@@ -5,14 +5,14 @@ python:
 addons:
   apt:
     packages:
-      - chromium-browser
+      - google-chrome-stable
       - wget
+      - xvfb
 
 before_install:
   - wget http://chromedriver.storage.googleapis.com/2.20/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip -d bin
   - export PATH=$HOME/bin:$PATH
-  - export CHROME_BIN=chromium-browser
 install:
   - pip install tornado pystache
   - pip install pytest pytest-cov selenium
