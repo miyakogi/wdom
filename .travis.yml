@@ -2,11 +2,17 @@ language: python
 python:
   - "3.5"
 
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3
+before_install:
+  - "export CHROME_BIN=chromium-browser"
 install:
   - pip install tornado pystache
   - pip install pytest pytest-cov selenium
-  - pip install coveralls
+  - pip install codecov
 script:
-  - py.test --cov wdom --cov-report term-missing
+  - py.test --cov wdom
 after_success:
-  - coveralls
+  - codecov
