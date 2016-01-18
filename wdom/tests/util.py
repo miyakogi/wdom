@@ -21,7 +21,6 @@ from tornado.platform.asyncio import AsyncIOMainLoop
 
 from wdom.server import start_server
 
-driver = webdriver.Firefox
 wd = None
 conn, wd_conn = Pipe()
 browser = None
