@@ -1,0 +1,19 @@
+tmp
+.cache
+.coverage
+coverage.xml
+pytest.xml
+requirements.txt
+
+# Python files
+__pycache__/
+*.py[cod]
+
+# Sphinx build dir
+docs/_build/*
+
+# node files
+node_modules
+
+# phantomjs
+ghostdriver.log
