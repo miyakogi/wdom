@@ -6,6 +6,9 @@ This module defines options for wdom and wraps ``tornado.options``.
 Do not use ``tornado.options`` directly.
 """
 
+import sys
+from os import path
+
 from argparse import ArgumentParser, SUPPRESS
 from tornado.log import define_logging_options
 
@@ -41,25 +44,16 @@ parser.define('--autoreload', default=False, action='store_const', const=True)
 parser.define('--theme', default=None)
 parser.define('--temptheme', default=None, help='Only for internal use.')
 
-parser.define('-b', default=SUPPRESS, nargs='*',
-              help='Fake option for sphinx-build.')
-parser.define('-d', default=SUPPRESS, nargs='*',
-              help='Fake option for sphinx-build.')
-parser.define('-s', default=SUPPRESS, nargs='?',
-              help='Fake option for pytest.')
-parser.define('-v', default=SUPPRESS, nargs='?',
-              help='Fake option for pytest.')
-parser.define('--junitxml', default=SUPPRESS, help='Fake option for pytest.')
-parser.define('--cov', default=SUPPRESS, help='Fake option for pytest-cov.')
-parser.define('--cov-report', default=SUPPRESS,
-              help='Fake option for pytest-cov.')
-
 
 def parse_command_line(*args, **kwargs):
     '''Parse command line options and set options in ``tornado.options``.'''
     import tornado.options
     global config
-    config = parser.parse_args()
+    prog = path.basename(sys.argv[0])
+    if prog in ('py.test', 'tox', 'sphinx-build'):
+        config = parser.parse_args([])
+    else:
+        config = parser.parse_args()
     for k, v in vars(config).items():
         if k.startswith('log'):
             tornado.options.options.__setattr__(k, v)
