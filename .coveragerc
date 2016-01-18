@@ -1,0 +1,2 @@
+[run]
+omit=wdom/themes/*,wdom/examples/*
