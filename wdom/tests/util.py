@@ -21,7 +21,7 @@ from tornado.platform.asyncio import AsyncIOMainLoop
 
 from wdom.server import start_server
 
-driver = webdriver.Chrome
+driver = webdriver.Firefox
 wd = None
 conn, wd_conn = Pipe()
 browser = None
@@ -49,7 +49,7 @@ def get_browser():
     '''Get existing webdriver. If no driver is running, start new one.'''
     global wd
     if wd is None:
-        wd = webdriver.Chrome()
+        wd = webdriver.Firefox()
         return wd
     else:
         return wd
