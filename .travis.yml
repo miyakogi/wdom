@@ -1,0 +1,12 @@
+language: python
+python:
+  - "3.5"
+
+install:
+  - pip install tornado pystache
+  - pip install pytest pytest-cov selenium
+  - pip install coveralls
+script:
+  - py.test --cov wdom --cov-report term-missing
+after_success:
+  - coveralls
