@@ -56,7 +56,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'SciDOM'
+project = 'W-DOM'
 copyright = '2016, Hiroyuki Takagi'
 author = 'Hiroyuki Takagi'
 
@@ -212,7 +212,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'SciDOMdoc'
+htmlhelp_basename = 'WDOMdoc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -234,7 +234,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'SciDOM.tex', 'SciDOM Documentation',
+  (master_doc, 'WDOM.tex', 'W-DOM Documentation',
    'Hiroyuki Takagi', 'manual'),
 ]
 
