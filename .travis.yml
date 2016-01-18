@@ -15,8 +15,9 @@ before_script:
 install:
   - pip install tornado pystache
   - pip install pytest pytest-cov selenium
-  - pip install codecov
+  - pip install codecov coveralls
 script:
   - py.test --cov wdom
 after_success:
   - codecov
+  - coveralls
