@@ -75,7 +75,6 @@ class TextNode:
                 return None
             else:
                 return self.parent[index + 1]
-        return self.next_sibling
 
 
 class RawHtmlNode(TextNode):
@@ -125,11 +124,6 @@ class Dom(TextNode):
 
     def _inner_html(self) -> str:
         return ''.join(child.html for child in self.children)
-
-    def inner_contents(self) -> str:
-        '''Return inner contents of this node, in otherwords, html expression
-        of this node excluding beginning/ending tag.'''
-        return self._inner_text() + self._inner_html()
 
     def end_tag(self) -> str:
         '''Return start tag of this node. For example,
@@ -438,10 +432,6 @@ class HtmlDom(Dom, metaclass=HtmlDomMeta):
         if attr == 'class':
             self.class_list = ClassList(val)
         else:
-            if attr == 'checked':
-                self.checked = val
-            elif attr == 'value':
-                self.value = val
             super().__setitem__(attr, val)
 
     def __copy__(self) -> 'HtmlDom':
