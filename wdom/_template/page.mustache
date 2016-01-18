@@ -1,1 +1,28 @@
-/home/takagi/Documents/python/Projects/wdom/page.mustache
+<!DOCTYPE html>
+<head>
+  <meta charset="{{charset}}">
+  <meta content="text/css" http-equiv="Content-Style-Type">
+  <title> {{title}} </title>
+  <link href="favicon.ico" rel="shortcut icon">
+  {{#headers}}
+    {{{header}}}
+  {{/headers}}
+  {{#cssfiles}}
+    <link href="{{css}}" rel="stylesheet">
+  {{/cssfiles}}
+</head>
+<body>
+  {{#contents}}
+    {{{content}}}
+  {{/contents}}
+  {{#jsfiles}}
+    <script src="{{js}}" type="text/javascript"></script>
+  {{/jsfiles}}
+  <script type="text/javascript">
+    {{#autoreload}}
+      WDOM_AUTORELOAD = true
+    {{/autoreload}}
+    WDOM_LOG_CONSOLE = true
+  </script>
+</body>
+</html>
