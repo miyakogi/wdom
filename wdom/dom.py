@@ -735,6 +735,10 @@ class TextInput(Input):
     type_ = 'text'
 
 
+class Button(Node):
+    tag = 'button'
+
+
 Div = NewNodeClass('Div')
 Span = NewNodeClass('Span')
 
@@ -784,3 +788,8 @@ Form = NewNodeClass('Form')
 Label = NewNodeClass('Label')
 Option = NewNodeClass('Option')
 Select = NewNodeClass('Select')
+
+# Building blocks
+Container = Div
+Wrapper = Div
+Row = Div

@@ -32,8 +32,9 @@ def main():
     AsyncIOMainLoop().install()
 
     from wdom.server import start_server, get_app
+    from wdom.examples.bootstrap3 import sample_page
     # from wdom.examples.rev_text import sample_page
-    from wdom.examples.data_binding import sample_page
+    # from wdom.examples.data_binding import sample_page
     # from wdom.examples.todo import sample_page
     from wdom.log import configure_logger
     configure_logger()
