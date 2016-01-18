@@ -1,9 +1,9 @@
+build
 tmp
 .cache
 .coverage
 coverage.xml
 pytest.xml
-requirements.txt
 
 # Python files
 __pycache__/
