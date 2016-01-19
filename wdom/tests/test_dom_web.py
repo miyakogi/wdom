@@ -56,6 +56,8 @@ class TestNode(WDTest):
     def test_node_class(self) -> None:
         self.root.addClass('a')
         assert self.get_attribute('class') == 'a'
+        self.root.removeClass('a')
+        assert self.get_attribute('class') == ''
 
     def test_addremove_child(self) -> None:
         child = Node()
