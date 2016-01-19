@@ -354,7 +354,8 @@ class ClassList:
             elif arg is None:
                 pass
             else:
-                raise TypeError(arg)
+                raise TypeError(
+                    'class must be str, bytes, or Iterable of them')
 
     def remove(self, item):
         self.classes.remove(item)

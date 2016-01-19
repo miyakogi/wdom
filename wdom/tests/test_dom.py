@@ -347,6 +347,13 @@ class TestClassList(object):
         assert bool(self.cl) is False
         assert '' == self.cl.to_string()
 
+    def test_add_invlalid(self):
+        with pytest.raises(TypeError):
+            self.cl.append(1)
+        assert len(self.cl) == 0
+        assert bool(self.cl) is False
+        assert '' == self.cl.to_string()
+
     def test_iter(self):
         cls = ['a', 'b', 'c']
         self.cl.append(cls)
