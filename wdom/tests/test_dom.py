@@ -35,8 +35,15 @@ class TestDom(object):
         assert self.dom.tagName == 'TAG'
         assert self.dom.localName == 'tag'
 
+        class A(Dom):
+            tag = 'Atag'
+        a = A()
+        assert a.tag == 'Atag'
+        assert a.tagName == 'ATAG'
+        assert a.localName == 'atag'
+
     def test_tag_string(self):
-        assert re.match(r'<tag></tag>', self.dom.html)
+        assert '<tag></tag>' == self.dom.html
 
     def test_attr_init(self):
         dom = Dom(attrs={'src': 'a'})
