@@ -8,7 +8,7 @@
 import time
 import asyncio
 from multiprocessing import Process, Pipe
-from unittest import TestCase
+import unittest
 
 from selenium import webdriver
 from selenium.webdriver.common.utils import free_port
@@ -24,6 +24,14 @@ from wdom.server import start_server
 wd = None
 conn, wd_conn = Pipe()
 browser = None
+
+
+class TestCase(unittest.TestCase):
+    def assertIsTrue(self, bl) -> None:
+        self.assertIs(bl, True)
+
+    def assertIsFalse(self, bl) -> None:
+        self.assertIs(bl, False)
 
 
 def install_asyncio():
