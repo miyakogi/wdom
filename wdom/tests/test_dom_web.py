@@ -41,6 +41,12 @@ class TestNode(WDTest):
     def get_app(self) -> Application:
         return self.app
 
+    def test_connection(self) -> None:
+        assert self.root.connected is True
+        # this is an example, but valid domain for test
+        self.get('http://example.com/')
+        assert self.root.connected is False
+
     def test_node_text(self) -> None:
         assert self.get_text() == ''
         self.root.textContent = 'ROOT'
