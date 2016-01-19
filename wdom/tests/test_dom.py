@@ -38,6 +38,12 @@ class TestDom(object):
     def test_tag_string(self):
         assert re.match(r'<tag></tag>', self.dom.html)
 
+    def test_attr_init(self):
+        dom = Dom(attrs={'src': 'a'})
+        assert '<tag src="a"></tag>' == dom.html
+        dom.removeAttribute('src')
+        assert '<tag></tag>' == dom.html
+
     def test_attr_atomic(self):
         # test add tag-attr
         self.dom['a'] = 'b'
