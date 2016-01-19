@@ -261,7 +261,7 @@ class Dom(TextNode):
         '''Replace child node with new node. The node to be replaced is not a
         child of this node, raise ValueError.'''
         if old_child not in self:
-            raise ValueError
+            raise ValueError('No such child: {}'.format(old_child))
         self.insert(self.index(old_child), new_child)
         old_child.remove()
         # Need to swap parent of new/old child?
