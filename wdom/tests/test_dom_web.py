@@ -3,7 +3,6 @@
 
 from unittest.mock import MagicMock
 
-import pytest
 from tornado.web import Application
 from selenium.common.exceptions import NoSuchElementException
 
@@ -42,39 +41,39 @@ class TestNode(WDTest):
         return self.app
 
     def test_connection(self) -> None:
-        assert self.root.connected is True
+        self.assertIsTrue(self.root.connected)
         # this is an example, but valid domain for test
         self.get('http://example.com/')
-        assert self.root.connected is False
+        self.assertIsFalse(self.root.connected)
 
     def test_node_text(self) -> None:
-        assert self.get_text() == ''
+        self.assertEqual(self.get_text(), '')
         self.root.textContent = 'ROOT'
-        assert self.get_text() == 'ROOT'
+        self.assertEqual(self.get_text(), 'ROOT')
 
     def test_node_attr(self) -> None:
-        assert self.get_attribute('src') is None
+        self.assertIsNone(self.get_attribute('src'))
         self.root.setAttribute('src', 'a')
-        assert self.get_attribute('src') == 'a'
+        self.assertEqual(self.get_attribute('src'), 'a')
         self.root.removeAttribute('src')
-        assert self.get_attribute('src') is None
+        self.assertIsNone(self.get_attribute('src'))
 
     def test_node_class(self) -> None:
         self.root.addClass('a')
-        assert self.get_attribute('class') == 'a'
+        self.assertEqual(self.get_attribute('class'), 'a')
         self.root.removeClass('a')
-        assert self.get_attribute('class') == ''
+        self.assertEqual(self.get_attribute('class'), '')
 
     def test_addremove_child(self) -> None:
         child = Node()
         self.root.appendChild(child)
-        assert self.set_element_by_id(child.id) is True
-        assert self.get_text() == ''
+        self.assertIsTrue(self.set_element_by_id(child.id))
+        self.assertEqual(self.get_text(), '')
         child.textContent = 'Child'
-        assert self.get_text() == 'Child'
+        self.assertEqual(self.get_text(), 'Child')
 
         self.root.removeChild(child)
-        with pytest.raises(NoSuchElementException):
+        with self.assertRaises(NoSuchElementException):
             self.set_element_by_id(child.id)
 
     def test_replace_child(self) -> None:
@@ -83,24 +82,24 @@ class TestNode(WDTest):
         child2 = Node()
         child2.textContent = 'child2'
         self.root.appendChild(child1)
-        with pytest.raises(NoSuchElementException):
+        with self.assertRaises(NoSuchElementException):
             self.set_element_by_id(child2.id)
-        assert self.set_element_by_id(child1.id) is True
-        assert self.get_text() == 'child1'
+        self.assertIsTrue(self.set_element_by_id(child1.id))
+        self.assertEqual(self.get_text(), 'child1')
 
         self.root.replaceChild(child2, child1)
-        with pytest.raises(NoSuchElementException):
+        with self.assertRaises(NoSuchElementException):
             self.set_element_by_id(child1.id)
-        assert self.set_element_by_id(child2.id) is True
-        assert self.get_text() == 'child2'
+        self.assertIsTrue(self.set_element_by_id(child2.id))
+        self.assertEqual(self.get_text(), 'child2')
 
     def test_showhide(self) -> None:
         self.root.textContent = 'root'
-        assert self.is_displayed() is True
+        self.assertIsTrue(self.is_displayed())
         self.root.hide()
-        assert self.is_displayed() is False
+        self.assertIsFalse(self.is_displayed())
         self.root.show()
-        assert self.is_displayed() is True
+        self.assertIsTrue(self.is_displayed())
 
 
 class TestEvent(WDTest):
@@ -127,7 +126,7 @@ class TestEvent(WDTest):
         self.set_element(self.mock)
         self.click()
         self.wait(0.1)
-        assert self.click_mock.call_count == 1
+        self.assertEqual(self.click_mock.call_count, 1)
         self.mock.append.assert_not_called()
         self.mock.insert.assert_not_called()
         self.mock.remove.assert_not_called()
@@ -159,40 +158,40 @@ class TestInput(WDTest):
         self.set_element(self.input)
         self.send_keys('abc')
         self.wait(0.02)
-        assert self.input.value == 'abc'
+        self.assertEqual(self.input.value, 'abc')
 
         self.get(self.url)
         self.set_element(self.input)
-        assert self.get_attribute('value') == 'abc'
+        self.assertEqual(self.get_attribute('value'), 'abc')
 
         self.send_keys('def')
         self.wait(0.02)
-        assert self.input.value == 'abcdef'
+        self.assertEqual(self.input.value, 'abcdef')
 
     def test_textarea(self) -> None:
         self.set_element(self.textarea)
         self.send_keys('abc')
         self.wait(0.02)
-        assert self.textarea.value == 'abc'
+        self.assertEqual(self.textarea.value, 'abc')
 
         self.get(self.url)
         self.set_element(self.textarea)
-        assert self.get_attribute('value') == 'abc'
+        self.assertEqual(self.get_attribute('value'), 'abc')
 
         self.send_keys('def')
         self.wait(0.02)
-        assert self.textarea.value == 'abcdef'
+        self.assertEqual(self.textarea.value, 'abcdef')
 
     def test_checkbox(self) -> None:
         self.set_element(self.checkbox)
         self.click()
         self.wait(0.02)
-        assert self.checkbox.checked is True
+        self.assertIsTrue(self.checkbox.checked)
 
         self.get(self.url)
         self.set_element(self.checkbox)
-        assert self.get_attribute('checked') == 'true'
+        self.assertEqual(self.get_attribute('checked'), 'true')
 
         self.click()
         self.wait(0.02)
-        assert self.checkbox.checked is False
+        self.assertIsFalse(self.checkbox.checked)

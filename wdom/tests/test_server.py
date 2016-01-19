@@ -3,15 +3,14 @@
 
 import re
 import json
-import asyncio
 
-from tornado.testing import AsyncHTTPTestCase, gen_test, ExpectLog
+from tornado.testing import AsyncHTTPTestCase, gen_test
 from tornado.websocket import websocket_connect
 from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 
 from wdom.view import Document
-from wdom.server import MainHandler, WSHandler, Application, get_app
+from wdom.server import MainHandler, Application, get_app
 
 
 def setup_module():
@@ -35,16 +34,15 @@ class TestMainHandlerBlank(AsyncHTTPTestCase):
         return self.app
 
     def test_blank_mainpage(self) -> None:
-        with ExpectLog('wdom.server', 'connected'):
-            with ExpectLog('wdom.server', '200 GET'):
-                res = self.fetch('/')
-        assert res.code == 200
+        with self.assertLogs('wdom.server', 'INFO'):
+            res = self.fetch('/')
+        self.assertEqual(res.code, 200)
         _re = re.compile('<!DOCTYPE html>\s*<head>.*<meta .*'
                          '<title>\s*W-DOM\s*</title>.*'
                          '</head>\s*<body.*>.*<script.*>.*</script>.*'
                          '</body>\s*</html>'
                          , re.S)
-        assert _re.match(res.body.decode('utf8'))
+        self.assertIsNotNone(_re.match(res.body.decode('utf8')))
 
 
 class TestMainHandler(AsyncHTTPTestCase):
@@ -61,11 +59,10 @@ class TestMainHandler(AsyncHTTPTestCase):
         return self.app
 
     def test_blank_mainpage(self) -> None:
-        with ExpectLog('wdom.server', '.*connected'):
-            with ExpectLog('wdom.server', '200 GET'):
-                res = self.fetch('/')
-        assert res.code == 200
-        assert 'testing' in res.body.decode('utf8')
+        with self.assertLogs('wdom.server', 'INFO'):
+            res = self.fetch('/')
+        self.assertEqual(res.code, 200)
+        self.assertIn('testing', res.body.decode('utf8'))
 
 
 class TestStaticFileHandler(AsyncHTTPTestCase):
@@ -78,19 +75,20 @@ class TestStaticFileHandler(AsyncHTTPTestCase):
         return self.app
 
     def test_static_file(self) -> None:
-        with ExpectLog('wdom.server', '200 GET'):
+        with self.assertLogs('wdom.server', 'INFO'):
             res = self.fetch('/_static/js/wdom.js')
-        assert res.code == 200
-        assert 'Wlog' in res.body.decode('utf8')
-        assert 'Wdom' in res.body.decode('utf8')
+        self.assertEqual(res.code, 200)
+        body = res.body.decode('utf8')
+        self.assertIn('Wlog', body)
+        self.assertIn('Wdom', body)
 
     def test_add_static_path(self) -> None:
         from os import path
         self.app.add_static_path('a', path.abspath(path.dirname(__file__)))
-        with ExpectLog('wdom.server', '200 GET'):
+        with self.assertLogs('wdom.server', 'INFO'):
             res = self.fetch('/a/' + __file__)
-        assert res.code == 200
-        assert 'this text' in res.body.decode('utf8')
+        self.assertEqual(res.code, 200)
+        self.assertIn('this text', res.body.decode('utf8'))
 
 
 class TestRootWSHandler(AsyncHTTPTestCase):
@@ -100,7 +98,7 @@ class TestRootWSHandler(AsyncHTTPTestCase):
         super().setUp()
         self.url = self.get_url('/wdom_ws')
 
-        with ExpectLog('wdom.server', 'WS OPEN'):
+        with self.assertLogs('wdom.server', 'INFO'):
             ws_future = to_asyncio_future(websocket_connect(
                 self.url, callback=self.stop))
             self.wait()
@@ -120,32 +118,33 @@ class TestRootWSHandler(AsyncHTTPTestCase):
 
     @gen_test
     def test_ws_connection(self) -> None:
-        with ExpectLog('wdom.server', 'WS OPEN'):
-            ws = yield websocket_connect(self.url, io_loop=self.io_loop)
+        with self.assertLogs('wdom.server', 'INFO'):
+            _ = yield websocket_connect(self.url, io_loop=self.io_loop)
+            del _
 
     def test_logging_error(self) -> None:
-        with ExpectLog('wdom.server', 'JS: test'):
+        with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='error', message='test')
             ))
             self.sleep()
 
     def test_logging_warn(self) -> None:
-        with ExpectLog('wdom.server', 'JS: test'):
+        with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='warn', message='test')
             ))
             self.sleep()
 
     def test_logging_info(self) -> None:
-        with ExpectLog('wdom.server', 'JS: test'):
+        with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='info', message='test')
             ))
             self.sleep()
 
     def test_logging_debug(self) -> None:
-        with ExpectLog('wdom.server', 'JS: test'):
+        with self.assertLogs('wdom.server', 'DEBUG'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='debug', message='test')
             ))

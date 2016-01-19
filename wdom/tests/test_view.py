@@ -3,14 +3,13 @@
 
 import re
 
-import pytest
-
 from wdom.view import Document
 from wdom.dom import Node
+from wdom.tests.util import TestCase
 
 
-class TestMainDocument:
-    def setup(self) -> None:
+class TestMainDocument(TestCase):
+    def setUp(self) -> None:
         self.document = Document()
 
     def test_blankpage(self) -> None:
@@ -34,7 +33,7 @@ class TestMainDocument:
             , re.S
         )
         html = self.document.build()
-        assert _re.match(html)
+        self.assertIsNotNone(_re.match(html))
 
     def test_add_jsfile(self) -> None:
         self.document.add_jsfile('jsfile')
@@ -44,7 +43,7 @@ class TestMainDocument:
             '.*<script',
             re.S
         )
-        assert _re.search(self.document.build())
+        self.assertIsNotNone(_re.search(self.document.build()))
 
     def test_add_cssfile(self) -> None:
         self.document.add_cssfile('cssfile')
@@ -54,7 +53,7 @@ class TestMainDocument:
             '.*</head>',
             re.S
         )
-        assert _re.search(self.document.build())
+        self.assertIsNotNone(_re.search(self.document.build()))
 
     def test_add_header_link(self) -> None:
         self.document.add_header('<link href="cssfile" rel="stylesheet">')
@@ -64,8 +63,7 @@ class TestMainDocument:
             '.*</head>',
             re.S
         )
-        html = self.document.build()
-        assert _re.search(self.document.build())
+        self.assertIsNotNone(_re.search(self.document.build()))
 
     def test_add_header_script(self) -> None:
         self.document.add_header(
@@ -76,7 +74,7 @@ class TestMainDocument:
             '.*</head>',
             re.S
         )
-        assert _re.search(self.document.build())
+        self.assertIsNotNone(_re.search(self.document.build()))
 
     def test_title(self) -> None:
         document = Document(title='TEST')
@@ -85,8 +83,8 @@ class TestMainDocument:
             re.S
         )
         html = document.build()
-        assert _re.search(html)
-        assert 'W-DOM' not in html
+        self.assertIsNotNone(_re.search(html))
+        self.assertNotIn('W-DOM', html)
 
     def test_charset(self) -> None:
         document = Document(charset='TEST')
@@ -95,8 +93,8 @@ class TestMainDocument:
             re.S
         )
         html = document.build()
-        assert _re.search(html)
-        assert 'utf' not in html
+        self.assertIsNotNone(_re.search(html))
+        self.assertNotIn('utf', html)
 
     def test_set_body(self) -> None:
         self.document.set_body(Node())
@@ -105,14 +103,14 @@ class TestMainDocument:
             '<node\s+id="\d+">\s*</node>',
             re.S
         )
-        assert _re.search(html)
+        self.assertIsNotNone(_re.search(html))
 
     def test_set_body_string(self) -> None:
         string = 'testing'
         self.document.set_body(string)
         html = self.document.build()
-        assert string in html
+        self.assertIn(string, html)
 
     def test_set_body_error(self) -> None:
-        with pytest.raises(TypeError):
+        with self.assertRaises(TypeError):
             self.document.set_body(1)
