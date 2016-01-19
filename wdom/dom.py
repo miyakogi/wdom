@@ -348,6 +348,9 @@ class ClassList:
                 for c in arg.split():
                     if c not in self.classes:
                         self.classes.append(c)
+            elif isinstance(arg, TextNode):
+                raise TypeError(
+                    'class must be str, bytes, or Iterable of them')
             elif isinstance(arg, Iterable):
                 for c in arg:
                     self.append(c)

@@ -350,6 +350,8 @@ class TestClassList(object):
     def test_add_invlalid(self):
         with pytest.raises(TypeError):
             self.cl.append(1)
+        with pytest.raises(TypeError):
+            self.cl.append(Dom())
         assert len(self.cl) == 0
         assert bool(self.cl) is False
         assert '' == self.cl.to_string()
