@@ -93,6 +93,12 @@ class TestDom(object):
         assert self.c1 not in self.dom
         assert '<tag></tag>' == self.dom.html
 
+    def test_child_exception(self) -> None:
+        with pytest.raises(ValueError):
+            self.dom.removeChild(Dom())
+        with pytest.raises(ValueError):
+            self.dom.replaceChild(Dom(), Dom())
+
     def test_first_last_child(self):
         assert self.dom.firstChild is None
         assert self.dom.lastChild is None
@@ -257,7 +263,6 @@ class TestDom(object):
 
         b_sub_list = b1.getElementsByTagName('b')
         assert len(b_sub_list) == 1
-        print(b_sub_list[0].html)
         assert b_sub_list[0] is b2
 
 
