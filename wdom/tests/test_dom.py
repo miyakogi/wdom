@@ -63,8 +63,11 @@ class TestDom(object):
 
     def test_attr_addremove(self):
         assert self.dom.hasAttributes() is False
+        assert self.dom.hasAttribute('a') is False
         self.dom.setAttribute('a', 'b')
         assert self.dom.hasAttributes() is True
+        assert self.dom.hasAttribute('a') is True
+        assert self.dom.hasAttribute('b') is False
         assert 'b' == self.dom.getAttribute('a')
         assert '<tag a="b"></tag>' == self.dom.html
         assert self.dom.attributes == {'a': 'b'}
