@@ -94,6 +94,13 @@ class TestDom(object):
         assert '<tag></tag>' == self.dom.html
 
     def test_child_exception(self) -> None:
+        with pytest.raises(TypeError):
+            self.dom.insert(0, 'a')
+        with pytest.raises(TypeError):
+            self.dom.append('a')
+        with pytest.raises(TypeError):
+            self.dom.appendChild('a')
+
         with pytest.raises(ValueError):
             self.dom.removeChild(Dom())
         with pytest.raises(ValueError):
