@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import re
+
 import pytest
+from tornado.testing import ExpectLog
+
 from wdom.dom import TextNode, Dom, HtmlDom, PyNode, Node
 from wdom.dom import ClassList, EventListener
 from wdom.dom import NewNodeClass
@@ -434,7 +437,7 @@ class TestHtmlDom(object):
         assert self.dom.hasClass('b') is True
 
     def test_class_remove_error(self) -> None:
-        with pytest.raises(ValueError):
+        with ExpectLog('wdom.dom', 'tried to remove non-existing'):
             self.dom.removeClass('a')
 
     def test_type_class(self) -> None:
@@ -518,7 +521,7 @@ class TestHtmlDom(object):
         assert '<html-tag><html-tag></html-tag></html-tag>' == self.dom.html
         assert '<html-tag><html-tag hidden></html-tag></html-tag>' == clone.html
 
-    def test_classes_class(self):
+    def test_class_of_class(self):
         class A(HtmlDom):
             tag = 'a'
             class_ = 'a1'
@@ -527,7 +530,7 @@ class TestHtmlDom(object):
         assert '<a class="a1"></a>' == a.html
         a.addClass('a2')
         assert '<a class="a1 a2"></a>' == a.html
-        with pytest.raises(ValueError):
+        with ExpectLog('wdom.dom', 'tried to remove class-level class'):
             a.removeClass('a1')
         assert '<a class="a1 a2"></a>' == a.html
 
