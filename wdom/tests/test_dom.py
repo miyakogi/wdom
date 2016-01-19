@@ -424,6 +424,15 @@ class TestHtmlDom(object):
         assert self.dom.hasClass('b') is True
         assert '<html-tag class="b"></html-tag>' == self.dom.html
 
+    def test_class_getset(self) -> None:
+        assert self.dom['class'] == ''
+        self.dom.addClass('a')
+        assert self.dom['class'] == 'a'
+        self.dom['class'] = 'b'
+        assert self.dom['class'] == 'b'
+        assert self.dom.hasClass('a') is False
+        assert self.dom.hasClass('b') is True
+
     def test_type_class(self) -> None:
         class A(HtmlDom):
             tag = 'input'

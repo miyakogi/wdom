@@ -437,7 +437,7 @@ class HtmlDom(Dom, metaclass=HtmlDomMeta):
 
     def __getitem__(self, attr: str):
         if attr == 'class':
-            return self.class_list
+            return self.class_list.to_string()
         else:
             return super().__getitem__(attr)
 
