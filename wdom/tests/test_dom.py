@@ -390,6 +390,16 @@ class TestHtmlDom(object):
         assert self.dom.hasClass('a') is False
         assert '<html-tag></html-tag>' == self.dom.html
 
+    def test_class_in_init(self) -> None:
+        dom = HtmlDom(class_ = 'a')
+        assert dom.hasClass('a') is True
+        assert dom.hasClasses() is True
+        assert '<html-tag class="a"></html-tag>' == dom.html
+        dom.removeClass('a')
+        assert dom.hasClass('a') is False
+        assert dom.hasClasses() is False
+        assert '<html-tag></html-tag>' == dom.html
+
     def test_class_addremove_multi_string(self):
         self.dom.addClass('a b')
         assert self.dom.hasClasses() is True
