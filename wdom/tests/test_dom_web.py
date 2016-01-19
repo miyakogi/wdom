@@ -91,6 +91,8 @@ class TestNode(WDTest):
         assert self.is_displayed() is True
         self.root.hide()
         assert self.is_displayed() is False
+        self.root.show()
+        assert self.is_displayed() is True
 
 
 class TestEvent(WDTest):
