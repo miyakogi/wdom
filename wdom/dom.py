@@ -466,11 +466,11 @@ class HtmlDom(Dom, metaclass=HtmlDomMeta):
     def removeClass(self, class_: str):
         try:
             self.class_list.remove(class_)
-        except ValueError as e:
+        except ValueError:
             if class_ in self.__class__.get_class_list():
                 raise ValueError('Cannot remove class-level `class` attribute')
             else:
-                raise e
+                raise ValueError('not in class list: {}'.format(class_))
 
     def show(self):
         self.hidden = False

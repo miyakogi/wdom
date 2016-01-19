@@ -433,6 +433,10 @@ class TestHtmlDom(object):
         assert self.dom.hasClass('a') is False
         assert self.dom.hasClass('b') is True
 
+    def test_class_remove_error(self) -> None:
+        with pytest.raises(ValueError):
+            self.dom.removeClass('a')
+
     def test_type_class(self) -> None:
         class A(HtmlDom):
             tag = 'input'
