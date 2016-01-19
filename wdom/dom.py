@@ -348,13 +348,19 @@ class ClassList:
                 for c in arg.split():
                     if c not in self.classes:
                         self.classes.append(c)
+            elif isinstance(arg, TextNode):
+                raise TypeError(
+                    'class must be str, bytes, or Iterable of them,'
+                    ' not {}'.format(type(arg)))
             elif isinstance(arg, Iterable):
                 for c in arg:
                     self.append(c)
             elif arg is None:
                 pass
             else:
-                raise TypeError(arg)
+                raise TypeError(
+                    'class must be str, bytes, or Iterable of them,'
+                    ' not {}'.format(type(arg)))
 
     def remove(self, item):
         self.classes.remove(item)
@@ -431,7 +437,7 @@ class HtmlDom(Dom, metaclass=HtmlDomMeta):
 
     def __getitem__(self, attr: str):
         if attr == 'class':
-            return self.class_list
+            return self.class_list.to_string()
         else:
             return super().__getitem__(attr)
 
@@ -460,11 +466,16 @@ class HtmlDom(Dom, metaclass=HtmlDomMeta):
     def removeClass(self, class_: str):
         try:
             self.class_list.remove(class_)
-        except ValueError as e:
+        except ValueError:
             if class_ in self.__class__.get_class_list():
-                raise ValueError('Cannot remove class-level `class` attribute')
+                logger.warn(
+                    'tried to remove class-level class: '
+                    '{}'.format(class_)
+                )
             else:
-                raise e
+                logger.warn(
+                    'tried to remove non-existing class: {}'.format(class_)
+                )
 
     def show(self):
         self.hidden = False

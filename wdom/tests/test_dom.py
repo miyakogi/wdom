@@ -2,7 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import re
+
 import pytest
+from tornado.testing import ExpectLog
+
 from wdom.dom import TextNode, Dom, HtmlDom, PyNode, Node
 from wdom.dom import ClassList, EventListener
 from wdom.dom import NewNodeClass
@@ -347,6 +350,15 @@ class TestClassList(object):
         assert bool(self.cl) is False
         assert '' == self.cl.to_string()
 
+    def test_add_invlalid(self):
+        with pytest.raises(TypeError):
+            self.cl.append(1)
+        with pytest.raises(TypeError):
+            self.cl.append(Dom())
+        assert len(self.cl) == 0
+        assert bool(self.cl) is False
+        assert '' == self.cl.to_string()
+
     def test_iter(self):
         cls = ['a', 'b', 'c']
         self.cl.append(cls)
@@ -381,6 +393,16 @@ class TestHtmlDom(object):
         assert self.dom.hasClass('a') is False
         assert '<html-tag></html-tag>' == self.dom.html
 
+    def test_class_in_init(self) -> None:
+        dom = HtmlDom(class_ = 'a')
+        assert dom.hasClass('a') is True
+        assert dom.hasClasses() is True
+        assert '<html-tag class="a"></html-tag>' == dom.html
+        dom.removeClass('a')
+        assert dom.hasClass('a') is False
+        assert dom.hasClasses() is False
+        assert '<html-tag></html-tag>' == dom.html
+
     def test_class_addremove_multi_string(self):
         self.dom.addClass('a b')
         assert self.dom.hasClasses() is True
@@ -405,6 +427,19 @@ class TestHtmlDom(object):
         assert self.dom.hasClass('b') is True
         assert '<html-tag class="b"></html-tag>' == self.dom.html
 
+    def test_class_getset(self) -> None:
+        assert self.dom['class'] == ''
+        self.dom.addClass('a')
+        assert self.dom['class'] == 'a'
+        self.dom['class'] = 'b'
+        assert self.dom['class'] == 'b'
+        assert self.dom.hasClass('a') is False
+        assert self.dom.hasClass('b') is True
+
+    def test_class_remove_error(self) -> None:
+        with ExpectLog('wdom.dom', 'tried to remove non-existing'):
+            self.dom.removeClass('a')
+
     def test_type_class(self) -> None:
         class A(HtmlDom):
             tag = 'input'
@@ -420,6 +455,20 @@ class TestHtmlDom(object):
         a = HtmlDom()
         a.setAttribute('type', 'checkbox')
         assert '<html-tag type="checkbox"></html-tag>' == a.html
+
+    def test_type_setter(self) -> None:
+        class Check(HtmlDom):
+            type_ = 'checkbox'
+        a = Check()
+        b = Check()
+        c = Check()
+        b['type'] = 'radio'
+        c.setAttribute('type', 'text')
+        d = Check()
+        assert '<html-tag type="checkbox"></html-tag>' == a.html
+        assert '<html-tag type="radio"></html-tag>' == b.html
+        assert '<html-tag type="text"></html-tag>' == c.html
+        assert '<html-tag type="checkbox"></html-tag>' == d.html
 
     def test_hidden(self):
         self.dom.show()
@@ -486,7 +535,7 @@ class TestHtmlDom(object):
         assert '<html-tag><html-tag></html-tag></html-tag>' == self.dom.html
         assert '<html-tag><html-tag hidden></html-tag></html-tag>' == clone.html
 
-    def test_classes_class(self):
+    def test_class_of_class(self):
         class A(HtmlDom):
             tag = 'a'
             class_ = 'a1'
@@ -495,7 +544,7 @@ class TestHtmlDom(object):
         assert '<a class="a1"></a>' == a.html
         a.addClass('a2')
         assert '<a class="a1 a2"></a>' == a.html
-        with pytest.raises(ValueError):
+        with ExpectLog('wdom.dom', 'tried to remove class-level class'):
             a.removeClass('a1')
         assert '<a class="a1 a2"></a>' == a.html
 
