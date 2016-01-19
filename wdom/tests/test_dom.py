@@ -3,9 +3,6 @@
 
 import re
 
-import pytest
-from tornado.testing import ExpectLog
-
 from wdom.dom import TextNode, Dom, HtmlDom, PyNode, Node
 from wdom.dom import ClassList, EventListener
 from wdom.dom import NewNodeClass
@@ -108,16 +105,16 @@ class TestDom(TestCase):
         self.assertEqual('<tag></tag>', self.dom.html)
 
     def test_child_exception(self) -> None:
-        with pytest.raises(TypeError):
+        with self.assertRaises(TypeError):
             self.dom.insert(0, 'a')
-        with pytest.raises(TypeError):
+        with self.assertRaises(TypeError):
             self.dom.append('a')
-        with pytest.raises(TypeError):
+        with self.assertRaises(TypeError):
             self.dom.appendChild('a')
 
-        with pytest.raises(ValueError):
+        with self.assertRaises(ValueError):
             self.dom.removeChild(Dom())
-        with pytest.raises(ValueError):
+        with self.assertRaises(ValueError):
             self.dom.replaceChild(Dom(), Dom())
 
     def test_first_last_child(self):
@@ -352,9 +349,9 @@ class TestClassList(TestCase):
         self.assertEqual('', self.cl.to_string())
 
     def test_add_invlalid(self):
-        with pytest.raises(TypeError):
+        with self.assertRaises(TypeError):
             self.cl.append(1)
-        with pytest.raises(TypeError):
+        with self.assertRaises(TypeError):
             self.cl.append(Dom())
         self.assertEqual(len(self.cl), 0)
         self.assertIsFalse(bool(self.cl))
@@ -438,7 +435,7 @@ class TestHtmlDom(TestCase):
         self.assertIsTrue(self.dom.hasClass('b'))
 
     def test_class_remove_error(self) -> None:
-        with ExpectLog('wdom.dom', 'tried to remove non-existing'):
+        with self.assertLogs('wdom.dom', 'WARNING'):
             self.dom.removeClass('a')
 
     def test_type_class(self) -> None:
@@ -545,7 +542,7 @@ class TestHtmlDom(TestCase):
         self.assertEqual('<a class="a1"></a>', a.html)
         a.addClass('a2')
         self.assertEqual('<a class="a1 a2"></a>', a.html)
-        with ExpectLog('wdom.dom', 'tried to remove class-level class'):
+        with self.assertLogs('wdom.dom', 'WARNING'):
             a.removeClass('a1')
         self.assertEqual('<a class="a1 a2"></a>', a.html)
 
