@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import re
-from unittest import TestCase
 
 from wdom.view import Document
 from wdom.dom import Node
+from wdom.tests.util import TestCase
 
 
 class TestMainDocument(TestCase):
