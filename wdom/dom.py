@@ -76,6 +76,15 @@ class TextNode:
             else:
                 return self.parent[index + 1]
 
+    @property
+    def textContent(self) -> str:
+        # should return escaped string??
+        return self._text
+
+    @textContent.setter
+    def textContent(self, text: str):
+        self._text = text
+
 
 class RawHtmlNode(TextNode):
     @property
@@ -316,14 +325,16 @@ class Dom(TextNode):
     @property
     def textContent(self) -> str:
         '''Get inner text.'''
-        return self._inner_text()
+        text = ''.join(child.textContent for child in self.childNodes)
+        return text
 
     @textContent.setter
     def textContent(self, text: str):
         '''Remove all inner contents of this node, and set new text.'''
-        for child in self:
+        for child in tuple(self):
             child.remove()
-        self._text = _ensure_dom(text)
+        if text:
+            self.append(_ensure_dom(text))
 
 
 class ClassList:
