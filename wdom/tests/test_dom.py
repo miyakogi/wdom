@@ -35,8 +35,15 @@ class TestDom(object):
         assert self.dom.tagName == 'TAG'
         assert self.dom.localName == 'tag'
 
+        class A(Dom):
+            tag = 'Atag'
+        a = A()
+        assert a.tag == 'Atag'
+        assert a.tagName == 'ATAG'
+        assert a.localName == 'atag'
+
     def test_tag_string(self):
-        assert re.match(r'<tag></tag>', self.dom.html)
+        assert '<tag></tag>' == self.dom.html
 
     def test_attr_init(self):
         dom = Dom(attrs={'src': 'a'})
@@ -94,6 +101,13 @@ class TestDom(object):
         assert '<tag></tag>' == self.dom.html
 
     def test_child_exception(self) -> None:
+        with pytest.raises(TypeError):
+            self.dom.insert(0, 'a')
+        with pytest.raises(TypeError):
+            self.dom.append('a')
+        with pytest.raises(TypeError):
+            self.dom.appendChild('a')
+
         with pytest.raises(ValueError):
             self.dom.removeChild(Dom())
         with pytest.raises(ValueError):
@@ -134,13 +148,13 @@ class TestDom(object):
         assert '<tag><tag c="2"></tag></tag>' == self.dom.html
 
     def test_text_addremove(self):
-        self.dom.append('text')
+        self.dom.textContent = 'text'
         assert self.dom.hasChildNodes() is True
         assert '<tag>text</tag>' == self.dom.html
         assert 'text' in self.dom
         assert self.dom[0].parent == self.dom
 
-        self.dom.removeChild('text')
+        self.dom.textContent = ''
         assert self.dom.hasChildNodes() is False
         assert '<tag></tag>' == self.dom.html
 
@@ -157,6 +171,9 @@ class TestDom(object):
         self.dom.textContent = 'a'
         self.dom.appendChild(self.c1)
         assert '<tag>a<tag c="1"></tag></tag>' == self.dom.html
+        self.c1.textContent = 'c1'
+        assert '<tag>a<tag c="1">c1</tag></tag>' == self.dom.html
+        assert 'ac1' == self.dom.textContent
         self.dom.textContent = 'b'
         assert '<tag>b</tag>' == self.dom.html
         assert self.c1.parentNode is None

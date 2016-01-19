@@ -76,6 +76,15 @@ class TextNode:
             else:
                 return self.parent[index + 1]
 
+    @property
+    def textContent(self) -> str:
+        # should return escaped string??
+        return self._text
+
+    @textContent.setter
+    def textContent(self, text: str):
+        self._text = text
+
 
 class RawHtmlNode(TextNode):
     @property
@@ -143,7 +152,8 @@ class Dom(TextNode):
         '''Insert child node as the ``pos``-th child. If child is not an
         instance of Dom, it is converted to string and wrapped by TextNode
         before inserting it.'''
-        child = _ensure_dom(child)
+        if not isinstance(child, TextNode):
+            raise TypeError('child must be type of Node: {}'.format(child))
         self.children.insert(pos, child)
         child.parent = self
 
@@ -151,7 +161,8 @@ class Dom(TextNode):
         '''Append child node at the end of child nodes. If child is not an
         instance of Dom, it is converted to string and wrapped by TextNode
         before appending it.'''
-        child = _ensure_dom(child)
+        if not isinstance(child, TextNode):
+            raise TypeError('child must be type of Node: {}'.format(child))
         self.children.append(child)
         child.parent = self
 
@@ -193,7 +204,7 @@ class Dom(TextNode):
             clone.append(child.__deepcopy__(memo))
         return clone
 
-    def index(self, child: '_Element') -> int:
+    def index(self, child: TextNode) -> int:
         return self.children.index(child)
 
     # Properties defined in xml.dom.Node
@@ -253,20 +264,14 @@ class Dom(TextNode):
         of this node, raise ValueError.'''
         if child not in self:
             raise ValueError('No such child: {}'.format(child))
-        if isinstance(child, Dom):
-            child.remove()
-        elif isinstance(child, str):
-            for i, c in enumerate(self.children):
-                if c._text == child:
-                    del self.children[i]
+        child.remove()
 
     def replaceChild(self, new_child: 'Dom', old_child: 'Dom'):
         '''Replace child node with new node. The node to be replaced is not a
         child of this node, raise ValueError.'''
         if old_child not in self:
-            raise ValueError
-        index = self.index(old_child)
-        self.insert(index, new_child)
+            raise ValueError('No such child: {}'.format(old_child))
+        self.insert(self.index(old_child), new_child)
         old_child.remove()
         # Need to swap parent of new/old child?
 
@@ -320,14 +325,16 @@ class Dom(TextNode):
     @property
     def textContent(self) -> str:
         '''Get inner text.'''
-        return self._inner_text()
+        text = ''.join(child.textContent for child in self.childNodes)
+        return text
 
     @textContent.setter
     def textContent(self, text: str):
         '''Remove all inner contents of this node, and set new text.'''
-        for child in self:
+        for child in tuple(self):
             child.remove()
-        self._text = _ensure_dom(text)
+        if text:
+            self.append(_ensure_dom(text))
 
 
 class ClassList:
