@@ -9,10 +9,11 @@ from tornado.testing import ExpectLog
 from wdom.dom import TextNode, Dom, HtmlDom, PyNode, Node
 from wdom.dom import ClassList, EventListener
 from wdom.dom import NewNodeClass
+from wdom.tests.util import TestCase
 
 
-class TestTextNode(object):
-    def setup(self):
+class TestTextNode(TestCase):
+    def setUp(self):
         self.text_node = TextNode('text')
 
     def test_html(self):
@@ -26,9 +27,9 @@ class TestTextNode(object):
         assert TextNode('\'').html == '&#x27;'
 
 
-class TestDom(object):
+class TestDom(TestCase):
     '''Test for Basic Dom implementation'''
-    def setup(self):
+    def setUp(self):
         self.dom = Dom()
         self.c1 = Dom(c="1")
         self.c2 = Dom(c="2")
@@ -289,8 +290,8 @@ class TestDom(object):
         assert b_sub_list[0] is b2
 
 
-class TestClassList(object):
-    def setup(self):
+class TestClassList(TestCase):
+    def setUp(self):
         self.cl = ClassList()
 
     def test_addremove(self):
@@ -373,8 +374,8 @@ class TestClassList(object):
         assert 'd c b a' == self.cl.to_string()
 
 
-class TestHtmlDom(object):
-    def setup(self):
+class TestHtmlDom(TestCase):
+    def setUp(self):
         self.dom = HtmlDom()
         self.c1 = HtmlDom()
         self.c2 = HtmlDom()
@@ -592,7 +593,7 @@ class TestHtmlDom(object):
         assert C.get_class_list().to_string() == 'b1 b2 c1 c2'
 
 
-class TestPyNode(object):
+class TestPyNode(TestCase):
     def test_id_rand(self):
         dom = PyNode()
         assert re.match(r'<py-node id="\d+"></py-node>', dom.html)
@@ -602,13 +603,13 @@ class TestPyNode(object):
         assert '<py-node id="test"></py-node>' == dom.html
 
 
-class TestEventListener(object):
+class TestEventListener(TestCase):
     # To be implemented
     EventListener
 
 
-class TestNode(object):
-    def setup(self):
+class TestNode(TestCase):
+    def setUp(self):
         self.dom = Node()
 
     def test_event_addremove(self):
@@ -648,7 +649,7 @@ class TestNode(object):
         assert re.match(r'<node id="\d+"></node>', self.dom.html)
 
 
-class TestNewClass(object):
+class TestNewClass(TestCase):
     def test_create(self):
         MyTag = NewNodeClass('MyTag', 'mt')
         assert issubclass(MyTag, Node)
