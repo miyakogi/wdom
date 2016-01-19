@@ -350,7 +350,8 @@ class ClassList:
                         self.classes.append(c)
             elif isinstance(arg, TextNode):
                 raise TypeError(
-                    'class must be str, bytes, or Iterable of them')
+                    'class must be str, bytes, or Iterable of them,'
+                    ' not {}'.format(type(arg)))
             elif isinstance(arg, Iterable):
                 for c in arg:
                     self.append(c)
@@ -358,7 +359,8 @@ class ClassList:
                 pass
             else:
                 raise TypeError(
-                    'class must be str, bytes, or Iterable of them')
+                    'class must be str, bytes, or Iterable of them,'
+                    ' not {}'.format(type(arg)))
 
     def remove(self, item):
         self.classes.remove(item)
