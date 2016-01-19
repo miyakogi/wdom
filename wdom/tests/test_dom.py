@@ -456,6 +456,20 @@ class TestHtmlDom(object):
         a.setAttribute('type', 'checkbox')
         assert '<html-tag type="checkbox"></html-tag>' == a.html
 
+    def test_type_setter(self) -> None:
+        class Check(HtmlDom):
+            type_ = 'checkbox'
+        a = Check()
+        b = Check()
+        c = Check()
+        b['type'] = 'radio'
+        c.setAttribute('type', 'text')
+        d = Check()
+        assert '<html-tag type="checkbox"></html-tag>' == a.html
+        assert '<html-tag type="radio"></html-tag>' == b.html
+        assert '<html-tag type="text"></html-tag>' == c.html
+        assert '<html-tag type="checkbox"></html-tag>' == d.html
+
     def test_hidden(self):
         self.dom.show()
         assert '<html-tag></html-tag>' == self.dom.html
