@@ -9,7 +9,7 @@ from tornado.websocket import websocket_connect
 from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 
-from wdom.view import Document
+from wdom.document import Document
 from wdom.server import MainHandler, Application, get_app
 
 
@@ -37,8 +37,8 @@ class TestMainHandlerBlank(AsyncHTTPTestCase):
         with self.assertLogs('wdom.server', 'INFO'):
             res = self.fetch('/')
         self.assertEqual(res.code, 200)
-        _re = re.compile('<!DOCTYPE html>\s*<head>.*<meta .*'
-                         '<title>\s*W-DOM\s*</title>.*'
+        _re = re.compile('<!DOCTYPE html>\s*<html id="\d+">\s*<head id="\d+">'
+                         '.*<meta .*<title id="\d+">\s*W-DOM\s*</title>.*'
                          '</head>\s*<body.*>.*<script.*>.*</script>.*'
                          '</body>\s*</html>'
                          , re.S)

@@ -404,9 +404,12 @@ class appendTextMixin:
         super().appendChild(node)
 
     def insertBefore(self, node, ref_node):
-        if isinstance(node, (str, bytes)):
-            node = Text(node)
-        super().insertBefore(node, ref_node)
+        if isinstance(node, Node):
+            super().insertBefore(node, ref_node)
+        elif isinstance(node, (str, bytes)):
+            super().insertBefore(Text(node))
+        else:
+            raise TypeError('Invalid type to insert this node: {}'.format(node))
 
 
 class Element(appendTextMixin, Node):
