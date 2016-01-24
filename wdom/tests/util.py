@@ -79,6 +79,10 @@ class BrowserController:
         self.wd.get(url)
         self.conn.send(True)
 
+    def get_page_source(self):
+        src = self.wd.page_source
+        self.conn.send(src)
+
     def set_element_by_id(self, id):
         '''Find element with ``id`` and set it as operation target. When
         successfully find the element, send ``True``. If failed to find the
@@ -139,6 +143,8 @@ class BrowserController:
             req = self.conn.recv()
             if req['method'] == 'get':
                 self.get(req['url'])
+            if req['method'] == 'get_page_source':
+                self.get_page_source()
             elif req['method'] == 'set_element_by_id':
                 self.set_element_by_id(req['id'])
             elif req['method'] == 'get_attribute':
@@ -268,6 +274,10 @@ class WDTest(TestCase):
         '''Get the attribute's value of the target element. If the current
         target element does not have the attribute, return ``None``.'''
         self.conn.send({'method': 'get_attribute', 'attr': attr})
+        return self.wait_for()
+
+    def get_page_source(self):
+        self.conn.send({'method': 'get_page_source'})
         return self.wait_for()
 
     def get_text(self) -> str:

@@ -7,7 +7,8 @@ from typing import Optional
 import pystache
 from wdom.options import config
 from wdom.misc import template_dir
-from wdom.dom import TextNode, RawHtmlNode
+from wdom.dom import Text, RawHtmlNode
+from wdom.dom.node import Node
 
 import logging
 logger = logging.getLogger(__name__)
@@ -52,7 +53,7 @@ class Document:
         self.headers.append(string)
 
     def set_body(self, content):
-        if isinstance(content, TextNode):
+        if isinstance(content, Node):
             self.contents.append(content)
             content.parent = self
         elif isinstance(content, str):
@@ -70,7 +71,7 @@ class Document:
         for content in self.contents:
             if isinstance(content, str):
                 contents.append({'content': content})
-            elif isinstance(content, TextNode):
+            elif isinstance(content, Node):
                 contents.append({'content': content.html})
             else:
                 raise TypeError('Invalid type object in body: {}'.format(content))
@@ -91,7 +92,7 @@ def get_document(include_wdom: bool = True,
                  include_skeleton: bool = False,
                  include_normalizecss: bool = False,
                  autoreload: Optional[bool] = None,
-                 app: Optional[TextNode] = None,
+                 app: Optional[Text] = None,
                  **kwargs
                  ) -> Document:
 

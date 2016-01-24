@@ -4,7 +4,7 @@
 import re
 
 from wdom.view import Document
-from wdom.dom import Node
+from wdom.dom import Tag
 from wdom.tests.util import TestCase
 
 
@@ -97,7 +97,7 @@ class TestMainDocument(TestCase):
         self.assertNotIn('utf', html)
 
     def test_set_body(self) -> None:
-        self.document.set_body(Node())
+        self.document.set_body(Tag())
         html = self.document.build()
         _re = re.compile(
             '<node\s+id="\d+">\s*</node>',

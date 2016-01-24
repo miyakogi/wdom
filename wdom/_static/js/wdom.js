@@ -171,6 +171,11 @@
     node.insertAdjacentHTML('beforeend', params.html)
   }
 
+  W.insertBefore = function(node, params) {
+    var c = document.getElementById(params.id)
+    c.insertAdjacentHTML('beforebegin', params.html)
+  }
+
   W.removeChild = function(node, params) {
     var child = document.getElementById(params.id)
     node.removeChild(child)
@@ -178,8 +183,11 @@
 
   W.replaceChild = function(node, params) {
     var old_child = document.getElementById(params.id)
+    // var _ = document.createElement('div')
+    // _.innerHTML = params.html
+    // node.replaceChild(old_child, _.childNodes[0])
     old_child.insertAdjacentHTML('beforebegin', params.html)
-    node.removeChild(old_child)
+    // node.removeChild(old_child)
   }
 
   W.removeAttribute = function(node, params) {
@@ -187,7 +195,15 @@
   }
 
   W.setAttribute = function(node, params) {
-    node.setAttribute(params.attr, params.value)
+    var value = params.value
+    if (typeof value === 'string'){
+      if (value === 'true') {
+        value = true
+      } else if (value === 'false') {
+        value = false
+      }
+    }
+    node.setAttribute(params.attr, value)
   }
 
   W.setTextContent = function(node, params) {

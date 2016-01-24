@@ -3,40 +3,41 @@
 
 import re
 
-from wdom.dom import TextNode, Dom, HtmlDom, PyNode, Node
-from wdom.dom import ClassList, EventListener
-from wdom.dom import NewNodeClass
+from wdom.dom.node import NamedNodeMap
+from wdom.dom import Text, Html, PyNode, Tag, DOMTokenList
+from wdom.dom import EventListener
+from wdom.dom import NewTagClass
 from wdom.tests.util import TestCase
 
 
 class TestTextNode(TestCase):
     def setUp(self):
-        self.text_node = TextNode('text')
+        self.text_node = Text('text')
 
     def test_html(self):
-        self.assertEqual(TextNode('text').html, 'text')
+        self.assertEqual(Text('text').html, 'text')
 
     def test_html_escape(self):
-        self.assertEqual(TextNode('<').html, '&lt;')
-        self.assertEqual(TextNode('>').html, '&gt;')
-        self.assertEqual(TextNode('&').html, '&amp;')
-        self.assertEqual(TextNode('"').html, '&quot;')
-        self.assertEqual(TextNode('\'').html, '&#x27;')
+        self.assertEqual(Text('<').html, '&lt;')
+        self.assertEqual(Text('>').html, '&gt;')
+        self.assertEqual(Text('&').html, '&amp;')
+        self.assertEqual(Text('"').html, '&quot;')
+        self.assertEqual(Text('\'').html, '&#x27;')
 
 
 class TestDom(TestCase):
     '''Test for Basic Dom implementation'''
     def setUp(self):
-        self.dom = Dom()
-        self.c1 = Dom(c="1")
-        self.c2 = Dom(c="2")
+        self.dom = Html()
+        self.c1 = Html(c="1")
+        self.c2 = Html(c="2")
 
     def test_name(self):
         self.assertEqual(self.dom.tag, 'tag')
         self.assertEqual(self.dom.tagName, 'TAG')
         self.assertEqual(self.dom.localName, 'tag')
 
-        class A(Dom):
+        class A(Html):
             tag = 'Atag'
         a = A()
         self.assertEqual(a.tag, 'Atag')
@@ -47,7 +48,7 @@ class TestDom(TestCase):
         self.assertEqual('<tag></tag>', self.dom.html)
 
     def test_attr_init(self):
-        dom = Dom(attrs={'src': 'a'})
+        dom = Html(attrs={'src': 'a'})
         self.assertEqual('<tag src="a"></tag>', dom.html)
         dom.removeAttribute('src')
         self.assertEqual('<tag></tag>', dom.html)
@@ -57,7 +58,7 @@ class TestDom(TestCase):
         self.dom['a'] = 'b'
         self.assertEqual(self.dom['a'], 'b')
         self.assertIn('a="b"', self.dom.html)
-        self.assertEqual('<tag a="b">', self.dom.start_tag())
+        self.assertEqual('<tag a="b">', self.dom.start_tag)
         self.assertEqual('<tag a="b"></tag>', self.dom.html)
         del self.dom['a']
         self.assertEqual('<tag></tag>', self.dom.html)
@@ -71,11 +72,11 @@ class TestDom(TestCase):
         self.assertIsFalse(self.dom.hasAttribute('b'))
         self.assertEqual('b', self.dom.getAttribute('a'))
         self.assertEqual('<tag a="b"></tag>', self.dom.html)
-        self.assertEqual(self.dom.attributes, {'a': 'b'})
+        self.assertEqual(self.dom.attributes['a'].value, 'b')
         self.dom.removeAttribute('a')
         self.assertIsFalse(self.dom.hasAttributes())
         self.assertEqual('<tag></tag>', self.dom.html)
-        self.assertEqual(self.dom.attributes, {})
+        self.assertEqual(self.dom.attributes, NamedNodeMap())
 
         self.assertIsNone(self.dom.getAttribute('aaaa'))
 
@@ -105,17 +106,10 @@ class TestDom(TestCase):
         self.assertEqual('<tag></tag>', self.dom.html)
 
     def test_child_exception(self) -> None:
-        with self.assertRaises(TypeError):
-            self.dom.insert(0, 'a')
-        with self.assertRaises(TypeError):
-            self.dom.append('a')
-        with self.assertRaises(TypeError):
-            self.dom.appendChild('a')
-
         with self.assertRaises(ValueError):
-            self.dom.removeChild(Dom())
+            self.dom.removeChild(Html())
         with self.assertRaises(ValueError):
-            self.dom.replaceChild(Dom(), Dom())
+            self.dom.replaceChild(Html(), Html())
 
     def test_first_last_child(self):
         self.assertIsNone(self.dom.firstChild)
@@ -146,6 +140,7 @@ class TestDom(TestCase):
         self.assertIn(self.c1, self.dom)
         self.assertNotIn(self.c2, self.dom)
         self.assertEqual('<tag><tag c="1"></tag></tag>', self.dom.html)
+
         self.dom.replaceChild(self.c2, self.c1)
         self.assertNotIn(self.c1, self.dom)
         self.assertIn(self.c2, self.dom)
@@ -155,7 +150,7 @@ class TestDom(TestCase):
         self.dom.textContent = 'text'
         self.assertIsTrue(self.dom.hasChildNodes())
         self.assertEqual('<tag>text</tag>', self.dom.html)
-        self.assertIn('text', self.dom)
+        # self.assertIn('text', self.dom)
         self.assertEqual(self.dom[0].parent, self.dom)
 
         self.dom.textContent = ''
@@ -179,11 +174,12 @@ class TestDom(TestCase):
         self.assertEqual('<tag>a<tag c="1">c1</tag></tag>', self.dom.html)
         self.assertEqual('ac1', self.dom.textContent)
         self.dom.textContent = 'b'
+        self.assertEqual(self.dom.length, 1)
         self.assertEqual('<tag>b</tag>', self.dom.html)
         self.assertIsNone(self.c1.parentNode)
 
     def test_closing_tag(self):
-        class Img(Dom):
+        class Img(Html):
             tag = 'img'
         img = Img()
         self.assertEqual('<img>', img.html)
@@ -194,13 +190,19 @@ class TestDom(TestCase):
         self.assertIsTrue(self.dom.hasChildNodes())
         self.assertIsFalse(clone.hasChildNodes())
         self.assertEqual(len(clone), 0)
-        self.assertEqual('<tag src="a"></tag>', clone.html)
+        self.assertEqual('<tag src="a" class="b"></tag>', clone.html)
 
         self.assertIsTrue(clone.hasAttributes())
         self.assertEqual(clone.getAttribute('src'), 'a')
         clone.setAttribute('src', 'b')
         self.assertEqual(clone.getAttribute('src'), 'b')
         self.assertEqual(self.dom.getAttribute('src'), 'a')
+
+        self.assertIsTrue(clone.hasClass('b'))
+        self.assertEqual(clone.getAttribute('class'), 'b')
+        clone.setAttribute('class', 'c')
+        self.assertEqual(clone.getAttribute('class'), 'c')
+        self.assertEqual(self.dom.getAttribute('class'), 'b')
 
         clone.append(self.c2)
         self.assertIsTrue(clone.hasChildNodes())
@@ -211,12 +213,14 @@ class TestDom(TestCase):
         from copy import copy
         self.dom.appendChild(self.c1)
         self.dom.setAttribute('src', 'a')
+        self.dom.setAttribute('class', 'b')
         clone = copy(self.dom)
         self._test_shallow_copy(clone)
 
     def test_clone_node_sharrow(self):
         self.dom.appendChild(self.c1)
         self.dom.setAttribute('src', 'a')
+        self.dom.setAttribute('class', 'b')
         clone = self.dom.cloneNode()
         self._test_shallow_copy(clone)
 
@@ -233,6 +237,10 @@ class TestDom(TestCase):
         self.assertEqual(self.c1.getAttribute('src'), 'b')
         self.assertIsNone(clone[0].getAttribute('src'))
 
+        self.c1.setAttribute('class', 'c')
+        self.assertEqual(self.c1.getAttribute('class'), 'c')
+        self.assertIsNone(clone[0].getAttribute('class'))
+
         clone.append(self.c2)
         self.assertEqual(len(clone), 2)
         self.assertEqual(len(self.dom), 1)
@@ -241,12 +249,14 @@ class TestDom(TestCase):
         from copy import deepcopy
         self.dom.append(self.c1)
         self.dom.setAttribute('src', 'a')
+        self.dom.setAttribute('class', 'b')
         clone = deepcopy(self.dom)
         self._test_deep_copy(clone)
 
     def test_clone_node_deep(self):
         self.dom.append(self.c1)
         self.dom.setAttribute('src', 'a')
+        self.dom.setAttribute('class', 'b')
         clone = self.dom.cloneNode(deep=True)
         self._test_deep_copy(clone)
 
@@ -261,8 +271,8 @@ class TestDom(TestCase):
         self.assertIsNone(self.c2.nextSibling)
 
     def test_get_elements_by_tagname(self):
-        A = NewNodeClass('A', 'a')
-        B = NewNodeClass('B', 'b')
+        A = NewTagClass('A', 'a')
+        B = NewTagClass('B', 'b')
         a1 = A(src='a1')
         a2 = A(src='a2')
         b1 = B(src='b1')
@@ -289,7 +299,7 @@ class TestDom(TestCase):
 
 class TestClassList(TestCase):
     def setUp(self):
-        self.cl = ClassList()
+        self.cl = DOMTokenList()
 
     def test_addremove(self):
         self.assertIsFalse(bool(self.cl))
@@ -352,7 +362,7 @@ class TestClassList(TestCase):
         with self.assertRaises(TypeError):
             self.cl.append(1)
         with self.assertRaises(TypeError):
-            self.cl.append(Dom())
+            self.cl.append(Html())
         self.assertEqual(len(self.cl), 0)
         self.assertIsFalse(bool(self.cl))
         self.assertEqual('', self.cl.to_string())
@@ -371,62 +381,62 @@ class TestClassList(TestCase):
         self.assertEqual('d c b a', self.cl.to_string())
 
 
-class TestHtmlDom(TestCase):
+class TestHtml(TestCase):
     def setUp(self):
-        self.dom = HtmlDom()
-        self.c1 = HtmlDom()
-        self.c2 = HtmlDom()
+        self.dom = Html()
+        self.c1 = Html()
+        self.c2 = Html()
 
     def test_class_addremove(self):
         self.assertIsFalse(self.dom.hasClasses())
         self.assertIsFalse(self.dom.hasClass('a'))
-        self.assertEqual('<html-tag></html-tag>', self.dom.html)
+        self.assertEqual('<tag></tag>', self.dom.html)
         self.dom.addClass('a')
         self.assertIsTrue(self.dom.hasClasses())
         self.assertIsTrue(self.dom.hasClass('a'))
         self.assertIsFalse(self.dom.hasClass('b'))
-        self.assertEqual('<html-tag class="a"></html-tag>', self.dom.html)
+        self.assertEqual('<tag class="a"></tag>', self.dom.html)
         self.dom.removeClass('a')
         self.assertIsFalse(self.dom.hasClasses())
         self.assertIsFalse(self.dom.hasClass('a'))
-        self.assertEqual('<html-tag></html-tag>', self.dom.html)
+        self.assertEqual('<tag></tag>', self.dom.html)
 
     def test_class_in_init(self) -> None:
-        dom = HtmlDom(class_ = 'a')
+        dom = Html(class_ = 'a')
         self.assertIsTrue(dom.hasClass('a'))
         self.assertIsTrue(dom.hasClasses())
-        self.assertEqual('<html-tag class="a"></html-tag>', dom.html)
+        self.assertEqual('<tag class="a"></tag>', dom.html)
         dom.removeClass('a')
         self.assertIsFalse(dom.hasClass('a'))
         self.assertIsFalse(dom.hasClasses())
-        self.assertEqual('<html-tag></html-tag>', dom.html)
+        self.assertEqual('<tag></tag>', dom.html)
 
     def test_class_addremove_multi_string(self):
         self.dom.addClass('a b')
         self.assertIsTrue(self.dom.hasClasses())
         self.assertIsTrue(self.dom.hasClass('a'))
         self.assertIsTrue(self.dom.hasClass('b'))
-        self.assertEqual('<html-tag class="a b"></html-tag>', self.dom.html)
+        self.assertEqual('<tag class="a b"></tag>', self.dom.html)
         self.dom.removeClass('a')
         self.assertIsTrue(self.dom.hasClasses())
         self.assertIsFalse(self.dom.hasClass('a'))
         self.assertIsTrue(self.dom.hasClass('b'))
-        self.assertEqual('<html-tag class="b"></html-tag>', self.dom.html)
+        self.assertEqual('<tag class="b"></tag>', self.dom.html)
 
     def test_class_addremove_multi_list(self):
         self.dom.addClass(['a', 'b'])
         self.assertIsTrue(self.dom.hasClasses())
         self.assertIsTrue(self.dom.hasClass('a'))
         self.assertIsTrue(self.dom.hasClass('b'))
-        self.assertEqual('<html-tag class="a b"></html-tag>', self.dom.html)
+        self.assertEqual('<tag class="a b"></tag>', self.dom.html)
         self.dom.removeClass('a')
         self.assertIsTrue(self.dom.hasClasses())
         self.assertIsFalse(self.dom.hasClass('a'))
         self.assertIsTrue(self.dom.hasClass('b'))
-        self.assertEqual('<html-tag class="b"></html-tag>', self.dom.html)
+        self.assertEqual('<tag class="b"></tag>', self.dom.html)
 
     def test_class_getset(self) -> None:
-        self.assertEqual(self.dom['class'], '')
+        self.assertEqual(self.dom['class'], None)
         self.dom.addClass('a')
         self.assertEqual(self.dom['class'], 'a')
         self.dom['class'] = 'b'
@@ -439,23 +449,23 @@ class TestHtmlDom(TestCase):
             self.dom.removeClass('a')
 
     def test_type_class(self) -> None:
-        class A(HtmlDom):
+        class A(Html):
             tag = 'input'
             type_ = 'button'
         a = A()
         self.assertEqual('<input type="button">', a.html)
 
     def test_type_init(self) -> None:
-        a = HtmlDom(type='button')
-        self.assertEqual('<html-tag type="button"></html-tag>', a.html)
+        a = Html(type='button')
+        self.assertEqual('<tag type="button"></tag>', a.html)
 
     def test_type_attr(self) -> None:
-        a = HtmlDom()
+        a = Html()
         a.setAttribute('type', 'checkbox')
-        self.assertEqual('<html-tag type="checkbox"></html-tag>', a.html)
+        self.assertEqual('<tag type="checkbox"></tag>', a.html)
 
     def test_type_setter(self) -> None:
-        class Check(HtmlDom):
+        class Check(Html):
             type_ = 'checkbox'
         a = Check()
         b = Check()
@@ -463,78 +473,78 @@ class TestHtmlDom(TestCase):
         b['type'] = 'radio'
         c.setAttribute('type', 'text')
         d = Check()
-        self.assertEqual('<html-tag type="checkbox"></html-tag>', a.html)
-        self.assertEqual('<html-tag type="radio"></html-tag>', b.html)
-        self.assertEqual('<html-tag type="text"></html-tag>', c.html)
-        self.assertEqual('<html-tag type="checkbox"></html-tag>', d.html)
+        self.assertEqual('<tag type="checkbox"></tag>', a.html)
+        self.assertEqual('<tag type="radio"></tag>', b.html)
+        self.assertEqual('<tag type="text"></tag>', c.html)
+        self.assertEqual('<tag type="checkbox"></tag>', d.html)
 
     def test_hidden(self):
         self.dom.show()
-        self.assertEqual('<html-tag></html-tag>', self.dom.html)
+        self.assertEqual('<tag></tag>', self.dom.html)
         self.dom.hide()
-        self.assertEqual('<html-tag hidden></html-tag>', self.dom.html)
+        self.assertEqual('<tag hidden></tag>', self.dom.html)
         self.dom.show()
-        self.assertEqual('<html-tag></html-tag>', self.dom.html)
+        self.assertEqual('<tag></tag>', self.dom.html)
 
     def test_clone_node_sharrow_class(self):
         self.dom.appendChild(self.c1)
         self.dom.addClass('a')
         clone = self.dom.cloneNode()
-        self.assertEqual('<html-tag class="a"></html-tag>', clone.html)
+        self.assertEqual('<tag class="a"></tag>', clone.html)
 
         clone.removeClass('a')
-        self.assertEqual('<html-tag></html-tag>', clone.html)
-        self.assertEqual('<html-tag class="a"><html-tag></html-tag></html-tag>', self.dom.html)
+        self.assertEqual('<tag></tag>', clone.html)
+        self.assertEqual('<tag class="a"><tag></tag></tag>', self.dom.html)
 
         clone.addClass('b')
-        self.assertEqual('<html-tag class="b"></html-tag>', clone.html)
-        self.assertEqual('<html-tag class="a"><html-tag></html-tag></html-tag>', self.dom.html)
+        self.assertEqual('<tag class="b"></tag>', clone.html)
+        self.assertEqual('<tag class="a"><tag></tag></tag>', self.dom.html)
 
     def test_clone_node_sharrow_hidden(self):
         self.dom.hide()
         clone = self.dom.cloneNode()
-        self.assertEqual('<html-tag hidden></html-tag>', clone.html)
+        self.assertEqual('<tag hidden></tag>', clone.html)
         clone.show()
-        self.assertEqual('<html-tag hidden></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag hidden></tag>', self.dom.html)
+        self.assertEqual('<tag></tag>', clone.html)
 
     def test_clone_node_deep_class(self):
         self.dom.appendChild(self.c1)
         self.dom.addClass('a')
         self.c1.addClass('b')
         clone = self.dom.cloneNode(deep=True)
-        self.assertEqual('<html-tag class="a"><html-tag class="b"></html-tag></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag class="a"><html-tag class="b"></html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag class="a"><tag class="b"></tag></tag>', self.dom.html)
+        self.assertEqual('<tag class="a"><tag class="b"></tag></tag>', clone.html)
 
         clone.children[0].removeClass('b')
-        self.assertEqual('<html-tag class="a"><html-tag class="b"></html-tag></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag class="a"><html-tag></html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag class="a"><tag class="b"></tag></tag>', self.dom.html)
+        self.assertEqual('<tag class="a"><tag></tag></tag>', clone.html)
 
         self.c1.removeClass('b')
-        self.assertEqual('<html-tag class="a"><html-tag></html-tag></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag class="a"><html-tag></html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag class="a"><tag></tag></tag>', self.dom.html)
+        self.assertEqual('<tag class="a"><tag></tag></tag>', clone.html)
 
         clone.addClass('c')
-        self.assertEqual('<html-tag class="a"><html-tag></html-tag></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag class="a c"><html-tag></html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag class="a"><tag></tag></tag>', self.dom.html)
+        self.assertEqual('<tag class="a c"><tag></tag></tag>', clone.html)
 
         clone.removeClass('a')
-        self.assertEqual('<html-tag class="a"><html-tag></html-tag></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag class="c"><html-tag></html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag class="a"><tag></tag></tag>', self.dom.html)
+        self.assertEqual('<tag class="c"><tag></tag></tag>', clone.html)
 
     def test_clone_node_deep_hidden(self):
         self.dom.appendChild(self.c1)
         self.c1.hide()
         clone = self.dom.cloneNode(deep=True)
-        self.assertEqual('<html-tag><html-tag hidden></html-tag></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag><html-tag hidden></html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag><tag hidden></tag></tag>', self.dom.html)
+        self.assertEqual('<tag><tag hidden></tag></tag>', clone.html)
 
         self.c1.show()
-        self.assertEqual('<html-tag><html-tag></html-tag></html-tag>', self.dom.html)
-        self.assertEqual('<html-tag><html-tag hidden></html-tag></html-tag>', clone.html)
+        self.assertEqual('<tag><tag></tag></tag>', self.dom.html)
+        self.assertEqual('<tag><tag hidden></tag></tag>', clone.html)
 
     def test_class_of_class(self):
-        class A(HtmlDom):
+        class A(Html):
             tag = 'a'
             class_ = 'a1'
         self.assertEqual(A.get_class_list().to_string(), 'a1')
@@ -547,7 +557,7 @@ class TestHtmlDom(TestCase):
         self.assertEqual('<a class="a1 a2"></a>', a.html)
 
     def test_classes_multiclass(self):
-        class A(HtmlDom):
+        class A(Html):
             tag = 'a'
             class_ = 'a1 a2'
         self.assertEqual(A.get_class_list().to_string(), 'a1 a2')
@@ -556,7 +566,7 @@ class TestHtmlDom(TestCase):
         self.assertEqual('<a class="a1 a2 a3 a4"></a>', a.html)
 
     def test_classes_inherit_class(self):
-        class A(HtmlDom):
+        class A(Html):
             tag = 'a'
             class_ = 'a1 a2'
 
@@ -570,7 +580,7 @@ class TestHtmlDom(TestCase):
         self.assertEqual('<b class="a1 a2 b1 b2 b3"></b>', b.html)
 
     def test_classes_notinherit_class(self):
-        class A(HtmlDom):
+        class A(Html):
             tag = 'a'
             class_ = 'a1 a2'
 
@@ -593,7 +603,8 @@ class TestHtmlDom(TestCase):
 class TestPyNode(TestCase):
     def test_id_rand(self):
         dom = PyNode()
-        self.assertIsNotNone(re.match(r'<py-node id="\d+"></py-node>', dom.html))
+        self.assertIsNotNone(
+            re.match(r'<py-node id="\d+"></py-node>', dom.html))
 
     def test_id_constructor(self):
         dom = PyNode(id='test')
@@ -605,9 +616,9 @@ class TestEventListener(TestCase):
     EventListener
 
 
-class TestNode(TestCase):
+class TestTag(TestCase):
     def setUp(self):
-        self.dom = Node()
+        self.dom = Tag()
 
     def test_event_addremove(self):
         listener = lambda data: None
@@ -648,8 +659,8 @@ class TestNode(TestCase):
 
 class TestNewClass(TestCase):
     def test_create(self):
-        MyTag = NewNodeClass('MyTag', 'mt')
-        self.assertIsTrue(issubclass(MyTag, Node))
+        MyTag = NewTagClass('MyTag', 'mt')
+        self.assertIsTrue(issubclass(MyTag, Tag))
         self.assertEqual(MyTag.__name__, 'MyTag')
         self.assertEqual(MyTag.tag, 'mt')
         elm = MyTag()
@@ -657,16 +668,16 @@ class TestNewClass(TestCase):
         self.assertIsNotNone(re.match(r'<mt id="\d+"></mt>', elm.html))
 
     def test_create_by_classname(self):
-        MyTag = NewNodeClass('MyTag')
-        self.assertIsTrue(issubclass(MyTag, Node))
+        MyTag = NewTagClass('MyTag')
+        self.assertIsTrue(issubclass(MyTag, Tag))
         self.assertEqual(MyTag.__name__, 'MyTag')
         self.assertEqual(MyTag.tag, 'mytag')
         elm = MyTag()
         self.assertIsNotNone(re.match(r'<mytag id="\d+"></mytag>', elm.html))
 
     def test_create_class_with_baseclass(self):
-        MyTag = NewNodeClass('MyTag', 'mt')
-        MyTag2 = NewNodeClass('MyTag2', 'mt2', MyTag)
+        MyTag = NewTagClass('MyTag', 'mt')
+        MyTag2 = NewTagClass('MyTag2', 'mt2', MyTag)
         self.assertIsTrue(issubclass(MyTag2, MyTag))
         self.assertEqual(MyTag2.tag, 'mt2')
         elm = MyTag2()
@@ -674,19 +685,20 @@ class TestNewClass(TestCase):
 
         class A(object):
             pass
-        MyTag3 = NewNodeClass('MyTag3', 'mt3', (MyTag, A))
+        MyTag3 = NewTagClass('MyTag3', 'mt3', (MyTag, A))
         self.assertIsTrue(issubclass(MyTag3, MyTag))
         self.assertIsTrue(issubclass(MyTag3, A))
 
     def test_closing_tag(self):
-        Img = NewNodeClass('Img')
+        Img = NewTagClass('Img')
         img = Img()
         self.assertEqual(img.html, '<img id="{}">'.format(img.id))
         img = Img(src='/image.jpg')
-        self.assertEqual(img.html, '<img src="/image.jpg" id="{}">'.format(img.id))
+        self.assertIn('id="{}"'.format(img.id), img.html)
+        self.assertIn('src="/image.jpg"', img.html)
 
     def test_create_class_with_class_attr(self):
-        MyTag = NewNodeClass('MyTag', 'mt', class_='for test')
+        MyTag = NewTagClass('MyTag', 'mt', class_='for test')
         elm = MyTag()
         self.assertEqual(elm.html, '<mt class="for test" id="{}"></mt>'.format(elm.id))
         elm2 = MyTag()

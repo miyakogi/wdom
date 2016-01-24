@@ -6,7 +6,7 @@ from unittest.mock import MagicMock
 from tornado.web import Application
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.dom import Node, TextArea, Input, CheckBox
+from wdom.dom import Tag, TextArea, Input, CheckBox
 from wdom.view import get_document
 from wdom.server import get_app
 from wdom.misc import static_dir
@@ -14,20 +14,20 @@ from wdom.tests.util import WDTest
 from wdom.tests.util import install_asyncio, start_browser, close_browser
 
 
-def setup_module() -> None:
+def setup_module():
     install_asyncio()
     start_browser()
 
 
-def teardown_module() -> None:
+def teardown_module():
     close_browser()
 
 
 class TestNode(WDTest):
-    def setUp(self) -> None:
+    def setUp(self):
         self.document = get_document(autoreload=False)
 
-        class Root(Node):
+        class Root(Tag):
             tag = 'root'
 
         self.root = Root()
@@ -40,32 +40,32 @@ class TestNode(WDTest):
     def get_app(self) -> Application:
         return self.app
 
-    def test_connection(self) -> None:
+    def test_connection(self):
         self.assertIsTrue(self.root.connected)
         # this is an example, but valid domain for test
         self.get('http://example.com/')
         self.assertIsFalse(self.root.connected)
 
-    def test_node_text(self) -> None:
+    def test_node_text(self):
         self.assertEqual(self.get_text(), '')
         self.root.textContent = 'ROOT'
         self.assertEqual(self.get_text(), 'ROOT')
 
-    def test_node_attr(self) -> None:
+    def test_node_attr(self):
         self.assertIsNone(self.get_attribute('src'))
         self.root.setAttribute('src', 'a')
         self.assertEqual(self.get_attribute('src'), 'a')
         self.root.removeAttribute('src')
         self.assertIsNone(self.get_attribute('src'))
 
-    def test_node_class(self) -> None:
+    def test_node_class(self):
         self.root.addClass('a')
         self.assertEqual(self.get_attribute('class'), 'a')
         self.root.removeClass('a')
         self.assertEqual(self.get_attribute('class'), '')
 
-    def test_addremove_child(self) -> None:
-        child = Node()
+    def test_addremove_child(self):
+        child = Tag()
         self.root.appendChild(child)
         self.assertIsTrue(self.set_element_by_id(child.id))
         self.assertEqual(self.get_text(), '')
@@ -76,10 +76,10 @@ class TestNode(WDTest):
         with self.assertRaises(NoSuchElementException):
             self.set_element_by_id(child.id)
 
-    def test_replace_child(self) -> None:
-        child1 = Node()
+    def test_replace_child(self):
+        child1 = Tag()
         child1.textContent = 'child1'
-        child2 = Node()
+        child2 = Tag()
         child2.textContent = 'child2'
         self.root.appendChild(child1)
         with self.assertRaises(NoSuchElementException):
@@ -93,7 +93,7 @@ class TestNode(WDTest):
         self.assertIsTrue(self.set_element_by_id(child2.id))
         self.assertEqual(self.get_text(), 'child2')
 
-    def test_showhide(self) -> None:
+    def test_showhide(self):
         self.root.textContent = 'root'
         self.assertIsTrue(self.is_displayed())
         self.root.hide()
@@ -103,9 +103,9 @@ class TestNode(WDTest):
 
 
 class TestEvent(WDTest):
-    def setUp(self) -> None:
+    def setUp(self):
         self.document = get_document(autoreload=False)
-        self.root = Node()
+        self.root = Tag()
         self.root.textContent = 'ROOT'
         self.click_mock = MagicMock()
         self.click_mock._is_coroutine = False
@@ -122,7 +122,7 @@ class TestEvent(WDTest):
     def get_app(self) -> Application:
         return self.app
 
-    def test_click(self) -> None:
+    def test_click(self):
         self.set_element(self.mock)
         self.click()
         self.wait(0.1)
@@ -140,9 +140,9 @@ class TestEvent(WDTest):
 
 
 class TestInput(WDTest):
-    def setUp(self) -> None:
+    def setUp(self):
         self.document = get_document(autoreload=False)
-        self.root = Node()
+        self.root = Tag()
         self.input = Input(parent=self.root)
         self.textarea = TextArea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root)
@@ -154,7 +154,7 @@ class TestInput(WDTest):
     def get_app(self) -> Application:
         return self.app
 
-    def test_textinput(self) -> None:
+    def test_textinput(self):
         self.set_element(self.input)
         self.send_keys('abc')
         self.wait(0.02)
@@ -168,7 +168,7 @@ class TestInput(WDTest):
         self.wait(0.02)
         self.assertEqual(self.input.value, 'abcdef')
 
-    def test_textarea(self) -> None:
+    def test_textarea(self):
         self.set_element(self.textarea)
         self.send_keys('abc')
         self.wait(0.02)
@@ -182,7 +182,7 @@ class TestInput(WDTest):
         self.wait(0.02)
         self.assertEqual(self.textarea.value, 'abcdef')
 
-    def test_checkbox(self) -> None:
+    def test_checkbox(self):
         self.set_element(self.checkbox)
         self.click()
         self.wait(0.02)
