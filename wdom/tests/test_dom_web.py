@@ -7,7 +7,8 @@ from tornado.web import Application
 from selenium.common.exceptions import NoSuchElementException
 
 from wdom.dom import Tag, TextArea, Input, CheckBox
-from wdom.view import get_document
+from wdom import dom
+from wdom.document import get_document
 from wdom.server import get_app
 from wdom.misc import static_dir
 from wdom.tests.util import WDTest
@@ -113,6 +114,7 @@ class TestEvent(WDTest):
         self.mock = MagicMock(self.root)
         self.mock.id = self.root.id
         self.mock.html = self.root.html
+        self.mock.parentNode = None
 
         self.document.set_body(self.mock)
         self.app = get_app(self.document)

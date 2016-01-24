@@ -4,7 +4,7 @@
 import re
 
 from wdom.dom.node import NamedNodeMap
-from wdom.dom import Text, Html, PyNode, Tag, DOMTokenList
+from wdom.dom import Text, TagBase, PyNode, Tag, DOMTokenList
 from wdom.dom import EventListener
 from wdom.dom import NewTagClass
 from wdom.tests.util import TestCase
@@ -28,16 +28,16 @@ class TestTextNode(TestCase):
 class TestDom(TestCase):
     '''Test for Basic Dom implementation'''
     def setUp(self):
-        self.dom = Html()
-        self.c1 = Html(c="1")
-        self.c2 = Html(c="2")
+        self.dom = TagBase()
+        self.c1 = TagBase(c="1")
+        self.c2 = TagBase(c="2")
 
     def test_name(self):
         self.assertEqual(self.dom.tag, 'tag')
         self.assertEqual(self.dom.tagName, 'TAG')
         self.assertEqual(self.dom.localName, 'tag')
 
-        class A(Html):
+        class A(TagBase):
             tag = 'Atag'
         a = A()
         self.assertEqual(a.tag, 'Atag')
@@ -48,7 +48,7 @@ class TestDom(TestCase):
         self.assertEqual('<tag></tag>', self.dom.html)
 
     def test_attr_init(self):
-        dom = Html(attrs={'src': 'a'})
+        dom = TagBase(attrs={'src': 'a'})
         self.assertEqual('<tag src="a"></tag>', dom.html)
         dom.removeAttribute('src')
         self.assertEqual('<tag></tag>', dom.html)
@@ -107,9 +107,9 @@ class TestDom(TestCase):
 
     def test_child_exception(self) -> None:
         with self.assertRaises(ValueError):
-            self.dom.removeChild(Html())
+            self.dom.removeChild(TagBase())
         with self.assertRaises(ValueError):
-            self.dom.replaceChild(Html(), Html())
+            self.dom.replaceChild(TagBase(), TagBase())
 
     def test_first_last_child(self):
         self.assertIsNone(self.dom.firstChild)
@@ -179,7 +179,7 @@ class TestDom(TestCase):
         self.assertIsNone(self.c1.parentNode)
 
     def test_closing_tag(self):
-        class Img(Html):
+        class Img(TagBase):
             tag = 'img'
         img = Img()
         self.assertEqual('<img>', img.html)
@@ -362,7 +362,7 @@ class TestClassList(TestCase):
         with self.assertRaises(TypeError):
             self.cl.append(1)
         with self.assertRaises(TypeError):
-            self.cl.append(Html())
+            self.cl.append(TagBase())
         self.assertEqual(len(self.cl), 0)
         self.assertIsFalse(bool(self.cl))
         self.assertEqual('', self.cl.to_string())
@@ -381,11 +381,11 @@ class TestClassList(TestCase):
         self.assertEqual('d c b a', self.cl.to_string())
 
 
-class TestHtml(TestCase):
+class TestTagBase(TestCase):
     def setUp(self):
-        self.dom = Html()
-        self.c1 = Html()
-        self.c2 = Html()
+        self.dom = TagBase()
+        self.c1 = TagBase()
+        self.c2 = TagBase()
 
     def test_class_addremove(self):
         self.assertIsFalse(self.dom.hasClasses())
@@ -402,7 +402,7 @@ class TestHtml(TestCase):
         self.assertEqual('<tag></tag>', self.dom.html)
 
     def test_class_in_init(self) -> None:
-        dom = Html(class_ = 'a')
+        dom = TagBase(class_ = 'a')
         self.assertIsTrue(dom.hasClass('a'))
         self.assertIsTrue(dom.hasClasses())
         self.assertEqual('<tag class="a"></tag>', dom.html)
@@ -449,23 +449,23 @@ class TestHtml(TestCase):
             self.dom.removeClass('a')
 
     def test_type_class(self) -> None:
-        class A(Html):
+        class A(TagBase):
             tag = 'input'
             type_ = 'button'
         a = A()
         self.assertEqual('<input type="button">', a.html)
 
     def test_type_init(self) -> None:
-        a = Html(type='button')
+        a = TagBase(type='button')
         self.assertEqual('<tag type="button"></tag>', a.html)
 
     def test_type_attr(self) -> None:
-        a = Html()
+        a = TagBase()
         a.setAttribute('type', 'checkbox')
         self.assertEqual('<tag type="checkbox"></tag>', a.html)
 
     def test_type_setter(self) -> None:
-        class Check(Html):
+        class Check(TagBase):
             type_ = 'checkbox'
         a = Check()
         b = Check()
@@ -544,7 +544,7 @@ class TestHtml(TestCase):
         self.assertEqual('<tag><tag hidden></tag></tag>', clone.html)
 
     def test_class_of_class(self):
-        class A(Html):
+        class A(TagBase):
             tag = 'a'
             class_ = 'a1'
         self.assertEqual(A.get_class_list().to_string(), 'a1')
@@ -557,7 +557,7 @@ class TestHtml(TestCase):
         self.assertEqual('<a class="a1 a2"></a>', a.html)
 
     def test_classes_multiclass(self):
-        class A(Html):
+        class A(TagBase):
             tag = 'a'
             class_ = 'a1 a2'
         self.assertEqual(A.get_class_list().to_string(), 'a1 a2')
@@ -566,7 +566,7 @@ class TestHtml(TestCase):
         self.assertEqual('<a class="a1 a2 a3 a4"></a>', a.html)
 
     def test_classes_inherit_class(self):
-        class A(Html):
+        class A(TagBase):
             tag = 'a'
             class_ = 'a1 a2'
 
@@ -580,7 +580,7 @@ class TestHtml(TestCase):
         self.assertEqual('<b class="a1 a2 b1 b2 b3"></b>', b.html)
 
     def test_classes_notinherit_class(self):
-        class A(Html):
+        class A(TagBase):
             tag = 'a'
             class_ = 'a1 a2'
 

@@ -12,11 +12,11 @@ from typing import Callable, Tuple, Optional, Union
 from .node import Node, HTMLElement, Text, DOMTokenList
 
 logger = logging.getLogger(__name__)
-connections = []
+# connections = []
 elements = {}
 
 
-class RawHtmlNode(Text):
+class RawHtml(Text):
     @property
     def html(self) -> str:
         return self._value
@@ -25,14 +25,18 @@ class RawHtmlNode(Text):
     def textContent(self) -> str:
         return self._value
 
+    @textContent.setter
+    def textContent(self, value:str):
+        self._value = value
 
-class HtmlMeta(type):
+
+class TagBaseMeta(type):
     '''Meta class to set default class variable of HtmlDom'''
     def __prepare__(name, bases, **kwargs) -> dict:
         return {'inherit_class': True}
 
 
-class Html(HTMLElement, metaclass=HtmlMeta):
+class TagBase(HTMLElement, metaclass=TagBaseMeta):
     '''Add support for some special attrs(class, type, is, hidden)'''
     tag = 'tag'
     #: str and list of strs are acceptale.
@@ -57,7 +61,7 @@ class Html(HTMLElement, metaclass=HtmlMeta):
         l.append(DOMTokenList(cls.class_))
         if cls.inherit_class:
             for base_cls in cls.__bases__:
-                if issubclass(base_cls, Html):
+                if issubclass(base_cls, TagBase):
                     l.append(base_cls.get_class_list())
         # Reverse order so that parent's class comes to front
         l.reverse()
@@ -86,7 +90,7 @@ class Html(HTMLElement, metaclass=HtmlMeta):
     def __delitem__(self, attr: str):
         self.removeAttribute(attr)
 
-    def __copy__(self) -> 'Html':
+    def __copy__(self) -> 'TagBase':
         clone = super().__copy__()
         for c in self.classList:
             clone.addClass(c)
@@ -141,7 +145,7 @@ class Html(HTMLElement, metaclass=HtmlMeta):
         self.setAttribute('type', val)
 
 
-class PyNode(Html):
+class PyNode(TagBase):
     tag = 'py-node'
 
     def __init__(self, **kwargs):
@@ -210,7 +214,7 @@ class Tag(PyNode):
     @property
     def connected(self) -> bool:
         '''This instance has any connection on browser or not.'''
-        return any(connections)
+        return self.ownerDocument is not None and any(self.ownerDocument.connections)
 
     @coroutine
     def on_message(self, msg: dict):
@@ -259,7 +263,7 @@ class Tag(PyNode):
         obj['id'] = self.id
         obj['tag'] = self.tag
         msg = json.dumps(obj)
-        for conn in connections:
+        for conn in self.ownerDocument.connections:
             conn.write_message(msg)
 
     def insert(self, pos: int, new_child):
@@ -284,11 +288,11 @@ class Tag(PyNode):
         super().setAttribute(attr, value)
         self.js_exec('setAttribute', attr=attr, value=value)
 
-    def appendChild(self, new_child: 'Tag'):
+    def appendChild(self, child: 'Tag'):
         '''Append child node at the last of child nodes. If this instance is
         connected to the node on browser, the child node is also added to it.
         '''
-        super().appendChild(new_child)
+        super().appendChild(child)
         self.js_exec('append', html=self[-1].html)
 
     def insertBefore(self, child: 'Tag', ref_node: 'Tag'):
@@ -400,6 +404,23 @@ class TextInput(Input):
 class Button(Tag):
     tag = 'button'
 
+
+class Script(Tag):
+    tag = 'script'
+
+    def __init__(self, *args, type='text/javascript', src=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setAttribute('type', type)
+        if src is not None:
+            self.setAttribute('src', src)
+
+
+Html = NewTagClass('Html')
+Body = NewTagClass('Body')
+Meta = NewTagClass('Meta')
+Head = NewTagClass('Head')
+Link = NewTagClass('Link')
+Title = NewTagClass('Title')
 
 Div = NewTagClass('Div')
 Span = NewTagClass('Span')
