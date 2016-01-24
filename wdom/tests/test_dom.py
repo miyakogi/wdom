@@ -4,9 +4,9 @@
 import re
 
 from wdom.dom.node import NamedNodeMap
-from wdom.dom import Text, Html, PyNode, Node, DOMTokenList
+from wdom.dom import Text, Html, PyNode, Tag, DOMTokenList
 from wdom.dom import EventListener
-from wdom.dom import NewNodeClass
+from wdom.dom import NewTagClass
 from wdom.tests.util import TestCase
 
 
@@ -271,8 +271,8 @@ class TestDom(TestCase):
         self.assertIsNone(self.c2.nextSibling)
 
     def test_get_elements_by_tagname(self):
-        A = NewNodeClass('A', 'a')
-        B = NewNodeClass('B', 'b')
+        A = NewTagClass('A', 'a')
+        B = NewTagClass('B', 'b')
         a1 = A(src='a1')
         a2 = A(src='a2')
         b1 = B(src='b1')
@@ -616,9 +616,9 @@ class TestEventListener(TestCase):
     EventListener
 
 
-class TestNode(TestCase):
+class TestTag(TestCase):
     def setUp(self):
-        self.dom = Node()
+        self.dom = Tag()
 
     def test_event_addremove(self):
         listener = lambda data: None
@@ -659,8 +659,8 @@ class TestNode(TestCase):
 
 class TestNewClass(TestCase):
     def test_create(self):
-        MyTag = NewNodeClass('MyTag', 'mt')
-        self.assertIsTrue(issubclass(MyTag, Node))
+        MyTag = NewTagClass('MyTag', 'mt')
+        self.assertIsTrue(issubclass(MyTag, Tag))
         self.assertEqual(MyTag.__name__, 'MyTag')
         self.assertEqual(MyTag.tag, 'mt')
         elm = MyTag()
@@ -668,16 +668,16 @@ class TestNewClass(TestCase):
         self.assertIsNotNone(re.match(r'<mt id="\d+"></mt>', elm.html))
 
     def test_create_by_classname(self):
-        MyTag = NewNodeClass('MyTag')
-        self.assertIsTrue(issubclass(MyTag, Node))
+        MyTag = NewTagClass('MyTag')
+        self.assertIsTrue(issubclass(MyTag, Tag))
         self.assertEqual(MyTag.__name__, 'MyTag')
         self.assertEqual(MyTag.tag, 'mytag')
         elm = MyTag()
         self.assertIsNotNone(re.match(r'<mytag id="\d+"></mytag>', elm.html))
 
     def test_create_class_with_baseclass(self):
-        MyTag = NewNodeClass('MyTag', 'mt')
-        MyTag2 = NewNodeClass('MyTag2', 'mt2', MyTag)
+        MyTag = NewTagClass('MyTag', 'mt')
+        MyTag2 = NewTagClass('MyTag2', 'mt2', MyTag)
         self.assertIsTrue(issubclass(MyTag2, MyTag))
         self.assertEqual(MyTag2.tag, 'mt2')
         elm = MyTag2()
@@ -685,12 +685,12 @@ class TestNewClass(TestCase):
 
         class A(object):
             pass
-        MyTag3 = NewNodeClass('MyTag3', 'mt3', (MyTag, A))
+        MyTag3 = NewTagClass('MyTag3', 'mt3', (MyTag, A))
         self.assertIsTrue(issubclass(MyTag3, MyTag))
         self.assertIsTrue(issubclass(MyTag3, A))
 
     def test_closing_tag(self):
-        Img = NewNodeClass('Img')
+        Img = NewTagClass('Img')
         img = Img()
         self.assertEqual(img.html, '<img id="{}">'.format(img.id))
         img = Img(src='/image.jpg')
@@ -698,7 +698,7 @@ class TestNewClass(TestCase):
         self.assertIn('src="/image.jpg"', img.html)
 
     def test_create_class_with_class_attr(self):
-        MyTag = NewNodeClass('MyTag', 'mt', class_='for test')
+        MyTag = NewTagClass('MyTag', 'mt', class_='for test')
         elm = MyTag()
         self.assertEqual(elm.html, '<mt class="for test" id="{}"></mt>'.format(elm.id))
         elm2 = MyTag()

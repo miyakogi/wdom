@@ -19,7 +19,11 @@ elements = {}
 class RawHtmlNode(Text):
     @property
     def html(self) -> str:
-        return self._text
+        return self._value
+
+    @property
+    def textContent(self) -> str:
+        return self._value
 
 
 class HtmlMeta(type):
@@ -130,11 +134,11 @@ class Html(HTMLElement, metaclass=HtmlMeta):
 
     @property
     def type(self) -> str:
-        return self.attrs.get('type', self.__class__.type_)
+        return self.getAttribute('type') or self.type_
 
     @type.setter
     def type(self, val:str) -> None:
-        self.attrs['type'] = val
+        self.setAttribute('type', val)
 
 
 class PyNode(Html):
@@ -187,16 +191,18 @@ class EventListener:
             self.action()
 
 
-class Node(PyNode):
+class Tag(PyNode):
     tag = 'node'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, parent=None, **kwargs):
         self.listeners = dict()
         super().__init__(*args, **kwargs)
         elements[self.id] = self
+        if parent is not None:
+            parent.appendChild(self)
 
-    def get_attrs_by_string(self, **attrs) -> str:
-        attrs_str = super().get_attrs_by_string(**attrs)
+    def get_attrs_by_string(self) -> str:
+        attrs_str = super().get_attrs_by_string()
         for event in self.listeners:
             attrs_str += ' on{event}="W.on{event}(this);"'.format(event=event)
         return attrs_str
@@ -278,23 +284,23 @@ class Node(PyNode):
         super().setAttribute(attr, value)
         self.js_exec('setAttribute', attr=attr, value=value)
 
-    def appendChild(self, new_child: 'Node'):
+    def appendChild(self, new_child: 'Tag'):
         '''Append child node at the last of child nodes. If this instance is
-        connected to the node on browser, the child node is also added to it.'''
+        connected to the node on browser, the child node is also added to it.
+        '''
         super().appendChild(new_child)
         self.js_exec('append', html=self[-1].html)
 
-    def removeChild(self, child: 'Node'):
+    def insertBefore(self, child: 'Tag', ref_node: 'Tag'):
+        super().insertBefore(child, ref_node)
+        self.js_exec('insertBefore', html=child.html, id=ref_node.id)
+
+    def removeChild(self, child: 'Tag'):
         '''Remove child node from this node's content. The node is not a child
         of this node, raise ValueError.'''
         super().removeChild(child)
-        self.js_exec('removeChild', id=child.id)
-
-    def replaceChild(self, new_child: 'Node', old_child: 'Node'):
-        '''Replace child node with new node. The node to be replaced is not a
-        child of this node, raise ValueError.'''
-        super().replaceChild(new_child, old_child)
-        self.js_exec('replaceChild', id=old_child.id, html=new_child.html)
+        if isinstance(child, Tag):
+            self.js_exec('removeChild', id=child.id)
 
     @property
     def textContent(self) -> str:
@@ -307,11 +313,11 @@ class Node(PyNode):
 
     def show(self, **kwargs):
         self.js_exec('show')
-        super().show()
+        self.attributes['hidden'] = False
 
     def hide(self, **kwargs):
         self.js_exec('hide')
-        super().hide()
+        self.attributes['hidden'] = True
 
     def addClass(self, cls: str, **kwargs):
         if cls and cls not in self.classList:
@@ -324,7 +330,7 @@ class Node(PyNode):
             super().removeClass(cls)
 
 
-def NewNodeClass(class_name: str, tag: str=None, bases: Tuple[type]=(Node, ),
+def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
                  **attrs) -> type:
     if tag is None:
         tag = class_name.lower()
@@ -340,7 +346,7 @@ def NewNodeClass(class_name: str, tag: str=None, bases: Tuple[type]=(Node, ),
     return cls
 
 
-class Input(Node):
+class Input(Tag):
     tag = 'input'
 
     def __init__(self, *args, **kwargs) -> None:
@@ -356,19 +362,19 @@ class Input(Node):
 
     @property
     def checked(self) -> bool:
-        return self.attrs.get('checked')
+        return self.getAttribute('checked') or False
 
     @checked.setter
-    def checked(self, value: bool) -> None:
-        self.attrs['checked'] = value
+    def checked(self, value: bool):
+        self.setAttribute('checked', value)
 
     @property
     def value(self) -> str:
-        return self.attrs.get('value')
+        return self.getAttribute('value') or ''
 
     @value.setter
-    def value(self, value: str) -> None:
-        self.attrs['value'] = value
+    def value(self, value: str):
+        self.setAttribute('value', value)
 
 
 class TextArea(Input):
@@ -391,59 +397,59 @@ class TextInput(Input):
     type_ = 'text'
 
 
-class Button(Node):
+class Button(Tag):
     tag = 'button'
 
 
-Div = NewNodeClass('Div')
-Span = NewNodeClass('Span')
+Div = NewTagClass('Div')
+Span = NewTagClass('Span')
 
 # Typography
-H1 = NewNodeClass('H1')
-H2 = NewNodeClass('H2')
-H3 = NewNodeClass('H3')
-H4 = NewNodeClass('H4')
-H5 = NewNodeClass('H5')
-H6 = NewNodeClass('H6')
+H1 = NewTagClass('H1')
+H2 = NewTagClass('H2')
+H3 = NewTagClass('H3')
+H4 = NewTagClass('H4')
+H5 = NewTagClass('H5')
+H6 = NewTagClass('H6')
 
-P = NewNodeClass('P')
-A = NewNodeClass('A')
-Strong = NewNodeClass('Strong')
-Em = NewNodeClass('Em')
-U = NewNodeClass('U')
-Br = NewNodeClass('Br')
-Hr = NewNodeClass('Hr')
+P = NewTagClass('P')
+A = NewTagClass('A')
+Strong = NewTagClass('Strong')
+Em = NewTagClass('Em')
+U = NewTagClass('U')
+Br = NewTagClass('Br')
+Hr = NewTagClass('Hr')
 
-Cite = NewNodeClass('Cite')
-Code = NewNodeClass('Code')
-Pre = NewNodeClass('Pre')
+Cite = NewTagClass('Cite')
+Code = NewTagClass('Code')
+Pre = NewTagClass('Pre')
 
-Img = NewNodeClass('Img')
+Img = NewTagClass('Img')
 
 # table tags
-Table = NewNodeClass('Table')
-Thead = NewNodeClass('Thead')
-Tbody = NewNodeClass('Tbody')
-Tfoot = NewNodeClass('Tfoot')
-Th = NewNodeClass('Th')
-Tr = NewNodeClass('Tr')
-Td = NewNodeClass('Td')
+Table = NewTagClass('Table')
+Thead = NewTagClass('Thead')
+Tbody = NewTagClass('Tbody')
+Tfoot = NewTagClass('Tfoot')
+Th = NewTagClass('Th')
+Tr = NewTagClass('Tr')
+Td = NewTagClass('Td')
 
 # List tags
-Ol = NewNodeClass('Ol')
-Ul = NewNodeClass('Ul')
-Li = NewNodeClass('Li')
+Ol = NewTagClass('Ol')
+Ul = NewTagClass('Ul')
+Li = NewTagClass('Li')
 
 # Definition-list tags
-Dl = NewNodeClass('Dl')
-Dt = NewNodeClass('Dt')
-Dd = NewNodeClass('Dd')
+Dl = NewTagClass('Dl')
+Dt = NewTagClass('Dt')
+Dd = NewTagClass('Dd')
 
 # Form tags
-Form = NewNodeClass('Form')
-Label = NewNodeClass('Label')
-Option = NewNodeClass('Option')
-Select = NewNodeClass('Select')
+Form = NewTagClass('Form')
+Label = NewTagClass('Label')
+Option = NewTagClass('Option')
+Select = NewTagClass('Select')
 
 # Building blocks
 Container = Div
