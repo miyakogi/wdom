@@ -433,7 +433,7 @@ class Element(appendTextMixin, Node):
             clone.setAttributeNode(attr)
         return clone
 
-    def get_attrs_by_string(self) -> str:
+    def _get_attrs_by_string(self) -> str:
         attrs = ' '.join(attr.html for attr in self.attributes.values())
         classes = self.getAttribute('class')
         if classes:
@@ -443,7 +443,7 @@ class Element(appendTextMixin, Node):
     @property
     def start_tag(self) -> str:
         tag = '<' + self.tag
-        attrs = self.get_attrs_by_string()
+        attrs = self._get_attrs_by_string()
         if attrs:
             tag = ' '.join((tag, attrs))
         return tag + '>'

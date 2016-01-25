@@ -12,11 +12,12 @@ from typing import Callable, Tuple, Optional, Union
 from .node import Node, HTMLElement, Text, DOMTokenList
 
 logger = logging.getLogger(__name__)
-# connections = []
 elements = {}
 
 
 class RawHtml(Text):
+    '''Very similar to ``Text`` class, but contents are not escaped. Used for
+    inner contents of ``<script>`` element or ``<style>`` element.'''
     @property
     def html(self) -> str:
         return self._value
@@ -37,10 +38,19 @@ class TagBaseMeta(type):
 
 
 class TagBase(HTMLElement, metaclass=TagBaseMeta):
-    '''Add support for some special attrs(class, type, is, hidden)'''
+    '''Base class for html tags. ``HTMLElement`` requires to specify tag name
+    when instanciate it, but this class and sublasses have default tag name and
+    not need to specify it for each thier instances.
+
+    Additionally, this class provides shortcut properties to handle some
+    special attributes (class, type, is).
+    '''
+    #: Tag name used for this node.
     tag = 'tag'
     #: str and list of strs are acceptale.
     class_ = ''
+    #: Inherit classes defined in super class or not.
+    #: By default, this variable is True.
     inherit_class = True
     #: use for <input> tag's type
     type_ = ''
@@ -57,6 +67,8 @@ class TagBase(HTMLElement, metaclass=TagBaseMeta):
 
     @classmethod
     def get_class_list(cls) -> DOMTokenList:
+        '''Return class-level class list, including all super class's.
+        '''
         l = []
         l.append(DOMTokenList(cls.class_))
         if cls.inherit_class:
@@ -68,6 +80,7 @@ class TagBase(HTMLElement, metaclass=TagBaseMeta):
         return DOMTokenList(l)
 
     def append(self, child:Node):
+        '''Shortcut method of ``appendChild``.'''
         self.appendChild(child)
 
     def insert(self, pos:int, child:Node):
@@ -146,6 +159,7 @@ class TagBase(HTMLElement, metaclass=TagBaseMeta):
 
 
 class PyNode(TagBase):
+    '''Add ``id`` attribute automatically.'''
     tag = 'py-node'
 
     def __init__(self, **kwargs):
@@ -160,8 +174,8 @@ class PyNode(TagBase):
     def id(self, id:str):
         self._id = id
 
-    def get_attrs_by_string(self) -> str:
-        return ' '.join((super().get_attrs_by_string(),
+    def _get_attrs_by_string(self) -> str:
+        return ' '.join((super()._get_attrs_by_string(),
                          'id="{}"'.format(self.id))).strip()
 
 
@@ -196,7 +210,13 @@ class EventListener:
 
 
 class Tag(PyNode):
+    '''Base class for binding python node and dom object on browser. Any
+    changes of this node are reflected on browser's one, and vice versa.
+    '''
     tag = 'node'
+    '''tag name of this node. For example, if ``tag = 'a'``, this node makes
+    ``<a>`` tag on browser.
+    '''
 
     def __init__(self, *args, parent=None, **kwargs):
         self.listeners = dict()
@@ -205,20 +225,20 @@ class Tag(PyNode):
         if parent is not None:
             parent.appendChild(self)
 
-    def get_attrs_by_string(self) -> str:
-        attrs_str = super().get_attrs_by_string()
+    def _get_attrs_by_string(self) -> str:
+        attrs_str = super()._get_attrs_by_string()
         for event in self.listeners:
             attrs_str += ' on{event}="W.on{event}(this);"'.format(event=event)
         return attrs_str
 
     @property
     def connected(self) -> bool:
-        '''This instance has any connection on browser or not.'''
+        '''When this instance has any connection, return True.'''
         return self.ownerDocument is not None and any(self.ownerDocument.connections)
 
     @coroutine
     def on_message(self, msg: dict):
-        '''Coroutine when webscoket get message to this instance is called.'''
+        '''Coroutine to be called when webscoket get message.'''
         logger.debug('WS MSG  {tag}: {msg}'.format(tag=self.tag, msg=msg))
 
         event = msg.get('event', False)
@@ -228,8 +248,12 @@ class Tag(PyNode):
                 listener(data=data)
 
     def addEventListener(self, event: str, listener: Callable):
-        '''Add event listener to this instance. ``event`` is a string which
-        determines the event type when the new listener called.'''
+        '''Add event listener to this node. ``event`` is a string which
+        determines the event type when the new listener called. Acceptable
+        events are same as JavaScript, without ``on``. For example, to add a
+        listener which is called when this node is clicked, event is
+        ``'click``.
+        '''
         if event not in self.listeners:
             self.listeners[event] = []
             if self.connected:
@@ -237,6 +261,9 @@ class Tag(PyNode):
         self.listeners[event].append(EventListener(listener))
 
     def removeEventListener(self, event: str, listener: Callable):
+        '''Remove an event listener of this node. The listener is removed only
+        when both event type and listener is matched.
+        '''
         listeners = self.listeners[event]
         for l in listeners:
             if l.listener == listener:
@@ -246,10 +273,10 @@ class Tag(PyNode):
             del self.listeners[event]
 
     def js_exec(self, method: str, **kwargs) -> Optional[Future]:
-        '''Execute ``method`` in the related node on browser via web socket
+        '''Execute ``method`` in the related node on browser, via web socket
         connection. Other keyword arguments are passed to ``params`` attribute.
-        If this node is not in document tree (namely, this node does not have
-        parent node), the ``method`` is not executed.
+        If this node is not in any document tree (namely, this node does not
+        have parent node), the ``method`` is not executed.
         '''
         if self.parent is not None:
             return ensure_future(
@@ -258,10 +285,11 @@ class Tag(PyNode):
 
     @coroutine
     def ws_send(self, obj):
-        '''Send message to the related node on browser, with ``tagname`` and
-        ``pyg_id`` which specifies relation between python object and element
+        '''Send message to the related nodes on browser, with ``tagname`` and
+        ``id`` which specifies relation between python's object and element
         on browser. The message is serialized by JSON object and send via
-        WebSocket connection.'''
+        WebSocket connection.
+        '''
         obj['id'] = self.id
         obj['tag'] = self.tag
         msg = json.dumps(obj)
@@ -270,13 +298,15 @@ class Tag(PyNode):
 
     def insert(self, pos: int, new_child):
         '''Insert child node at the specified ``position``. The same operation
-        will be done also in the related node on browser, if exists.'''
+        will be done also in the related node on browser, if exists.
+        '''
         if self.connected:
             self.js_exec('insert', index=pos, html=self[pos].html)
         super().insert(pos, new_child)
 
     def remove(self, *args, **kwargs):
-        '''Remove this node and this child nodes from parent's DOM tree.'''
+        '''Remove this node from parent's DOM tree.
+        '''
         if self.connected:
             fut = self.js_exec('remove')
             fut.add_done_callback(self._remove_callback)
@@ -286,12 +316,18 @@ class Tag(PyNode):
     def _remove_callback(self, *args, **kwargs):
         super().remove()
 
-    def removeAttribute(self, attr: str) -> str:
+    def removeAttribute(self, attr: str):
+        '''Remove attribute. Even if this node does not have the attribute,
+        this method does not raise any error errors will be raised.
+        '''
         if self.connected:
             self.js_exec('removeAttribute', attr=attr)
         super().removeAttribute(attr)
 
     def setAttribute(self, attr: str, value: str, **kwargs):
+        '''Set attribute to ``value``. If the attribute already exists,
+        overwrite it by new ``value``.
+        '''
         if self.connected:
             self.js_exec('setAttribute', attr=attr, value=value)
         super().setAttribute(attr, value)
@@ -305,12 +341,17 @@ class Tag(PyNode):
             self.js_exec('append', html=self[-1].html)
 
     def insertBefore(self, child: 'Tag', ref_node: 'Tag'):
+        '''Insert new child node before the reference child node. If the
+        reference node is not a child of this node, raise ValueError. If this
+        instance is connected to the node on browser, the child node is also
+        added to it.
+        '''
         super().insertBefore(child, ref_node)
         if self.connected:
             self.js_exec('insertBefore', html=child.html, id=ref_node.id)
 
     def removeChild(self, child: 'Tag'):
-        '''Remove child node from this node's content. The node is not a child
+        '''Remove the child node from this node. If the node is not a child
         of this node, raise ValueError.'''
         if isinstance(child, Tag) and self.connected:
             self.js_exec('removeChild', id=child.id)
@@ -318,6 +359,10 @@ class Tag(PyNode):
 
     @property
     def textContent(self) -> str:
+        '''Return text contents of this node and all chid nodes. Any value is
+        set to this property, all child nodes are removed and new value is set
+        as a text node.
+        '''
         return PyNode.textContent.fget(self)
 
     @textContent.setter
@@ -327,22 +372,30 @@ class Tag(PyNode):
             self.js_exec(method='textContent', text=text)
 
     def show(self, **kwargs):
+        '''Make this node visible on browser.'''
         self.attributes['hidden'] = False
         if self.connected:
             self.js_exec('show')
 
     def hide(self, **kwargs):
+        '''Make this node invisible on browser.'''
         self.attributes['hidden'] = True
         if self.connected:
             self.js_exec('hide')
 
     def addClass(self, cls: str, **kwargs):
+        '''Add a class to this node. If this node already has the class, or
+        class name is empty string, do nothing.
+        '''
         if cls and cls not in self.classList:
             if self.connected:
                 self.js_exec('addClass', **{'class': cls})
             super().addClass(cls)
 
     def removeClass(self, cls: str, **kwargs):
+        '''Remove the class from this node. If the class is not a member of
+        this node's class or it is empty string, do nothing.
+        '''
         if cls and  cls in self.classList:
             if self.connected:
                 self.js_exec('removeClass', **{'class': cls})
@@ -351,6 +404,21 @@ class Tag(PyNode):
 
 def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
                  **attrs) -> type:
+    '''Generate and return new ``Tag`` class. If ``tag`` is empty, lower case
+    of ``class_name`` is used for a tag name of the new class. ``bases`` should
+    be a tuple of base classes. If it is empty, use ``Tag`` class for a base
+    class. Other keyword arguments are used for class variables of the new
+    class.
+
+    Example::
+
+        MyButton = NewTagClass(
+                        'MyButton', 'button', (Button,), class_='btn')
+        my_button = MyButton('Click!')
+        print(my_button.html)
+
+        >>> <button class="btn" id="111111111">Click!</button>
+    '''
     if tag is None:
         tag = class_name.lower()
     if type(bases) is not tuple:
@@ -366,7 +434,11 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
 
 
 class Input(Tag):
+    '''Base class for ``<input>`` element.
+    '''
     tag = 'input'
+    #: type attribute; text, button, checkbox, or radio... and so on.
+    type_ = ''
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -381,6 +453,11 @@ class Input(Tag):
 
     @property
     def checked(self) -> bool:
+        '''If checked, this property returns True. Setting True/False to this
+        property will change default value of this element.
+        This node is other than checkbox or radio, this property will be
+        ignored.
+        '''
         return self.getAttribute('checked') or False
 
     @checked.setter
@@ -389,6 +466,9 @@ class Input(Tag):
 
     @property
     def value(self) -> str:
+        '''Get input value of this node. This value is used as a default value
+        of this element.
+        '''
         return self.getAttribute('value') or ''
 
     @value.setter
@@ -397,10 +477,14 @@ class Input(Tag):
 
 
 class TextArea(Input):
+    '''Base class for ``<textarea>`` element.'''
     tag = 'textarea'
 
     @property
     def value(self) -> str:
+        '''Get input value of this node. This value is used as a default value
+        of this element.
+        '''
         return self.textContent
 
     @value.setter
