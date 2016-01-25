@@ -147,6 +147,11 @@
     )
   }
 
+  W.addEventListener = function(node, params) {
+    var e = 'on' + params.event
+    node.addEventListener(e, function() { W[e](node) })
+  }
+
   /* DOM contrall */
   W.insert = function(node, params) {
     console.log(node)

@@ -71,7 +71,7 @@ class TagBase(HTMLElement, metaclass=TagBaseMeta):
         self.appendChild(child)
 
     def insert(self, pos:int, child:Node):
-        if isinstance(child, (str, bytes)):
+        if isinstance(child, str):
             child = Text(child)
         if 0 <= pos < self.length:
             self.insertBefore(child, self.childNodes[pos])
@@ -232,6 +232,8 @@ class Tag(PyNode):
         determines the event type when the new listener called.'''
         if event not in self.listeners:
             self.listeners[event] = []
+            if self.connected:
+                self.js_exec('addEventListener', event=event)
         self.listeners[event].append(EventListener(listener))
 
     def removeEventListener(self, event: str, listener: Callable):
@@ -269,42 +271,50 @@ class Tag(PyNode):
     def insert(self, pos: int, new_child):
         '''Insert child node at the specified ``position``. The same operation
         will be done also in the related node on browser, if exists.'''
+        if self.connected:
+            self.js_exec('insert', index=pos, html=self[pos].html)
         super().insert(pos, new_child)
-        self.js_exec('insert', index=pos, html=self[pos].html)
 
     def remove(self, *args, **kwargs):
         '''Remove this node and this child nodes from parent's DOM tree.'''
-        fut = self.js_exec('remove')
-        fut.add_done_callback(self._remove_callback)
+        if self.connected:
+            fut = self.js_exec('remove')
+            fut.add_done_callback(self._remove_callback)
+        else:
+            super().remove()
 
     def _remove_callback(self, *args, **kwargs):
         super().remove()
 
     def removeAttribute(self, attr: str) -> str:
+        if self.connected:
+            self.js_exec('removeAttribute', attr=attr)
         super().removeAttribute(attr)
-        self.js_exec('removeAttribute', attr=attr)
 
     def setAttribute(self, attr: str, value: str, **kwargs):
+        if self.connected:
+            self.js_exec('setAttribute', attr=attr, value=value)
         super().setAttribute(attr, value)
-        self.js_exec('setAttribute', attr=attr, value=value)
 
     def appendChild(self, child: 'Tag'):
         '''Append child node at the last of child nodes. If this instance is
         connected to the node on browser, the child node is also added to it.
         '''
         super().appendChild(child)
-        self.js_exec('append', html=self[-1].html)
+        if self.connected:
+            self.js_exec('append', html=self[-1].html)
 
     def insertBefore(self, child: 'Tag', ref_node: 'Tag'):
         super().insertBefore(child, ref_node)
-        self.js_exec('insertBefore', html=child.html, id=ref_node.id)
+        if self.connected:
+            self.js_exec('insertBefore', html=child.html, id=ref_node.id)
 
     def removeChild(self, child: 'Tag'):
         '''Remove child node from this node's content. The node is not a child
         of this node, raise ValueError.'''
-        super().removeChild(child)
-        if isinstance(child, Tag):
+        if isinstance(child, Tag) and self.connected:
             self.js_exec('removeChild', id=child.id)
+        super().removeChild(child)
 
     @property
     def textContent(self) -> str:
@@ -313,24 +323,29 @@ class Tag(PyNode):
     @textContent.setter
     def textContent(self, text: str):
         PyNode.textContent.fset(self, text)
-        self.js_exec(method='textContent', text=text)
+        if self.connected:
+            self.js_exec(method='textContent', text=text)
 
     def show(self, **kwargs):
-        self.js_exec('show')
         self.attributes['hidden'] = False
+        if self.connected:
+            self.js_exec('show')
 
     def hide(self, **kwargs):
-        self.js_exec('hide')
         self.attributes['hidden'] = True
+        if self.connected:
+            self.js_exec('hide')
 
     def addClass(self, cls: str, **kwargs):
         if cls and cls not in self.classList:
-            self.js_exec('addClass', **{'class': cls})
+            if self.connected:
+                self.js_exec('addClass', **{'class': cls})
             super().addClass(cls)
 
     def removeClass(self, cls: str, **kwargs):
         if cls and  cls in self.classList:
-            self.js_exec('removeClass', **{'class': cls})
+            if self.connected:
+                self.js_exec('removeClass', **{'class': cls})
             super().removeClass(cls)
 
 

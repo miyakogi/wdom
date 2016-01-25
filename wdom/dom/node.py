@@ -19,7 +19,7 @@ class DOMTokenList(list):
                 'Token contains space characters, which are invalid.')
 
     def append(self, token):
-        if isinstance(token, (str, bytes)):
+        if isinstance(token, str):
             for t in token.split(' '):
                 self.add(t)
         elif isinstance(token, Iterable):
@@ -399,14 +399,14 @@ class DocumentType(Node):
 
 class appendTextMixin:
     def appendChild(self, node):
-        if isinstance(node, (str, bytes)):
+        if isinstance(node, str):
             node = Text(node)
         super().appendChild(node)
 
     def insertBefore(self, node, ref_node):
         if isinstance(node, Node):
             super().insertBefore(node, ref_node)
-        elif isinstance(node, (str, bytes)):
+        elif isinstance(node, str):
             super().insertBefore(Text(node))
         else:
             raise TypeError('Invalid type to insert this node: {}'.format(node))
