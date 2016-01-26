@@ -155,6 +155,21 @@ class TestNode(TestCase):
         with self.assertRaises(ValueError):
             self.node.removeChild(self.c1)
 
+    def test_empty(self):
+        self.node.appendChild(self.c1)
+        self.assertTrue(self.node.hasChildNodes())
+        self.node.empty()
+        self.assertFalse(self.node.hasChildNodes())
+
+        self.node.appendChild(self.c1)
+        self.node.appendChild(self.c2)
+        self.c1.appendChild(self.c3)
+        self.assertTrue(self.node.hasChildNodes())
+        self.node.empty()
+        self.assertFalse(self.node.hasChildNodes())
+        self.assertTrue(self.c1.hasChildNodes())
+        self.assertIsNone(self.c1.parentNode)
+
     def test_insert_before(self) -> None:
         self.node.appendChild(self.c1)
         self.node.appendChild(self.c2)
