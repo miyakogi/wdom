@@ -7,6 +7,8 @@ from xml.dom import Node
 from xml.etree.ElementTree import HTML_EMPTY
 import html
 
+from wdom.dom.css import parse_style_decl, CSSStyleDeclaration
+
 
 class DOMTokenList(list):
     def __init__(self, *args):
@@ -619,6 +621,17 @@ class Document(Node):
 
 
 class HTMLElement(Element):
+    def __init__(self, *args, style:str=None, **kwargs):
+        self.style = style
+        super().__init__(*args, **kwargs)
+
+    def _get_attrs_by_string(self) -> str:
+        attrs = super()._get_attrs_by_string()
+        style = self.getAttribute('style')
+        if style:
+            attrs += ' style="{}"'.format(style)
+        return attrs.strip()
+
     @property
     def end_tag(self) -> str:
         if self.tag in HTML_EMPTY:
@@ -650,3 +663,39 @@ class HTMLElement(Element):
     @title.setter
     def title(self, value:str):
         self.setAttribute('title', value)
+
+    @property
+    def style(self) -> CSSStyleDeclaration:
+        return self._style
+
+    @style.setter
+    def style(self, style:str):
+        if isinstance(style, str):
+            self._style = parse_style_decl(style)
+        elif style is None:
+            self._style = CSSStyleDeclaration()
+        else:
+            self._style = style
+
+    def getAttribute(self, attr:str):
+        if attr == 'style':
+            # if style is neither None nor empty, return None
+            # otherwise, return style.cssText
+            if self.style:
+                return self.style.cssText
+            else:
+                return None
+        else:
+            return super().getAttribute(attr)
+
+    def setAttribute(self, attr:str, value:str):
+        if attr == 'style':
+            self.style = value
+        else:
+            super().setAttribute(attr, value)
+
+    def removeAttribute(self, attr:str):
+        if attr == 'style':
+            self.style = None
+        else:
+            super().removeAttribute(attr)

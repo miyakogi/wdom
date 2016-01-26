@@ -3,6 +3,7 @@
 
 from unittest import TestCase
 from wdom.dom.node import DOMTokenList, NamedNodeMap
+from wdom.dom.css import CSSStyleDeclaration
 from wdom.dom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
 from wdom.dom.node import Element, HTMLElement, RawHtml
 
@@ -593,6 +594,37 @@ class TestHTMLElement(TestCase):
         self.assertTrue(elm.hasAttributes())
         self.assertTrue(elm.getAttribute('src'), 'b')
         self.assertTrue(elm.hidden)
+
+    def test_style_empty(self):
+        self.assertIsNotNone(self.elm.style)
+        self.assertEqual(self.elm.getAttribute('style'), None)
+        self.assertEqual(self.elm.style.cssText, '')
+        self.assertTrue(isinstance(self.elm.style, CSSStyleDeclaration))
+
+        self.assertEqual(self.elm.html, '<a></a>')
+
+    def test_init_style_string(self):
+        elm = HTMLElement('a', style='color: red;')
+        self.assertEqual(elm.style.cssText, 'color: red;')
+        self.assertEqual(elm.getAttribute('style'), 'color: red;')
+
+        self.assertEqual(elm.html, '<a style="color: red;"></a>')
+
+    def test_style_setter(self):
+        self.elm.style='color: red;'
+        self.assertEqual(self.elm.style.cssText, 'color: red;')
+        self.assertEqual(self.elm.getAttribute('style'), 'color: red;')
+
+        self.assertEqual(self.elm.html, '<a style="color: red;"></a>')
+
+    def test_style_remove(self):
+        self.elm.style='color: red;'
+        self.elm.removeAttribute('style')
+        self.assertIsNotNone(self.elm.style)
+        self.assertEqual(self.elm.getAttribute('style'), None)
+        self.assertEqual(self.elm.style.cssText, '')
+
+        self.assertEqual(self.elm.html, '<a></a>')
 
 
 class TestDocument(TestCase):
