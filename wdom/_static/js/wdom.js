@@ -235,6 +235,10 @@
     node.parentNode.removeChild(node)
   }
 
+  W.empty = function(node) {
+    node.innerHTML = ''
+  }
+
   W.textContent = function(node, params) {
     node.textContent = params.text
   }
