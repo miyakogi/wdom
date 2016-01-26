@@ -15,22 +15,6 @@ logger = logging.getLogger(__name__)
 elements = {}
 
 
-class RawHtml(Text):
-    '''Very similar to ``Text`` class, but contents are not escaped. Used for
-    inner contents of ``<script>`` element or ``<style>`` element.'''
-    @property
-    def html(self) -> str:
-        return self._value
-
-    @property
-    def textContent(self) -> str:
-        return self._value
-
-    @textContent.setter
-    def textContent(self, value:str):
-        self._value = value
-
-
 class TagBaseMeta(type):
     '''Meta class to set default class variable of HtmlDom'''
     def __prepare__(name, bases, **kwargs) -> dict:

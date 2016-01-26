@@ -541,6 +541,9 @@ class TestElement(TestCase):
         self.elm.appendChild(Element('a'))
         self.assertEqual(self.elm.innerHTML, '<a></a>')
 
+        self.elm.innerHTML = '<b></b>'
+        self.assertEqual(self.elm.innerHTML, '<b></b>')
+
     def test_end_tag(self):
         self.assertEqual(self.elm.end_tag, '</tag>')
 

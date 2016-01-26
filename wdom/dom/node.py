@@ -374,6 +374,22 @@ class Text(Node):
         return False
 
 
+class RawHtml(Text):
+    '''Very similar to ``Text`` class, but contents are not escaped. Used for
+    inner contents of ``<script>`` element or ``<style>`` element.'''
+    @property
+    def html(self) -> str:
+        return self._value
+
+    @property
+    def textContent(self) -> str:
+        return self._value
+
+    @textContent.setter
+    def textContent(self, value:str):
+        self._value = value
+
+
 class DocumentType(Node):
     nodeType = Node.DOCUMENT_TYPE_NODE
     nodeValue = None
@@ -454,6 +470,11 @@ class Element(appendTextMixin, Node):
     @property
     def innerHTML(self) -> str:
         return ''.join(child.html for child in self.childNodes)
+
+    @innerHTML.setter
+    def innerHTML(self, html:str):
+        self.empty()
+        self.appendChild(RawHtml(html))
 
     @property
     def end_tag(self) -> str:
