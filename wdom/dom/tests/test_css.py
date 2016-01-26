@@ -8,6 +8,7 @@ import pytest
 from wdom.dom.css import _normalize_css_property
 from wdom.dom.css import CSSStyleDeclaration, parse_style_decl
 from wdom.dom.css import CSSStyleRule
+from wdom.dom.css import CSSRuleList
 
 
 @pytest.mark.parametrize(
@@ -171,3 +172,25 @@ class TestCSSStyleRule(TestCase):
 
         self.rule.style.removeProperty('color')
         self.assertEqual(self.rule.cssText, '')
+
+
+class TestCSSRuleList(TestCase):
+    def setUp(self):
+        self.list = CSSRuleList()
+        self.style = CSSStyleDeclaration()
+        self.style.color = 'red'
+        self.rule = CSSStyleRule('h1', self.style)
+
+    def test_blank(self):
+        self.assertEqual(self.list.cssText, '')
+
+    def test_append(self):
+        self.list.append(self.rule)
+        self.assertEqual(self.list.cssText, 'h1 {color: red;}')
+
+    def test_append2(self):
+        self.list.append(self.rule)
+        rule2 = CSSStyleRule('h2', CSSStyleDeclaration(background='black'))
+        self.list.append(rule2)
+        self.assertEqual(
+            self.list.cssText, 'h1 {color: red;}\nh2 {background: black;}')

@@ -120,3 +120,19 @@ class CSSStyleRule(object):
             return '{0} {{{1}}}'.format(self.selectorText, _style)
         else:
             return ''
+
+
+class CSSRuleList(list):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, kwargs)
+
+    @property
+    def length(self) -> int:
+        return len(self)
+
+    def item(self, index:int) -> CSSStyleRule:
+        return self[index]
+
+    @property
+    def cssText(self) -> str:
+        return '\n'.join(rule.cssText for rule in self)
