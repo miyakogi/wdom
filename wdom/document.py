@@ -4,8 +4,8 @@
 from typing import Optional
 
 from wdom.options import config
-from wdom.dom.node import Node, DocumentType, Text
-from wdom.dom import Html, Head, Body, Meta, Link, Title, Script, RawHtml
+from wdom.dom.node import Node, DocumentType, Text, RawHtml
+from wdom.dom import Html, Head, Body, Meta, Link, Title, Script
 
 
 class Document(Node):

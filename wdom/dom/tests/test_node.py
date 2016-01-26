@@ -4,7 +4,7 @@
 from unittest import TestCase
 from wdom.dom.node import DOMTokenList, NamedNodeMap
 from wdom.dom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
-from wdom.dom.node import Element, HTMLElement
+from wdom.dom.node import Element, HTMLElement, RawHtml
 
 
 class TestDOMTokenList(TestCase):
@@ -155,6 +155,21 @@ class TestNode(TestCase):
         with self.assertRaises(ValueError):
             self.node.removeChild(self.c1)
 
+    def test_empty(self):
+        self.node.appendChild(self.c1)
+        self.assertTrue(self.node.hasChildNodes())
+        self.node.empty()
+        self.assertFalse(self.node.hasChildNodes())
+
+        self.node.appendChild(self.c1)
+        self.node.appendChild(self.c2)
+        self.c1.appendChild(self.c3)
+        self.assertTrue(self.node.hasChildNodes())
+        self.node.empty()
+        self.assertFalse(self.node.hasChildNodes())
+        self.assertTrue(self.c1.hasChildNodes())
+        self.assertIsNone(self.c1.parentNode)
+
     def test_insert_before(self) -> None:
         self.node.appendChild(self.c1)
         self.node.appendChild(self.c2)
@@ -260,6 +275,21 @@ class TestNode(TestCase):
     def test_owner_document(self) -> None:
         self.assertIsNone(self.node.ownerDocument)
 
+    def test_text_content(self):
+        self.assertEqual(self.node.textContent, '')
+        self.node.textContent = 'a'
+        self.assertEqual(self.node.textContent, 'a')
+        self.node.textContent = 'b'
+        self.assertEqual(self.node.textContent, 'b')
+
+        self.node.appendChild(self.c1)
+        self.c1.textContent = 'c1'
+        self.assertEqual(self.node.textContent, 'bc1')
+        self.node.textContent = 'd'
+        self.assertEqual(self.node.textContent, 'd')
+        self.assertIsNone(self.c1.parentNode)
+        self.assertEqual(self.c1.textContent, 'c1')
+
 class TestAttr(TestCase):
     def setUp(self) -> None:
         self.id = Attr('id')
@@ -357,6 +387,15 @@ class TestText(TestCase):
         self.assertFalse(self.tnode.hasAttributes())
         self.assertFalse(self.tnode.hasChildNodes())
         self.assertEqual(len(self.tnode.childNodes), 0)
+
+
+class TestRawHtml(TestCase):
+    def setUp(self):
+        pass
+
+    def test_rawhtml_content(self):
+        rhtml = RawHtml('<a>')
+        self.assertEqual(rhtml.html, '<a>')
 
 
 class TestDocumentType(TestCase):
@@ -507,9 +546,12 @@ class TestElement(TestCase):
         self.assertIn('id="c"', self.elm.start_tag)
 
     def test_inner_html(self):
-        self.assertEqual(self.elm.inner_html, '')
+        self.assertEqual(self.elm.innerHTML, '')
         self.elm.appendChild(Element('a'))
-        self.assertEqual(self.elm.inner_html, '<a></a>')
+        self.assertEqual(self.elm.innerHTML, '<a></a>')
+
+        self.elm.innerHTML = '<b></b>'
+        self.assertEqual(self.elm.innerHTML, '<b></b>')
 
     def test_end_tag(self):
         self.assertEqual(self.elm.end_tag, '</tag>')

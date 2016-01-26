@@ -15,22 +15,6 @@ logger = logging.getLogger(__name__)
 elements = {}
 
 
-class RawHtml(Text):
-    '''Very similar to ``Text`` class, but contents are not escaped. Used for
-    inner contents of ``<script>`` element or ``<style>`` element.'''
-    @property
-    def html(self) -> str:
-        return self._value
-
-    @property
-    def textContent(self) -> str:
-        return self._value
-
-    @textContent.setter
-    def textContent(self, value:str):
-        self._value = value
-
-
 class TagBaseMeta(type):
     '''Meta class to set default class variable of HtmlDom'''
     def __prepare__(name, bases, **kwargs) -> dict:
@@ -57,13 +41,15 @@ class TagBase(HTMLElement, metaclass=TagBaseMeta):
     #: custom element which extends built-in tag (like <table is="your-tag">)
     is_ = ''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, parent=None, **kwargs):
         attrs = kwargs.pop('attrs', None)
         if attrs:
             kwargs.update(attrs)
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
-        super().__init__(self.tag, *args, **kwargs)
+        super().__init__(self.tag, parent=parent, **kwargs)
+        for arg in args:
+            self.appendChild(arg)
 
     @classmethod
     def get_class_list(cls) -> DOMTokenList:
@@ -162,9 +148,9 @@ class PyNode(TagBase):
     '''Add ``id`` attribute automatically.'''
     tag = 'py-node'
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         self._id = kwargs.pop('id', str(id(self)))
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def id(self) -> str:
@@ -313,6 +299,12 @@ class Tag(PyNode):
         else:
             super().remove()
 
+    def empty(self):
+        if self.connected:
+            self.js_exec('empty')
+        for child in tuple(self.childNodes):
+            super().removeChild(child)
+
     def _remove_callback(self, *args, **kwargs):
         super().remove()
 
@@ -370,6 +362,16 @@ class Tag(PyNode):
         PyNode.textContent.fset(self, text)
         if self.connected:
             self.js_exec(method='textContent', text=text)
+
+    @property
+    def innerHTML(self) -> str:
+        return PyNode.innerHTML.fget(self)
+
+    @innerHTML.setter
+    def innerHTML(self, html:str):
+        PyNode.innerHTML.fset(self, html)
+        if self.connected:
+            self.js_exec(method='innerHTML', html=html)
 
     def show(self, **kwargs):
         '''Make this node visible on browser.'''

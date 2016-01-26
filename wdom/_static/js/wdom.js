@@ -18,6 +18,13 @@
     NOTSET: 0,
   }
 
+  var _boolean_attrs = ['async', 'autofocus', 'autoplay', 'checked',
+    'contenteditable', 'defer', 'disabled', 'draggable', 'dropzone',
+    'formnovalidate', 'hidden', 'ismap', 'loop', 'multiple', 'muted',
+    'novalidate', 'readonly', 'required', 'reversed', 'spellcheck', 'scoped',
+    'selected',
+  ]
+
   function get_log_level(level) {
     if (typeof level === 'number'){
       return level
@@ -208,7 +215,11 @@
         value = false
       }
     }
-    node.setAttribute(params.attr, value)
+    if (params.attr in _boolean_attrs) {
+      node[params.attr] = value
+    } else {
+      node.setAttribute(params.attr, value)
+    }
   }
 
   W.setTextContent = function(node, params) {
@@ -235,8 +246,16 @@
     node.parentNode.removeChild(node)
   }
 
+  W.empty = function(node) {
+    node.innerHTML = ''
+  }
+
   W.textContent = function(node, params) {
     node.textContent = params.text
+  }
+
+  W.innerHTML = function(node, params) {
+    node.innerHTML = params.html
   }
 
   W.show = function(node) {

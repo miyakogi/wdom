@@ -21,10 +21,6 @@ python and browser.
       :members:
       :undoc-members:
 
-   .. autoclass:: RawHtml
-      :members:
-      :undoc-members:
-
    .. autoclass:: EventListener
       :members:
       :undoc-members:
@@ -44,6 +40,10 @@ python and browser.
       :undoc-members:
 
    .. autoclass:: Text
+      :members:
+      :undoc-members:
+
+   .. autoclass:: RawHtml
       :members:
       :undoc-members:
 
