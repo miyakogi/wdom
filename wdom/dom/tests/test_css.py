@@ -5,7 +5,9 @@ from unittest import TestCase
 
 import pytest
 
-from wdom.dom.css import CSSStyleDeclaration, _normalize_css_property
+from wdom.dom.css import _normalize_css_property
+from wdom.dom.css import CSSStyleDeclaration, parse_style_decl
+from wdom.dom.css import CSSStyleRule
 
 
 @pytest.mark.parametrize(
@@ -128,3 +130,44 @@ class TestCSSStyleDeclaration(TestCase):
         self.assertEqual(self.css.getPropertyValue('cssFloat'), '')
         self.assertEqual(self.css.getPropertyValue('float'), 1)
         self.assertEqual(self.css.getPropertyValue('css-float'), '')
+
+
+@pytest.mark.parametrize('style,parsed',[
+    ('color:red;', 'color: red;'),
+    ('color  :red  ;', 'color: red;'),
+    ('margin: 1 3 4 5;', 'margin: 1 3 4 5;'),
+    (' margin :1 3 4 5   ;  ', 'margin: 1 3 4 5;'),
+    ('z-index: 1;', 'z-index: 1;'),
+])
+def test_parse_style_decl(style, parsed):
+    assert parse_style_decl(style).cssText == parsed
+
+
+class TestCSSStyleRule(TestCase):
+    def setUp(self):
+        self.rule = CSSStyleRule()
+
+    def test_blank(self):
+        self.assertEqual(self.rule.cssText, '')
+        self.rule.selectorText = 'h1'
+        self.assertEqual(self.rule.cssText, '')
+
+    def test_init(self):
+        style = CSSStyleDeclaration()
+        style.color = 'red'
+        rule = CSSStyleRule('h1', style)
+        self.assertEqual(rule.cssText, 'h1 {color: red;}')
+
+    def test_overwrite_style(self):
+        self.rule.style = CSSStyleDeclaration()
+        self.rule.style.color = 'red'
+        self.assertEqual(self.rule.cssText, ' {color: red;}')
+
+        self.rule.selectorText = 'h1'
+        self.assertEqual(self.rule.cssText, 'h1 {color: red;}')
+
+        self.rule.selectorText = 'h1,h2'
+        self.assertEqual(self.rule.cssText, 'h1,h2 {color: red;}')
+
+        self.rule.style.removeProperty('color')
+        self.assertEqual(self.rule.cssText, '')

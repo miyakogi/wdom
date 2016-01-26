@@ -2,8 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import re
+from collections import OrderedDict
+import logging
 
+logger = logging.getLogger(__name__)
 _css_norm_re = re.compile(r'([a-z])([A-Z])')
+_style_cleanup_re = re.compile(r'\s*([:;])\s*')
 
 
 def _lower_dash(m):
@@ -17,7 +21,7 @@ def _normalize_css_property(prop):
         return _css_norm_re.sub(_lower_dash, prop)
 
 
-class CSSStyleDeclaration(dict):
+class CSSStyleDeclaration(OrderedDict):
     def __init__(self, *args, parent=None, **kwargs):
         self.parentRule = parent
         super().__init__(*args, **kwargs)
@@ -76,3 +80,43 @@ class CSSStyleDeclaration(dict):
             super().__delattr__(attr)
         else:
             self.__delitem__(_normalize_css_property(attr))
+
+
+def parse_style_decl(style:str) -> CSSStyleDeclaration:
+    orig_style = style
+    style_str = _style_cleanup_re.sub(r'\1', style.strip())
+    if len(style_str) == 0:
+        return CSSStyleDeclaration()
+
+    style = CSSStyleDeclaration()
+    for decls in style_str.split(';'):
+        if ':' not in decls:
+            if len(decls) > 0:
+                logger.warning('[skip] unknown style: {}'.format(decls))
+            continue
+        decl_list = decls.split(':')
+        if len(decl_list) != 2:
+            raise ValueError(
+                'Invalid style declaration: {0} in {1}'.format(
+                    decls, orig_style))
+        prop = decl_list[0]
+        value = decl_list[1]
+        style[prop] = value
+    return style
+
+
+class CSSStyleRule(object):
+    def __init__(self, selector:str = '', style:CSSStyleDeclaration = None):
+        self.selectorText = selector
+        if style is None:
+            self.style = CSSStyleDeclaration()
+        else:
+            self.style = style
+
+    @property
+    def cssText(self) -> str:
+        _style = self.style.cssText
+        if _style:
+            return '{0} {{{1}}}'.format(self.selectorText, _style)
+        else:
+            return ''
