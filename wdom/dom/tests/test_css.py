@@ -7,7 +7,7 @@ import pytest
 
 from wdom.dom.css import _normalize_css_property
 from wdom.dom.css import CSSStyleDeclaration, parse_style_decl
-from wdom.dom.css import CSSStyleRule
+from wdom.dom.css import CSSStyleRule, parse_style_rules
 from wdom.dom.css import CSSRuleList
 
 
@@ -135,10 +135,14 @@ class TestCSSStyleDeclaration(TestCase):
 
 @pytest.mark.parametrize('style,parsed',[
     ('color:red;', 'color: red;'),
+    ('color:red', 'color: red;'),
     ('color  :red  ;', 'color: red;'),
     ('margin: 1 3 4 5;', 'margin: 1 3 4 5;'),
     (' margin :1 3 4 5   ;  ', 'margin: 1 3 4 5;'),
     ('z-index: 1;', 'z-index: 1;'),
+    ('color: red; z-index: 1;', 'color: red; z-index: 1;'),
+    ('  color  : red ;  z-index  : 1  ', 'color: red; z-index: 1;'),
+    ('color: red;  \n z-index: 1;', 'color: red; z-index: 1;'),
 ])
 def test_parse_style_decl(style, parsed):
     assert parse_style_decl(style).cssText == parsed
@@ -194,3 +198,17 @@ class TestCSSRuleList(TestCase):
         self.list.append(rule2)
         self.assertEqual(
             self.list.cssText, 'h1 {color: red;}\nh2 {background: black;}')
+
+
+@pytest.mark.parametrize('style,parsed',[
+    ('h1 {color:red;}', 'h1 {color: red;}'),
+    ('h1,h2 {color:red;}', 'h1,h2 {color: red;}'),
+    ('  h1  {  color  :  red  ;  }', 'h1 {color: red;}'),
+    ('h1{color:red}', 'h1 {color: red;}'),
+    ('h1 {color: red;}\n   h2 {font-size: 4px;}',
+     'h1 {color: red;}\nh2 {font-size: 4px;}'),
+    ('h1 {\n   color: red;\n    background: white;}\n   h2 {font-size: 4px;}',
+     'h1 {color: red; background: white;}\nh2 {font-size: 4px;}'),
+])
+def test_parse_style_rules(style, parsed):
+    assert parse_style_rules(style).cssText == parsed

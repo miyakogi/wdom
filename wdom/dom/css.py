@@ -7,7 +7,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 _css_norm_re = re.compile(r'([a-z])([A-Z])')
-_style_cleanup_re = re.compile(r'\s*([:;])\s*')
+_style_cleanup_re = re.compile(r'\s*([:;])\s*', re.S)
+_style_rule_re = re.compile(r'\s*(.*?)\s*{(.*?)}\s*', re.S)
 
 
 def _lower_dash(m):
@@ -136,3 +137,10 @@ class CSSRuleList(list):
     @property
     def cssText(self) -> str:
         return '\n'.join(rule.cssText for rule in self)
+
+
+def parse_style_rules(styles:str) -> CSSRuleList:
+    rules = CSSRuleList()
+    for m in _style_rule_re.finditer(styles):
+        rules.append(CSSStyleRule(m.group(1), parse_style_decl(m.group(2))))
+    return rules
