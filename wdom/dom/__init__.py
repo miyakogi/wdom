@@ -57,13 +57,15 @@ class TagBase(HTMLElement, metaclass=TagBaseMeta):
     #: custom element which extends built-in tag (like <table is="your-tag">)
     is_ = ''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, parent=None, **kwargs):
         attrs = kwargs.pop('attrs', None)
         if attrs:
             kwargs.update(attrs)
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
-        super().__init__(self.tag, *args, **kwargs)
+        super().__init__(self.tag, parent=parent, **kwargs)
+        for arg in args:
+            self.appendChild(arg)
 
     @classmethod
     def get_class_list(cls) -> DOMTokenList:
@@ -162,9 +164,9 @@ class PyNode(TagBase):
     '''Add ``id`` attribute automatically.'''
     tag = 'py-node'
 
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         self._id = kwargs.pop('id', str(id(self)))
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def id(self) -> str:
