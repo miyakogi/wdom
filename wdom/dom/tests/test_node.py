@@ -275,6 +275,21 @@ class TestNode(TestCase):
     def test_owner_document(self) -> None:
         self.assertIsNone(self.node.ownerDocument)
 
+    def test_text_content(self):
+        self.assertEqual(self.node.textContent, '')
+        self.node.textContent = 'a'
+        self.assertEqual(self.node.textContent, 'a')
+        self.node.textContent = 'b'
+        self.assertEqual(self.node.textContent, 'b')
+
+        self.node.appendChild(self.c1)
+        self.c1.textContent = 'c1'
+        self.assertEqual(self.node.textContent, 'bc1')
+        self.node.textContent = 'd'
+        self.assertEqual(self.node.textContent, 'd')
+        self.assertIsNone(self.c1.parentNode)
+        self.assertEqual(self.c1.textContent, 'c1')
+
 class TestAttr(TestCase):
     def setUp(self) -> None:
         self.id = Attr('id')
