@@ -452,7 +452,7 @@ class Element(appendTextMixin, Node):
         return tag + '>'
 
     @property
-    def inner_html(self) -> str:
+    def innerHTML(self) -> str:
         return ''.join(child.html for child in self.childNodes)
 
     @property
@@ -461,10 +461,11 @@ class Element(appendTextMixin, Node):
 
     @property
     def html(self) -> str:
-        return self.start_tag + self.inner_html + self.end_tag
+        return self.start_tag + self.innerHTML + self.end_tag
 
-    innerHTML = inner_html
-    outerHTML = html
+    @property
+    def outerHTML(self):
+        return self.html
 
     @property
     def nodeName(self) -> str:

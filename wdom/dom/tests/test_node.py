@@ -537,9 +537,9 @@ class TestElement(TestCase):
         self.assertIn('id="c"', self.elm.start_tag)
 
     def test_inner_html(self):
-        self.assertEqual(self.elm.inner_html, '')
+        self.assertEqual(self.elm.innerHTML, '')
         self.elm.appendChild(Element('a'))
-        self.assertEqual(self.elm.inner_html, '<a></a>')
+        self.assertEqual(self.elm.innerHTML, '<a></a>')
 
     def test_end_tag(self):
         self.assertEqual(self.elm.end_tag, '</tag>')
