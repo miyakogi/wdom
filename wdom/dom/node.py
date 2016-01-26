@@ -226,14 +226,17 @@ class Node(Node):
         if self.parentNode is not None:
             self.parentNode.removeChild(self)
 
+    def empty(self):
+        for child in tuple(self.childNodes):
+            self.removeChild(child)
+
     @property
     def textContent(self) -> str:
         return ''.join(child.textContent for child in self.childNodes)
 
     @textContent.setter
     def textContent(self, value:str):
-        for child in tuple(self.childNodes):
-            child.remove()
+        self.empty()
         if value:
             self.appendChild(Text(value))
 
