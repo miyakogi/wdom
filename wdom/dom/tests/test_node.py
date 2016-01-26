@@ -4,7 +4,7 @@
 from unittest import TestCase
 from wdom.dom.node import DOMTokenList, NamedNodeMap
 from wdom.dom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
-from wdom.dom.node import Element, HTMLElement
+from wdom.dom.node import Element, HTMLElement, RawHtml
 
 
 class TestDOMTokenList(TestCase):
@@ -387,6 +387,15 @@ class TestText(TestCase):
         self.assertFalse(self.tnode.hasAttributes())
         self.assertFalse(self.tnode.hasChildNodes())
         self.assertEqual(len(self.tnode.childNodes), 0)
+
+
+class TestRawHtml(TestCase):
+    def setUp(self):
+        pass
+
+    def test_rawhtml_content(self):
+        rhtml = RawHtml('<a>')
+        self.assertEqual(rhtml.html, '<a>')
 
 
 class TestDocumentType(TestCase):
