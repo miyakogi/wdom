@@ -299,6 +299,12 @@ class Tag(PyNode):
         else:
             super().remove()
 
+    def empty(self):
+        if self.connected:
+            self.js_exec('empty')
+        for child in tuple(self.childNodes):
+            super().removeChild(child)
+
     def _remove_callback(self, *args, **kwargs):
         super().remove()
 
@@ -356,6 +362,16 @@ class Tag(PyNode):
         PyNode.textContent.fset(self, text)
         if self.connected:
             self.js_exec(method='textContent', text=text)
+
+    @property
+    def innerHTML(self) -> str:
+        return PyNode.innerHTML.fget(self)
+
+    @innerHTML.setter
+    def innerHTML(self, html:str):
+        PyNode.innerHTML.fset(self, html)
+        if self.connected:
+            self.js_exec(method='innerHTML', html=html)
 
     def show(self, **kwargs):
         '''Make this node visible on browser.'''

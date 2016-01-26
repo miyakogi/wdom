@@ -243,6 +243,10 @@
     node.textContent = params.text
   }
 
+  W.innerHTML = function(node, params) {
+    node.innerHTML = params.html
+  }
+
   W.show = function(node) {
     node.hidden = false
   }
