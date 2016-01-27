@@ -9,7 +9,7 @@ from asyncio import coroutine, ensure_future, iscoroutine, Future
 from inspect import iscoroutinefunction
 from typing import Callable, Tuple, Optional, Union
 
-from .node import Node, HTMLElement, Text, DOMTokenList
+from wdom.node import Node, HTMLElement, Text, DOMTokenList
 
 logger = logging.getLogger(__name__)
 elements = {}

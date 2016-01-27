@@ -4,7 +4,7 @@
 from typing import Optional
 
 from wdom.options import config
-from wdom.dom.node import Node, DocumentType, Text, RawHtml
+from wdom.node import Node, DocumentType, Text, RawHtml
 from wdom.dom import Html, Head, Body, Meta, Link, Title, Script
 
 

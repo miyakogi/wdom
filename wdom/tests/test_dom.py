@@ -3,7 +3,7 @@
 
 import re
 
-from wdom.dom.node import NamedNodeMap
+from wdom.node import NamedNodeMap
 from wdom.dom import Text, TagBase, PyNode, Tag, DOMTokenList
 from wdom.dom import EventListener
 from wdom.dom import NewTagClass

@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from wdom.dom.node import DOMTokenList, NamedNodeMap
 from wdom.dom.css import CSSStyleDeclaration
-from wdom.dom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
-from wdom.dom.node import Element, HTMLElement, RawHtml
+from wdom.node import DOMTokenList, NamedNodeMap
+from wdom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
+from wdom.node import Element, HTMLElement, RawHtml
 
 
 class TestDOMTokenList(TestCase):
