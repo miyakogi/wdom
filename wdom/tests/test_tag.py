@@ -587,8 +587,7 @@ class TestTagBase(TestCase):
 class TestPyNode(TestCase):
     def test_id_rand(self):
         dom = PyNode()
-        self.assertIsNotNone(
-            re.match(r'<py-node id="\d+"></py-node>', dom.html))
+        self.assertMatch(r'<py-node id="\d+"></py-node>', dom.html)
 
     def test_id_constructor(self):
         dom = PyNode(id='test')
@@ -603,16 +602,16 @@ class TestTag(TestCase):
         listener = lambda data: None
         listener_2 = lambda data: None
         self.dom.addEventListener('click', listener)
-        self.assertIsNotNone(re.match(
+        self.assertMatch(
             r'<node id="\d+" onclick="W.onclick\(this\);"></node>',
             self.dom.html
-        ))
+        )
         # Add listner on same type. one event should be defined in html.
         self.dom.addEventListener('click', listener_2)
-        self.assertIsNotNone(re.match(
+        self.assertMatch(
             r'<node id="\d+" onclick="W.onclick\(this\);"></node>',
             self.dom.html
-        ))
+        )
 
         # Add defferent event type. two event shoud be defined in html.
         self.dom.addEventListener('change', listener)
@@ -633,7 +632,7 @@ class TestTag(TestCase):
         # Remove one more listener and have no listener for the event.
         # No event shoud be still define in html.
         self.dom.removeEventListener('click', listener_2)
-        self.assertIsNotNone(re.match(r'<node id="\d+"></node>', self.dom.html))
+        self.assertMatch(r'<node id="\d+"></node>', self.dom.html)
 
 
 class TestNewClass(TestCase):
@@ -644,7 +643,7 @@ class TestNewClass(TestCase):
         self.assertEqual(MyTag.tag, 'mt')
         elm = MyTag()
         self.assertEqual(elm.localName, 'mt')
-        self.assertIsNotNone(re.match(r'<mt id="\d+"></mt>', elm.html))
+        self.assertMatch(r'<mt id="\d+"></mt>', elm.html)
 
     def test_create_by_classname(self):
         MyTag = NewTagClass('MyTag')
@@ -652,7 +651,7 @@ class TestNewClass(TestCase):
         self.assertEqual(MyTag.__name__, 'MyTag')
         self.assertEqual(MyTag.tag, 'mytag')
         elm = MyTag()
-        self.assertIsNotNone(re.match(r'<mytag id="\d+"></mytag>', elm.html))
+        self.assertMatch(r'<mytag id="\d+"></mytag>', elm.html)
 
     def test_create_class_with_baseclass(self):
         MyTag = NewTagClass('MyTag', 'mt')
@@ -660,7 +659,7 @@ class TestNewClass(TestCase):
         self.assertIsTrue(issubclass(MyTag2, MyTag))
         self.assertEqual(MyTag2.tag, 'mt2')
         elm = MyTag2()
-        self.assertIsNotNone(re.match(r'<mt2 id="\d+"></mt2>', elm.html))
+        self.assertMatch(r'<mt2 id="\d+"></mt2>', elm.html)
 
         class A(object):
             pass
