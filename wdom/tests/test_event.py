@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tests.util import TestCase
-from wdom.tag import EventListener
+from wdom.event import EventListener
 
 
 class TestEventListener(TestCase):
