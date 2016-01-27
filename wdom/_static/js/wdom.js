@@ -161,10 +161,6 @@
 
   /* DOM contrall */
   W.insert = function(node, params) {
-    console.log(node)
-    console.log(params)
-    console.log(node.childNodes)
-    console.log(node.childNodes[Number(params.index)])
     if (!node.hasChildNodes() || params.index >= node.childNodes.length) {
       W.append(node, params)
     } else {
@@ -215,7 +211,7 @@
         value = false
       }
     }
-    if (params.attr in _boolean_attrs) {
+    if (params.attr in node) {
       node[params.attr] = value
     } else {
       node.setAttribute(params.attr, value)

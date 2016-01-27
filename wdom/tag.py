@@ -107,6 +107,8 @@ class Tag(WebElement, metaclass=TagBaseMeta):
             return super().getAttribute(attr)
 
     def addClass(self, class_: str):
+        if class_ and self.connected:
+            self.js_exec('addClass', **{'class': class_})
         self.classList.append(class_)
 
     def hasClass(self, class_: str):
@@ -127,6 +129,8 @@ class Tag(WebElement, metaclass=TagBaseMeta):
                     'tried to remove non-existing class: {}'.format(class_)
                 )
         else:
+            if class_ and  class_ in self.classList and self.connected:
+                self.js_exec('removeClass', **{'class': class_})
             self.classList.remove(class_)
 
     def show(self):
