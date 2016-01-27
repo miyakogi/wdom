@@ -7,7 +7,7 @@ from xml.dom import Node
 from xml.etree.ElementTree import HTML_EMPTY
 import html
 
-from wdom.dom.css import parse_style_decl, CSSStyleDeclaration
+from wdom.css import parse_style_decl, CSSStyleDeclaration
 
 
 class DOMTokenList(list):

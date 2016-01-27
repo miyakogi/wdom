@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from wdom.dom.css import CSSStyleDeclaration
+from wdom.css import CSSStyleDeclaration
 from wdom.node import DOMTokenList, NamedNodeMap
 from wdom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
 from wdom.node import Element, HTMLElement, RawHtml
