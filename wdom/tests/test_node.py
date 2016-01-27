@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from wdom.dom.node import DOMTokenList, NamedNodeMap
-from wdom.dom.css import CSSStyleDeclaration
-from wdom.dom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
-from wdom.dom.node import Element, HTMLElement, RawHtml
+from wdom.css import CSSStyleDeclaration
+from wdom.node import DOMTokenList, NamedNodeMap
+from wdom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
+from wdom.node import Element, HTMLElement, RawHtml
 
 
 class TestDOMTokenList(TestCase):
@@ -356,10 +356,16 @@ class TestText(TestCase):
         self.tnode.textContent = 'newtext'
         self.assertEqual(self.tnode.textContent, 'newtext')
 
-    def test_escape(self):
+    def test_html_escape(self):
         self.assertEqual(self.tnode.html, 'text')
         self.tnode.textContent = '<'
         self.assertEqual(self.tnode.html, '&lt;')
+
+        self.assertEqual(Text('<').html, '&lt;')
+        self.assertEqual(Text('>').html, '&gt;')
+        self.assertEqual(Text('&').html, '&amp;')
+        self.assertEqual(Text('"').html, '&quot;')
+        self.assertEqual(Text('\'').html, '&#x27;')
 
     def test_appned(self):
         self.node.appendChild(self.tnode)

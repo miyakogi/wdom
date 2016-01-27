@@ -4,7 +4,7 @@
 import re
 
 from wdom.document import Document
-from wdom.dom import Tag
+from wdom.tag import Tag
 from wdom.tests.util import TestCase
 
 
@@ -93,7 +93,7 @@ class TestMainDocument(TestCase):
         self.doc.set_body(Tag())
         html = self.doc.build()
         _re = re.compile(
-            '<node id="\d+">\s*</node>',
+            '<tag id="\d+">\s*</tag>',
             re.S
         )
         self.assertIsNotNone(_re.search(html))

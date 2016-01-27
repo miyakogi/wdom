@@ -4,7 +4,7 @@
 from markdown import markdown
 
 from wdom.document import get_document
-from wdom.dom import Div
+from wdom.tag import Div
 from wdom.themes.bootstrap3 import css_files, js_files
 from wdom.themes.bootstrap3 import TextArea, Col6, Row, H1, Hr
 

@@ -18,13 +18,6 @@
     NOTSET: 0,
   }
 
-  var _boolean_attrs = ['async', 'autofocus', 'autoplay', 'checked',
-    'contenteditable', 'defer', 'disabled', 'draggable', 'dropzone',
-    'formnovalidate', 'hidden', 'ismap', 'loop', 'multiple', 'muted',
-    'novalidate', 'readonly', 'required', 'reversed', 'spellcheck', 'scoped',
-    'selected',
-  ]
-
   function get_log_level(level) {
     if (typeof level === 'number'){
       return level
@@ -161,10 +154,6 @@
 
   /* DOM contrall */
   W.insert = function(node, params) {
-    console.log(node)
-    console.log(params)
-    console.log(node.childNodes)
-    console.log(node.childNodes[Number(params.index)])
     if (!node.hasChildNodes() || params.index >= node.childNodes.length) {
       W.append(node, params)
     } else {
@@ -173,10 +162,6 @@
         params.html
       )
     }
-  }
-
-  W.append = function(node, params) {
-    node.insertAdjacentHTML('beforeend', params.html)
   }
 
   W.appendChild = function(node, params) {
@@ -195,11 +180,7 @@
 
   W.replaceChild = function(node, params) {
     var old_child = document.getElementById(params.id)
-    // var _ = document.createElement('div')
-    // _.innerHTML = params.html
-    // node.replaceChild(old_child, _.childNodes[0])
     old_child.insertAdjacentHTML('beforebegin', params.html)
-    // node.removeChild(old_child)
   }
 
   W.removeAttribute = function(node, params) {
@@ -215,15 +196,11 @@
         value = false
       }
     }
-    if (params.attr in _boolean_attrs) {
+    if (params.attr in node) {
       node[params.attr] = value
     } else {
       node.setAttribute(params.attr, value)
     }
-  }
-
-  W.setTextContent = function(node, params) {
-    node.textContent = params.text
   }
 
   W.addClass = function(node, params) {
@@ -242,28 +219,8 @@
     }
   }
 
-  W.remove = function(node) {
-    node.parentNode.removeChild(node)
-  }
-
   W.empty = function(node) {
     node.innerHTML = ''
-  }
-
-  W.textContent = function(node, params) {
-    node.textContent = params.text
-  }
-
-  W.innerHTML = function(node, params) {
-    node.innerHTML = params.html
-  }
-
-  W.show = function(node) {
-    node.hidden = false
-  }
-
-  W.hide = function(node) {
-    node.hidden = true
   }
 
   Wlog.log = function(level, message, retry) {

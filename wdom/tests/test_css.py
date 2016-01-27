@@ -5,10 +5,10 @@ from unittest import TestCase
 
 import pytest
 
-from wdom.dom.css import _normalize_css_property
-from wdom.dom.css import CSSStyleDeclaration, parse_style_decl
-from wdom.dom.css import CSSStyleRule, parse_style_rules
-from wdom.dom.css import CSSRuleList
+from wdom.css import _normalize_css_property
+from wdom.css import CSSStyleDeclaration, parse_style_decl
+from wdom.css import CSSStyleRule, parse_style_rules
+from wdom.css import CSSRuleList
 
 
 @pytest.mark.parametrize(
