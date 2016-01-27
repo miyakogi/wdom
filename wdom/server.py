@@ -11,7 +11,7 @@ from tornado import websocket
 from tornado.httpserver import HTTPServer
 
 from wdom import options
-from wdom.tag import elements
+from wdom.web_node import elements
 from wdom.misc import static_dir
 
 logger = logging.getLogger(__name__)

@@ -173,3 +173,148 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
     cls = type(class_name, bases, attrs)
     cls.tag = tag
     return cls
+
+
+class Input(Tag):
+    '''Base class for ``<input>`` element.
+    '''
+    tag = 'input'
+    #: type attribute; text, button, checkbox, or radio... and so on.
+    type_ = ''
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.addEventListener('change', self._update)
+        self.addEventListener('input', self._update)
+
+    def _update(self, data) -> None:
+        if self.type in ('checkbox', 'radio'):
+            self.checked = data.get('checked')
+        else:
+            self.value = data.get('value')
+
+    @property
+    def checked(self) -> bool:
+        '''If checked, this property returns True. Setting True/False to this
+        property will change default value of this element.
+        This node is other than checkbox or radio, this property will be
+        ignored.
+        '''
+        return self.getAttribute('checked') or False
+
+    @checked.setter
+    def checked(self, value: bool):
+        self.setAttribute('checked', value)
+
+    @property
+    def value(self) -> str:
+        '''Get input value of this node. This value is used as a default value
+        of this element.
+        '''
+        return self.getAttribute('value') or ''
+
+    @value.setter
+    def value(self, value: str):
+        self.setAttribute('value', value)
+
+
+class TextArea(Input):
+    '''Base class for ``<textarea>`` element.'''
+    tag = 'textarea'
+
+    @property
+    def value(self) -> str:
+        '''Get input value of this node. This value is used as a default value
+        of this element.
+        '''
+        return self.textContent
+
+    @value.setter
+    def value(self, value: str) -> None:
+        self.textContent = value
+
+
+class CheckBox(Input):
+    type_ = 'checkbox'
+
+
+class TextInput(Input):
+    type_ = 'text'
+
+
+class Button(Tag):
+    tag = 'button'
+
+
+class Script(Tag):
+    tag = 'script'
+
+    def __init__(self, *args, type='text/javascript', src=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setAttribute('type', type)
+        if src is not None:
+            self.setAttribute('src', src)
+
+
+Html = NewTagClass('Html')
+Body = NewTagClass('Body')
+Meta = NewTagClass('Meta')
+Head = NewTagClass('Head')
+Link = NewTagClass('Link')
+Title = NewTagClass('Title')
+
+Div = NewTagClass('Div')
+Span = NewTagClass('Span')
+
+# Typography
+H1 = NewTagClass('H1')
+H2 = NewTagClass('H2')
+H3 = NewTagClass('H3')
+H4 = NewTagClass('H4')
+H5 = NewTagClass('H5')
+H6 = NewTagClass('H6')
+
+P = NewTagClass('P')
+A = NewTagClass('A')
+Strong = NewTagClass('Strong')
+Em = NewTagClass('Em')
+U = NewTagClass('U')
+Br = NewTagClass('Br')
+Hr = NewTagClass('Hr')
+
+Cite = NewTagClass('Cite')
+Code = NewTagClass('Code')
+Pre = NewTagClass('Pre')
+
+Img = NewTagClass('Img')
+
+# table tags
+Table = NewTagClass('Table')
+Thead = NewTagClass('Thead')
+Tbody = NewTagClass('Tbody')
+Tfoot = NewTagClass('Tfoot')
+Th = NewTagClass('Th')
+Tr = NewTagClass('Tr')
+Td = NewTagClass('Td')
+
+# List tags
+Ol = NewTagClass('Ol')
+Ul = NewTagClass('Ul')
+Li = NewTagClass('Li')
+
+# Definition-list tags
+Dl = NewTagClass('Dl')
+Dt = NewTagClass('Dt')
+Dd = NewTagClass('Dd')
+
+# Form tags
+Form = NewTagClass('Form')
+Label = NewTagClass('Label')
+Option = NewTagClass('Option')
+Select = NewTagClass('Select')
+
+# Building blocks
+Container = Div
+Wrapper = Div
+Row = Div
+

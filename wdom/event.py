@@ -3,6 +3,7 @@
 
 from asyncio import ensure_future, iscoroutine, iscoroutinefunction
 from typing import Callable
+from functools import partial
 
 
 class EventListener:
