@@ -356,10 +356,16 @@ class TestText(TestCase):
         self.tnode.textContent = 'newtext'
         self.assertEqual(self.tnode.textContent, 'newtext')
 
-    def test_escape(self):
+    def test_html_escape(self):
         self.assertEqual(self.tnode.html, 'text')
         self.tnode.textContent = '<'
         self.assertEqual(self.tnode.html, '&lt;')
+
+        self.assertEqual(Text('<').html, '&lt;')
+        self.assertEqual(Text('>').html, '&gt;')
+        self.assertEqual(Text('&').html, '&amp;')
+        self.assertEqual(Text('"').html, '&quot;')
+        self.assertEqual(Text('\'').html, '&#x27;')
 
     def test_appned(self):
         self.node.appendChild(self.tnode)

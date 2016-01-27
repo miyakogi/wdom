@@ -4,25 +4,9 @@
 import re
 
 from wdom.node import NamedNodeMap
-from wdom.tag import Text, TagBase, PyNode, Tag, DOMTokenList
-from wdom.tag import EventListener
+from wdom.tag import TagBase, PyNode, Tag, DOMTokenList
 from wdom.tag import NewTagClass
 from wdom.tests.util import TestCase
-
-
-class TestTextNode(TestCase):
-    def setUp(self):
-        self.text_node = Text('text')
-
-    def test_html(self):
-        self.assertEqual(Text('text').html, 'text')
-
-    def test_html_escape(self):
-        self.assertEqual(Text('<').html, '&lt;')
-        self.assertEqual(Text('>').html, '&gt;')
-        self.assertEqual(Text('&').html, '&amp;')
-        self.assertEqual(Text('"').html, '&quot;')
-        self.assertEqual(Text('\'').html, '&#x27;')
 
 
 class TestDom(TestCase):
@@ -609,11 +593,6 @@ class TestPyNode(TestCase):
     def test_id_constructor(self):
         dom = PyNode(id='test')
         self.assertEqual('<py-node id="test"></py-node>', dom.html)
-
-
-class TestEventListener(TestCase):
-    # To be implemented
-    EventListener
 
 
 class TestTag(TestCase):
