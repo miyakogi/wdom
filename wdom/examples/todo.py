@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.dom import Node
+from wdom.tag import Node
 from wdom.view import get_document
 
 

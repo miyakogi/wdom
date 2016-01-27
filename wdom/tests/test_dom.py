@@ -4,9 +4,9 @@
 import re
 
 from wdom.node import NamedNodeMap
-from wdom.dom import Text, TagBase, PyNode, Tag, DOMTokenList
-from wdom.dom import EventListener
-from wdom.dom import NewTagClass
+from wdom.tag import Text, TagBase, PyNode, Tag, DOMTokenList
+from wdom.tag import EventListener
+from wdom.tag import NewTagClass
 from wdom.tests.util import TestCase
 
 
@@ -445,7 +445,7 @@ class TestTagBase(TestCase):
         self.assertIsTrue(self.dom.hasClass('b'))
 
     def test_class_remove_error(self) -> None:
-        with self.assertLogs('wdom.dom', 'WARNING'):
+        with self.assertLogs('wdom.tag', 'WARNING'):
             self.dom.removeClass('a')
 
     def test_type_class(self) -> None:
@@ -552,7 +552,7 @@ class TestTagBase(TestCase):
         self.assertEqual('<a class="a1"></a>', a.html)
         a.addClass('a2')
         self.assertEqual('<a class="a1 a2"></a>', a.html)
-        with self.assertLogs('wdom.dom', 'WARNING'):
+        with self.assertLogs('wdom.tag', 'WARNING'):
             a.removeClass('a1')
         self.assertEqual('<a class="a1 a2"></a>', a.html)
 

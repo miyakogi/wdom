@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.dom import NewTagClass
-from wdom.dom import *
+from wdom.tag import NewTagClass
+from wdom.tag import *
 
 
 css_files = [

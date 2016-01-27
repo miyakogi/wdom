@@ -4,7 +4,7 @@
 import re
 
 from wdom.document import Document
-from wdom.dom import Tag
+from wdom.tag import Tag
 from wdom.tests.util import TestCase
 
 

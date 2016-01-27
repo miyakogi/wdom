@@ -6,8 +6,7 @@ from unittest.mock import MagicMock
 from tornado.web import Application
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.dom import Tag, TextArea, Input, CheckBox
-from wdom import dom
+from wdom.tag import Tag, TextArea, Input, CheckBox
 from wdom.document import get_document
 from wdom.server import get_app
 from wdom.misc import static_dir

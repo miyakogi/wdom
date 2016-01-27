@@ -5,7 +5,7 @@
 Data binding example
 '''
 
-from wdom.dom import Node, Input, TextArea
+from wdom.tag import Node, Input, TextArea
 from wdom.view import get_document
 
 
