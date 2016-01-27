@@ -151,9 +151,9 @@ class WebElement(HTMLElement):
         '''
         if self.connected:
             if isinstance(child, Node):
-                self.js_exec('append', html=child.html)
+                self.js_exec('appendChild', html=child.html)
             else:
-                self.js_exec('append', html=str(child))
+                self.js_exec('appendChild', html=str(child))
         super().appendChild(child)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement'):
