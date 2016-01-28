@@ -266,6 +266,7 @@ Meta = NewTagClass('Meta')
 Head = NewTagClass('Head')
 Link = NewTagClass('Link')
 Title = NewTagClass('Title')
+Style = NewTagClass('Style')
 
 Div = NewTagClass('Div')
 Span = NewTagClass('Span')
