@@ -19,9 +19,13 @@ from tornado.httpserver import HTTPServer
 from wdom.server import start_server
 from wdom.tests.util import TestCase
 
-wd = None
-conn, wd_conn = Pipe()
-browser = None
+
+def _clear():
+    global wd, conn, wd_conn, browser
+    wd = None
+    conn = None
+    wd_conn = None
+    browser = None
 
 
 def get_browser():
@@ -133,11 +137,17 @@ class BrowserController:
                 self.wd.close()
                 self.conn.send('CLOSED')
                 break
+            elif req['method'] == 'quit':
+                self.wd.quit()
+                self.conn.send('CLOSED')
+                break
 
 
 def start_browser():
     '''Start broser process.'''
-    global browser
+    _clear()
+    global browser, conn, wd_conn
+    conn, wd_conn = Pipe()
     def start_browser():
         global wd_conn
         bc = BrowserController(wd_conn)
@@ -150,12 +160,13 @@ def start_browser():
 def close_browser():
     '''Terminate browser process.'''
     global conn, browser
-    conn.send({'method': 'close'})
+    conn.send({'method': 'quit'})
     time.sleep(0.3)
     print('\nBrowser closed')
     conn.close()
     if browser is not None:
         browser.terminate()
+    _clear()
 
 
 class WDTest(TestCase):
