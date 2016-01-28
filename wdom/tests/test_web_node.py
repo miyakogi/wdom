@@ -108,6 +108,13 @@ class TestTag(ElementTestCase):
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), 'child2child1')
 
+        self.tag.empty()
+        self.assertEqual(self.get_text(), '')
+        with self.assertRaises(NoSuchElementException):
+            self.set_element(child1)
+        with self.assertRaises(NoSuchElementException):
+            self.set_element(child2)
+
     def test_replace_child(self):
         self.set_element(self.tag)
         child1 = WebElement('a')
