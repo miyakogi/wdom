@@ -9,18 +9,12 @@ from selenium.common.exceptions import NoSuchElementException
 from wdom.tag import Tag, TextArea, Input, CheckBox
 from wdom.document import get_document
 from wdom.server import get_app
-from wdom.misc import static_dir
-from wdom.tests.util import WDTest
-from wdom.tests.util import install_asyncio, start_browser, close_browser
+from wdom.misc import static_dir, install_asyncio
+from wdom.tests.web.remote_browser import WDTest
 
 
 def setup_module():
     install_asyncio()
-    start_browser()
-
-
-def teardown_module():
-    close_browser()
 
 
 class TestNode(WDTest):

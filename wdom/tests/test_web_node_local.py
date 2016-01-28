@@ -3,7 +3,7 @@
 
 import re
 
-from wdom.tests.util import TestCase, WDTest
+from wdom.tests.util import TestCase
 from wdom.web_node import WebElement
 
 

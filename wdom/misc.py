@@ -4,6 +4,10 @@
 import sys
 from os import path
 
+from tornado.ioloop import IOLoop
+from tornado.platform.asyncio import AsyncIOMainLoop
+
+
 # if freezed by cx_freeze, _static and _template dirs are copied to lib dir.
 if getattr(sys, 'frozen', False):
     root_dir = path.join(path.dirname(sys.executable), 'lib')
@@ -24,3 +28,9 @@ Example:
 
 '''
 include_dirs = [static_dir, template_dir]
+
+
+def install_asyncio():
+    '''Ensure asyncio's io-loop is installed to tornado.'''
+    if not IOLoop.initialized():
+        AsyncIOMainLoop().install()
