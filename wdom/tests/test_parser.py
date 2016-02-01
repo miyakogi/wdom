@@ -56,13 +56,6 @@ class TestFragmentParser(TestCase):
         self.assertEqual(child.textContent, 'test')
         self.assertEqual(child.textContent, 'test')
 
-    def test_string(self):
-        self.parser.feed('a')
-        self.assertEqual(self.parser.root.length, 1)
-        child = self.parser.root.firstChild
-        self.assertEqual(child.nodeType, Node.TEXT_NODE)
-        self.assertEqual(child.textContent, 'a')
-
     def test_multi_tag_para(self):
         self.parser.feed('<h1>test1</h1><h2>test2</h2><h3>test3</h3>')
         self.assertEqual(self.parser.root.length, 3)
