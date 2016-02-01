@@ -18,7 +18,7 @@ class DocumentParser(HTMLParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.root = Document()
-        self.elm = self.root
+        self.elm = self.root.body
 
     def handle_decl(self, decl):
         self.root.doctype.name = decl.split()[-1]

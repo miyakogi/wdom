@@ -11,6 +11,32 @@ class TestDocumentParser(TestCase):
     def setUp(self):
         self.parser = DocumentParser()
 
+    def test_empty(self):
+        self.parser.feed('')
+        doc = self.parser.root
+        self.assertEqual(doc.length, 2)
+        self.assertEqual(doc.nodeType, Node.DOCUMENT_NODE)
+        self.assertEqual(doc.doctype.nodeType, Node.DOCUMENT_TYPE_NODE)
+        self.assertEqual(doc.html.length, 2)
+
+    def test_single_tag(self):
+        self.parser.feed('<h1>title</h1>')
+        doc = self.parser.root
+        self.assertEqual(doc.html.length, 2)
+        self.assertEqual(doc.body.length, 2)
+        # first child is <script>
+        self.assertEqual(doc.body.lastChild.tagName, 'H1')
+
+    def test_full_docc(self):
+        self.parser.feed(
+            '<!DOCTYPE html><html><head><title>Title</title></head>'
+            '<body><h1>title</h1></body></html>')
+        doc = self.parser.root
+        self.assertEqual(doc.html.length, 2)
+        self.assertEqual(doc.body.length, 2)
+        # first child is <script>
+        self.assertEqual(doc.body.lastChild.tagName, 'H1')
+
 
 class TestFragmentParser(TestCase):
     def setUp(self):
