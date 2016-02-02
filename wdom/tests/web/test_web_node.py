@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 from unittest.mock import MagicMock
 
 from wdom.document import get_document
@@ -29,7 +30,7 @@ class ElementTestCase(WDTest):
         raise NotImplementedError
 
 
-class TestTag(ElementTestCase):
+class TestWebElement(ElementTestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -137,6 +138,22 @@ class TestTag(ElementTestCase):
         self.assertIsFalse(self.is_displayed())
         self.tag.hidden = False
         self.assertIsTrue(self.is_displayed())
+
+    def test_get_rect(self):
+        rect = WebElement('div', style='width:200px;height:100px;')
+        self.tag.appendChild(rect)
+
+        def check_rect(fut):
+            data = fut.result()
+            self.assertEqual(data['width'], 200)
+            self.assertEqual(data['height'], 100)
+
+        fut = rect.getBoundingClientRect()
+        fut.add_done_callback(check_rect)
+        asyncio.get_event_loop().run_until_complete(fut)
+        data = fut.result()
+        self.assertEqual(data['width'], 200)
+        self.assertEqual(data['height'], 100)
 
 
 class TestEvent(ElementTestCase):
