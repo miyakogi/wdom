@@ -4,7 +4,7 @@
 import logging
 import json
 
-from asyncio import coroutine, Future, ensure_future
+from asyncio import coroutine, Future, ensure_future, get_event_loop
 from typing import Callable, Optional
 
 from wdom.event import EventListener
@@ -26,6 +26,8 @@ class WebElement(HTMLElement):
     def __init__(self, *args, parent=None, **kwargs):
         self.id = kwargs.pop('id', str(id(self)))
         self.listeners = dict()
+        self._reqid = 0
+        self._tasks = {}
         super().__init__(*args, **kwargs)
         elements[self.id] = self
         if parent is not None:
@@ -48,11 +50,19 @@ class WebElement(HTMLElement):
         '''Coroutine to be called when webscoket get message.'''
         logger.debug('WS MSG  {tag}: {msg}'.format(tag=self.tag, msg=msg))
 
-        event = msg.get('event', False)
-        if event:
-            data = msg.get('data')
-            for listener in self.listeners.get(event, []):
-                listener(data=data)
+        msg_type = msg.get('type')
+        if msg_type == 'event':
+            event = msg.get('event', False)
+            if event:
+                data = msg.get('data')
+                for listener in self.listeners.get(event, []):
+                    listener(data=data)
+        elif msg_type == 'response':
+            response = msg.get('data', False)
+            if response:
+                req = self._tasks.pop(msg.get('reqid'))
+                if req:
+                    req.set_result(msg.get('data'))
 
     def addEventListener(self, event: str, listener: Callable):
         '''Add event listener to this node. ``event`` is a string which
@@ -89,6 +99,14 @@ class WebElement(HTMLElement):
             return ensure_future(
                 self.ws_send(dict(method=method, params=kwargs))
             )
+
+    def _query(self, query):
+        if self.connected:
+            self.js_exec(query, reqid=self._reqid)
+            fut = Future()
+            self._tasks[self._reqid] = fut
+            self._reqid += 1
+            return fut
 
     @coroutine
     def ws_send(self, obj):
@@ -175,6 +193,9 @@ class WebElement(HTMLElement):
         if isinstance(child, WebElement) and self.connected:
             self.js_exec('removeChild', id=child.id)
         super().removeChild(child)
+
+    def getBoundingClientRect(self):
+        return self._query('getBoundingClientRect')
 
     @property
     def textContent(self) -> str:
