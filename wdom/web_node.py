@@ -228,3 +228,16 @@ class WebElement(HTMLElement):
         if self.connected:
             self.js_exec(method='empty')
             self.js_exec(method='appendChild', html=html)
+
+    # Window controll
+    def scroll(self, x:int, y:int):
+        if self.connected:
+            self.js_exec('scroll', x=x, y=y)
+
+    def scrollTo(self, x:int, y:int):
+        if self.connected:
+            self.js_exec('scrollTo', x=x, y=y)
+
+    def scrollBy(self, x:int, y:int):
+        if self.connected:
+            self.js_exec('scrollBy', x=x, y=y)

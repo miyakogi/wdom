@@ -250,6 +250,19 @@
     })
   }
 
+  /* Window Control */
+  W.scroll = function(node, params){
+    window.scrollTo(params.x, params.y)
+  }
+
+  W.scrollTo = function(node, params){
+    window.scrollTo(params.x, params.y)
+  }
+
+  W.scrollBy = function(node, params){
+    window.scrollBy(params.x, params.y)
+  }
+
   Wlog.log = function(level, message, retry) {
     var msg = JSON.stringify({
       type: 'log',
