@@ -250,6 +250,27 @@
     })
   }
 
+  /* Window Control */
+  W.scroll = function(node, params){
+    window.scrollTo(params.x, params.y)
+  }
+
+  W.scrollTo = function(node, params){
+    window.scrollTo(params.x, params.y)
+  }
+
+  W.scrollBy = function(node, params){
+    window.scrollBy(params.x, params.y)
+  }
+
+  W.scrollX = function(node, params){
+    W.send_response(node, params.reqid, {x: window.scrollX})
+  }
+
+  W.scrollY = function(node, params){
+    W.send_response(node, params.reqid, {y: window.scrollY})
+  }
+
   Wlog.log = function(level, message, retry) {
     var msg = JSON.stringify({
       type: 'log',

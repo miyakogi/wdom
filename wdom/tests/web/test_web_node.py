@@ -155,6 +155,25 @@ class TestWebElement(ElementTestCase):
         self.assertEqual(data['width'], 200)
         self.assertEqual(data['height'], 100)
 
+    def test_scroll(self):
+        rect = WebElement('div',
+                          style='width:3000px;height:3000px;background:#eee;')
+        self.tag.appendChild(rect)
+        futX = rect.scrollX()
+        futY = rect.scrollY()
+        asyncio.get_event_loop().run_until_complete(futX)
+        asyncio.get_event_loop().run_until_complete(futY)
+        self.assertEqual(futX.result()['x'], 0)
+        self.assertEqual(futY.result()['y'], 0)
+
+        rect.scrollTo(200, 200)
+        futX = rect.scrollX()
+        futY = rect.scrollY()
+        asyncio.get_event_loop().run_until_complete(futX)
+        asyncio.get_event_loop().run_until_complete(futY)
+        self.assertEqual(futX.result()['x'], 200)
+        self.assertEqual(futY.result()['y'], 200)
+
 
 class TestEvent(ElementTestCase):
     def get_elements(self):
