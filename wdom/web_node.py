@@ -241,3 +241,9 @@ class WebElement(HTMLElement):
     def scrollBy(self, x:int, y:int):
         if self.connected:
             self.js_exec('scrollBy', x=x, y=y)
+
+    def scrollX(self):
+        return self._query('scrollX')
+
+    def scrollY(self):
+        return self._query('scrollY')

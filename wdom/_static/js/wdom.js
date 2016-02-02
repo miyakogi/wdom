@@ -263,6 +263,14 @@
     window.scrollBy(params.x, params.y)
   }
 
+  W.scrollX = function(node, params){
+    W.send_response(node, params.reqid, {x: window.scrollX})
+  }
+
+  W.scrollY = function(node, params){
+    W.send_response(node, params.reqid, {y: window.scrollY})
+  }
+
   Wlog.log = function(level, message, retry) {
     var msg = JSON.stringify({
       type: 'log',
