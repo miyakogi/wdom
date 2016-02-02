@@ -45,24 +45,30 @@ class WebElement(HTMLElement):
         '''When this instance has any connection, return True.'''
         return self.ownerDocument is not None and any(self.ownerDocument.connections)
 
-    @coroutine
     def on_message(self, msg: dict):
         '''Coroutine to be called when webscoket get message.'''
         logger.debug('WS MSG  {tag}: {msg}'.format(tag=self.tag, msg=msg))
 
         msg_type = msg.get('type')
         if msg_type == 'event':
-            event = msg.get('event', False)
-            if event:
-                data = msg.get('data')
-                for listener in self.listeners.get(event, []):
-                    listener(data=data)
+            ensure_future(self.handle_event(msg))
         elif msg_type == 'response':
-            response = msg.get('data', False)
-            if response:
-                req = self._tasks.pop(msg.get('reqid'))
-                if req:
-                    req.set_result(msg.get('data'))
+            self.handle_response(msg)
+
+    @coroutine
+    def handle_event(self, msg):
+        event = msg.get('event', False)
+        if event:
+            data = msg.get('data')
+            for listener in self.listeners.get(event, []):
+                listener(data=data)
+
+    def handle_response(self, msg):
+        response = msg.get('data', False)
+        if response:
+            req = self._tasks.pop(msg.get('reqid'))
+            if req:
+                req.set_result(msg.get('data'))
 
     def addEventListener(self, event: str, listener: Callable):
         '''Add event listener to this node. ``event`` is a string which

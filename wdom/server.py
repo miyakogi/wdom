@@ -3,7 +3,6 @@
 
 import json
 import logging
-import asyncio
 import webbrowser
 
 from tornado import web
@@ -60,7 +59,7 @@ class WSHandler(websocket.WebSocketHandler):
         id = msg.get('id')
         elm = elements.get(id, None)
         if elm is not None:
-            asyncio.ensure_future(elm.on_message(msg))
+            elm.on_message(msg)
         else:
             logger.warn('No such element: id={}'.format(id))
 
