@@ -3,7 +3,6 @@
 
 import json
 import logging
-import asyncio
 import webbrowser
 
 from tornado import web
@@ -34,10 +33,11 @@ class WSHandler(websocket.WebSocketHandler):
     def on_message(self, message):
         # Log handling
         msg = json.loads(message)
-        if msg['type'] == 'log':
+        _type = msg.get('type')
+        if _type == 'log':
             self.log_handler(msg.get('level'), msg.get('message'))
-        elif msg['type'] == 'event':
-            self.event_handler(msg)
+        elif _type in ('event', 'response'):
+            self.element_handler(msg)
 
     def on_close(self):
         logger.info('RootWS CLOSED')
@@ -55,11 +55,11 @@ class WSHandler(websocket.WebSocketHandler):
         elif level == 'debug':
             logger.debug(message)
 
-    def event_handler(self, msg: dict):
+    def element_handler(self, msg: dict):
         id = msg.get('id')
         elm = elements.get(id, None)
         if elm is not None:
-            asyncio.ensure_future(elm.on_message(msg))
+            elm.on_message(msg)
         else:
             logger.warn('No such element: id={}'.format(id))
 

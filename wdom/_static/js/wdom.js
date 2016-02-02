@@ -106,6 +106,19 @@
     W[method](node, params)
   }
 
+  // send response
+  W.send_response = function(node, reqid, data) {
+    Wlog.debug('send_response')
+    var msg = JSON.stringify({
+      type: 'response',
+      id: node.id,
+      reqid: reqid,
+      data: data
+    })
+    Wlog.debug(msg)
+    W.ws.send(msg)
+  }
+
   /* Event contrall */
   // emit events to python
   // find better name...
@@ -221,6 +234,20 @@
 
   W.empty = function(node) {
     node.innerHTML = ''
+  }
+
+  W.getBoundingClientRect = function(node, params) {
+    Wlog.debug(params)
+    var reqid = params.reqid
+    var rect = node.getBoundingClientRect()
+    W.send_response(node, reqid, {
+      bottom: rect.bottom,
+      height: rect.height,
+      left: rect.left,
+      right: rect.right,
+      top: rect.top,
+      width: rect.width
+    })
   }
 
   Wlog.log = function(level, message, retry) {
