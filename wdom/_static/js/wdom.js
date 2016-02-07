@@ -49,7 +49,6 @@
 
   function ws_onmessage(e) {
     var msg = JSON.parse(e.data)
-    console.log(msg)
     var elm = get_node(msg.id)
     if (!elm) {
       // node may not have been mounted yet. retry 100ms later.
@@ -168,12 +167,16 @@
   /* DOM contrall */
   W.insert = function(node, params) {
     if (!node.hasChildNodes() || params.index >= node.childNodes.length) {
-      W.append(node, params)
+      W.appendChild(node, params)
     } else {
-      node.childNodes[Number(params.index)].insertAdjacentHTML(
-        'beforebegin',
-        params.html
-      )
+      var ref_node = node.childNodes[Number(params.index)]
+      if (ref_node.nodeName === '#text') {
+        var df = document.createDocumentFragment()
+        df.innerHTML = params.html
+        ref_node.parentNode.insertBefore(df, ref_node)
+      } else {
+        ref_node.insertAdjacentHTML('beforebegin', params.html)
+      }
     }
   }
 
@@ -182,18 +185,25 @@
   }
 
   W.insertBefore = function(node, params) {
-    var c = document.getElementById(params.id)
-    c.insertAdjacentHTML('beforebegin', params.html)
+    var child = document.getElementById(params.id)
+    if (child){
+      child.insertAdjacentHTML('beforebegin', params.html)
+    }
   }
 
   W.removeChild = function(node, params) {
     var child = document.getElementById(params.id)
-    node.removeChild(child)
+    if (child){
+      node.removeChild(child)
+    }
   }
 
   W.replaceChild = function(node, params) {
     var old_child = document.getElementById(params.id)
-    old_child.insertAdjacentHTML('beforebegin', params.html)
+    if (!old_child) {
+      old_child.insertAdjacentHTML('beforebegin', params.html)
+      old_child.parentNode.removeChild(old_child)
+    }
   }
 
   W.removeAttribute = function(node, params) {
