@@ -128,8 +128,9 @@ class WebElement(HTMLElement):
         obj['id'] = self.id
         obj['tag'] = self.tag
         msg = json.dumps(obj)
-        for conn in self.ownerDocument.connections:
-            conn.write_message(msg)
+        if self.ownerDocument is not None:
+            for conn in self.ownerDocument.connections:
+                conn.write_message(msg)
 
     def insert(self, pos: int, new_child):
         '''Insert child node at the specified ``position``. The same operation
