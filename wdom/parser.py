@@ -63,9 +63,8 @@ class FragmentParser(HTMLParser):
         self.elm = self.elm.parentNode
 
     def handle_data(self, data):
-        _d = data.strip()
-        if _d and self.elm is not None:
-            self.elm.appendChild(_d)
+        if data and self.elm is not None:
+            self.elm.appendChild(data)
 
 
 def parse_document(doc:str):
