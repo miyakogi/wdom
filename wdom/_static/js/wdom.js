@@ -105,6 +105,11 @@
     W[method](node, params)
   }
 
+  W.eval = function(node, params) {
+    // Execute fucntion with msg
+    eval(params.script)
+  }
+
   // send response
   W.send_response = function(node, reqid, data) {
     Wlog.debug('send_response')
