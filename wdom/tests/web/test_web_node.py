@@ -4,6 +4,8 @@
 import asyncio
 from unittest.mock import MagicMock
 
+from tornado.testing import gen_test
+
 from wdom.document import get_document
 from wdom.server import get_app, Application
 from wdom.misc import static_dir, install_asyncio
@@ -143,13 +145,7 @@ class TestWebElement(ElementTestCase):
         rect = WebElement('div', style='width:200px;height:100px;')
         self.tag.appendChild(rect)
 
-        def check_rect(fut):
-            data = fut.result()
-            self.assertEqual(data['width'], 200)
-            self.assertEqual(data['height'], 100)
-
-        fut = rect.getBoundingClientRect()
-        fut.add_done_callback(check_rect)
+        fut = asyncio.ensure_future(rect.getBoundingClientRect())
         asyncio.get_event_loop().run_until_complete(fut)
         data = fut.result()
         self.assertEqual(data['width'], 200)
@@ -159,16 +155,16 @@ class TestWebElement(ElementTestCase):
         rect = WebElement('div',
                           style='width:3000px;height:3000px;background:#eee;')
         self.tag.appendChild(rect)
-        futX = rect.scrollX()
-        futY = rect.scrollY()
+        futX = asyncio.ensure_future(rect.scrollX())
+        futY = asyncio.ensure_future(rect.scrollY())
         asyncio.get_event_loop().run_until_complete(futX)
         asyncio.get_event_loop().run_until_complete(futY)
         self.assertEqual(futX.result()['x'], 0)
         self.assertEqual(futY.result()['y'], 0)
 
         rect.scrollTo(200, 200)
-        futX = rect.scrollX()
-        futY = rect.scrollY()
+        futX = asyncio.ensure_future(rect.scrollX())
+        futY = asyncio.ensure_future(rect.scrollY())
         asyncio.get_event_loop().run_until_complete(futX)
         asyncio.get_event_loop().run_until_complete(futY)
         self.assertEqual(futX.result()['x'], 200)
