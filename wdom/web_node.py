@@ -247,6 +247,14 @@ class WebElement(HTMLElement):
             self.js_exec(method='empty')
             self.js_exec(method='appendChild', html=html)
 
+    @property
+    def html_noid(self) -> str:
+        html = self.start_tag.replace(' id="{}"'.format(self.id), '')
+        html += ''.join(elm.html_noid if isinstance(elm, WebElement) else elm.html
+                       for elm in self.childNodes)
+        html += self.end_tag
+        return html
+
     # Window controll
     def scroll(self, x:int, y:int):
         if self.connected:
