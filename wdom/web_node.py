@@ -192,10 +192,21 @@ class WebElement(HTMLElement):
         added to it.
         '''
         if self.connected:
-            if isinstance(child, Node):
-                self.js_exec('insertBefore', html=child.html, id=ref_node.id)
+            if isinstance(child, WebElement):
+                if isinstance(ref_node, WebElement):
+                    self.js_exec('insertBefore', html=child.html,
+                                 id=ref_node.id)
+                elif isinstance(ref_node, Node):
+                    self.js_exec('insert', html=child.html,
+                                 index=self.childNodes.index(ref_node))
             else:
-                self.js_exec('insertBefore', html=str(child), id=ref_node.id)
+                if isinstance(ref_node, WebElement):
+                    self.js_exec('insertBefore', html=str(child),
+                                 id=ref_node.id)
+                elif isinstance(ref_node, Node):
+                    self.js_exec('insert', html=str(child),
+                                 index=self.childNodes.index(ref_node))
+                # self.js_exec('insertBefore', html=str(child), id=ref_node.id)
         super().insertBefore(child, ref_node)
 
     def removeChild(self, child: 'Tag'):
