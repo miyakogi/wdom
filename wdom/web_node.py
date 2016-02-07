@@ -66,8 +66,8 @@ class WebElement(HTMLElement):
     def handle_response(self, msg):
         response = msg.get('data', False)
         if response:
-            req = self._tasks.pop(msg.get('reqid'))
-            if req:
+            req = self._tasks.pop(msg.get('reqid'), False)
+            if req and not req.cancelled() and not req.done():
                 req.set_result(msg.get('data'))
 
     def addEventListener(self, event: str, listener: Callable):
@@ -112,6 +112,10 @@ class WebElement(HTMLElement):
             fut = Future()
             self._tasks[self._reqid] = fut
             self._reqid += 1
+            return fut
+        else:
+            fut = Future()
+            fut.set_result(None)
             return fut
 
     @coroutine
@@ -200,8 +204,10 @@ class WebElement(HTMLElement):
             self.js_exec('removeChild', id=child.id)
         super().removeChild(child)
 
+    @coroutine
     def getBoundingClientRect(self):
-        return self._query('getBoundingClientRect')
+        fut = yield from self._query('getBoundingClientRect')
+        return fut
 
     @property
     def textContent(self) -> str:
@@ -245,5 +251,7 @@ class WebElement(HTMLElement):
     def scrollX(self):
         return self._query('scrollX')
 
+    @coroutine
     def scrollY(self):
-        return self._query('scrollY')
+        fut = yield from self._query('scrollY')
+        return fut
