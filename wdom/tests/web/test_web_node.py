@@ -183,10 +183,8 @@ class TestEvent(ElementTestCase):
         btn.textContent = 'click'
         btn.addEventListener('click', self.click_event_mock)
         self.btn_mock = MagicMock(btn)
-        self.btn_mock.id = btn.id
-        self.btn_mock.html = btn.html
-        self.btn_mock.parentNode = None
-        self.btn_mock.nodeType = btn.nodeType
+        self.btn_mock.configure_mock(id=btn.id, html=btn.html, parentNode=None,
+                                     nodeType=btn.nodeType)
 
         self.input_event_mock = MagicMock()
         self.input_event_mock._is_coroutine = False
@@ -194,10 +192,12 @@ class TestEvent(ElementTestCase):
         input = WebElement('input', type='text')
         input.addEventListener('input', self.input_event_mock)
         self.input_mock = MagicMock(input)
-        self.input_mock.id = input.id
-        self.input_mock.html = input.html
-        self.input_mock.parentNode = None
-        self.input_mock.nodeType = input.nodeType
+        self.input_mock.configure_mock(
+            id=input.id,
+            html=input.html,
+            parentNode=input.html,
+            nodeType=input.nodeType,
+        )
 
         self.root.appendChild(self.btn_mock)
         self.root.appendChild(self.input_mock)
