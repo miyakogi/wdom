@@ -448,6 +448,9 @@ class appendTextMixin:
     def _append_child(self, node):
         if isinstance(node, str):
             node = Text(node)
+        elif not isinstance(node, Node):
+            raise TypeError('Invalid type to append: {}'.format(node))
+
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             self._append_document_fragment(node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
@@ -459,6 +462,9 @@ class appendTextMixin:
     def _insert_before(self, node, ref_node):
         if isinstance(node, str):
             node = Text(node)
+        elif not isinstance(node, Node):
+            raise TypeError('Invalid type to insert: {}'.format(node))
+
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             self._insert_document_fragment_before(node, ref_node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
