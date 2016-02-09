@@ -200,6 +200,9 @@ class Node(Node):
     def appendChild(self, node):
         self._append_child(node)
 
+    def index(self, node):
+        return self.children.index(node)
+
     def insertBefore(self, node, ref_node) -> None:
         index = self.children.index(ref_node)
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:

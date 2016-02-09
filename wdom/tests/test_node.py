@@ -291,6 +291,14 @@ class TestNode(TestCase):
         self.assertIsNone(self.c1.parentNode)
         self.assertEqual(self.c1.textContent, 'c1')
 
+    def test_index(self):
+        self.node.appendChild(self.c1)
+        self.node.appendChild(self.c2)
+        self.node.appendChild(self.c3)
+        self.assertEqual(self.node.index(self.c1), 0)
+        self.assertEqual(self.node.index(self.c2), 1)
+        self.assertEqual(self.node.index(self.c3), 2)
+
 class TestAttr(TestCase):
     def setUp(self) -> None:
         self.id = Attr('id')
