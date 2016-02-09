@@ -17,6 +17,15 @@ class TestWebElementLocal(TestCase):
         self.assertIsNotNone(re.match('<tag id="\d+"></tag>', self.elm.html))
         self.assertIsNotNone(re.match('\d+', self.elm.id))
 
+    def test_noid(self):
+        self.assertEqual('<tag></tag>', self.elm.html_noid)
+        self.c1.tag = 'c1'
+        self.elm.appendChild(self.c1)
+        self.assertEqual('<tag><c1></c1></tag>', self.elm.html_noid)
+        self.c2.tag = 'c2'
+        self.c1.appendChild(self.c2)
+        self.assertEqual('<tag><c1><c2></c2></c1></tag>', self.elm.html_noid)
+
     def test_id_init(self):
         elm = WebElement('tag', id='myid')
         self.assertEqual('<tag id="myid"></tag>', elm.html)
