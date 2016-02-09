@@ -203,16 +203,24 @@ class Node(Node):
     def index(self, node):
         return self.children.index(node)
 
-    def insertBefore(self, node, ref_node) -> None:
-        index = self.children.index(ref_node)
+    def _insert_document_fragment_before(self, node, ref_node):
+        for c in tuple(node.childNodes):
+            self._insert_before(c, ref_node)
+
+    def _insert_element_before(self, node, ref_node):
+        if node.parentNode is not None:
+            node.remove()
+        self.children.insert(self.index(ref_node), node)
+        node.parent = self
+
+    def _insert_before(self, node, ref_node):
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            for c in tuple(node.childNodes):
-                self.insertBefore(c, ref_node)
+            self._insert_document_fragment_before(node, ref_node)
         else:
-            if node.parentNode is not None:
-                node.remove()
-            self.children.insert(index, node)
-            node.parent = self
+            self._insert_element_before(node, ref_node)
+
+    def insertBefore(self, node, ref_node) -> None:
+        self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
         return bool(self.children)
@@ -442,11 +450,14 @@ class appendTextMixin:
         else:
             raise TypeError('Invalid type to append: {}'.format(node))
 
-    def insertBefore(self, node, ref_node):
-        if isinstance(node, Node):
-            super().insertBefore(node, ref_node)
-        elif isinstance(node, str):
-            super().insertBefore(Text(node))
+    def _insert_before(self, node, ref_node):
+        if isinstance(node, str):
+            node = Text(node)
+        if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
+            self._insert_document_fragment_before(node, ref_node)
+        elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
+                               Node.DOCUMENT_TYPE_NODE):
+            self._insert_element_before(node, ref_node)
         else:
             raise TypeError('Invalid type to insert: {}'.format(node))
 
