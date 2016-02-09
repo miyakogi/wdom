@@ -108,6 +108,7 @@ class TestEvent(WDTest):
         self.mock.id = self.root.id
         self.mock.html = self.root.html
         self.mock.parentNode = None
+        self.mock.nodeType = self.root.nodeType
 
         self.document.set_body(self.mock)
         self.app = get_app(self.document)

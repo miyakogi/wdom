@@ -186,6 +186,7 @@ class TestEvent(ElementTestCase):
         self.btn_mock.id = btn.id
         self.btn_mock.html = btn.html
         self.btn_mock.parentNode = None
+        self.btn_mock.nodeType = btn.nodeType
 
         self.input_event_mock = MagicMock()
         self.input_event_mock._is_coroutine = False
@@ -196,6 +197,7 @@ class TestEvent(ElementTestCase):
         self.input_mock.id = input.id
         self.input_mock.html = input.html
         self.input_mock.parentNode = None
+        self.input_mock.nodeType = input.nodeType
 
         self.root.appendChild(self.btn_mock)
         self.root.appendChild(self.input_mock)
