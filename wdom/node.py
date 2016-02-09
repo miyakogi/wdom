@@ -181,15 +181,24 @@ class Node(Node):
             return None
 
     # Methods
-    def appendChild(self, node) -> None:
+    def _append_document_fragment(self, node):
+        for c in tuple(node.childNodes):
+            self._append_child(c)
+
+    def _append_element(self, node):
+        if node.parentNode is not None:
+            node.remove()
+        self.children.append(node)
+        node.parent = self
+
+    def _append_child(self, node) -> None:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            for c in tuple(node.childNodes):
-                self.appendChild(c)
+            self._append_document_fragment(node)
         else:
-            if node.parentNode is not None:
-                node.remove()
-            self.children.append(node)
-            node.parent = self
+            self._append_element(node)
+
+    def appendChild(self, node):
+        self._append_child(node)
 
     def insertBefore(self, node, ref_node) -> None:
         index = self.children.index(ref_node)
@@ -419,10 +428,16 @@ class DocumentType(Node):
 
 
 class appendTextMixin:
-    def appendChild(self, node):
+    def _append_child(self, node):
         if isinstance(node, str):
             node = Text(node)
-        super().appendChild(node)
+        if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
+            self._append_document_fragment(node)
+        elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
+                               Node.DOCUMENT_TYPE_NODE):
+            self._append_element(node)
+        else:
+            raise TypeError('Invalid type to append: {}'.format(node))
 
     def insertBefore(self, node, ref_node):
         if isinstance(node, Node):
@@ -430,7 +445,7 @@ class appendTextMixin:
         elif isinstance(node, str):
             super().insertBefore(Text(node))
         else:
-            raise TypeError('Invalid type to insert this node: {}'.format(node))
+            raise TypeError('Invalid type to insert: {}'.format(node))
 
 
 class Element(appendTextMixin, Node):
