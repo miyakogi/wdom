@@ -33,6 +33,10 @@ class TestMainDocument(TestCase):
         html = self.doc.build()
         self.assertIsNotNone(_re.match(html))
 
+    def test_get_element_by_id(self):
+        elm = Tag(parent=self.doc.body)
+        self.assertIs(elm, self.doc.getElementById(elm.id))
+
     def test_add_jsfile(self) -> None:
         self.doc.add_jsfile('jsfile')
         _re = re.compile(
@@ -78,6 +82,7 @@ class TestMainDocument(TestCase):
         html = doc.build()
         self.assertIsNotNone(_re.search(html))
         self.assertNotIn('W-DOM', html)
+        self.assertEqual('TEST', doc.title)
 
     def test_charset(self) -> None:
         doc = Document(charset='TEST')
@@ -88,6 +93,7 @@ class TestMainDocument(TestCase):
         html = doc.build()
         self.assertIsNotNone(_re.search(html))
         self.assertNotIn('utf', html)
+        self.assertEqual('TEST', doc.charset)
 
     def test_set_body(self) -> None:
         self.doc.set_body(Tag())
