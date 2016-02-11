@@ -699,7 +699,7 @@ class HTMLElement(Element):
 
     @property
     def title(self) -> str:
-        return bool(self.getAttribute('title'))
+        return self.getAttribute('title')
 
     @title.setter
     def title(self, value:str):
