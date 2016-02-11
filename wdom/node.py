@@ -181,39 +181,65 @@ class Node(Node):
             return None
 
     # Methods
-    def appendChild(self, node) -> None:
+    def _append_document_fragment(self, node):
+        for c in tuple(node.childNodes):
+            self._append_child(c)
+
+    def _append_element(self, node):
+        if node.parentNode is not None:
+            node.remove()
+        self.children.append(node)
+        node.parent = self
+
+    def _append_child(self, node) -> None:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            for c in tuple(node.childNodes):
-                self.appendChild(c)
+            self._append_document_fragment(node)
         else:
-            if node.parentNode is not None:
-                node.remove()
-            self.children.append(node)
-            node.parent = self
+            self._append_element(node)
+
+    def appendChild(self, node):
+        self._append_child(node)
+
+    def index(self, node):
+        return self.children.index(node)
+
+    def _insert_document_fragment_before(self, node, ref_node):
+        for c in tuple(node.childNodes):
+            self._insert_before(c, ref_node)
+
+    def _insert_element_before(self, node, ref_node):
+        if node.parentNode is not None:
+            node.remove()
+        self.children.insert(self.index(ref_node), node)
+        node.parent = self
+
+    def _insert_before(self, node, ref_node):
+        if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
+            self._insert_document_fragment_before(node, ref_node)
+        else:
+            self._insert_element_before(node, ref_node)
 
     def insertBefore(self, node, ref_node) -> None:
-        index = self.children.index(ref_node)
-        if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            for c in tuple(node.childNodes):
-                self.insertBefore(c, ref_node)
-        else:
-            if node.parentNode is not None:
-                node.remove()
-            self.children.insert(index, node)
-            node.parent = self
+        self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
         return bool(self.children)
 
-    def removeChild(self, node) -> None:
+    def _remove_child(self, node):
         if node not in self.children:
             raise ValueError('node to be removed is not a child of this node.')
         self.childNodes.remove(node)
         node.parent = None
 
-    def replaceChild(self, new_child: Node, old_child: Node) -> None:
+    def removeChild(self, node):
+        self._remove_child(node)
+
+    def _replace_child(self, new_child: Node, old_child: Node):
         self.insertBefore(new_child, old_child)
         self.removeChild(old_child)
+
+    def replaceChild(self, new_child: Node, old_child: Node) -> None:
+        self._replace_child(new_child, old_child)
 
     def hasAttributes(self) -> bool:
         return bool(self.attributes)
@@ -419,18 +445,33 @@ class DocumentType(Node):
 
 
 class appendTextMixin:
-    def appendChild(self, node):
+    def _append_child(self, node):
         if isinstance(node, str):
             node = Text(node)
-        super().appendChild(node)
+        elif not isinstance(node, Node):
+            raise TypeError('Invalid type to append: {}'.format(node))
 
-    def insertBefore(self, node, ref_node):
-        if isinstance(node, Node):
-            super().insertBefore(node, ref_node)
-        elif isinstance(node, str):
-            super().insertBefore(Text(node))
+        if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
+            self._append_document_fragment(node)
+        elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
+                               Node.DOCUMENT_TYPE_NODE):
+            self._append_element(node)
         else:
-            raise TypeError('Invalid type to insert this node: {}'.format(node))
+            raise TypeError('Invalid type to append: {}'.format(node))
+
+    def _insert_before(self, node, ref_node):
+        if isinstance(node, str):
+            node = Text(node)
+        elif not isinstance(node, Node):
+            raise TypeError('Invalid type to insert: {}'.format(node))
+
+        if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
+            self._insert_document_fragment_before(node, ref_node)
+        elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
+                               Node.DOCUMENT_TYPE_NODE):
+            self._insert_element_before(node, ref_node)
+        else:
+            raise TypeError('Invalid type to insert: {}'.format(node))
 
 
 class Element(appendTextMixin, Node):

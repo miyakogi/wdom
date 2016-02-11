@@ -105,9 +105,8 @@ class TestEvent(WDTest):
         self.click_mock._is_coroutine = False
         self.root.addEventListener('click', self.click_mock)
         self.mock = MagicMock(self.root)
-        self.mock.id = self.root.id
-        self.mock.html = self.root.html
-        self.mock.parentNode = None
+        self.mock.configure_mock(id=self.root.id, html=self.root.html,
+                                 parentNode=None, nodeType=self.root.nodeType)
 
         self.document.set_body(self.mock)
         self.app = get_app(self.document)

@@ -174,16 +174,34 @@ class WebElement(HTMLElement):
             self.js_exec('setAttribute', attr=attr, value=value)
         super().setAttribute(attr, value)
 
-    def appendChild(self, child: 'WebElement'):
-        '''Append child node at the last of child nodes. If this instance is
-        connected to the node on browser, the child node is also added to it.
-        '''
+    def _append_child_web(self, child: 'WebElement'):
         if self.connected:
             if isinstance(child, Node):
                 self.js_exec('appendChild', html=child.html)
             else:
                 self.js_exec('appendChild', html=str(child))
-        super().appendChild(child)
+
+    def appendChild(self, child: 'WebElement'):
+        '''Append child node at the last of child nodes. If this instance is
+        connected to the node on browser, the child node is also added to it.
+        '''
+        self._append_child_web(child)
+        self._append_child(child)
+
+    def _insert_before_web(self, child: 'WebElement', ref_node: 'WebElement'):
+        if self.connected:
+            method = 'insertBefore'
+            kwargs = {}
+            if isinstance(child, WebElement):
+                kwargs['html'] = child.html
+            else:
+                kwargs['html'] = str(child)
+            if isinstance(ref_node, WebElement):
+                kwargs['id'] = ref_node.id
+            else:
+                kwargs['index'] = self.childNodes.index(ref_node)
+                method = 'insert'
+            self.js_exec(method, **kwargs)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement'):
         '''Insert new child node before the reference child node. If the
@@ -191,30 +209,18 @@ class WebElement(HTMLElement):
         instance is connected to the node on browser, the child node is also
         added to it.
         '''
-        if self.connected:
-            if isinstance(child, WebElement):
-                if isinstance(ref_node, WebElement):
-                    self.js_exec('insertBefore', html=child.html,
-                                 id=ref_node.id)
-                elif isinstance(ref_node, Node):
-                    self.js_exec('insert', html=child.html,
-                                 index=self.childNodes.index(ref_node))
-            else:
-                if isinstance(ref_node, WebElement):
-                    self.js_exec('insertBefore', html=str(child),
-                                 id=ref_node.id)
-                elif isinstance(ref_node, Node):
-                    self.js_exec('insert', html=str(child),
-                                 index=self.childNodes.index(ref_node))
-                # self.js_exec('insertBefore', html=str(child), id=ref_node.id)
-        super().insertBefore(child, ref_node)
+        self._insert_before_web(child, ref_node)
+        self._insert_before(child, ref_node)
+
+    def _remove_child_web(self, child: 'WebElement'):
+        if isinstance(child, WebElement) and self.connected:
+            self.js_exec('removeChild', id=child.id)
 
     def removeChild(self, child: 'Tag'):
         '''Remove the child node from this node. If the node is not a child
         of this node, raise ValueError.'''
-        if isinstance(child, WebElement) and self.connected:
-            self.js_exec('removeChild', id=child.id)
-        super().removeChild(child)
+        self._remove_child_web(child)
+        self._remove_child(child)
 
     @coroutine
     def getBoundingClientRect(self):
