@@ -258,15 +258,21 @@ class Node(Node):
         for child in tuple(self.childNodes):
             self.removeChild(child)
 
+    def _get_text_content(self) -> str:
+        return ''.join(child.textContent for child in self.childNodes)
+
+    def _set_text_content(self, value:str):
+        if value:
+            self.appendChild(Text(value))
+
     @property
     def textContent(self) -> str:
-        return ''.join(child.textContent for child in self.childNodes)
+        return self._get_text_content()
 
     @textContent.setter
     def textContent(self, value:str):
         self.empty()
-        if value:
-            self.appendChild(Text(value))
+        self._set_text_content(value)
 
 
 class Attr(Node):
@@ -370,12 +376,10 @@ class Text(Node):
     def html(self) -> str:
         return self.textContent
 
-    @property
-    def textContent(self) -> str:
+    def _get_text_content(self):
         return html.escape(self._value)
 
-    @textContent.setter
-    def textContent(self, value:str):
+    def _set_text_content(self, value:str):
         self._value = value
 
     @property
@@ -409,12 +413,10 @@ class RawHtml(Text):
     def html(self) -> str:
         return self._value
 
-    @property
-    def textContent(self) -> str:
+    def _get_text_content(self) -> str:
         return self._value
 
-    @textContent.setter
-    def textContent(self, value:str):
+    def _set_text_content(self, value:str):
         self._value = value
 
 
