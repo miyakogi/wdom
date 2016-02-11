@@ -98,13 +98,16 @@ def get_document(include_wdom: bool = True,
         if reload_wait is not None:
             script += 'var WDOM_RELOAD_WAIT = {}\n'.format(reload_wait)
     if log_level is not None:
-        script += 'var WDOM_LOG_LEVEL = {}\n'.format(log_level)
+        if isinstance(log_level, str):
+            script += 'var WDOM_LOG_LEVEL = \'{}\'\n'.format(log_level)
+        elif isinstance(log_level, int):
+            script += 'var WDOM_LOG_LEVEL = {}\n'.format(log_level)
     if log_prefix is not None:
         script += 'var WDOM_LOG_PREFIX = {}\n'.format(log_prefix)
     if log_console:
         script += 'var WDOM_LOG_CONSOLE = true\n'
     if ws_url is not None:
-        script += 'var WDOM_WS_URL = {}\n'.format(ws_url)
+        script += 'var WDOM_WS_URL = \'{}\'\n'.format(ws_url)
 
     document.script.textContent = script
 
