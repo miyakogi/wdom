@@ -154,19 +154,25 @@ class WebElement(HTMLElement):
         self._empty_web()
         self._empty()
 
+    def _remove_attribute_web(self, attr:str):
+        self.js_exec('removeAttribute', attr=attr)
+
     def removeAttribute(self, attr: str):
         '''Remove attribute. Even if this node does not have the attribute,
         this method does not raise any error errors will be raised.
         '''
-        self.js_exec('removeAttribute', attr=attr)
-        super().removeAttribute(attr)
+        self._remove_attribute_web(attr)
+        self._remove_attribute(attr)
+
+    def _set_attribute_web(self, attr:str, value:str):
+        self.js_exec('setAttribute', attr=attr, value=value)
 
     def setAttribute(self, attr: str, value: str, **kwargs):
         '''Set attribute to ``value``. If the attribute already exists,
         overwrite it by new ``value``.
         '''
-        self.js_exec('setAttribute', attr=attr, value=value)
-        super().setAttribute(attr, value)
+        self._set_attribute_web(attr, value)
+        self._set_attribute(attr, value)
 
     def _append_child_web(self, child: 'WebElement'):
         if isinstance(child, Node):

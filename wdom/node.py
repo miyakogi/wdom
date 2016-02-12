@@ -589,21 +589,27 @@ class Element(appendTextMixin, Node):
     def hasAttributes(self) -> bool:
         return bool(self.attributes) or bool(self.classList)
 
-    def setAttribute(self, attr:str, value=None):
+    def _set_attribute(self, attr:str, value=None):
         if attr == 'class':
             self.classList = DOMTokenList(value)
         else:
             new_attr = Attr(attr, value)
             self.setAttributeNode(new_attr)
 
+    def setAttribute(self, attr:str, value=None):
+        self._set_attribute(attr, value)
+
     def setAttributeNode(self, attr:Attr):
         self.attributes.setNamedItem(attr)
 
-    def removeAttribute(self, attr:str):
+    def _remove_attribute(self, attr:str):
         if attr == 'class':
             self.classList = DOMTokenList()
         else:
             self.attributes.removeNamedItem(attr)
+
+    def removeAttribute(self, attr:str):
+        self._remove_attribute(attr)
 
     def removeAttributeNode(self, attr:Attr):
         self.attributes.removeNamedItem(attr.name)
@@ -743,14 +749,14 @@ class HTMLElement(Element):
         else:
             return super().getAttribute(attr)
 
-    def setAttribute(self, attr:str, value:str):
+    def _set_attribute(self, attr:str, value:str):
         if attr == 'style':
             self.style = value
         else:
-            super().setAttribute(attr, value)
+            super()._set_attribute(attr, value)
 
-    def removeAttribute(self, attr:str):
+    def _remove_attribute(self, attr:str):
         if attr == 'style':
             self.style = None
         else:
-            super().removeAttribute(attr)
+            super()._remove_attribute(attr)
