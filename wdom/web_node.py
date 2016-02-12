@@ -279,8 +279,10 @@ class WebElement(HTMLElement):
     def scrollBy(self, x:int, y:int):
         self.js_exec('scrollBy', x=x, y=y)
 
+    @coroutine
     def scrollX(self):
-        return self._query('scrollX')
+        fut = yield from self._query('scrollX')
+        return fut
 
     @coroutine
     def scrollY(self):
