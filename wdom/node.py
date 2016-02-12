@@ -254,14 +254,18 @@ class Node(Node):
         if self.parentNode is not None:
             self.parentNode.removeChild(self)
 
-    def empty(self):
+    def _empty(self):
         for child in tuple(self.childNodes):
             self.removeChild(child)
+
+    def empty(self):
+        self._empty()
 
     def _get_text_content(self) -> str:
         return ''.join(child.textContent for child in self.childNodes)
 
     def _set_text_content(self, value:str):
+        self._empty()
         if value:
             self.appendChild(Text(value))
 
@@ -271,7 +275,6 @@ class Node(Node):
 
     @textContent.setter
     def textContent(self, value:str):
-        self.empty()
         self._set_text_content(value)
 
 
@@ -516,7 +519,7 @@ class Element(appendTextMixin, Node):
         return ''.join(child.html for child in self.childNodes)
 
     def _set_inner_html(self, html:str):
-        self.empty()
+        self._empty()
         self.appendChild(RawHtml(html))
 
     @property

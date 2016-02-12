@@ -152,11 +152,13 @@ class WebElement(HTMLElement):
     def _remove_callback(self, *args, **kwargs):
         super().remove()
 
-    def empty(self):
+    def _empty_web(self):
         if self.connected:
             self.js_exec('empty')
-        for child in tuple(self.childNodes):
-            super().removeChild(child)
+
+    def empty(self):
+        self._empty_web()
+        self._empty()
 
     def removeAttribute(self, attr: str):
         '''Remove attribute. Even if this node does not have the attribute,
@@ -252,7 +254,6 @@ class WebElement(HTMLElement):
 
     @textContent.setter
     def textContent(self, text: str):
-        self.empty()
         self._set_text_content(text)
         self._set_text_content_web(text)
 
