@@ -131,13 +131,6 @@ class WebElement(HTMLElement):
             for conn in self.ownerDocument.connections:
                 conn.write_message(msg)
 
-    def insert(self, pos: int, new_child):
-        '''Insert child node at the specified ``position``. The same operation
-        will be done also in the related node on browser, if exists.
-        '''
-        self.js_exec('insert', index=pos, html=self[pos].html)
-        super().insert(pos, new_child)
-
     def _remove_web(self):
         self.js_exec('remove')
 
