@@ -79,8 +79,7 @@ class WebElement(HTMLElement):
         '''
         if event not in self.listeners:
             self.listeners[event] = []
-            if self.connected:
-                self.js_exec('addEventListener', event=event)
+            self.js_exec('addEventListener', event=event)
         self.listeners[event].append(EventListener(listener))
 
     def removeEventListener(self, event: str, listener: Callable):
@@ -101,7 +100,7 @@ class WebElement(HTMLElement):
         If this node is not in any document tree (namely, this node does not
         have parent node), the ``method`` is not executed.
         '''
-        if self.parent is not None:
+        if self.connected:
             return ensure_future(
                 self.ws_send(dict(method=method, params=kwargs))
             )
@@ -136,8 +135,7 @@ class WebElement(HTMLElement):
         '''Insert child node at the specified ``position``. The same operation
         will be done also in the related node on browser, if exists.
         '''
-        if self.connected:
-            self.js_exec('insert', index=pos, html=self[pos].html)
+        self.js_exec('insert', index=pos, html=self[pos].html)
         super().insert(pos, new_child)
 
     def remove(self, *args, **kwargs):
@@ -153,8 +151,7 @@ class WebElement(HTMLElement):
         super().remove()
 
     def _empty_web(self):
-        if self.connected:
-            self.js_exec('empty')
+        self.js_exec('empty')
 
     def empty(self):
         self._empty_web()
@@ -164,25 +161,22 @@ class WebElement(HTMLElement):
         '''Remove attribute. Even if this node does not have the attribute,
         this method does not raise any error errors will be raised.
         '''
-        if self.connected:
-            self.js_exec('removeAttribute', attr=attr)
+        self.js_exec('removeAttribute', attr=attr)
         super().removeAttribute(attr)
 
     def setAttribute(self, attr: str, value: str, **kwargs):
         '''Set attribute to ``value``. If the attribute already exists,
         overwrite it by new ``value``.
         '''
-        if self.connected:
-            self.js_exec('setAttribute', attr=attr, value=value)
+        self.js_exec('setAttribute', attr=attr, value=value)
         super().setAttribute(attr, value)
 
     def _append_child_web(self, child: 'WebElement'):
-        if self.connected:
-            if isinstance(child, Node):
-                text = child.html
-            else:
-                text = str(child)
-            self.js_exec('insertAdjacentHTML', position='beforeend', text=text)
+        if isinstance(child, Node):
+            text = child.html
+        else:
+            text = str(child)
+        self.js_exec('insertAdjacentHTML', position='beforeend', text=text)
 
     def appendChild(self, child: 'WebElement'):
         '''Append child node at the last of child nodes. If this instance is
@@ -192,17 +186,16 @@ class WebElement(HTMLElement):
         self._append_child(child)
 
     def _insert_before_web(self, child: 'WebElement', ref_node: 'WebElement'):
-        if self.connected:
-            if isinstance(child, WebElement):
-                text = child.html
-            else:
-                text = str(child)
-            if isinstance(ref_node, WebElement):
-                ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
-                                 text=text)
-            else:
-                index = self.childNodes.index(ref_node)
-                self.insert(index, text)
+        if isinstance(child, WebElement):
+            text = child.html
+        else:
+            text = str(child)
+        if isinstance(ref_node, WebElement):
+            ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
+                                text=text)
+        else:
+            index = self.childNodes.index(ref_node)
+            self.insert(index, text)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement'):
         '''Insert new child node before the reference child node. If the
@@ -249,8 +242,7 @@ class WebElement(HTMLElement):
         return self._get_text_content()
 
     def _set_text_content_web(self, text:str):
-        if self.connected:
-            self.js_exec(method='textContent', text=self.textContent)
+        self.js_exec(method='textContent', text=self.textContent)
 
     @textContent.setter
     def textContent(self, text: str):
@@ -258,8 +250,7 @@ class WebElement(HTMLElement):
         self._set_text_content_web(text)
 
     def _set_inner_html_web(self, html:str):
-        if self.connected:
-            self.js_exec(method='innerHTML', html=html)
+        self.js_exec(method='innerHTML', html=html)
 
     @property
     def innerHTML(self) -> str:
@@ -280,16 +271,13 @@ class WebElement(HTMLElement):
 
     # Window controll
     def scroll(self, x:int, y:int):
-        if self.connected:
-            self.js_exec('scroll', x=x, y=y)
+        self.js_exec('scroll', x=x, y=y)
 
     def scrollTo(self, x:int, y:int):
-        if self.connected:
-            self.js_exec('scrollTo', x=x, y=y)
+        self.js_exec('scrollTo', x=x, y=y)
 
     def scrollBy(self, x:int, y:int):
-        if self.connected:
-            self.js_exec('scrollBy', x=x, y=y)
+        self.js_exec('scrollBy', x=x, y=y)
 
     def scrollX(self):
         return self._query('scrollX')
