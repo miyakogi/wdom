@@ -105,7 +105,7 @@ class WebElement(HTMLElement):
                 self.ws_send(dict(method=method, params=kwargs))
             )
 
-    def _query(self, query):
+    def js_query(self, query):
         if self.connected:
             self.js_exec(query, reqid=self._reqid)
             fut = Future()
@@ -230,7 +230,7 @@ class WebElement(HTMLElement):
 
     @coroutine
     def getBoundingClientRect(self):
-        fut = yield from self._query('getBoundingClientRect')
+        fut = yield from self.js_query('getBoundingClientRect')
         return fut
 
     @property
@@ -281,10 +281,10 @@ class WebElement(HTMLElement):
 
     @coroutine
     def scrollX(self):
-        fut = yield from self._query('scrollX')
+        fut = yield from self.js_query('scrollX')
         return fut
 
     @coroutine
     def scrollY(self):
-        fut = yield from self._query('scrollY')
+        fut = yield from self.js_query('scrollY')
         return fut
