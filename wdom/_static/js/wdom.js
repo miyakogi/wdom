@@ -171,10 +171,11 @@
 
   /* DOM contrall */
   W.insert = function(node, params) {
-    if (!node.hasChildNodes() || params.index >= node.childNodes.length) {
-      W.appendChild(node, params)
+    var index = Number(params.index)
+    if (!node.hasChildNodes() || index >= node.childNodes.length) {
+      node.insertAdjacentHTML('beforeend', params.html)
     } else {
-      var ref_node = node.childNodes[Number(params.index)]
+      var ref_node = node.childNodes[index]
       if (ref_node.nodeName === '#text') {
         var df = document.createDocumentFragment()
         df.innerHTML = params.html
@@ -185,15 +186,20 @@
     }
   }
 
-  W.appendChild = function(node, params) {
-    node.insertAdjacentHTML('beforeend', params.html)
+  W.insertAdjacentHTML = function(node, params) {
+    node.insertAdjacentHTML(params.position, params.text)
   }
 
-  W.insertBefore = function(node, params) {
-    var child = document.getElementById(params.id)
-    if (child){
-      child.insertAdjacentHTML('beforebegin', params.html)
-    }
+  W.textContent = function(node, params) {
+    node.textContent = params.text
+  }
+
+  W.innerHTML = function(node, params) {
+    node.innerHTML = params.html
+  }
+
+  W.outerHTML = function(node, params) {
+    node.outerHTML = params.html
   }
 
   W.removeChild = function(node, params) {
@@ -205,7 +211,7 @@
 
   W.replaceChild = function(node, params) {
     var old_child = document.getElementById(params.id)
-    if (!old_child) {
+    if (old_child) {
       old_child.insertAdjacentHTML('beforebegin', params.html)
       old_child.parentNode.removeChild(old_child)
     }

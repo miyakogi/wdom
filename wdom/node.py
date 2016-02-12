@@ -235,8 +235,8 @@ class Node(Node):
         self._remove_child(node)
 
     def _replace_child(self, new_child: Node, old_child: Node):
-        self.insertBefore(new_child, old_child)
-        self.removeChild(old_child)
+        self._insert_before(new_child, old_child)
+        self._remove_child(old_child)
 
     def replaceChild(self, new_child: Node, old_child: Node) -> None:
         self._replace_child(new_child, old_child)
