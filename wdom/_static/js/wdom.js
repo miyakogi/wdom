@@ -185,7 +185,7 @@
     }
   }
 
-  W.appendChild = function(node, params) {
+  W._appendChild = function(node, params) {
     node.insertAdjacentHTML('beforeend', params.html)
   }
 
@@ -194,6 +194,18 @@
     if (child){
       child.insertAdjacentHTML('beforebegin', params.html)
     }
+  }
+
+  W.insertAdjacentHTML = function(node, params) {
+    node.insertAdjacentHTML(params.position, params.text)
+  }
+
+  W.textContent = function(node, params) {
+    node.textContent = params.text
+  }
+
+  W.innerHTML = function(node, params) {
+    node.innerHTML = params.html
   }
 
   W.removeChild = function(node, params) {

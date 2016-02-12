@@ -4,7 +4,7 @@
 import logging
 import json
 
-from asyncio import coroutine, Future, ensure_future, get_event_loop
+from asyncio import coroutine, Future, ensure_future
 from typing import Callable, Optional
 
 from wdom.event import EventListener
@@ -177,9 +177,10 @@ class WebElement(HTMLElement):
     def _append_child_web(self, child: 'WebElement'):
         if self.connected:
             if isinstance(child, Node):
-                self.js_exec('appendChild', html=child.html)
+                text = child.html
             else:
-                self.js_exec('appendChild', html=str(child))
+                text = str(child)
+            self.js_exec('insertAdjacentHTML', position='beforeend', text=text)
 
     def appendChild(self, child: 'WebElement'):
         '''Append child node at the last of child nodes. If this instance is
@@ -190,18 +191,16 @@ class WebElement(HTMLElement):
 
     def _insert_before_web(self, child: 'WebElement', ref_node: 'WebElement'):
         if self.connected:
-            method = 'insertBefore'
-            kwargs = {}
             if isinstance(child, WebElement):
-                kwargs['html'] = child.html
+                text = child.html
             else:
-                kwargs['html'] = str(child)
+                text = str(child)
             if isinstance(ref_node, WebElement):
-                kwargs['id'] = ref_node.id
+                ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
+                                 text=text)
             else:
-                kwargs['index'] = self.childNodes.index(ref_node)
-                method = 'insert'
-            self.js_exec(method, **kwargs)
+                index = self.childNodes.index(ref_node)
+                self.insert(index, text)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement'):
         '''Insert new child node before the reference child node. If the
@@ -222,6 +221,18 @@ class WebElement(HTMLElement):
         self._remove_child_web(child)
         self._remove_child(child)
 
+    def _replace_child_web(self, new_child, old_child):
+        # Does not work... why?
+        # self._insert_before_web(new_child, old_child)
+        # self._remove_child_web(old_child)
+        # This also not work...
+        # old_child.js_exec('outerHTML', html=new_child.html)
+        self.js_exec('replaceChild', id=old_child.id, html=new_child.html)
+
+    def replaceChild(self, new_child, old_child):
+        self._replace_child_web(new_child, old_child)
+        self._replace_child(new_child, old_child)
+
     @coroutine
     def getBoundingClientRect(self):
         fut = yield from self._query('getBoundingClientRect')
@@ -237,8 +248,7 @@ class WebElement(HTMLElement):
 
     def _set_text_content_web(self, text:str):
         if self.connected:
-            self.js_exec(method='empty')
-            self.js_exec(method='appendChild', html=self.textContent)
+            self.js_exec(method='textContent', text=self.textContent)
 
     @textContent.setter
     def textContent(self, text: str):
@@ -254,8 +264,7 @@ class WebElement(HTMLElement):
     def innerHTML(self, html:str):
         HTMLElement.innerHTML.fset(self, html)
         if self.connected:
-            self.js_exec(method='empty')
-            self.js_exec(method='appendChild', html=html)
+            self.js_exec(method='innerHTML', html=html)
 
     @property
     def html_noid(self) -> str:
