@@ -185,17 +185,6 @@
     }
   }
 
-  W._appendChild = function(node, params) {
-    node.insertAdjacentHTML('beforeend', params.html)
-  }
-
-  W.insertBefore = function(node, params) {
-    var child = document.getElementById(params.id)
-    if (child){
-      child.insertAdjacentHTML('beforebegin', params.html)
-    }
-  }
-
   W.insertAdjacentHTML = function(node, params) {
     node.insertAdjacentHTML(params.position, params.text)
   }
@@ -208,6 +197,10 @@
     node.innerHTML = params.html
   }
 
+  W.outerHTML = function(node, params) {
+    node.outerHTML = params.html
+  }
+
   W.removeChild = function(node, params) {
     var child = document.getElementById(params.id)
     if (child){
@@ -217,7 +210,7 @@
 
   W.replaceChild = function(node, params) {
     var old_child = document.getElementById(params.id)
-    if (!old_child) {
+    if (old_child) {
       old_child.insertAdjacentHTML('beforebegin', params.html)
       old_child.parentNode.removeChild(old_child)
     }
