@@ -203,8 +203,14 @@ class WebElement(HTMLElement):
         self._insert_before(child, ref_node)
 
     def _remove_child_web(self, child: 'WebElement'):
-        if isinstance(child, WebElement) and self.connected:
+        if isinstance(child, WebElement):
             self.js_exec('removeChild', id=child.id)
+        else:
+            index = self.childNodes.index(child)
+            self.js_exec(
+                'eval',
+                script='this.removeChild(this.childNodes[{}])'.format(index),
+            )
 
     def removeChild(self, child: 'Tag'):
         '''Remove the child node from this node. If the node is not a child

@@ -107,6 +107,7 @@
 
   W.eval = function(node, params) {
     // Execute fucntion with msg
+    var this = node
     eval(params.script)
   }
 
