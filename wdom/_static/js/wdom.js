@@ -171,10 +171,11 @@
 
   /* DOM contrall */
   W.insert = function(node, params) {
-    if (!node.hasChildNodes() || params.index >= node.childNodes.length) {
-      W.appendChild(node, params)
+    var index = Number(params.index)
+    if (!node.hasChildNodes() || index >= node.childNodes.length) {
+      node.insertAdjacentHTML('beforeend', params.html)
     } else {
-      var ref_node = node.childNodes[Number(params.index)]
+      var ref_node = node.childNodes[index]
       if (ref_node.nodeName === '#text') {
         var df = document.createDocumentFragment()
         df.innerHTML = params.html
