@@ -9,7 +9,7 @@ from asyncio import coroutine, ensure_future, iscoroutine, Future
 from inspect import iscoroutinefunction
 from typing import Callable, Tuple, Optional, Union
 
-from wdom.node import Node, Text, DOMTokenList
+from wdom.node import Node, Text, DOMTokenList, RawHtml
 from wdom.web_node import WebElement
 
 logger = logging.getLogger(__name__)
@@ -258,6 +258,10 @@ class Script(Tag):
         self.setAttribute('type', type)
         if src is not None:
             self.setAttribute('src', src)
+
+    def _set_text_content(self, text:str):
+        if text:
+            self.appendChild(RawHtml(text))
 
 
 Html = NewTagClass('Html')

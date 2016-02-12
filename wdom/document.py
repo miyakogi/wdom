@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from wdom.options import config
+from wdom import options
 from wdom.node import Node, DocumentType, Text, RawHtml
 from wdom.web_node import elements
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
@@ -70,24 +70,45 @@ class Document(Node):
 def get_document(include_wdom: bool = True,
                  include_skeleton: bool = False,
                  include_normalizecss: bool = False,
-                 autoreload: Optional[bool] = None,
                  app: Optional[Node] = None,
-                 **kwargs
+                 autoreload: Optional[bool] = None,
+                 reload_wait: int = None,
+                 log_level: int = None,
+                 log_prefix: str = None,
+                 log_console: bool = None,
+                 ws_url: str = None,
                  ) -> Document:
-
-    if autoreload is None:
-        if 'autoreload' in config:
-            autoreload = config.autoreload
-        if 'debug' in config:
-            autoreload = config.debug
 
     document = Document()
     if app is not None:
-        document.body.appendChild(app)
+        document.body.insertBefore(app, document.body.firstChild)
+
+    if autoreload is None:
+        if 'autoreload' in options.config:
+            autoreload = options.config.autoreload
+        elif 'debug' in options.config:
+            autoreload = options.config.debug
+    if log_level is None:
+        if 'logging' in options.config:
+            log_level = options.config.logging
 
     script = '\n'
     if autoreload:
         script += 'var WDOM_AUTORELOAD = true\n'
+        if reload_wait is not None:
+            script += 'var WDOM_RELOAD_WAIT = {}\n'.format(reload_wait)
+    if log_level is not None:
+        if isinstance(log_level, str):
+            script += 'var WDOM_LOG_LEVEL = \'{}\'\n'.format(log_level)
+        elif isinstance(log_level, int):
+            script += 'var WDOM_LOG_LEVEL = {}\n'.format(log_level)
+    if log_prefix is not None:
+        script += 'var WDOM_LOG_PREFIX = {}\n'.format(log_prefix)
+    if log_console:
+        script += 'var WDOM_LOG_CONSOLE = true\n'
+    if ws_url is not None:
+        script += 'var WDOM_WS_URL = \'{}\'\n'.format(ws_url)
+
     document.script.textContent = script
 
     if include_wdom:

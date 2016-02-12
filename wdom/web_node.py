@@ -233,14 +233,18 @@ class WebElement(HTMLElement):
         set to this property, all child nodes are removed and new value is set
         as a text node.
         '''
-        return HTMLElement.textContent.fget(self)
+        return self._get_text_content()
 
-    @textContent.setter
-    def textContent(self, text: str):
-        HTMLElement.textContent.fset(self, text)
+    def _set_text_content_web(self, text:str):
         if self.connected:
             self.js_exec(method='empty')
             self.js_exec(method='appendChild', html=self.textContent)
+
+    @textContent.setter
+    def textContent(self, text: str):
+        self.empty()
+        self._set_text_content(text)
+        self._set_text_content_web(text)
 
     @property
     def innerHTML(self) -> str:
