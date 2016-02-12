@@ -69,14 +69,6 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         '''Shortcut method of ``appendChild``.'''
         self.appendChild(child)
 
-    def insert(self, pos:int, child:Node):
-        if isinstance(child, str):
-            child = Text(child)
-        if 0 <= pos < self.length:
-            self.insertBefore(child, self.childNodes[pos])
-        elif pos == self.length:
-            self.appendChild(child)
-
     def __getitem__(self, attr: Union[str, int]):
         if isinstance(attr, int):
             return self.childNodes[attr]

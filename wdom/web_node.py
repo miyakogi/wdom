@@ -186,12 +186,13 @@ class WebElement(HTMLElement):
             text = child.html
         else:
             text = str(child)
+
         if isinstance(ref_node, WebElement):
             ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
                                 text=text)
         else:
             index = self.childNodes.index(ref_node)
-            self.insert(index, text)
+            self.js_exec('insert', index=index, html=text)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement'):
         '''Insert new child node before the reference child node. If the
@@ -209,7 +210,7 @@ class WebElement(HTMLElement):
             index = self.childNodes.index(child)
             self.js_exec(
                 'eval',
-                script='this.removeChild(this.childNodes[{}])'.format(index),
+                script='node.removeChild(node.childNodes[{}])'.format(index),
             )
 
     def removeChild(self, child: 'Tag'):
