@@ -122,7 +122,6 @@ class TestEvent(WDTest):
         self.wait(0.1)
         self.assertEqual(self.click_mock.call_count, 1)
         self.mock.append.assert_not_called()
-        self.mock.insert.assert_not_called()
         self.mock.remove.assert_not_called()
         self.mock.setAttribute.assert_not_called()
         self.mock.removeAttribute.assert_not_called()
