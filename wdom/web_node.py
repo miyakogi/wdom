@@ -138,17 +138,14 @@ class WebElement(HTMLElement):
         self.js_exec('insert', index=pos, html=self[pos].html)
         super().insert(pos, new_child)
 
+    def _remove_web(self):
+        self.js_exec('remove')
+
     def remove(self, *args, **kwargs):
         '''Remove this node from parent's DOM tree.
         '''
-        if self.connected:
-            fut = self.js_exec('remove')
-            fut.add_done_callback(self._remove_callback)
-        else:
-            super().remove()
-
-    def _remove_callback(self, *args, **kwargs):
-        super().remove()
+        self._remove_web()
+        self._remove()
 
     def _empty_web(self):
         self.js_exec('empty')

@@ -250,9 +250,12 @@ class Node(Node):
         else:
             return self.__copy__()
 
-    def remove(self):
+    def _remove(self):
         if self.parentNode is not None:
             self.parentNode.removeChild(self)
+
+    def remove(self):
+        self._remove()
 
     def _empty(self):
         for child in tuple(self.childNodes):
