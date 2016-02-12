@@ -256,15 +256,18 @@ class WebElement(HTMLElement):
         self._set_text_content(text)
         self._set_text_content_web(text)
 
+    def _set_inner_html_web(self, html:str):
+        if self.connected:
+            self.js_exec(method='innerHTML', html=html)
+
     @property
     def innerHTML(self) -> str:
-        return HTMLElement.innerHTML.fget(self)
+        return self._get_inner_html()
 
     @innerHTML.setter
     def innerHTML(self, html:str):
-        HTMLElement.innerHTML.fset(self, html)
-        if self.connected:
-            self.js_exec(method='innerHTML', html=html)
+        self._set_inner_html_web(html)
+        self._set_inner_html(html)
 
     @property
     def html_noid(self) -> str:

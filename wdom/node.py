@@ -512,14 +512,20 @@ class Element(appendTextMixin, Node):
             tag = ' '.join((tag, attrs))
         return tag + '>'
 
+    def _get_inner_html(self) -> str:
+        return ''.join(child.html for child in self.childNodes)
+
+    def _set_inner_html(self, html:str):
+        self.empty()
+        self.appendChild(RawHtml(html))
+
     @property
     def innerHTML(self) -> str:
-        return ''.join(child.html for child in self.childNodes)
+        return self._get_inner_html()
 
     @innerHTML.setter
     def innerHTML(self, html:str):
-        self.empty()
-        self.appendChild(RawHtml(html))
+        self._set_inner_html(html)
 
     @property
     def end_tag(self) -> str:
