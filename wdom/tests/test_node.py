@@ -364,6 +364,9 @@ class TestText(TestCase):
         self.tnode.textContent = 'newtext'
         self.assertEqual(self.tnode.textContent, 'newtext')
 
+    def test_length(self):
+        self.assertEqual(self.tnode.length, 4)
+
     def test_append_data(self):
         self.tnode.appendData('new')
         self.assertEqual(self.tnode.textContent, 'textnew')
@@ -428,12 +431,27 @@ class TestRawHtml(TestCase):
         rhtml = RawHtml('<a>')
         self.assertEqual(rhtml.html, '<a>')
 
+
 class TestComment(TestCase):
     def setUp(self):
         self.c = Comment('comment')
+        self.elm = Element('tag')
+
+    def test_node_type(self):
+        self.assertEqual(self.c.nodeType, self.c.COMMENT_NODE)
+        self.assertEqual(self.c.nodeName, '#comment')
+
+    def test_length(self):
+        self.assertEqual(self.c.length, 7)
 
     def test_html(self):
         self.assertEqual('<!--comment-->', self.c.html)
+
+    def test_append_comment(self):
+        self.elm.appendChild(self.c)
+        self.assertTrue(self.elm.hasChildNodes())
+        self.assertEqual(self.elm.length, 1)
+        self.assertEqual('<tag><!--comment--></tag>', self.elm.html)
 
 
 class TestDocumentType(TestCase):

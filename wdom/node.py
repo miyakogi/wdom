@@ -502,7 +502,7 @@ class appendTextMixin:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             self._append_document_fragment(node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
-                               Node.DOCUMENT_TYPE_NODE):
+                               Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
             self._append_element(node)
         else:
             raise TypeError('Invalid type to append: {}'.format(node))
@@ -516,7 +516,7 @@ class appendTextMixin:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             self._insert_document_fragment_before(node, ref_node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
-                               Node.DOCUMENT_TYPE_NODE):
+                               Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
             self._insert_element_before(node, ref_node)
         else:
             raise TypeError('Invalid type to insert: {}'.format(node))
