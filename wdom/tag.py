@@ -82,7 +82,9 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         self.removeAttribute(attr)
 
     def __copy__(self) -> 'TagBase':
-        clone = super().__copy__()
+        clone = type(self)()
+        for attr in self.attributes.values():
+            clone.setAttributeNode(attr)
         for c in self.classList:
             clone.addClass(c)
         return clone
