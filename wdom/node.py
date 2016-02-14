@@ -364,7 +364,45 @@ class Attr(Node):
         return False
 
 
-class Text(Node):
+class CharacterData(Node):
+    def __init__(self, text:str, parent=None):
+        super().__init__(parent=parent)
+        self.data = text
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    @property
+    def length(self) -> int:
+        return len(self)
+
+    def _append_data(self, string:str):
+        self.data += string
+
+    def appendData(self, string:str):
+        self._append_data(string)
+
+    def _insert_data(self, offset:int, string:str):
+        self.data = ''.join(self.data[:offset], string, self.data[offset:])
+
+    def insertData(self, offset:int, string:str):
+        self._insert_data(offset, string)
+
+    def _delete_data(self, offset:int, count:int):
+        self.data = ''.join(self.data[:offset], self.data[offset+count:])
+
+    def deleteData(self, offset:int, count:int):
+        self._delete_data(offset, count)
+
+    def _replace_data(self, offset:int, count:int, string:str):
+        self.data = ''.join(
+            self.data[:offset], string, self.data[offset+count:])
+
+    def replaceData(self, offset:int, count:int, string:str):
+        self._replace_data(offset, count, string)
+
+
+class Text(CharacterData):
     nodeType = Node.TEXT_NODE
     nodeName = '#text'
 
@@ -374,19 +412,15 @@ class Text(Node):
     lastChild = None
     specified = False
 
-    def __init__(self, text:str, parent=None):
-        super().__init__(parent=parent)
-        self._value = text
-
     @property
     def html(self) -> str:
         return self.textContent
 
     def _get_text_content(self):
-        return html.escape(self._value)
+        return html.escape(self.data)
 
     def _set_text_content(self, value:str):
-        self._value = value
+        self.data = value
 
     @property
     def childNodes(self) -> NodeList:
@@ -417,14 +451,17 @@ class RawHtml(Text):
     inner contents of ``<script>`` element or ``<style>`` element.'''
     @property
     def html(self) -> str:
-        return self._value
+        return self.data
 
     def _get_text_content(self) -> str:
-        return self._value
+        return self.data
 
     def _set_text_content(self, value:str):
-        self._value = value
+        self.data = value
 
+
+class Comment(Node):
+    pass
 
 class DocumentType(Node):
     nodeType = Node.DOCUMENT_TYPE_NODE
