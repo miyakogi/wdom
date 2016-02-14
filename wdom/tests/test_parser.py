@@ -145,3 +145,10 @@ class TestFragmentParser(TestCase):
 
         img = h1.childNodes[1]
         self.assertEqual(img.length, 0)
+
+    def test_comment(self):
+        self.parser.feed('<!--comment-->')
+        self.assertEqual(self.parser.root.length, 1)
+        c = self.parser.root.firstChild
+        self.assertEqual(c.length, 7)
+        self.assertEqual(c.html, '<!--comment-->')

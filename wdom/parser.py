@@ -10,7 +10,7 @@ from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
 
 from wdom.document import Document
-from wdom.node import DocumentFragment
+from wdom.node import DocumentFragment, Comment
 from wdom.web_node import WebElement
 
 
@@ -21,7 +21,8 @@ class DocumentParser(HTMLParser):
         self.elm = self.root.body
 
     def handle_decl(self, decl):
-        self.root.doctype.name = decl.split()[-1]
+        if decl.startswith('DOCTYPE'):
+            self.root.doctype.name = decl.split()[-1]
 
     def handle_starttag(self, tag, attrs):
         if tag == 'html':
@@ -45,6 +46,9 @@ class DocumentParser(HTMLParser):
         if _d and self.elm is not None:
             self.elm.appendChild(_d)
 
+    def handle_comment(self, comment:str):
+        self.elm.appendChild(Comment(comment))
+
 
 class FragmentParser(HTMLParser):
     def __init__(self, *args, **kwargs):
@@ -65,6 +69,9 @@ class FragmentParser(HTMLParser):
     def handle_data(self, data):
         if data and self.elm is not None:
             self.elm.appendChild(data)
+
+    def handle_comment(self, comment:str):
+        self.elm.appendChild(Comment(comment))
 
 
 def parse_document(doc:str):

@@ -364,29 +364,57 @@ class Attr(Node):
         return False
 
 
-class Text(Node):
-    nodeType = Node.TEXT_NODE
-    nodeName = '#text'
-
+class CharacterData(Node):
     # DOM Level 1
-    length = 0
     firstChild = None
     lastChild = None
     specified = False
 
     def __init__(self, text:str, parent=None):
         super().__init__(parent=parent)
-        self._value = text
+        self.data = text
 
     @property
     def html(self) -> str:
         return self.textContent
 
-    def _get_text_content(self):
-        return html.escape(self._value)
+    def _get_text_content(self) -> str:
+        return self.data
 
     def _set_text_content(self, value:str):
-        self._value = value
+        self.data = value
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    @property
+    def length(self) -> int:
+        return len(self)
+
+    def _append_data(self, string:str):
+        self.data += string
+
+    def appendData(self, string:str):
+        self._append_data(string)
+
+    def _insert_data(self, offset:int, string:str):
+        self.data = ''.join((self.data[:offset], string, self.data[offset:]))
+
+    def insertData(self, offset:int, string:str):
+        self._insert_data(offset, string)
+
+    def _delete_data(self, offset:int, count:int):
+        self.data = ''.join((self.data[:offset], self.data[offset+count:]))
+
+    def deleteData(self, offset:int, count:int):
+        self._delete_data(offset, count)
+
+    def _replace_data(self, offset:int, count:int, string:str):
+        self.data = ''.join((
+            self.data[:offset], string, self.data[offset+count:]))
+
+    def replaceData(self, offset:int, count:int, string:str):
+        self._replace_data(offset, count, string)
 
     @property
     def childNodes(self) -> NodeList:
@@ -412,18 +440,30 @@ class Text(Node):
         return False
 
 
+class Text(CharacterData):
+    nodeType = Node.TEXT_NODE
+    nodeName = '#text'
+
+    @property
+    def html(self) -> str:
+        return html.escape(self.data)
+
+
 class RawHtml(Text):
     '''Very similar to ``Text`` class, but contents are not escaped. Used for
     inner contents of ``<script>`` element or ``<style>`` element.'''
     @property
     def html(self) -> str:
-        return self._value
+        return self.data
 
-    def _get_text_content(self) -> str:
-        return self._value
 
-    def _set_text_content(self, value:str):
-        self._value = value
+class Comment(CharacterData):
+    nodeType = Node.COMMENT_NODE
+    nodeName = '#comment'
+
+    @property
+    def html(self) -> str:
+        return ''.join(('<!--', self.data, '-->'))
 
 
 class DocumentType(Node):
@@ -462,7 +502,7 @@ class appendTextMixin:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             self._append_document_fragment(node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
-                               Node.DOCUMENT_TYPE_NODE):
+                               Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
             self._append_element(node)
         else:
             raise TypeError('Invalid type to append: {}'.format(node))
@@ -476,7 +516,7 @@ class appendTextMixin:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             self._insert_document_fragment_before(node, ref_node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
-                               Node.DOCUMENT_TYPE_NODE):
+                               Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
             self._insert_element_before(node, ref_node)
         else:
             raise TypeError('Invalid type to insert: {}'.format(node))

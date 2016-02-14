@@ -5,7 +5,7 @@ from unittest import TestCase
 from wdom.css import CSSStyleDeclaration
 from wdom.node import DOMTokenList, NamedNodeMap
 from wdom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
-from wdom.node import Element, HTMLElement, RawHtml
+from wdom.node import Element, HTMLElement, RawHtml, Comment, CharacterData
 
 
 class TestDOMTokenList(TestCase):
@@ -351,6 +351,49 @@ class TestAttr(TestCase):
         self.assertEqual(len(self.id.childNodes), 0)
 
 
+class TestCharacterData(TestCase):
+    def setUp(self):
+        self.node = Node()
+        self.tnode = CharacterData('text')
+
+    def test_textcontent(self):
+        self.assertEqual(self.tnode.textContent, 'text')
+        self.tnode.textContent = 'newtext'
+        self.assertEqual(self.tnode.textContent, 'newtext')
+
+    def test_length(self):
+        self.assertEqual(self.tnode.length, 4)
+
+    def test_append_data(self):
+        self.tnode.appendData('new')
+        self.assertEqual(self.tnode.textContent, 'textnew')
+
+    def test_insert_data(self):
+        self.tnode.insertData(1, 'new')
+        self.assertEqual(self.tnode.textContent, 'tnewext')
+
+    def test_delete_data(self):
+        self.tnode.deleteData(1, 2)
+        self.assertEqual(self.tnode.textContent, 'tt')
+
+    def test_replace_data(self):
+        self.tnode.replaceData(1, 2, 'new')
+        self.assertEqual(self.tnode.textContent, 'tnewt')
+
+    def test_invalid_methods(self) -> None:
+        with self.assertRaises(NotImplementedError):
+            self.tnode.appendChild(self.node)
+        with self.assertRaises(NotImplementedError):
+            self.tnode.removeChild(self.node)
+        with self.assertRaises(NotImplementedError):
+            self.tnode.insertBefore(self.node, self.node)
+        with self.assertRaises(NotImplementedError):
+            self.tnode.replaceChild(self.node, self.node)
+        self.assertFalse(self.tnode.hasAttributes())
+        self.assertFalse(self.tnode.hasChildNodes())
+        self.assertEqual(len(self.tnode.childNodes), 0)
+
+
 class TestText(TestCase):
     def setUp(self):
         self.node = Node()
@@ -358,11 +401,6 @@ class TestText(TestCase):
 
     def test_nodename(self):
         self.assertEqual(self.tnode.nodeName, '#text')
-
-    def test_textcontent(self):
-        self.assertEqual(self.tnode.textContent, 'text')
-        self.tnode.textContent = 'newtext'
-        self.assertEqual(self.tnode.textContent, 'newtext')
 
     def test_html_escape(self):
         self.assertEqual(self.tnode.html, 'text')
@@ -390,19 +428,6 @@ class TestText(TestCase):
         self.assertIs(self.tnode.previousSibling, node2)
         self.assertIs(self.tnode, node2.nextSibling)
 
-    def test_invalid_methods(self) -> None:
-        with self.assertRaises(NotImplementedError):
-            self.tnode.appendChild(self.node)
-        with self.assertRaises(NotImplementedError):
-            self.tnode.removeChild(self.node)
-        with self.assertRaises(NotImplementedError):
-            self.tnode.insertBefore(self.node, self.node)
-        with self.assertRaises(NotImplementedError):
-            self.tnode.replaceChild(self.node, self.node)
-        self.assertFalse(self.tnode.hasAttributes())
-        self.assertFalse(self.tnode.hasChildNodes())
-        self.assertEqual(len(self.tnode.childNodes), 0)
-
 
 class TestRawHtml(TestCase):
     def setUp(self):
@@ -411,6 +436,28 @@ class TestRawHtml(TestCase):
     def test_rawhtml_content(self):
         rhtml = RawHtml('<a>')
         self.assertEqual(rhtml.html, '<a>')
+
+
+class TestComment(TestCase):
+    def setUp(self):
+        self.c = Comment('comment')
+        self.elm = Element('tag')
+
+    def test_node_type(self):
+        self.assertEqual(self.c.nodeType, self.c.COMMENT_NODE)
+        self.assertEqual(self.c.nodeName, '#comment')
+
+    def test_length(self):
+        self.assertEqual(self.c.length, 7)
+
+    def test_html(self):
+        self.assertEqual('<!--comment-->', self.c.html)
+
+    def test_append_comment(self):
+        self.elm.appendChild(self.c)
+        self.assertTrue(self.elm.hasChildNodes())
+        self.assertEqual(self.elm.length, 1)
+        self.assertEqual('<tag><!--comment--></tag>', self.elm.html)
 
 
 class TestDocumentType(TestCase):
