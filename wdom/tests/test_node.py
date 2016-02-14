@@ -5,7 +5,7 @@ from unittest import TestCase
 from wdom.css import CSSStyleDeclaration
 from wdom.node import DOMTokenList, NamedNodeMap
 from wdom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
-from wdom.node import Element, HTMLElement, RawHtml
+from wdom.node import Element, HTMLElement, RawHtml, Comment
 
 
 class TestDOMTokenList(TestCase):
@@ -427,6 +427,13 @@ class TestRawHtml(TestCase):
     def test_rawhtml_content(self):
         rhtml = RawHtml('<a>')
         self.assertEqual(rhtml.html, '<a>')
+
+class TestComment(TestCase):
+    def setUp(self):
+        self.c = Comment('comment')
+
+    def test_html(self):
+        self.assertEqual('<!--comment-->', self.c.html)
 
 
 class TestDocumentType(TestCase):

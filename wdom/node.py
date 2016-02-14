@@ -365,9 +365,24 @@ class Attr(Node):
 
 
 class CharacterData(Node):
+    # DOM Level 1
+    firstChild = None
+    lastChild = None
+    specified = False
+
     def __init__(self, text:str, parent=None):
         super().__init__(parent=parent)
         self.data = text
+
+    @property
+    def html(self) -> str:
+        return self.textContent
+
+    def _get_text_content(self) -> str:
+        return self.data
+
+    def _set_text_content(self, value:str):
+        self.data = value
 
     def __len__(self) -> int:
         return len(self.data)
@@ -401,27 +416,6 @@ class CharacterData(Node):
     def replaceData(self, offset:int, count:int, string:str):
         self._replace_data(offset, count, string)
 
-
-class Text(CharacterData):
-    nodeType = Node.TEXT_NODE
-    nodeName = '#text'
-
-    # DOM Level 1
-    length = 0
-    firstChild = None
-    lastChild = None
-    specified = False
-
-    @property
-    def html(self) -> str:
-        return self.textContent
-
-    def _get_text_content(self):
-        return html.escape(self.data)
-
-    def _set_text_content(self, value:str):
-        self.data = value
-
     @property
     def childNodes(self) -> NodeList:
         return NodeList()
@@ -446,6 +440,15 @@ class Text(CharacterData):
         return False
 
 
+class Text(CharacterData):
+    nodeType = Node.TEXT_NODE
+    nodeName = '#text'
+
+    @property
+    def html(self) -> str:
+        return html.escape(self.data)
+
+
 class RawHtml(Text):
     '''Very similar to ``Text`` class, but contents are not escaped. Used for
     inner contents of ``<script>`` element or ``<style>`` element.'''
@@ -453,15 +456,15 @@ class RawHtml(Text):
     def html(self) -> str:
         return self.data
 
-    def _get_text_content(self) -> str:
-        return self.data
 
-    def _set_text_content(self, value:str):
-        self.data = value
+class Comment(CharacterData):
+    nodeType = Node.COMMENT_NODE
+    nodeName = '#comment'
 
+    @property
+    def html(self) -> str:
+        return ''.join(('<!--', self.data, '-->'))
 
-class Comment(Node):
-    pass
 
 class DocumentType(Node):
     nodeType = Node.DOCUMENT_TYPE_NODE
