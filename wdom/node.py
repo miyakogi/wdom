@@ -374,6 +374,10 @@ class CharacterData(Node):
         super().__init__(parent=parent)
         self.data = text
 
+    def __copy__(self):
+        clone = type(self)(self.data)
+        return clone
+
     @property
     def html(self) -> str:
         return self.textContent
@@ -537,8 +541,9 @@ class Element(appendTextMixin, Node):
         for k, v in kwargs.items():
             self.setAttribute(k, v)
 
+
     def __copy__(self):
-        clone = super().__copy__()
+        clone = type(self)(self.tag)
         for attr in self.attributes.values():
             clone.setAttributeNode(attr)
         return clone

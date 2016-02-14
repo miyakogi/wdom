@@ -538,6 +538,35 @@ class TestDocumentFragment(TestCase):
         self.assertIs(self.elm.firstChild, self.c1)
         self.assertIs(self.elm.lastChild, self.c3)
 
+    def test_child(self):
+        self.df.appendChild(self.c1)
+        self.df.appendChild(self.c2)
+        self.assertEqual(self.c1.html, '<c1></c1>')
+        self.assertEqual(self.df.html, '<c1></c1><c2></c2>')
+
+    def test_clone_node_sharrow(self):
+        self.df.appendChild(self.c1)
+        clone = self.df.cloneNode()
+        self.assertEqual(self.df.length, 1)
+        self.assertEqual(clone.length, 0)
+        clone.appendChild(self.c2)
+        self.assertEqual(self.df.length, 1)
+        self.assertEqual(clone.length, 1)
+
+    def test_clone_node_deep(self):
+        self.df.appendChild(self.c1)
+        clone = self.df.cloneNode(deep=True)
+        self.assertEqual(self.df.length, 1)
+        self.assertEqual(clone.length, 1)
+        self.assertEqual(clone.html, '<c1></c1>')
+
+        clone.appendChild(self.c2)
+        self.assertEqual(self.df.length, 1)
+        self.assertEqual(clone.length, 2)
+        self.df.removeChild(self.c1)
+        self.assertEqual(self.df.length, 0)
+        self.assertEqual(clone.length, 2)
+
 
 class TestElement(TestCase):
     def setUp(self):
