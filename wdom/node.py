@@ -383,20 +383,20 @@ class CharacterData(Node):
         self._append_data(string)
 
     def _insert_data(self, offset:int, string:str):
-        self.data = ''.join(self.data[:offset], string, self.data[offset:])
+        self.data = ''.join((self.data[:offset], string, self.data[offset:]))
 
     def insertData(self, offset:int, string:str):
         self._insert_data(offset, string)
 
     def _delete_data(self, offset:int, count:int):
-        self.data = ''.join(self.data[:offset], self.data[offset+count:])
+        self.data = ''.join((self.data[:offset], self.data[offset+count:]))
 
     def deleteData(self, offset:int, count:int):
         self._delete_data(offset, count)
 
     def _replace_data(self, offset:int, count:int, string:str):
-        self.data = ''.join(
-            self.data[:offset], string, self.data[offset+count:])
+        self.data = ''.join((
+            self.data[:offset], string, self.data[offset+count:]))
 
     def replaceData(self, offset:int, count:int, string:str):
         self._replace_data(offset, count, string)

@@ -364,6 +364,22 @@ class TestText(TestCase):
         self.tnode.textContent = 'newtext'
         self.assertEqual(self.tnode.textContent, 'newtext')
 
+    def test_append_data(self):
+        self.tnode.appendData('new')
+        self.assertEqual(self.tnode.textContent, 'textnew')
+
+    def test_insert_data(self):
+        self.tnode.insertData(1, 'new')
+        self.assertEqual(self.tnode.textContent, 'tnewext')
+
+    def test_delete_data(self):
+        self.tnode.deleteData(1, 2)
+        self.assertEqual(self.tnode.textContent, 'tt')
+
+    def test_replace_data(self):
+        self.tnode.replaceData(1, 2, 'new')
+        self.assertEqual(self.tnode.textContent, 'tnewt')
+
     def test_html_escape(self):
         self.assertEqual(self.tnode.html, 'text')
         self.tnode.textContent = '<'
