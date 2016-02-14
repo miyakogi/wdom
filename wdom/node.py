@@ -370,7 +370,7 @@ class CharacterData(Node):
     lastChild = None
     specified = False
 
-    def __init__(self, text:str, parent=None):
+    def __init__(self, text:str='', parent=None):
         super().__init__(parent=parent)
         self.data = text
 
