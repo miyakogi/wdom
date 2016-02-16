@@ -145,7 +145,7 @@ def get_app(document, debug=None, **kwargs) -> Application:
     return app
 
 
-def start_server(app: web.Application, port=None, browser=None) -> HTTPServer:
+def start_server(app: web.Application, port=None, browser=None, **kwargs) -> HTTPServer:
     '''Start server with ``app`` on ``localhost:port``.
     If port is not specified, use command line option of ``--port``.
 
@@ -169,3 +169,7 @@ def start_server(app: web.Application, port=None, browser=None) -> HTTPServer:
             webbrowser.open(url)
 
     return server
+
+def stop_server(server):
+    server.stop()
+    logger.info('Server terminated')

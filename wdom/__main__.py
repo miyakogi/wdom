@@ -31,7 +31,8 @@ def main():
     import asyncio
     AsyncIOMainLoop().install()
 
-    from wdom.server import start_server, get_app
+    from wdom.server import start_server, get_app, stop_server
+    # from wdom.aioserver import start_server, get_app, stop_server
     # from wdom.examples.bootstrap3 import sample_page
     from wdom.examples.markdown_simple import sample_page
     # from wdom.examples.rev_text import sample_page
@@ -41,15 +42,16 @@ def main():
     configure_logger()
     page = sample_page()
     app = get_app(document=page)
-    server = start_server(app=app)
     loop = asyncio.get_event_loop()
+    server = start_server(app=app, loop=loop)
+
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        server.stop()
-        loop.close()
-        logger.info('Server terminated')
-    # IOLoop.current().start()
+        pass
+    finally:
+        stop_server(server)
+    loop.close()
 
 
 if __name__ == '__main__':
