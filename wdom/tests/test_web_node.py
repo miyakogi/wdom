@@ -34,7 +34,7 @@ class TestWebElementLocal(TestCase):
         f = lambda data: None
         self.elm.addEventListener('click', f)
         self.assertIsNotNone(re.match(
-            '<tag id="\d+" onclick="W.onclick\(this\);"></tag>',
+            '<tag id="\d+" onclick="rimo.onclick\(this\);"></tag>',
             self.elm.html,
         ))
 

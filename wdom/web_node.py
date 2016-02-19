@@ -37,7 +37,7 @@ class WebElement(HTMLElement):
         attrs_str = ' '.join((super()._get_attrs_by_string(),
                               'id="{}"'.format(self.id)))
         for event in self.listeners:
-            attrs_str += ' on{event}="W.on{event}(this);"'.format(event=event)
+            attrs_str += ' on{event}="rimo.on{event}(this);"'.format(event=event)
         return attrs_str.strip()
 
     @property

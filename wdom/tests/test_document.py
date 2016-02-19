@@ -119,42 +119,42 @@ class TestDocumentOptions(TestCase):
     def test_document_autoreload(self):
         doc = get_document(autoreload=True)
         html = doc.build()
-        self.assertIn('WDOM_AUTORELOAD = true', html)
-        self.assertNotIn('WDOM_RELOAD_WAIT', html)
+        self.assertIn('RIMO_AUTORELOAD = true', html)
+        self.assertNotIn('RIMO_RELOAD_WAIT', html)
 
     def test_document_reload_wait(self):
         doc = get_document(autoreload=True, reload_wait=1234)
         html = doc.build()
-        self.assertIn('WDOM_AUTORELOAD = true', html)
-        self.assertIn('WDOM_RELOAD_WAIT = 1234', html)
+        self.assertIn('RIMO_AUTORELOAD = true', html)
+        self.assertIn('RIMO_RELOAD_WAIT = 1234', html)
 
     def test_document_no_reload_wait_no_reload(self):
         doc = get_document(autoreload=False, reload_wait=1234)
         html = doc.build()
-        self.assertNotIn('WDOM_AUTORELOAD', html)
-        self.assertNotIn('WDOM_RELOAD_WAIT', html)
+        self.assertNotIn('RIMO_AUTORELOAD', html)
+        self.assertNotIn('RIMO_RELOAD_WAIT', html)
 
     def test_document_log_level_str(self):
         doc = get_document(log_level='INFO')
         html = doc.build()
-        self.assertIn('WDOM_LOG_LEVEL = \'INFO\'', html)
+        self.assertIn('RIMO_LOG_LEVEL = \'INFO\'', html)
 
     def test_document_log_level_int(self):
         doc = get_document(log_level=10)
         html = doc.build()
-        self.assertIn('WDOM_LOG_LEVEL = 10', html)
+        self.assertIn('RIMO_LOG_LEVEL = 10', html)
 
     def test_document_log_prefix(self):
         doc = get_document(log_prefix='TEST')
         html = doc.build()
-        self.assertIn('WDOM_LOG_PREFIX = TEST', html)
+        self.assertIn('RIMO_LOG_PREFIX = TEST', html)
 
     def test_document_log_console(self):
         doc = get_document(log_console=True)
         html = doc.build()
-        self.assertIn('WDOM_LOG_CONSOLE = true', html)
+        self.assertIn('RIMO_LOG_CONSOLE = true', html)
 
     def test_document_ws_url(self):
         doc = get_document(ws_url='test_ws')
         html = doc.build()
-        self.assertIn('WDOM_WS_URL = \'test_ws\'', html)
+        self.assertIn('RIMO_WS_URL = \'test_ws\'', html)
