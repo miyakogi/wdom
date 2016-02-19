@@ -90,8 +90,6 @@
     set_default('LOG_PREFIX', 'WDOM: ')
     set_default('LOG_CONSOLE', false)
     set_default('WS_URL', __ws_url)
-    console.log(W.settings)
-
     Wlog.set_loglevel(W.settings.LOG_LEVEL)
 
     // Make root WebScoket connection
@@ -258,7 +256,6 @@
   }
 
   W.getBoundingClientRect = function(node, params) {
-    Wlog.debug(params)
     var reqid = params.reqid
     var rect = node.getBoundingClientRect()
     W.send_response(node, reqid, {
