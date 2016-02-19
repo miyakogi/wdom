@@ -1,0 +1,3 @@
+[submodule "wdom/_static/js/rimo"]
+	path = wdom/_static/js/rimo
+	url = https://github.com/miyakogi/rimo
