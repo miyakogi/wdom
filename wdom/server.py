@@ -133,7 +133,7 @@ def get_app(document, debug=None, **kwargs) -> Application:
         debug = options.config.debug
     app = Application(
         [(r'/', MainHandler),
-         (r'/wdom_ws', WSHandler),
+         (r'/rimo_ws', WSHandler),
          ],
         document=document,
         debug=debug,

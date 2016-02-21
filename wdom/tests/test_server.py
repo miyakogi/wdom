@@ -96,7 +96,7 @@ class TestRootWSHandler(AsyncHTTPTestCase):
         self.document = Document()
         self.app = get_app(self.document)
         super().setUp()
-        self.url = self.get_url('/wdom_ws')
+        self.url = self.get_url('/rimo_ws')
 
         with self.assertLogs('wdom.server', 'INFO'):
             ws_future = to_asyncio_future(websocket_connect(
