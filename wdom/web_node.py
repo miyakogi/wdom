@@ -43,7 +43,7 @@ class WebElement(HTMLElement):
     @property
     def connected(self) -> bool:
         '''When this instance has any connection, return True.'''
-        return self.ownerDocument is not None and any(self.ownerDocument.connections)
+        return bool(self.ownerDocument and self.ownerDocument.connections)
 
     def on_message(self, msg: dict):
         '''Coroutine to be called when webscoket get message.'''
