@@ -5,8 +5,6 @@ import logging
 
 from wdom import options
 
-logger = logging.getLogger(__name__)
-
 
 def configure_logger(level=None):
     logger = logging.getLogger('wdom')

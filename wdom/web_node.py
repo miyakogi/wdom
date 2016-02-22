@@ -11,6 +11,7 @@ from wdom.event import EventListener
 from wdom.node import HTMLElement, Node
 
 logger = logging.getLogger(__name__)
+js_logger = logger.getChild('ws')
 elements = dict()
 
 
@@ -46,8 +47,8 @@ class WebElement(HTMLElement):
         return bool(self.ownerDocument and self.ownerDocument.connections)
 
     def on_message(self, msg: dict):
-        '''Coroutine to be called when webscoket get message.'''
-        logger.debug('WS MSG  {tag}: {msg}'.format(tag=self.tag, msg=msg))
+        '''called when webscoket get message.'''
+        js_logger.debug('{tag}: {msg}'.format(tag=self.tag, msg=msg))
 
         msg_type = msg.get('type')
         if msg_type == 'event':
