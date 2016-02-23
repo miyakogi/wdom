@@ -11,6 +11,7 @@ if __name__ == '__main__':
 import json
 import logging
 import asyncio
+import socket
 import webbrowser
 
 import aiohttp
@@ -120,7 +121,8 @@ async def close_connections(app):
         await conn.ws.close(code=999, message='server shutdown')
 
 
-def start_server(app: web.Application, port=None, browser=None, loop=None):
+def start_server(app: web.Application, port=None, browser=None, loop=None,
+                 family=socket.AF_INET):
     '''Start server with ``app`` on ``localhost:port``.
     If port is not specified, use command line option of ``--port``.
 
@@ -138,7 +140,7 @@ def start_server(app: web.Application, port=None, browser=None, loop=None):
     if loop is None:
         loop = asyncio.get_event_loop()
     handler = app.make_handler()
-    f = loop.create_server(handler, 'localhost', port)
+    f = loop.create_server(handler, 'localhost', port, family=family)
     server = loop.run_until_complete(f)
     server.app = app
     server.handler = handler
