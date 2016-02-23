@@ -5,27 +5,7 @@ Node Object
 python and browser.
 
 
-.. automodule:: wdom.dom
-
-   .. autoclass:: Tag
-      :members:
-      :undoc-members:
-
-   .. autofunction:: NewTagClass
-
-   .. autoclass:: TagBase
-      :members:
-      :undoc-members:
-
-   .. autoclass:: PyNode
-      :members:
-      :undoc-members:
-
-   .. autoclass:: EventListener
-      :members:
-      :undoc-members:
-
-.. automodule:: wdom.dom.node
+.. automodule:: wdom.node
 
    .. autoclass:: Node
       :members:
@@ -70,3 +50,22 @@ python and browser.
    .. autoclass:: NamedNodeMap
       :members:
       :undoc-members:
+
+.. automodule:: wdom.event
+
+   .. autoclass:: EventListener
+      :members:
+      :undoc-members:
+
+.. automodule:: wdom.tag
+
+   .. autoclass:: Tag
+      :members:
+      :undoc-members:
+
+   .. autofunction:: NewTagClass
+
+   .. autoclass:: TagBaseMeta
+      :members:
+      :undoc-members:
+

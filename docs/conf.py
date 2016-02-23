@@ -32,7 +32,9 @@ sys.path.insert(0, os.path.abspath('..'))
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinx_autodoc_typehints',
 ]
+
 primary_domain = 'py'
 default_rale = 'py:obj'
 autodoc_member_order = 'bysource'
@@ -104,7 +106,7 @@ exclude_patterns = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'xcode'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -121,11 +123,34 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'sphinx_rtd_theme'
+html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-#html_theme_options = {}
+font_family = ', '.join(['"goudy old style"', '"minion pro"', '"bell mt"',
+                         'Georgia', '"Hiragino Mincho Pro"', 'serif',
+                         ])
+head_font_family = ', '.join(['Garamond', 'Georgia', 'serif'])
+code_font_family = ', '.join(['Consolas','Menlo', '"Deja Vu Sans Mono"',
+                              '"Bitstream Vera Sans Mono"', 'monospace',
+                              ])
+
+html_theme_options = {
+    'description': 'DOM manipulation library for python',
+    'description': 'All you need is DOM',
+    'github_user': 'miyakogi',
+    'github_repo': 'wdom_py',
+    'travis_button': 'miyakogi/wdom_py',
+    'codecov_button': 'miyakogi/wdom_py',
+    'page_width': '1180px',
+    'sidebar_width': '260px',
+    'font_family': ', '.join(['"PT Serif"', "Roboto Slab", font_family]),
+    'head_font_family': ', '.join(['Merriweather', '"PT Serif"',
+                                   '"Crimson Text"', head_font_family,
+                                   ]),
+    'code_font_family': ', '.join(['"PT Mono"', code_font_family]),
+}
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
@@ -165,7 +190,14 @@ html_static_path = ['_static']
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    '**': [
+        'about.html',
+        'navigation.html',
+        'relations.html',
+        'searchbox.html',
+    ]
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.

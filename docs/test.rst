@@ -93,7 +93,7 @@ Example code using `py.test <http://pytest.org/>`_ as a test runner::
 
 For more examples, see wdon/tests/test_dom_web.py.
 
-.. automodule:: wdom.tests.util
+.. automodule:: wdom.tests.web.remote_browser
 
    .. autoclass:: UITest
       :members:
