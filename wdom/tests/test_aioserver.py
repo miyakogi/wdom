@@ -5,9 +5,10 @@ import logging
 import asyncio
 
 import aiohttp
+from syncer import sync
 
 from wdom.log import configure_logger
-from wdom.tests.util import TestCase, sync
+from wdom.tests.util import TestCase
 from wdom.document import Document
 from wdom.aioserver import get_app, start_server, stop_server
 
