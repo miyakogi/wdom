@@ -307,6 +307,7 @@ class TestNode(TestCase):
         self.assertEqual(self.node.index(self.c2), 1)
         self.assertEqual(self.node.index(self.c3), 2)
 
+
 class TestAttr(TestCase):
     def setUp(self):
         self.id = Attr('id')
@@ -498,8 +499,9 @@ class TestDocumentFragment(TestCase):
 
     def test_children(self):
         self.assertFalse(self.df.hasChildNodes())
-        self.df.appendChild(self.elm)
+        appended_child = self.df.appendChild(self.elm)
         self.assertEqual(self.df.html, '<a></a>')
+        self.assertIs(appended_child, self.elm)
 
     def test_init_append(self):
         df = DocumentFragment(self.c1, self.c2)
@@ -510,12 +512,15 @@ class TestDocumentFragment(TestCase):
         self.assertIs(df.lastChild, self.c2)
 
     def test_append_to_element(self):
-        self.df.appendChild(self.c1)
-        self.df.appendChild(self.c2)
+        appended_child1 = self.df.appendChild(self.c1)
+        appended_child2 = self.df.appendChild(self.c2)
         self.assertIs(self.df, self.c1.parentNode)
         self.assertIs(self.df, self.c2.parentNode)
+        self.assertIs(appended_child1, self.c1)
+        self.assertIs(appended_child2, self.c2)
 
-        self.elm.appendChild(self.df)
+        appended_df = self.elm.appendChild(self.df)
+        self.assertIs(appended_df, self.df)
         self.assertEqual(self.df.length, 0)
         self.assertEqual(self.elm.length, 2)
         self.assertFalse(self.df.hasChildNodes())
@@ -529,7 +534,8 @@ class TestDocumentFragment(TestCase):
         self.df.appendChild(self.c2)
         self.elm.appendChild(self.c3)
 
-        self.elm.insertBefore(self.df, self.c3)
+        inserted_node = self.elm.insertBefore(self.df, self.c3)
+        self.assertIs(inserted_node, self.df)
         self.assertEqual(self.df.length, 0)
         self.assertEqual(self.elm.length, 3)
         self.assertFalse(self.df.hasChildNodes())
@@ -547,8 +553,10 @@ class TestDocumentFragment(TestCase):
         self.assertIs(self.elm.lastChild, self.c3)
 
     def test_child(self):
-        self.df.appendChild(self.c1)
-        self.df.appendChild(self.c2)
+        appended_child1 = self.df.appendChild(self.c1)
+        appended_child2 = self.df.appendChild(self.c2)
+        self.assertIs(appended_child1, self.c1)
+        self.assertIs(appended_child2, self.c2)
         self.assertEqual(self.c1.html, '<c1></c1>')
         self.assertEqual(self.df.html, '<c1></c1><c2></c2>')
 
