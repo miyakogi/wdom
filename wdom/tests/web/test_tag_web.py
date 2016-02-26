@@ -3,14 +3,13 @@
 
 from unittest.mock import MagicMock
 
-from tornado.web import Application
 from selenium.common.exceptions import NoSuchElementException
 
 from wdom.tag import Tag, TextArea, Input, CheckBox
 from wdom.document import get_document
-from wdom.server import get_app
-from wdom.misc import static_dir, install_asyncio
+from wdom.misc import install_asyncio
 from wdom.tests.web.remote_browser import WDTest
+from wdom import aioserver
 
 
 def setup_module():
@@ -26,13 +25,8 @@ class TestNode(WDTest):
 
         self.root = Root()
         self.document.set_body(self.root)
-        self.app = get_app(self.document)
-        self.app.add_favicon_path(static_dir)
         super().setUp()
         self.set_element(self.root)
-
-    def get_app(self) -> Application:
-        return self.app
 
     def test_connection(self):
         self.assertIsTrue(self.root.connected)
@@ -109,12 +103,7 @@ class TestEvent(WDTest):
                                  parentNode=None, nodeType=self.root.nodeType)
 
         self.document.set_body(self.mock)
-        self.app = get_app(self.document)
-        self.app.add_favicon_path(static_dir)
         super().setUp()
-
-    def get_app(self) -> Application:
-        return self.app
 
     def test_click(self):
         self.set_element(self.mock)
@@ -140,12 +129,7 @@ class TestInput(WDTest):
         self.textarea = TextArea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root)
         self.document.set_body(self.root)
-        self.app = get_app(self.document)
-        self.app.add_favicon_path(static_dir)
         super().setUp()
-
-    def get_app(self) -> Application:
-        return self.app
 
     def test_textinput(self):
         self.set_element(self.input)
@@ -188,3 +172,15 @@ class TestInput(WDTest):
         self.click()
         self.wait(0.02)
         self.assertIsFalse(self.checkbox.checked)
+
+
+class TestNodeAIO(TestNode):
+    module = aioserver
+
+
+class TestEventAIO(TestEvent):
+    module = aioserver
+
+
+class TestInputAIO(TestInput):
+    module = aioserver

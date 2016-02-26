@@ -4,13 +4,11 @@
 import asyncio
 from unittest.mock import MagicMock
 
-from tornado.testing import gen_test
-
 from wdom.document import get_document
-from wdom.server import get_app, Application
-from wdom.misc import static_dir, install_asyncio
+from wdom.misc import install_asyncio
 from wdom.web_node import WebElement
 from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
+from wdom import aioserver
 
 
 def setup_module():
@@ -21,12 +19,7 @@ class ElementTestCase(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
         self.document.set_body(self.get_elements())
-        self.app = get_app(self.document)
-        self.app.add_favicon_path(static_dir)
         super().setUp()
-
-    def get_app(self) -> Application:
-        return self.app
 
     def get_elements(self):
         raise NotImplementedError
@@ -228,3 +221,11 @@ class TestEvent(ElementTestCase):
         self.btn_mock.insertBefore.assert_not_called()
         self.btn_mock.removeChild.assert_not_called()
         self.btn_mock.replaceChild.assert_not_called()
+
+
+class TestWebElementAIO(TestWebElement):
+    module = aioserver
+
+
+class TestEventAIO(TestEvent):
+    module = aioserver
