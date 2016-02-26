@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from copy import deepcopy
 import asyncio
 from unittest.mock import MagicMock
 
 from wdom.document import get_document
-from wdom.server import get_app, Application
-from wdom.misc import static_dir, install_asyncio
+from wdom.misc import install_asyncio
 from wdom.web_node import WebElement
 from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
 

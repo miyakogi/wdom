@@ -17,7 +17,6 @@ from selenium.common.exceptions import NoSuchElementException
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
 
-from wdom.server import start_server, stop_server
 from wdom.misc import static_dir
 from wdom.tests.util import TestCase
 
