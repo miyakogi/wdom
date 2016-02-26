@@ -98,6 +98,9 @@ class Application(web.Application):
             prefix = '/' + prefix
         self.router.add_static(prefix, path)
 
+    def add_favicon_path(self, path:str):
+        self.router.add_static('/(favicon.ico)', path)
+
 
 def get_app(document, debug=None, **kwargs) -> web.Application:
     '''Return Application object to serve ``document``.'''
@@ -108,7 +111,7 @@ def get_app(document, debug=None, **kwargs) -> web.Application:
 
     app = Application()
     app.router.add_route('GET', '/', MainHandler)
-    app.router.add_route('*', '/wdom_ws', ws_open)
+    app.router.add_route('*', '/rimo_ws', ws_open)
     app['document'] = document
 
     # Add application's static files directory
@@ -136,11 +139,10 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
             options.parse_command_line()
         port = options.config.port
 
-    # server = web.run_app(app, host='localhost', port=port)
     if loop is None:
         loop = asyncio.get_event_loop()
     handler = app.make_handler()
-    f = loop.create_server(handler, 'localhost', port, family=family)
+    f = loop.create_server(handler, 'localhost', port)
     server = loop.run_until_complete(f)
     server.app = app
     server.handler = handler
@@ -153,14 +155,6 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
             webbrowser.get(browser).open(url)
         else:
             webbrowser.open(url)
-
-    # try:
-    #     loop.run_forever()
-    # except KeyboardInterrupt:
-    #     pass
-    # finally:
-    #     stop_server(server)
-    # loop.close()
 
     return server
 
