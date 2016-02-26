@@ -15,7 +15,7 @@ import socket
 import webbrowser
 
 import aiohttp
-from aiohttp import web
+from aiohttp import web, MsgType
 
 from wdom import options
 from wdom.web_node import elements
@@ -48,12 +48,11 @@ class WSHandler(object):
 
         while not self.ws.closed:
             msg = await self.ws.receive()
-            if msg.tp == aiohttp.MsgType.text:
-                if msg.data == 'close':
-                    await self.ws.close()
-                else:
-                    await self.on_message(msg.data)
-        logger.info('websocket closed')
+            if msg.tp == MsgType.text:
+                await self.on_message(msg.data)
+            elif msg.tp in (MsgType.close, MsgType.closed, MsgType.error):
+                await self.ws.close()
+        self.on_close()
         return self.ws
 
     def write_message(self, message):
