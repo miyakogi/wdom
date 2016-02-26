@@ -683,6 +683,10 @@ class Element(appendTextMixin, Node):
         cond = lambda node: getattr(node, 'tagName') == _tag
         return self.getElementsBy(cond)
 
+    def getElementsByClassName(self, class_name:str):
+        cond = lambda node: class_name in getattr(node, 'classList')
+        return self.getElementsBy(cond)
+
 
 class DocumentFragment(appendTextMixin, Node):
     nodeType = Node.DOCUMENT_FRAGMENT_NODE
