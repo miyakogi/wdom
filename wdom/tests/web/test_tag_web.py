@@ -3,13 +3,11 @@
 
 from unittest.mock import MagicMock
 
-from tornado.web import Application
 from selenium.common.exceptions import NoSuchElementException
 
 from wdom.tag import Tag, TextArea, Input, CheckBox
 from wdom.document import get_document
-from wdom.server import get_app
-from wdom.misc import static_dir, install_asyncio
+from wdom.misc import install_asyncio
 from wdom.tests.web.remote_browser import WDTest
 
 
