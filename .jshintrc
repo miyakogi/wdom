@@ -1,0 +1,18 @@
+{
+  // Enhancement
+  "unused": true,
+  "undef": true,
+
+  // Environments
+  "browser": true,
+  "devel": true,
+
+  // Relaxes
+  "asi": true,
+  "sub": true,
+
+  // Global variables
+  "globals": {
+    "riot": false
+  }
+}
