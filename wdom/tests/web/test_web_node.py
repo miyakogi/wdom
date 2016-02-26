@@ -8,6 +8,7 @@ from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.web_node import WebElement
 from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
+from wdom import aioserver
 
 
 def setup_module():
@@ -220,3 +221,11 @@ class TestEvent(ElementTestCase):
         self.btn_mock.insertBefore.assert_not_called()
         self.btn_mock.removeChild.assert_not_called()
         self.btn_mock.replaceChild.assert_not_called()
+
+
+class TestWebElementAIO(TestWebElement):
+    module = aioserver
+
+
+class TestEventAIO(TestEvent):
+    module = aioserver
