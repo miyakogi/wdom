@@ -135,11 +135,11 @@ class WebElement(HTMLElement):
     def _remove_web(self):
         self.js_exec('remove')
 
-    def remove(self, *args, **kwargs) -> Node:
+    def remove(self, *args, **kwargs):
         '''Remove this node from parent's DOM tree.
         '''
         self._remove_web()
-        return self._remove()
+        self._remove()
 
     def _empty_web(self):
         self.js_exec('empty')

@@ -147,7 +147,7 @@ class TestNode(TestCase):
         self.assertEqual(self.node.length, 2)
 
         removed_child2 = self.c2.remove()
-        self.assertIs(removed_child2, self.c2)
+        self.assertIsNone(removed_child2)
         self.assertEqual(len(self.node), 1)
         self.assertEqual(self.node.length, 1)
         self.assertIsNone(self.c2.parentNode)
