@@ -205,24 +205,26 @@ class Node(Node):
     def index(self, node):
         return self.children.index(node)
 
-    def _insert_document_fragment_before(self, node, ref_node):
+    def _insert_document_fragment_before(self, node, ref_node) -> Node:
         for c in tuple(node.childNodes):
             self._insert_before(c, ref_node)
+        return node
 
-    def _insert_element_before(self, node, ref_node):
+    def _insert_element_before(self, node, ref_node) -> Node:
         if node.parentNode is not None:
             node.remove()
         self.children.insert(self.index(ref_node), node)
         node.parent = self
+        return node
 
-    def _insert_before(self, node, ref_node):
+    def _insert_before(self, node, ref_node) -> Node:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._insert_document_fragment_before(node, ref_node)
+            return self._insert_document_fragment_before(node, ref_node)
         else:
-            self._insert_element_before(node, ref_node)
+            return self._insert_element_before(node, ref_node)
 
-    def insertBefore(self, node, ref_node) -> None:
-        self._insert_before(node, ref_node)
+    def insertBefore(self, node, ref_node) -> Node:
+        return self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
         return bool(self.children)

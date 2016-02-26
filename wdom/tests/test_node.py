@@ -177,8 +177,9 @@ class TestNode(TestCase):
     def test_insert_before(self) -> None:
         self.node.appendChild(self.c1)
         self.node.appendChild(self.c2)
-        self.node.insertBefore(self.c3, self.c2)
+        inserted_node3 = self.node.insertBefore(self.c3, self.c2)
 
+        self.assertIs(inserted_node3, self.c3)
         self.assertIs(self.c3.parentNode, self.node)
         self.assertIs(self.node.childNodes[0], self.c1)
         self.assertIs(self.node.childNodes[1], self.c3)
@@ -187,8 +188,9 @@ class TestNode(TestCase):
     def test_insert_first(self) -> None:
         self.node.appendChild(self.c1)
         self.node.appendChild(self.c2)
-        self.node.insertBefore(self.c3, self.c1)
+        inserted_node3 = self.node.insertBefore(self.c3, self.c1)
 
+        self.assertIs(inserted_node3, self.c3)
         self.assertIs(self.c3.parentNode, self.node)
         self.assertIs(self.node.childNodes[0], self.c3)
         self.assertIs(self.node.childNodes[1], self.c1)
