@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from copy import deepcopy
 import asyncio
 from unittest.mock import MagicMock
-
-from tornado.testing import gen_test
 
 from wdom.document import get_document
 from wdom.server import get_app, Application
@@ -21,12 +20,7 @@ class ElementTestCase(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
         self.document.set_body(self.get_elements())
-        self.app = get_app(self.document)
-        self.app.add_favicon_path(static_dir)
         super().setUp()
-
-    def get_app(self) -> Application:
-        return self.app
 
     def get_elements(self):
         raise NotImplementedError

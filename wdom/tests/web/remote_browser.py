@@ -7,6 +7,7 @@
 
 import time
 import asyncio
+import socket
 from multiprocessing import Process, Pipe
 
 from selenium import webdriver
@@ -16,7 +17,8 @@ from selenium.common.exceptions import NoSuchElementException
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
 
-from wdom.server import start_server
+from wdom.server import start_server, stop_server
+from wdom.misc import static_dir
 from wdom.tests.util import TestCase
 
 
@@ -182,29 +184,47 @@ class WDTest(TestCase):
     ``wdom.server.Application`` or ``tornado.web.Application``), which you wand
     to test.
     '''
+    from wdom import server
+    module = server
+
     def setUp(self):
         global conn
         self.conn = conn
         self.loop = asyncio.get_event_loop()
         self.address = 'localhost'
-        self.port = free_port()
-        self.app = self.get_app()
+        self.app = self.get_app(self.document)
+        self.app.add_favicon_path(static_dir)
+        self.start_server(self.app)
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
-        self.server = start_server(self.app, self.port)
-        # super().setUp()
+        super().setUp()
         self.wait(0.1)
         self.get(self.url)
         self.wait(0.1)
 
     def tearDown(self):
-        self.server.stop()
+        self.stop_server()
 
-    def get_app(self) -> Application:
+    @property
+    def port(self) -> int:
+        if isinstance(self.server, HTTPServer):
+            for sock in self.server._sockets.values():
+                if sock.family == socket.AF_INET:
+                    return sock.getsockname()[1]
+        elif isinstance(self.server, asyncio.AbstractServer):
+            return self.server.sockets[-1].getsockname()[1]
+
+    def start_server(self, app, port=0):
+        self.server = self.module.start_server(app, port)
+
+    def stop_server(self):
+        self.module.stop_server(self.server)
+
+    def get_app(self, doc=None) -> Application:
         '''This method should be overridden by subclasses. Return
         ``pygmariot.server.Application``, ``tornado.web.Application`` to be
         tested.
         '''
-        NotImplementedError
+        return self.module.get_app(doc)
 
     def get(self, url):
         '''Load the url by browser.'''
