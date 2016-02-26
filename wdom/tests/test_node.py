@@ -763,20 +763,25 @@ class TestHTMLElement(TestCase):
         self.assertEqual(elm.html, '<a style="color: red;"></a>')
 
     def test_style_setter(self):
-        self.elm.style='color: red;'
+        self.elm.style = 'color: red;'
         self.assertEqual(self.elm.style.cssText, 'color: red;')
         self.assertEqual(self.elm.getAttribute('style'), 'color: red;')
 
         self.assertEqual(self.elm.html, '<a style="color: red;"></a>')
 
     def test_style_remove(self):
-        self.elm.style='color: red;'
+        self.elm.style = 'color: red;'
         self.elm.removeAttribute('style')
         self.assertIsNotNone(self.elm.style)
         self.assertEqual(self.elm.getAttribute('style'), None)
         self.assertEqual(self.elm.style.cssText, '')
 
         self.assertEqual(self.elm.html, '<a></a>')
+
+    def test_style_clone(self):
+        self.elm.style = 'color: red;'
+        clone = self.elm.cloneNode()
+        self.assertEqual(clone.style.cssText, 'color: red;')
 
 
 class TestDocument(TestCase):

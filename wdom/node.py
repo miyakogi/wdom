@@ -756,6 +756,11 @@ class HTMLElement(Element):
             attrs += ' style="{}"'.format(style)
         return attrs.strip()
 
+    def __copy__(self) -> 'HTMLElement':
+        clone = super().__copy__()
+        clone.style.update(self.style)
+        return clone
+
     @property
     def end_tag(self) -> str:
         if self.tag in HTML_EMPTY:
