@@ -135,14 +135,17 @@ class TestNode(TestCase):
         self.assertEqual(len(self.node), 0)
         self.assertEqual(self.node.length, 0)
 
-        self.node.appendChild(self.c1)
+        appended_child1 = self.node.appendChild(self.c1)
+        self.assertIs(appended_child1, self.c1)
         self.assertTrue(self.node.hasChildNodes())
         self.assertEqual(len(self.node), 1)
         self.assertEqual(self.node.length, 1)
 
-        self.node.appendChild(self.c2)
+        appended_child2 = self.node.appendChild(self.c2)
+        self.assertIs(appended_child2, self.c2)
         self.assertEqual(len(self.node), 2)
         self.assertEqual(self.node.length, 2)
+
         self.c2.remove()
         self.assertEqual(len(self.node), 1)
         self.assertEqual(self.node.length, 1)

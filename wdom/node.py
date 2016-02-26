@@ -72,7 +72,7 @@ class NamedNodeMap(dict):
     def length(self) -> int:
         return len(self)
 
-    def getNamedItem(self, name:str):
+    def getNamedItem(self, name:str) -> 'Attr':
         return self.get(name, None)
 
     def setNamedItem(self, item: 'Attr'):
@@ -80,10 +80,10 @@ class NamedNodeMap(dict):
             raise TypeError('item must be an instance of Attr')
         self[item.name] = item
 
-    def removeNamedItem(self, name:str):
+    def removeNamedItem(self, name:str) -> 'Attr':
         return self.pop(name, None)
 
-    def item(self, index:int):
+    def item(self, index:int) -> 'Attr':
         if 0 <= index < len(self):
             return self[tuple(self.keys())[index]]
         else:
@@ -107,7 +107,7 @@ class Node(Node):
     # DOM Level 4
     parentElement = None
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None):
         self.children = NodeList()
         self.parent = None
         if parent is not None:
@@ -119,11 +119,11 @@ class Node(Node):
     def __contains__(self, other: Node) -> bool:
         return other in self.children
 
-    def __copy__(self):
+    def __copy__(self) -> Node:
         clone = type(self)()
         return clone
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo=None) -> Node:
         clone = self.__copy__()
         for child in self.childNodes:
             clone.appendChild(child.__deepcopy__(memo))
@@ -181,24 +181,26 @@ class Node(Node):
             return None
 
     # Methods
-    def _append_document_fragment(self, node):
+    def _append_document_fragment(self, node) -> Node:
         for c in tuple(node.childNodes):
             self._append_child(c)
+        return node
 
-    def _append_element(self, node):
+    def _append_element(self, node) -> Node:
         if node.parentNode is not None:
             node.remove()
         self.children.append(node)
         node.parent = self
+        return node
 
-    def _append_child(self, node) -> None:
+    def _append_child(self, node) -> Node:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._append_document_fragment(node)
+            return self._append_document_fragment(node)
         else:
-            self._append_element(node)
+            return self._append_element(node)
 
-    def appendChild(self, node):
-        self._append_child(node)
+    def appendChild(self, node) -> Node:
+        return self._append_child(node)
 
     def index(self, node):
         return self.children.index(node)
