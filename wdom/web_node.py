@@ -175,12 +175,12 @@ class WebElement(HTMLElement):
             text = str(child)
         self.js_exec('insertAdjacentHTML', position='beforeend', text=text)
 
-    def appendChild(self, child: 'WebElement'):
+    def appendChild(self, child: 'WebElement') -> Node:
         '''Append child node at the last of child nodes. If this instance is
         connected to the node on browser, the child node is also added to it.
         '''
         self._append_child_web(child)
-        self._append_child(child)
+        return self._append_child(child)
 
     def _insert_before_web(self, child: 'WebElement', ref_node: 'WebElement'):
         if isinstance(child, WebElement):
@@ -195,14 +195,14 @@ class WebElement(HTMLElement):
             index = self.childNodes.index(ref_node)
             self.js_exec('insert', index=index, html=text)
 
-    def insertBefore(self, child: 'WebElement', ref_node: 'WebElement'):
+    def insertBefore(self, child: 'WebElement', ref_node: 'WebElement') -> Node:
         '''Insert new child node before the reference child node. If the
         reference node is not a child of this node, raise ValueError. If this
         instance is connected to the node on browser, the child node is also
         added to it.
         '''
         self._insert_before_web(child, ref_node)
-        self._insert_before(child, ref_node)
+        return self._insert_before(child, ref_node)
 
     def _remove_child_web(self, child: 'WebElement'):
         if isinstance(child, WebElement):
@@ -214,11 +214,11 @@ class WebElement(HTMLElement):
                 script='node.removeChild(node.childNodes[{}])'.format(index),
             )
 
-    def removeChild(self, child: 'Tag'):
+    def removeChild(self, child: 'Tag') -> Node:
         '''Remove the child node from this node. If the node is not a child
         of this node, raise ValueError.'''
         self._remove_child_web(child)
-        self._remove_child(child)
+        return self._remove_child(child)
 
     def _replace_child_web(self, new_child, old_child):
         # Does not work... why?
@@ -228,9 +228,9 @@ class WebElement(HTMLElement):
         # old_child.js_exec('outerHTML', html=new_child.html)
         self.js_exec('replaceChild', id=old_child.id, html=new_child.html)
 
-    def replaceChild(self, new_child, old_child):
+    def replaceChild(self, new_child, old_child) -> Node:
         self._replace_child_web(new_child, old_child)
-        self._replace_child(new_child, old_child)
+        return self._replace_child(new_child, old_child)
 
     @coroutine
     def getBoundingClientRect(self):

@@ -19,11 +19,15 @@ class TestWebElementLocal(TestCase):
 
     def test_noid(self):
         self.assertEqual('<tag></tag>', self.elm.html_noid)
+
         self.c1.tag = 'c1'
-        self.elm.appendChild(self.c1)
+        appended_child1 = self.elm.appendChild(self.c1)
+        self.assertIs(appended_child1, self.c1)
         self.assertEqual('<tag><c1></c1></tag>', self.elm.html_noid)
+
         self.c2.tag = 'c2'
-        self.c1.appendChild(self.c2)
+        appended_child2 = self.c1.appendChild(self.c2)
+        self.assertIs(appended_child2, self.c2)
         self.assertEqual('<tag><c1><c2></c2></c1></tag>', self.elm.html_noid)
 
     def test_id_init(self):
@@ -50,7 +54,8 @@ class TestWebElementLocal(TestCase):
         self.elm.appendChild(self.c1)
         self.assertIs(self.elm, self.c1.parentNode)
 
-        self.elm.removeChild(self.c1)
+        removed_child1 = self.elm.removeChild(self.c1)
+        self.assertIs(removed_child1, self.c1)
         self.assertIsNone(self.c1.parentNode)
 
     def test_addremove_child(self):

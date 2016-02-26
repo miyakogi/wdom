@@ -72,7 +72,7 @@ class NamedNodeMap(dict):
     def length(self) -> int:
         return len(self)
 
-    def getNamedItem(self, name:str):
+    def getNamedItem(self, name:str) -> 'Attr':
         return self.get(name, None)
 
     def setNamedItem(self, item: 'Attr'):
@@ -80,10 +80,10 @@ class NamedNodeMap(dict):
             raise TypeError('item must be an instance of Attr')
         self[item.name] = item
 
-    def removeNamedItem(self, name:str):
+    def removeNamedItem(self, name:str) -> 'Attr':
         return self.pop(name, None)
 
-    def item(self, index:int):
+    def item(self, index:int) -> 'Attr':
         if 0 <= index < len(self):
             return self[tuple(self.keys())[index]]
         else:
@@ -107,7 +107,7 @@ class Node(Node):
     # DOM Level 4
     parentElement = None
 
-    def __init__(self, parent=None) -> None:
+    def __init__(self, parent=None):
         self.children = NodeList()
         self.parent = None
         if parent is not None:
@@ -119,11 +119,11 @@ class Node(Node):
     def __contains__(self, other: Node) -> bool:
         return other in self.children
 
-    def __copy__(self):
+    def __copy__(self) -> Node:
         clone = type(self)()
         return clone
 
-    def __deepcopy__(self, memo=None):
+    def __deepcopy__(self, memo=None) -> Node:
         clone = self.__copy__()
         for child in self.childNodes:
             clone.appendChild(child.__deepcopy__(memo))
@@ -181,70 +181,75 @@ class Node(Node):
             return None
 
     # Methods
-    def _append_document_fragment(self, node):
+    def _append_document_fragment(self, node) -> Node:
         for c in tuple(node.childNodes):
             self._append_child(c)
+        return node
 
-    def _append_element(self, node):
+    def _append_element(self, node) -> Node:
         if node.parentNode is not None:
             node.remove()
         self.children.append(node)
         node.parent = self
+        return node
 
-    def _append_child(self, node) -> None:
+    def _append_child(self, node) -> Node:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._append_document_fragment(node)
+            return self._append_document_fragment(node)
         else:
-            self._append_element(node)
+            return self._append_element(node)
 
-    def appendChild(self, node):
-        self._append_child(node)
+    def appendChild(self, node) -> Node:
+        return self._append_child(node)
 
     def index(self, node):
         return self.children.index(node)
 
-    def _insert_document_fragment_before(self, node, ref_node):
+    def _insert_document_fragment_before(self, node, ref_node) -> Node:
         for c in tuple(node.childNodes):
             self._insert_before(c, ref_node)
+        return node
 
-    def _insert_element_before(self, node, ref_node):
+    def _insert_element_before(self, node, ref_node) -> Node:
         if node.parentNode is not None:
             node.remove()
         self.children.insert(self.index(ref_node), node)
         node.parent = self
+        return node
 
-    def _insert_before(self, node, ref_node):
+    def _insert_before(self, node, ref_node) -> Node:
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._insert_document_fragment_before(node, ref_node)
+            return self._insert_document_fragment_before(node, ref_node)
         else:
-            self._insert_element_before(node, ref_node)
+            return self._insert_element_before(node, ref_node)
 
-    def insertBefore(self, node, ref_node) -> None:
-        self._insert_before(node, ref_node)
+    def insertBefore(self, node, ref_node) -> Node:
+        return self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
         return bool(self.children)
 
-    def _remove_child(self, node):
+    def _remove_child(self, node) -> Node:
         if node not in self.children:
             raise ValueError('node to be removed is not a child of this node.')
         self.childNodes.remove(node)
         node.parent = None
+        return node
 
-    def removeChild(self, node):
-        self._remove_child(node)
+    def removeChild(self, node) -> Node:
+        return self._remove_child(node)
 
-    def _replace_child(self, new_child: Node, old_child: Node):
+    def _replace_child(self, new_child: Node, old_child: Node) -> Node:
         self._insert_before(new_child, old_child)
-        self._remove_child(old_child)
+        return self._remove_child(old_child)
 
-    def replaceChild(self, new_child: Node, old_child: Node) -> None:
-        self._replace_child(new_child, old_child)
+    def replaceChild(self, new_child: Node, old_child: Node) -> Node:
+        return self._replace_child(new_child, old_child)
 
     def hasAttributes(self) -> bool:
         return bool(self.attributes)
 
-    def cloneNode(self, deep=False):
+    def cloneNode(self, deep=False) -> Node:
         if deep:
             return self.__deepcopy__()
         else:
@@ -325,7 +330,7 @@ class Attr(Node):
         return self._value
 
     @value.setter
-    def value(self, val) -> None:
+    def value(self, val):
         self._value = val
 
     @property
@@ -337,7 +342,7 @@ class Attr(Node):
         return self.value
 
     @textContent.setter
-    def textContent(self, val) -> None:
+    def textContent(self, val):
         self.value = val
 
     @property
@@ -492,36 +497,36 @@ class DocumentType(Node):
         self._type = name
 
     @property
-    def html(self):
+    def html(self) -> str:
         return '<!DOCTYPE {}>'.format(self.name)
 
 
 class appendTextMixin:
-    def _append_child(self, node):
+    def _append_child(self, node) -> Node:
         if isinstance(node, str):
             node = Text(node)
         elif not isinstance(node, Node):
             raise TypeError('Invalid type to append: {}'.format(node))
 
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._append_document_fragment(node)
+            return self._append_document_fragment(node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
                                Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
-            self._append_element(node)
+            return self._append_element(node)
         else:
             raise TypeError('Invalid type to append: {}'.format(node))
 
-    def _insert_before(self, node, ref_node):
+    def _insert_before(self, node, ref_node) -> Node:
         if isinstance(node, str):
             node = Text(node)
         elif not isinstance(node, Node):
             raise TypeError('Invalid type to insert: {}'.format(node))
 
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._insert_document_fragment_before(node, ref_node)
+            return self._insert_document_fragment_before(node, ref_node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
                                Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
-            self._insert_element_before(node, ref_node)
+            return self._insert_element_before(node, ref_node)
         else:
             raise TypeError('Invalid type to insert: {}'.format(node))
 
@@ -541,8 +546,7 @@ class Element(appendTextMixin, Node):
         for k, v in kwargs.items():
             self.setAttribute(k, v)
 
-
-    def __copy__(self):
+    def __copy__(self) -> 'Element':
         clone = type(self)(self.tag)
         for attr in self.attributes.values():
             clone.setAttributeNode(attr)
@@ -587,7 +591,7 @@ class Element(appendTextMixin, Node):
         return self.start_tag + self.innerHTML + self.end_tag
 
     @property
-    def outerHTML(self):
+    def outerHTML(self) -> str:
         return self.html
 
     @property
@@ -610,7 +614,7 @@ class Element(appendTextMixin, Node):
     def id(self, id:str):
         self.setAttribute('id', id)
 
-    def getAttribute(self, attr:str):
+    def getAttribute(self, attr:str) -> str:
         if attr == 'class':
             if self.classList:
                 return self.classList.to_string()
@@ -622,10 +626,10 @@ class Element(appendTextMixin, Node):
         else:
             return attr.value
 
-    def getAttributeNode(self, attr:str):
+    def getAttributeNode(self, attr:str) -> Attr:
         return self.attributes.getNamedItem(attr)
 
-    def hasAttribute(self, attr:str):
+    def hasAttribute(self, attr:str) -> bool:
         if attr == 'class':
             return bool(self.classList)
         else:
@@ -783,7 +787,7 @@ class HTMLElement(Element):
         else:
             self._style = style
 
-    def getAttribute(self, attr:str):
+    def getAttribute(self, attr:str) -> str:
         if attr == 'style':
             # if style is neither None nor empty, return None
             # otherwise, return style.cssText
