@@ -330,7 +330,7 @@ class Attr(Node):
         return self._value
 
     @value.setter
-    def value(self, val) -> None:
+    def value(self, val):
         self._value = val
 
     @property
@@ -342,7 +342,7 @@ class Attr(Node):
         return self.value
 
     @textContent.setter
-    def textContent(self, val) -> None:
+    def textContent(self, val):
         self.value = val
 
     @property
@@ -497,36 +497,36 @@ class DocumentType(Node):
         self._type = name
 
     @property
-    def html(self):
+    def html(self) -> str:
         return '<!DOCTYPE {}>'.format(self.name)
 
 
 class appendTextMixin:
-    def _append_child(self, node):
+    def _append_child(self, node) -> Node:
         if isinstance(node, str):
             node = Text(node)
         elif not isinstance(node, Node):
             raise TypeError('Invalid type to append: {}'.format(node))
 
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._append_document_fragment(node)
+            return self._append_document_fragment(node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
                                Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
-            self._append_element(node)
+            return self._append_element(node)
         else:
             raise TypeError('Invalid type to append: {}'.format(node))
 
-    def _insert_before(self, node, ref_node):
+    def _insert_before(self, node, ref_node) -> Node:
         if isinstance(node, str):
             node = Text(node)
         elif not isinstance(node, Node):
             raise TypeError('Invalid type to insert: {}'.format(node))
 
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
-            self._insert_document_fragment_before(node, ref_node)
+            return self._insert_document_fragment_before(node, ref_node)
         elif node.nodeType in (Node.ELEMENT_NODE, Node.TEXT_NODE,
                                Node.DOCUMENT_TYPE_NODE, Node.COMMENT_NODE):
-            self._insert_element_before(node, ref_node)
+            return self._insert_element_before(node, ref_node)
         else:
             raise TypeError('Invalid type to insert: {}'.format(node))
 
@@ -546,8 +546,7 @@ class Element(appendTextMixin, Node):
         for k, v in kwargs.items():
             self.setAttribute(k, v)
 
-
-    def __copy__(self):
+    def __copy__(self) -> 'Element':
         clone = type(self)(self.tag)
         for attr in self.attributes.values():
             clone.setAttributeNode(attr)
@@ -592,7 +591,7 @@ class Element(appendTextMixin, Node):
         return self.start_tag + self.innerHTML + self.end_tag
 
     @property
-    def outerHTML(self):
+    def outerHTML(self) -> str:
         return self.html
 
     @property
@@ -615,7 +614,7 @@ class Element(appendTextMixin, Node):
     def id(self, id:str):
         self.setAttribute('id', id)
 
-    def getAttribute(self, attr:str):
+    def getAttribute(self, attr:str) -> str:
         if attr == 'class':
             if self.classList:
                 return self.classList.to_string()
@@ -627,10 +626,10 @@ class Element(appendTextMixin, Node):
         else:
             return attr.value
 
-    def getAttributeNode(self, attr:str):
+    def getAttributeNode(self, attr:str) -> Attr:
         return self.attributes.getNamedItem(attr)
 
-    def hasAttribute(self, attr:str):
+    def hasAttribute(self, attr:str) -> bool:
         if attr == 'class':
             return bool(self.classList)
         else:
@@ -788,7 +787,7 @@ class HTMLElement(Element):
         else:
             self._style = style
 
-    def getAttribute(self, attr:str):
+    def getAttribute(self, attr:str) -> str:
         if attr == 'style':
             # if style is neither None nor empty, return None
             # otherwise, return style.cssText
