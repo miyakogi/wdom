@@ -9,7 +9,7 @@ from wdom.node import Element, HTMLElement, RawHtml, Comment, CharacterData
 
 
 class TestDOMTokenList(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.tokens = DOMTokenList()
 
     def test_add(self):
@@ -84,7 +84,7 @@ class TestDOMTokenList(TestCase):
 
 
 class TestNamedNodeMap(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.map = NamedNodeMap()
         self.attr = Attr('src', value='a')
 
@@ -106,16 +106,16 @@ class TestNamedNodeMap(TestCase):
 
 
 class TestNode(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.node = Node()
         self.c1 = Node()
         self.c2 = Node()
         self.c3 = Node()
 
-    def test_attributes(self) -> None:
+    def test_attributes(self):
         self.assertFalse(self.node.hasAttributes())
 
-    def test_parent(self) -> None:
+    def test_parent(self):
         self.assertIsNone(self.node.parentNode)
         self.assertIsNone(self.c1.parentNode)
         self.node.appendChild(self.c1)
@@ -176,7 +176,7 @@ class TestNode(TestCase):
         self.assertTrue(self.c1.hasChildNodes())
         self.assertIsNone(self.c1.parentNode)
 
-    def test_insert_before(self) -> None:
+    def test_insert_before(self):
         self.node.appendChild(self.c1)
         self.node.appendChild(self.c2)
         inserted_node3 = self.node.insertBefore(self.c3, self.c2)
@@ -187,7 +187,7 @@ class TestNode(TestCase):
         self.assertIs(self.node.childNodes[1], self.c3)
         self.assertIs(self.node.childNodes[2], self.c2)
 
-    def test_insert_first(self) -> None:
+    def test_insert_first(self):
         self.node.appendChild(self.c1)
         self.node.appendChild(self.c2)
         inserted_node3 = self.node.insertBefore(self.c3, self.c1)
@@ -198,7 +198,7 @@ class TestNode(TestCase):
         self.assertIs(self.node.childNodes[1], self.c1)
         self.assertIs(self.node.childNodes[2], self.c2)
 
-    def test_replace_child(self) -> None:
+    def test_replace_child(self):
         self.node.appendChild(self.c1)
         self.assertTrue(self.c1 in self.node)
         self.assertFalse(self.c2 in self.node)
@@ -209,7 +209,7 @@ class TestNode(TestCase):
         self.assertIsNone(self.c1.parentNode)
         self.assertIs(self.c2.parentNode, self.node)
 
-    def test_first_last_child(self) -> None:
+    def test_first_last_child(self):
         self.assertIsNone(self.node.firstChild)
         self.assertIsNone(self.node.lastChild)
 
@@ -221,7 +221,7 @@ class TestNode(TestCase):
         self.assertIs(self.node.firstChild, self.c1)
         self.assertIs(self.node.lastChild, self.c2)
 
-    def test_siblings(self) -> None:
+    def test_siblings(self):
         self.assertIsNone(self.node.previousSibling)
         self.assertIsNone(self.node.nextSibling)
 
@@ -280,7 +280,7 @@ class TestNode(TestCase):
         clone = self.node.cloneNode(deep=True)
         self._test_deep_copy(clone)
 
-    def test_owner_document(self) -> None:
+    def test_owner_document(self):
         self.assertIsNone(self.node.ownerDocument)
 
     def test_text_content(self):
@@ -307,12 +307,12 @@ class TestNode(TestCase):
         self.assertEqual(self.node.index(self.c3), 2)
 
 class TestAttr(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.id = Attr('id')
         self.cls = Attr('class')
         self.src = Attr('src')
 
-    def test_name(self) -> None:
+    def test_name(self):
         self.assertEqual(self.id.name, 'id')
         self.assertEqual(self.id.nodeName, 'id')
         self.assertEqual(self.cls.name, 'class')
@@ -320,7 +320,7 @@ class TestAttr(TestCase):
         self.assertEqual(self.src.name, 'src')
         self.assertEqual(self.src.nodeName, 'src')
 
-    def test_value(self) -> None:
+    def test_value(self):
         self.src.value = 'a'
         self.assertEqual(self.src.value, 'a')
         self.assertEqual(self.src.textContent, 'a')
@@ -339,12 +339,12 @@ class TestAttr(TestCase):
         hidden.value = False
         self.assertEqual(hidden.html, '')
 
-    def test_isid(self) -> None:
+    def test_isid(self):
         self.assertTrue(self.id.isId)
         self.assertFalse(self.cls.isId)
         self.assertFalse(self.src.isId)
 
-    def test_invalid_methods(self) -> None:
+    def test_invalid_methods(self):
         with self.assertRaises(NotImplementedError):
             self.id.appendChild(self.cls)
         with self.assertRaises(NotImplementedError):
@@ -387,7 +387,7 @@ class TestCharacterData(TestCase):
         self.tnode.replaceData(1, 2, 'new')
         self.assertEqual(self.tnode.textContent, 'tnewt')
 
-    def test_invalid_methods(self) -> None:
+    def test_invalid_methods(self):
         with self.assertRaises(NotImplementedError):
             self.tnode.appendChild(self.node)
         with self.assertRaises(NotImplementedError):
