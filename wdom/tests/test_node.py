@@ -587,8 +587,8 @@ class TestDocumentFragment(TestCase):
 class TestElement(TestCase):
     def setUp(self):
         self.elm = Element('tag')
-        self.c1 = Element()
-        self.c2 = Element()
+        self.c1 = Element('c1')
+        self.c2 = Element('c2')
 
     def test_constructor(self):
         elm = Element('a')
@@ -669,6 +669,30 @@ class TestElement(TestCase):
     def test_append_string(self):
         self.elm.appendChild('a')
         self.assertTrue(self.elm.hasChildNodes())
+
+    def test_get_elements_by_tagname(self):
+        self.elm.appendChild(self.c1)
+        self.elm.appendChild(self.c2)
+        c1_tags = self.elm.getElementsByTagName('c1')
+        c2_tags = self.elm.getElementsByTagName('c2')
+        self.assertEqual(len(c1_tags), 1)
+        self.assertEqual(len(c2_tags), 1)
+        self.assertIs(c1_tags[0], self.c1)
+        self.assertIs(c2_tags[0], self.c2)
+
+    def test_get_elements_by_tagname_nest(self):
+        self.elm.appendChild(self.c1)
+        self.c1.appendChild(self.c2)
+        c2_tags = self.c1.getElementsByTagName('c2')
+        self.assertEqual(len(c2_tags), 1)
+        self.assertIs(c2_tags[0], self.c2)
+        c2_tags = self.elm.getElementsByTagName('c2')
+        self.assertEqual(len(c2_tags), 1)
+        self.assertIs(c2_tags[0], self.c2)
+
+    def test_get_elements_by_tagname_self(self):
+        c1_tags = self.c1.getElementsByTagName('c1')
+        self.assertEqual(len(c1_tags), 0)
 
 
 class TestHTMLElement(TestCase):
