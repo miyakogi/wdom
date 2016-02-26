@@ -663,15 +663,25 @@ class Element(appendTextMixin, Node):
     def removeAttributeNode(self, attr:Attr):
         self.attributes.removeNamedItem(attr.name)
 
-    def getElementsByTagName(self, tag:str):
+    def getElementsBy(self, cond):
+        '''Return list of child nodes which matches ``cond``.
+        ``cond`` must be a function which gets a single argument ``node``,
+        and returns bool. If the node matches requested condition, ``cond``
+        should return True.
+        This searches all child nodes recursively.
+        '''
         elements = []
-        tag = tag.upper()
         for child in self.childNodes:
-            if child.tagName == tag:
+            if cond(child):
                 elements.append(child)
             if isinstance(child, Element):
-                elements.extend(child.getElementsByTagName(tag))
+                elements.extend(child.getElementsBy(cond))
         return elements
+
+    def getElementsByTagName(self, tag:str):
+        _tag = tag.upper()
+        cond = lambda node: getattr(node, 'tagName') == _tag
+        return self.getElementsBy(cond)
 
 
 class DocumentFragment(appendTextMixin, Node):
