@@ -39,7 +39,7 @@ define_logging_options(parser)
 
 parser.define('--debug', default=False, action='store_const', const=True)
 parser.define('--address', default='localhost')
-parser.define('--port', default=8888)
+parser.define('--port', default=8888, type=int)
 parser.define('--autoreload', default=False, action='store_const', const=True)
 parser.define('--theme', default=None)
 parser.define('--temptheme', default=None, help='Only for internal use.')
