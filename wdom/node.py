@@ -239,12 +239,12 @@ class Node(Node):
     def removeChild(self, node) -> Node:
         return self._remove_child(node)
 
-    def _replace_child(self, new_child: Node, old_child: Node):
+    def _replace_child(self, new_child: Node, old_child: Node) -> Node:
         self._insert_before(new_child, old_child)
-        self._remove_child(old_child)
+        return self._remove_child(old_child)
 
-    def replaceChild(self, new_child: Node, old_child: Node) -> None:
-        self._replace_child(new_child, old_child)
+    def replaceChild(self, new_child: Node, old_child: Node) -> Node:
+        return self._replace_child(new_child, old_child)
 
     def hasAttributes(self) -> bool:
         return bool(self.attributes)

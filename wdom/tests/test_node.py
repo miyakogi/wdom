@@ -203,7 +203,8 @@ class TestNode(TestCase):
         self.assertTrue(self.c1 in self.node)
         self.assertFalse(self.c2 in self.node)
 
-        self.node.replaceChild(self.c2, self.c1)
+        replaced_node = self.node.replaceChild(self.c2, self.c1)
+        self.assertIs(replaced_node, self.c1)
         self.assertFalse(self.c1 in self.node)
         self.assertTrue(self.c2 in self.node)
         self.assertIsNone(self.c1.parentNode)
