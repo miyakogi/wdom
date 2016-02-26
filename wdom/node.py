@@ -229,14 +229,15 @@ class Node(Node):
     def hasChildNodes(self) -> bool:
         return bool(self.children)
 
-    def _remove_child(self, node):
+    def _remove_child(self, node) -> Node:
         if node not in self.children:
             raise ValueError('node to be removed is not a child of this node.')
         self.childNodes.remove(node)
         node.parent = None
+        return node
 
-    def removeChild(self, node):
-        self._remove_child(node)
+    def removeChild(self, node) -> Node:
+        return self._remove_child(node)
 
     def _replace_child(self, new_child: Node, old_child: Node):
         self._insert_before(new_child, old_child)
@@ -248,18 +249,18 @@ class Node(Node):
     def hasAttributes(self) -> bool:
         return bool(self.attributes)
 
-    def cloneNode(self, deep=False):
+    def cloneNode(self, deep=False) -> Node:
         if deep:
             return self.__deepcopy__()
         else:
             return self.__copy__()
 
-    def _remove(self):
+    def _remove(self) -> Node:
         if self.parentNode is not None:
-            self.parentNode.removeChild(self)
+            return self.parentNode.removeChild(self)
 
-    def remove(self):
-        self._remove()
+    def remove(self) -> Node:
+        return self._remove()
 
     def _empty(self):
         for child in tuple(self.childNodes):
