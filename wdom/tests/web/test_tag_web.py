@@ -9,6 +9,7 @@ from wdom.tag import Tag, TextArea, Input, CheckBox
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.tests.web.remote_browser import WDTest
+from wdom import aioserver
 
 
 def setup_module():
@@ -171,3 +172,15 @@ class TestInput(WDTest):
         self.click()
         self.wait(0.02)
         self.assertIsFalse(self.checkbox.checked)
+
+
+class TestNodeAIO(TestNode):
+    module = aioserver
+
+
+class TestEventAIO(TestEvent):
+    module = aioserver
+
+
+class TestInputAIO(TestInput):
+    module = aioserver
