@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import subprocess
+
 from livereload import Server, shell
+
+subprocess.run(['make', 'html'])
 
 server = Server()
 # Wtach documets

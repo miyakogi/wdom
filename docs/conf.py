@@ -58,7 +58,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'W-DOM'
+project = 'WDOM'
 copyright = '2016, Hiroyuki Takagi'
 author = 'Hiroyuki Takagi'
 
@@ -143,12 +143,8 @@ html_theme_options = {
     'github_repo': 'wdom_py',
     'travis_button': 'miyakogi/wdom_py',
     'codecov_button': 'miyakogi/wdom_py',
-    'page_width': '1180px',
-    'sidebar_width': '260px',
-    'font_family': ', '.join(['"PT Serif"', "Roboto Slab", font_family]),
-    'head_font_family': ', '.join(['Merriweather', '"PT Serif"',
-                                   '"Crimson Text"', head_font_family,
-                                   ]),
+    'font_family': ', '.join(['Georgia', font_family]),
+    'head_font_family': ', '.join(['"PT Serif"', head_font_family]),
     'code_font_family': ', '.join(['"PT Mono"', code_font_family]),
 }
 
@@ -266,7 +262,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-  (master_doc, 'WDOM.tex', 'W-DOM Documentation',
+  (master_doc, 'WDOM.tex', 'WDOM Documentation',
    'Hiroyuki Takagi', 'manual'),
 ]
 

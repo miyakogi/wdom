@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-W-DOM
-=====
+WDOM
+====
 
-W-DOM is a python library to control DOM on browser, as if it is a GUI elements.
+WDOM is a python library to control DOM on browser, as if it is a GUI elements.
 This library includes web-server (tornado/aiohttp), but not inteded to be
 used as a web framework, please use for **Desktop** GUI Applications!
 
