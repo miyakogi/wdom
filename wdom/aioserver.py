@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-if __name__ == '__main__':
-    import sys
-    from os import path
-    curdir = path.dirname(path.abspath(__file__))
-    sys.path.append(path.dirname(curdir))
-
-
 import json
 import logging
 import asyncio
@@ -166,25 +159,3 @@ def stop_server(server):
     server._loop.run_until_complete(server.handler.finish_connections(1.0))
     server._loop.run_until_complete(server.app.cleanup())
     logger.info('Server terminated')
-
-
-if __name__ == '__main__':
-    from wdom.document import get_document
-    from wdom.tag import H1
-    loop = asyncio.get_event_loop()
-    options.parse_command_line()
-    doc = get_document()
-    h1 = H1('aioHTTP', parent=doc.body)
-    def swap(data):
-        h1.textContent = h1.textContent[::-1]
-    h1.addEventListener('click', swap)
-    app = get_app(doc)
-    app.add_static_path('pre', './')
-    server = start_server(app, port=8888)
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        stop_server(server)
-        loop.close()
