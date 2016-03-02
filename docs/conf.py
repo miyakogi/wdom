@@ -106,7 +106,7 @@ exclude_patterns = ['_build']
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'xcode'
+pygments_style = 'sphinx'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -128,13 +128,13 @@ html_theme = 'alabaster'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-font_family = ', '.join(['"goudy old style"', '"minion pro"', '"bell mt"',
-                         'Georgia', '"Hiragino Mincho Pro"', 'serif',
-                         ])
-head_font_family = ', '.join(['Garamond', 'Georgia', 'serif'])
-code_font_family = ', '.join(['Consolas','Menlo', '"Deja Vu Sans Mono"',
-                              '"Bitstream Vera Sans Mono"', 'monospace',
-                              ])
+font = ', '.join(['"goudy old style"', '"minion pro"', '"bell mt"', 'Georgia',
+                  '"Hiragino Mincho Pro"', 'serif',
+                  ])
+head_font = ', '.join(['Garamond', 'Georgia', 'serif'])
+code_font = ', '.join(['Consolas','Menlo', '"Deja Vu Sans Mono"',
+                       '"Bitstream Vera Sans Mono"', 'monospace',
+                       ])
 
 html_theme_options = {
     'description': 'DOM manipulation library for python',
@@ -143,9 +143,9 @@ html_theme_options = {
     'github_repo': 'wdom_py',
     'travis_button': 'miyakogi/wdom_py',
     'codecov_button': 'miyakogi/wdom_py',
-    'font_family': ', '.join(['Georgia', font_family]),
-    'head_font_family': ', '.join(['"PT Serif"', head_font_family]),
-    'code_font_family': ', '.join(['"PT Mono"', code_font_family]),
+    'font_family': ', '.join(['Georgia', font]),
+    'head_font_family': ', '.join(['"PT Serif"', head_font]),
+    'code_font_family': ', '.join(['"PT Mono"', code_font]),
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
