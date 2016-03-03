@@ -11,12 +11,13 @@ This library includes web-server (tornado/aiohttp), but not inteded to be
 used as a web framework, please use for **Desktop** GUI Applications!
 
 .. toctree::
-   :titlesonly:
+    :titlesonly:
 
-   install
-   dom
-   server
-   test
+    guide/index
+    install
+    dom
+    server
+    test
 
 
 Indices and tables

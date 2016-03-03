@@ -45,8 +45,8 @@ Example code using `py.test <http://pytest.org/>`_ as a test runner::
             ...
 
 
-WDTest
-------
+WDTest Class
+------------
 
 ``WDTest`` class is design to test ``wdom.py`` itself. Its features might
 not be so useful for library's users. ``WDTest`` class helps you to test your
