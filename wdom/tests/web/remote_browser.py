@@ -185,7 +185,7 @@ class WDTest(TestCase):
     '''
     from wdom import server
     module = server
-    wait_time = 0.05
+    wait_time = 0.1
 
     def setUp(self):
         global conn

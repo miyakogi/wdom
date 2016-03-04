@@ -171,14 +171,14 @@ class TestInput(WDTest):
 
 class TestNodeAIO(TestNode):
     module = aioserver
-    wait_time = 0.02
+    wait_time = 0.05
 
 
 class TestEventAIO(TestEvent):
     module = aioserver
-    wait_time = 0.02
+    wait_time = 0.05
 
 
 class TestInputAIO(TestInput):
     module = aioserver
-    wait_time = 0.02
+    wait_time = 0.05
