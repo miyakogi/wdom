@@ -111,6 +111,10 @@ class TestEvent(WDTest):
         self.set_element(self.root)
         self.click()
         self.wait()
+        self.wait()
+        self.wait()
+        self.wait()
+        self.wait()
         self.assertEqual(self.click_mock.call_count, 1)
 
 
@@ -128,6 +132,10 @@ class TestInput(WDTest):
         self.set_element(self.input)
         self.send_keys('abc')
         self.wait()
+        self.wait()
+        self.wait()
+        self.wait()
+        self.wait()
         self.assertEqual(self.input.value, 'abc')
 
         self.get(self.url)
@@ -135,6 +143,10 @@ class TestInput(WDTest):
         self.assertEqual(self.get_attribute('value'), 'abc')
 
         self.send_keys('def')
+        self.wait()
+        self.wait()
+        self.wait()
+        self.wait()
         self.wait()
         self.assertEqual(self.input.value, 'abcdef')
 

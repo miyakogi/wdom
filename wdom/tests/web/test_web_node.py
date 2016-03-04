@@ -205,6 +205,10 @@ class TestEvent(ElementTestCase):
         self.set_element(self.btn)
         self.click()
         self.wait()
+        self.wait()
+        self.wait()
+        self.wait()
+        self.wait()
         self.assertEqual(self.click_event_mock.call_count, 1)
 
     def test_input(self):
