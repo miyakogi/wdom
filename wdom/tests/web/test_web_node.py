@@ -45,8 +45,8 @@ class TestWebElement(ElementTestCase):
 
         child = WebElement('a')
         child.textContent = 'child'
-        self.wait()
         self.tag.appendChild(child)
+        self.wait()
         self.assertEqual(self.get_text(), 'textchild')
 
         self.tag.textContent = 'NewText'
@@ -66,6 +66,7 @@ class TestWebElement(ElementTestCase):
     def test_addremove_child(self):
         child = WebElement('a')
         self.tag.appendChild(child)
+        self.wait()
         self.assertIsTrue(self.set_element(child))
         self.assertEqual(self.get_text(), '')
         child.textContent = 'Child'
@@ -76,6 +77,7 @@ class TestWebElement(ElementTestCase):
         self.assertEqual(self.get_text(), 'Child')
 
         self.tag.removeChild(child)
+        self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element(child)
 
@@ -88,6 +90,7 @@ class TestWebElement(ElementTestCase):
         child1.textContent = 'child1'
         child2 = WebElement('b')
         child2.textContent = 'child2'
+        self.wait()
 
         self.assertIsTrue(self.set_element(child1))
         with self.assertRaises(NoSuchElementException):
@@ -97,12 +100,14 @@ class TestWebElement(ElementTestCase):
         self.assertEqual(self.get_text(), 'child1')
 
         self.tag.insertBefore(child2, child1)
+        self.wait()
         self.assertIsTrue(self.set_element(child2))
 
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), 'child2child1')
 
         self.tag.empty()
+        self.wait()
         self.assertEqual(self.get_text(), '')
         with self.assertRaises(NoSuchElementException):
             self.set_element(child1)
@@ -137,8 +142,10 @@ class TestWebElement(ElementTestCase):
         self.set_element(self.tag)
         self.assertIsTrue(self.is_displayed())
         self.tag.hidden = True
+        self.wait()
         self.assertIsFalse(self.is_displayed())
         self.tag.hidden = False
+        self.wait()
         self.assertIsTrue(self.is_displayed())
 
     def test_get_rect(self):
