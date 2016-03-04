@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.tag import Tag, TextArea, Input, CheckBox
+from wdom.tag import Tag, TextArea, Input, CheckBox, Div
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.tests.web.remote_browser import WDTest
@@ -93,38 +93,24 @@ class TestNode(WDTest):
 class TestEvent(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
-        self.root = Tag()
-        self.root.textContent = 'ROOT'
+        self.root = Div('ROOT')
         self.click_mock = MagicMock()
         self.click_mock._is_coroutine = False
         self.root.addEventListener('click', self.click_mock)
-        self.mock = MagicMock(self.root)
-        self.mock.configure_mock(id=self.root.id, html=self.root.html,
-                                 parentNode=None, nodeType=self.root.nodeType)
-
-        self.document.set_body(self.mock)
+        self.document.set_body(self.root)
         super().setUp()
 
     def test_click(self):
-        self.set_element(self.mock)
+        self.set_element(self.root)
         self.click()
         self.wait(0.1)
         self.assertEqual(self.click_mock.call_count, 1)
-        self.mock.append.assert_not_called()
-        self.mock.remove.assert_not_called()
-        self.mock.setAttribute.assert_not_called()
-        self.mock.removeAttribute.assert_not_called()
-        self.mock.appendChild.assert_not_called()
-        self.mock.removeChild.assert_not_called()
-        self.mock.replaceChild.assert_not_called()
-        self.mock.addClass.assert_not_called()
-        self.mock.removeClass.assert_not_called()
 
 
 class TestInput(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
-        self.root = Tag()
+        self.root = Div()
         self.input = Input(parent=self.root)
         self.textarea = TextArea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root)
@@ -169,8 +155,10 @@ class TestInput(WDTest):
         self.set_element(self.checkbox)
         self.assertEqual(self.get_attribute('checked'), 'true')
 
+        self.wait(0.02)
         self.click()
         self.wait(0.02)
+        self.assertEqual(self.get_attribute('checked'), None)
         self.assertIsFalse(self.checkbox.checked)
 
 
