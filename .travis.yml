@@ -5,8 +5,8 @@ python:
 addons:
   apt:
     packages:
-      - wget
       - xvfb
+      - chromium-chromedriver
 
 before_script:
   - "export DISPLAY=:99.0"
