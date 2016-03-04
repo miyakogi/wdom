@@ -203,16 +203,14 @@ class TestEvent(ElementTestCase):
 
     def test_click(self):
         self.set_element(self.btn)
+        self.wait()
         self.click()
-        self.wait()
-        self.wait()
-        self.wait()
-        self.wait()
         self.wait()
         self.assertEqual(self.click_event_mock.call_count, 1)
 
     def test_input(self):
         self.set_element(self.input)
+        self.wait()
         self.send_keys('abc')
         self.wait()
         self.assertEqual(self.input_event_mock.call_count, 3)
@@ -220,9 +218,9 @@ class TestEvent(ElementTestCase):
 
 class TestWebElementAIO(TestWebElement):
     module = aioserver
-    wait_time = 0.05
+    wait_time = 0.02
 
 
 class TestEventAIO(TestEvent):
     module = aioserver
-    wait_time = 0.05
+    wait_time = 0.02
