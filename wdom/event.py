@@ -34,6 +34,3 @@ class EventListener:
             self.action(data=data)
         else:
             self.action()
-
-
-

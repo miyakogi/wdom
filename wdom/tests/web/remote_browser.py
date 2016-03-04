@@ -185,6 +185,7 @@ class WDTest(TestCase):
     '''
     from wdom import server
     module = server
+    wait_time = 0.05
 
     def setUp(self):
         global conn
@@ -202,6 +203,7 @@ class WDTest(TestCase):
 
     def tearDown(self):
         self.stop_server()
+        self.wait(0.1)
 
     @property
     def port(self) -> int:
@@ -230,12 +232,12 @@ class WDTest(TestCase):
         self.conn.send({'method': 'get', 'url': url})
         return self.wait_for()
 
-    def wait(self, timeout=0.0):
+    def wait(self, timeout=None):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
         single event loop. This method does not block the thread, so the server
         in test still can send response before timeout.
         '''
-        self.loop.run_until_complete(asyncio.sleep(timeout))
+        self.loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
     def wait_for(self):
         '''Wait the action doing in the browser process, and afer finish it,

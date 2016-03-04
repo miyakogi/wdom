@@ -31,20 +31,23 @@ class WebElement(HTMLElement):
         self._tasks = {}
         super().__init__(*args, **kwargs)
         elements[self.id] = self
+        self.addEventListener('mount', self._on_mount)
         if parent is not None:
             parent.appendChild(self)
 
     def _get_attrs_by_string(self) -> str:
         attrs_str = ' '.join((super()._get_attrs_by_string(),
                               'id="{}"'.format(self.id)))
-        for event in self.listeners:
-            attrs_str += ' on{event}="rimo.on{event}(this);"'.format(event=event)
         return attrs_str.strip()
 
     @property
     def connected(self) -> bool:
         '''When this instance has any connection, return True.'''
         return bool(self.ownerDocument and self.ownerDocument.connections)
+
+    def _on_mount(self, *args, **kwargs):
+        for event in self.listeners:
+            self.js_exec('addEventListener', event=event)
 
     def on_message(self, msg: dict):
         '''called when webscoket get message.'''

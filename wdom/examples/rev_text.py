@@ -15,6 +15,6 @@ def sample_page() -> Div:
 
     text.addEventListener('click', reverse)
 
-    page = get_document(app=app)
+    page = get_document(app=app, autoreload=True)
 
     return page

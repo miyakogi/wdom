@@ -52,6 +52,9 @@ class Document(Node):
     def add_jsfile(self, src:str):
         self.body.appendChild(Script(src=src))
 
+    def add_jsfile_head(self, src:str):
+        self.head.appendChild(Script(src=src))
+
     def add_cssfile(self, src:str):
         self.head.appendChild(Link(rel='stylesheet', href=src))
 
@@ -112,6 +115,6 @@ def get_document(include_wdom: bool = True,
     document.script.textContent = script
 
     if include_wdom:
-        document.add_jsfile('_static/js/rimo/rimo.js')
+        document.add_jsfile_head('_static/js/rimo/rimo.js')
 
     return document
