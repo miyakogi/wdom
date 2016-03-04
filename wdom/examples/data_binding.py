@@ -5,22 +5,16 @@
 Data binding example
 '''
 
-from wdom.tag import Node, Input, TextArea
-from wdom.view import get_document
+from wdom.tag import H1, Div, Input, TextArea
+from wdom.document import get_document
 
-
-class App(Node):
-    tag = 'wdom-app'
-
-
-class H1(Node):
-    tag = 'h1'
 
 class Check(Input):
     type_ = 'checkbox'
 
-def sample_page() -> Node:
-    app = App()
+
+def sample_page():
+    app = Div()
     textbox = Input(parent=app)
     check1 = Check(parent=app)
     check2 = Check(parent=app)
@@ -32,8 +26,8 @@ def sample_page() -> Node:
     def update(data):
         text.textContent = textbox.getAttribute('value')
 
-    # textbox.addEventListener('input', update)
+    textbox.addEventListener('input', update)
 
-    page = get_document(app=app)
+    page = get_document(app=app, autoreload=True)
 
     return page

@@ -19,7 +19,7 @@ def main():
 
     # ADD js/css/template files for autoreload
     from tornado import autoreload
-    for file_ in (_CURDIR.glob('_static/js/*.js')):
+    for file_ in (_CURDIR.glob('_static/js/**/*.js')):
         autoreload.watch(str(file_))
     for file_ in (_CURDIR.glob('_static/css/*.css')):
         autoreload.watch(str(file_))
@@ -34,9 +34,9 @@ def main():
     from wdom.server import start_server, get_app, stop_server
     # from wdom.aioserver import start_server, get_app, stop_server
     # from wdom.examples.bootstrap3 import sample_page
-    from wdom.examples.markdown_simple import sample_page
+    # from wdom.examples.markdown_simple import sample_page
     # from wdom.examples.rev_text import sample_page
-    # from wdom.examples.data_binding import sample_page
+    from wdom.examples.data_binding import sample_page
     # from wdom.examples.todo import sample_page
     from wdom.log import configure_logger
     configure_logger()
