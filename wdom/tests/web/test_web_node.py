@@ -3,6 +3,7 @@
 
 import asyncio
 from unittest.mock import MagicMock
+from syncer import sync
 
 from wdom.document import get_document
 from wdom.misc import install_asyncio
@@ -148,34 +149,34 @@ class TestWebElement(ElementTestCase):
         self.wait()
         self.assertIsTrue(self.is_displayed())
 
-    def test_get_rect(self):
+    @sync
+    async def test_get_rect(self):
         rect = WebElement('div', style='width:200px;height:100px;')
         self.tag.appendChild(rect)
+        await asyncio.sleep(self.wait_time)
 
-        fut = asyncio.ensure_future(rect.getBoundingClientRect())
-        asyncio.get_event_loop().run_until_complete(fut)
-        data = fut.result()
+        data = await rect.getBoundingClientRect()
         self.assertEqual(data['width'], 200)
         self.assertEqual(data['height'], 100)
 
-    def test_scroll(self):
+    @sync
+    async def test_scroll(self):
         rect = WebElement('div',
                           style='width:3000px;height:3000px;background:#eee;')
         self.tag.appendChild(rect)
-        futX = asyncio.ensure_future(rect.scrollX())
-        futY = asyncio.ensure_future(rect.scrollY())
-        asyncio.get_event_loop().run_until_complete(futX)
-        asyncio.get_event_loop().run_until_complete(futY)
-        self.assertEqual(futX.result()['x'], 0)
-        self.assertEqual(futY.result()['y'], 0)
+        await asyncio.sleep(self.wait_time)
+
+        X = await rect.scrollX()
+        Y = await rect.scrollY()
+        self.assertEqual(X['x'], 0)
+        self.assertEqual(Y['y'], 0)
 
         rect.scrollTo(200, 200)
-        futX = asyncio.ensure_future(rect.scrollX())
-        futY = asyncio.ensure_future(rect.scrollY())
-        asyncio.get_event_loop().run_until_complete(futX)
-        asyncio.get_event_loop().run_until_complete(futY)
-        self.assertEqual(futX.result()['x'], 200)
-        self.assertEqual(futY.result()['y'], 200)
+        await asyncio.sleep(self.wait_time)
+        X = await rect.scrollX()
+        Y = await rect.scrollY()
+        self.assertEqual(X['x'], 200)
+        self.assertEqual(Y['y'], 200)
 
 
 class TestEvent(ElementTestCase):
