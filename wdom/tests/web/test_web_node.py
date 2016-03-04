@@ -40,14 +40,17 @@ class TestWebElement(ElementTestCase):
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), '')
         self.tag.textContent = 'text'
+        self.wait()
         self.assertEqual(self.get_text(), 'text')
 
         child = WebElement('a')
         child.textContent = 'child'
+        self.wait()
         self.tag.appendChild(child)
         self.assertEqual(self.get_text(), 'textchild')
 
         self.tag.textContent = 'NewText'
+        self.wait()
         self.assertEqual(self.get_text(), 'NewText')
         with self.assertRaises(NoSuchElementException):
             self.set_element(child)
@@ -66,6 +69,7 @@ class TestWebElement(ElementTestCase):
         self.assertIsTrue(self.set_element(child))
         self.assertEqual(self.get_text(), '')
         child.textContent = 'Child'
+        self.wait()
         self.assertEqual(self.get_text(), 'Child')
 
         self.set_element(self.tag)
@@ -112,12 +116,14 @@ class TestWebElement(ElementTestCase):
         child2 = WebElement('b')
         child2.textContent = 'child2'
         self.tag.appendChild(child1)
+        self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element(child2)
         self.assertIsTrue(self.set_element(child1))
         self.assertEqual(self.get_text(), 'child1')
 
         self.tag.replaceChild(child2, child1)
+        self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element(child1)
         self.assertIsTrue(self.set_element(child2))
@@ -127,6 +133,7 @@ class TestWebElement(ElementTestCase):
 
     def test_shortcut_attr(self):
         self.tag.textContent = 'TAG'
+        self.wait()
         self.set_element(self.tag)
         self.assertIsTrue(self.is_displayed())
         self.tag.hidden = True
@@ -189,19 +196,21 @@ class TestEvent(ElementTestCase):
     def test_click(self):
         self.set_element(self.btn)
         self.click()
-        self.wait(0.1)
+        self.wait()
         self.assertEqual(self.click_event_mock.call_count, 1)
 
     def test_input(self):
         self.set_element(self.input)
         self.send_keys('abc')
-        self.wait(0.1)
+        self.wait()
         self.assertEqual(self.input_event_mock.call_count, 3)
 
 
 class TestWebElementAIO(TestWebElement):
     module = aioserver
+    wait_time = 0.02
 
 
 class TestEventAIO(TestEvent):
     module = aioserver
+    wait_time = 0.02

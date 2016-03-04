@@ -37,6 +37,7 @@ class TestNode(WDTest):
     def test_node_text(self):
         self.assertEqual(self.get_text(), '')
         self.root.textContent = 'ROOT'
+        self.wait()
         self.assertEqual(self.get_text(), 'ROOT')
 
     def test_node_attr(self):
@@ -58,6 +59,7 @@ class TestNode(WDTest):
         self.assertIsTrue(self.set_element_by_id(child.id))
         self.assertEqual(self.get_text(), '')
         child.textContent = 'Child'
+        self.wait()
         self.assertEqual(self.get_text(), 'Child')
 
         self.root.removeChild(child)
@@ -70,12 +72,14 @@ class TestNode(WDTest):
         child2 = Tag()
         child2.textContent = 'child2'
         self.root.appendChild(child1)
+        self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element_by_id(child2.id)
         self.assertIsTrue(self.set_element_by_id(child1.id))
         self.assertEqual(self.get_text(), 'child1')
 
         self.root.replaceChild(child2, child1)
+        self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element_by_id(child1.id)
         self.assertIsTrue(self.set_element_by_id(child2.id))
@@ -83,10 +87,13 @@ class TestNode(WDTest):
 
     def test_showhide(self):
         self.root.textContent = 'root'
+        self.wait()
         self.assertIsTrue(self.is_displayed())
         self.root.hide()
+        self.wait()
         self.assertIsFalse(self.is_displayed())
         self.root.show()
+        self.wait()
         self.assertIsTrue(self.is_displayed())
 
 
@@ -103,7 +110,7 @@ class TestEvent(WDTest):
     def test_click(self):
         self.set_element(self.root)
         self.click()
-        self.wait(0.1)
+        self.wait()
         self.assertEqual(self.click_mock.call_count, 1)
 
 
@@ -120,7 +127,7 @@ class TestInput(WDTest):
     def test_textinput(self):
         self.set_element(self.input)
         self.send_keys('abc')
-        self.wait(0.02)
+        self.wait()
         self.assertEqual(self.input.value, 'abc')
 
         self.get(self.url)
@@ -128,13 +135,13 @@ class TestInput(WDTest):
         self.assertEqual(self.get_attribute('value'), 'abc')
 
         self.send_keys('def')
-        self.wait(0.02)
+        self.wait()
         self.assertEqual(self.input.value, 'abcdef')
 
     def test_textarea(self):
         self.set_element(self.textarea)
         self.send_keys('abc')
-        self.wait(0.02)
+        self.wait()
         self.assertEqual(self.textarea.value, 'abc')
 
         self.get(self.url)
@@ -142,33 +149,36 @@ class TestInput(WDTest):
         self.assertEqual(self.get_attribute('value'), 'abc')
 
         self.send_keys('def')
-        self.wait(0.02)
+        self.wait()
         self.assertEqual(self.textarea.value, 'abcdef')
 
     def test_checkbox(self):
         self.set_element(self.checkbox)
         self.click()
-        self.wait(0.02)
+        self.wait()
         self.assertIsTrue(self.checkbox.checked)
 
         self.get(self.url)
         self.set_element(self.checkbox)
         self.assertEqual(self.get_attribute('checked'), 'true')
 
-        self.wait(0.02)
+        self.wait()
         self.click()
-        self.wait(0.02)
+        self.wait()
         self.assertEqual(self.get_attribute('checked'), None)
         self.assertIsFalse(self.checkbox.checked)
 
 
 class TestNodeAIO(TestNode):
     module = aioserver
+    wait_time = 0.02
 
 
 class TestEventAIO(TestEvent):
     module = aioserver
+    wait_time = 0.02
 
 
 class TestInputAIO(TestInput):
     module = aioserver
+    wait_time = 0.02
