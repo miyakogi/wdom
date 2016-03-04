@@ -119,7 +119,7 @@ class TestInput(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
         self.root = Div()
-        self.input = Input(parent=self.root)
+        self.input = Input(parent=self.root, type='text')
         self.textarea = TextArea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root)
         self.document.set_body(self.root)
@@ -127,6 +127,7 @@ class TestInput(WDTest):
 
     def test_textinput(self):
         self.set_element(self.input)
+        self.wait()
         self.send_keys('abc')
         self.wait()
         self.assertEqual(self.input.value, 'abc')
