@@ -6,7 +6,6 @@ addons:
   apt:
     packages:
       - xvfb
-      - chromium-chromedriver
 
 before_script:
   - "export DISPLAY=:99.0"

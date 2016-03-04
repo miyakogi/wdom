@@ -33,8 +33,7 @@ def get_browser():
     '''Get existing webdriver. If no driver is running, start new one.'''
     global wd
     if wd is None:
-        # wd = webdriver.Firefox()
-        wd = webdriver.Chrome(executable_path='/usr/lib/chromium-browser/chromedriver')
+        wd = webdriver.Firefox()
         return wd
     else:
         return wd
