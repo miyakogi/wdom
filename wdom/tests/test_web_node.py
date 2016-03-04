@@ -37,13 +37,10 @@ class TestWebElementLocal(TestCase):
     def test_event(self):
         f = lambda data: None
         self.elm.addEventListener('click', f)
-        self.assertIsNotNone(re.match(
-            '<tag id="\d+" onclick="rimo.onclick\(this\);"></tag>',
-            self.elm.html,
-        ))
+        self.assertIn('click', self.elm.listeners)
 
         self.elm.removeEventListener('click', f)
-        self.assertIsNotNone(re.match('<tag id="\d+"></tag>', self.elm.html))
+        self.assertNotIn('click', self.elm.listeners)
 
     def test_not_connected(self):
         self.assertFalse(self.elm.connected)
