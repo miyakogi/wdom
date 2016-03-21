@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import asyncio
-from asyncio import ensure_future, iscoroutine, iscoroutinefunction
+from asyncio import ensure_future, iscoroutinefunction
 from typing import Callable
-from functools import partial
 
 
 class Event:
-    def __init__(self, type:str, bubbles:bool=None, cancelable:bool=None):
+    def __init__(self, type:str, **kwargs):
         self.type = type
-        self.bubbles = bubbles
-        self.cancelable = cancelable
+        self.__dict__.update(kwargs)
 
     def stopPrapagation(self):
         raise NotImplementedError
@@ -39,13 +36,14 @@ class EventListener:
             return ensure_future(coro(*args, **kwargs))
         return wrapper
 
-    def __call__(self, data):
-        return self.action(data=data)
+    def __call__(self, event:Event):
+        return self.action(event=event)
 
 
 class EventTarget:
     def __init__(self, *args, **kwargs):
         self._listeners = {}
+        super().__init__(*args, **kwargs)
 
     def _add_event_listener(self, event:str, listener:Callable):
         self._listeners.setdefault(event, []).append(EventListener(listener))
