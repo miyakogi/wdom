@@ -3,9 +3,9 @@
 
 import os
 import asyncio
+import unittest
 from unittest.mock import MagicMock
 
-import pytest
 from syncer import sync
 
 from wdom.tests.util import TestCase
@@ -204,7 +204,7 @@ class EventTestCase(ElementTestCase):
         self.root.appendChild(self.input)
         return self.root
 
-    @pytest.mark.skipif(os.environ.get('TRAVIS', False),
+    @unittest.skipIf(os.environ.get('TRAVIS', False),
                         reason='This test not pass only on travis')
     def test_click(self):
         self.set_element(self.btn)

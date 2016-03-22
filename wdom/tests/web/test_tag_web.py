@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
+import unittest
 
-import pytest
 from selenium.common.exceptions import NoSuchElementException
 
 from wdom.tag import Tag, TextArea, Input, CheckBox, Div
@@ -108,7 +108,7 @@ class InputTestCase(WDTest):
         self.document.set_body(self.root)
         super().setUp()
 
-    @pytest.mark.skipif(os.environ.get('TRAVIS', False),
+    @unittest.skipIf(os.environ.get('TRAVIS', False),
                         reason='This test not pass only on travis')
     def test_textinput(self):
         self.set_element(self.input)
