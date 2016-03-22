@@ -8,7 +8,7 @@ from wdom.tests.web.test_web_node import WebElementTestCase, EventTestCase
 from wdom.tests.web.test_tag_web import NodeTestCase, InputTestCase
 
 
-def setup_module():
+def setUpModule():
     install_asyncio()
 
 

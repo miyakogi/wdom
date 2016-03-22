@@ -15,7 +15,7 @@ from wdom.web_node import WebElement
 from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
 
 
-def setup_module():
+def setUpModule():
     install_asyncio()
 
 

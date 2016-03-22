@@ -13,7 +13,7 @@ from wdom.tests.web.remote_browser import WDTest, TestCase
 from wdom import server
 
 
-def setup_module():
+def setUpModule():
     install_asyncio()
 
 
