@@ -48,8 +48,8 @@ class WSHandler(websocket.WebSocketHandler):
         message = 'JS: ' + str(message)
         if level == 'error':
             logger.error(message)
-        elif level == 'warn':
-            logger.warn(message)
+        elif level.startswith('warn'):
+            logger.warning(message)
         elif level == 'info':
             logger.info(message)
         elif level == 'debug':

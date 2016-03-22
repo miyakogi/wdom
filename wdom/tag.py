@@ -110,12 +110,12 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def removeClass(self, class_: str):
         if class_ not in self.classList:
             if class_ in self.__class__.get_class_list():
-                logger.warn(
+                logger.warning(
                     'tried to remove class-level class: '
                     '{}'.format(class_)
                 )
             else:
-                logger.warn(
+                logger.warning(
                     'tried to remove non-existing class: {}'.format(class_)
                 )
         else:
