@@ -8,11 +8,11 @@ from unittest.mock import MagicMock
 import pytest
 from syncer import sync
 
+from wdom.tests.util import TestCase
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.web_node import WebElement
 from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
-from wdom import aioserver
 
 
 def setup_module():
@@ -29,7 +29,7 @@ class ElementTestCase(WDTest):
         raise NotImplementedError
 
 
-class TestWebElement(ElementTestCase):
+class WebElementTestCase(ElementTestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -182,7 +182,7 @@ class TestWebElement(ElementTestCase):
         self.assertEqual(Y['y'], 200)
 
 
-class TestEvent(ElementTestCase):
+class EventTestCase(ElementTestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -221,11 +221,9 @@ class TestEvent(ElementTestCase):
         self.assertEqual(self.input_event_mock.call_count, 3)
 
 
-class TestWebElementAIO(TestWebElement):
-    module = aioserver
-    wait_time = 0.02
+class TestWebElement(WebElementTestCase, TestCase):
+    pass
 
 
-class TestEventAIO(TestEvent):
-    module = aioserver
-    wait_time = 0.02
+class TestEvent(EventTestCase, TestCase):
+    pass

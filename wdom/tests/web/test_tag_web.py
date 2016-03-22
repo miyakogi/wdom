@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from unittest.mock import MagicMock
 
 import pytest
 from selenium.common.exceptions import NoSuchElementException
@@ -10,15 +9,15 @@ from selenium.common.exceptions import NoSuchElementException
 from wdom.tag import Tag, TextArea, Input, CheckBox, Div
 from wdom.document import get_document
 from wdom.misc import install_asyncio
-from wdom.tests.web.remote_browser import WDTest
-from wdom import aioserver
+from wdom.tests.web.remote_browser import WDTest, TestCase
+from wdom import server
 
 
 def setup_module():
     install_asyncio()
 
 
-class TestNode(WDTest):
+class NodeTestCase(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
 
@@ -99,25 +98,7 @@ class TestNode(WDTest):
         self.assertIsTrue(self.is_displayed())
 
 
-class TestEvent(WDTest):
-    def setUp(self):
-        self.document = get_document(autoreload=False)
-        self.root = Div('ROOT')
-        self.click_mock = MagicMock()
-        self.click_mock._is_coroutine = False
-        self.root.addEventListener('click', self.click_mock)
-        self.document.set_body(self.root)
-        super().setUp()
-
-    def test_click(self):
-        self.set_element(self.root)
-        self.wait()
-        self.click()
-        self.wait()
-        self.assertEqual(self.click_mock.call_count, 1)
-
-
-class TestInput(WDTest):
+class InputTestCase(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
         self.root = Div()
@@ -175,16 +156,9 @@ class TestInput(WDTest):
         self.assertIsFalse(self.checkbox.checked)
 
 
-class TestNodeAIO(TestNode):
-    module = aioserver
-    wait_time = 0.02
+class TestNode(NodeTestCase, TestCase):
+    module = server
 
 
-class TestEventAIO(TestEvent):
-    module = aioserver
-    wait_time = 0.02
-
-
-class TestInputAIO(TestInput):
-    module = aioserver
-    wait_time = 0.02
+class TestInput(InputTestCase, TestCase):
+    module = server

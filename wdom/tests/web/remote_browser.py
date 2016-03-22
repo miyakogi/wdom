@@ -170,7 +170,7 @@ def close_browser():
     _clear()
 
 
-class WDTest(TestCase):
+class WDTest:
     '''This class is **Experimental**.
 
     Utility class for testing apps with webdriver in another process. Mainly
@@ -180,7 +180,7 @@ class WDTest(TestCase):
     Usage:
 
     Make subclass and override ``get_app`` method to return app (instance of
-    ``wdom.server.Application`` or ``tornado.web.Application``), which you wand
+    ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
     from wdom import server
@@ -201,7 +201,7 @@ class WDTest(TestCase):
         self.get(self.url)
         self.wait(0.1)
 
-    def tearDown(self):
+    def teardown(self):
         self.stop_server()
         self.wait(0.1)
 
@@ -222,8 +222,8 @@ class WDTest(TestCase):
 
     def get_app(self, doc=None) -> Application:
         '''This method should be overridden by subclasses. Return
-        ``pygmariot.server.Application``, ``tornado.web.Application`` to be
-        tested.
+        ``wdom.server.Application`` (subclass of ``tornado.web.Application``)
+        or ``asyncio.Server`` to be tested.
         '''
         return self.module.get_app(doc)
 
