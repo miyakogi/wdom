@@ -23,7 +23,7 @@ def sample_page():
     textbox.setAttribute('type', 'text')
     text.text = 'Hello!'
 
-    def update(data):
+    def update(event):
         text.textContent = textbox.getAttribute('value')
 
     textbox.addEventListener('input', update)
