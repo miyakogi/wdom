@@ -2,14 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import json
 from collections import Iterable
-from functools import partial
-from asyncio import coroutine, ensure_future, iscoroutine, Future
-from inspect import iscoroutinefunction
-from typing import Callable, Tuple, Optional, Union
+from typing import Tuple, Union
 
-from wdom.node import Node, Text, DOMTokenList, RawHtml
+from wdom.node import Node, DOMTokenList, RawHtml
 from wdom.web_node import WebElement
 
 logger = logging.getLogger(__name__)
@@ -186,7 +182,7 @@ class Input(Tag):
         self.addEventListener('input', self._update)
 
     def _update(self, event) -> None:
-        target = event.get('currentTarget')
+        target = getattr(event, 'currentTarget', {})
         if self.type in ('checkbox', 'radio'):
             self.checked = target.get('checked')
         else:
