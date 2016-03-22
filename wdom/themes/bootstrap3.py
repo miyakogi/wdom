@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.tag import NewTagClass
+from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
 
@@ -15,8 +15,6 @@ js_files = [
 ]
 
 headers = []
-
-NewTag = NewTagClass
 
 Button = NewTag('Button', bases=Button, class_='btn')
 DefaultButton = NewTag('DefaultButton', 'button', Button, class_='btn-default')
