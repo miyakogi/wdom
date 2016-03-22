@@ -185,11 +185,12 @@ class Input(Tag):
         self.addEventListener('change', self._update)
         self.addEventListener('input', self._update)
 
-    def _update(self, data) -> None:
+    def _update(self, event) -> None:
+        target = event.get('currentTarget')
         if self.type in ('checkbox', 'radio'):
-            self.checked = data.get('checked')
+            self.checked = target.get('checked')
         else:
-            self.value = data.get('value')
+            self.value = target.get('value')
 
     @property
     def checked(self) -> bool:
