@@ -8,6 +8,7 @@ from xml.etree.ElementTree import HTML_EMPTY
 import html
 
 from wdom.css import parse_style_decl, CSSStyleDeclaration
+from wdom.event import EventTarget
 
 
 class DOMTokenList(list):
@@ -108,6 +109,7 @@ class Node(Node):
     parentElement = None
 
     def __init__(self, parent=None):
+        super().__init__()  # Need to call init in multiple inheritce
         self.children = NodeList()
         self.parent = None
         if parent is not None:
@@ -531,7 +533,7 @@ class appendTextMixin:
             raise TypeError('Invalid type to insert: {}'.format(node))
 
 
-class Element(appendTextMixin, Node):
+class Element(appendTextMixin, Node, EventTarget):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
 

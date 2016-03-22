@@ -2,12 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import re
+from unittest.mock import MagicMock
+
+from syncer import sync
 
 from wdom.tests.util import TestCase
 from wdom.web_node import WebElement
 
 
-class TestWebElementLocal(TestCase):
+class TestWebElement(TestCase):
     def setUp(self):
         self.elm = WebElement('tag')
         self.c1 = WebElement()
@@ -33,14 +36,6 @@ class TestWebElementLocal(TestCase):
     def test_id_init(self):
         elm = WebElement('tag', id='myid')
         self.assertEqual('<tag id="myid"></tag>', elm.html)
-
-    def test_event(self):
-        f = lambda data: None
-        self.elm.addEventListener('click', f)
-        self.assertIn('click', self.elm.listeners)
-
-        self.elm.removeEventListener('click', f)
-        self.assertNotIn('click', self.elm.listeners)
 
     def test_not_connected(self):
         self.assertFalse(self.elm.connected)
@@ -97,3 +92,33 @@ class TestWebElementLocal(TestCase):
 
         clone = self.elm.cloneNode(deep=True)
         self.assertNotEqual(clone.id, self.elm.id)
+
+
+class TestEventMessage(TestCase):
+    def setUp(self):
+        self.elm = WebElement('tag')
+        self.elm.js_exec = MagicMock()
+        self.mock = MagicMock(_is_coroutine=False)
+        self.elm.addEventListener('click', self.mock)
+        self.msg_e = {
+            'type': 'event',
+            'id': self.elm.id,
+            'event': {
+                'type': 'click',
+                'currentTarget': {
+                    'id': self.elm.id,
+                    'value': 'text',
+                },
+            },
+        }
+
+    def test_handle_event(self):
+        self.elm.js_exec.assert_called_once_with('addEventListener', event='click')
+        self.elm.on_message(self.msg_e)
+        self.assertTrue(self.mock.called)
+
+    def test_remove_event(self):
+        self.elm.removeEventListener('click', self.mock)
+        self.elm.js_exec.assert_called_with('removeEventListener', event='click')
+        self.elm.on_message(self.msg_e)
+        self.mock.assert_not_called()
