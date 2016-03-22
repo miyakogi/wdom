@@ -12,21 +12,9 @@ def setup_module():
     install_asyncio()
 
 
-class TestWebElementAIO(WebElementTestCase, TestCase):
-    module = aioserver
-    wait_time = 0.02
+test_cases = (WebElementTestCase, EventTestCase, NodeTestCase, InputTestCase)
 
-
-class TestEventAIO(EventTestCase, TestCase):
-    module = aioserver
-    wait_time = 0.02
-
-
-class TestNodeAIO(NodeTestCase, TestCase):
-    module = aioserver
-    wait_time = 0.02
-
-
-class TestInputAIO(InputTestCase, TestCase):
-    module = aioserver
-    wait_time = 0.02
+for case in test_cases:
+    name = 'Test' + case.__name__.replace('TestCase', 'AIO')
+    globals()[name] = type(name, (case, TestCase),
+                           {'module': aioserver, 'wait_time': 0.02})
