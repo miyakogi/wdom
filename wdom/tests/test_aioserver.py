@@ -13,7 +13,7 @@ from wdom.document import Document
 from wdom.aioserver import get_app, start_server, stop_server
 
 
-def setup_module():
+def setUpModule():
     configure_logger(logging.DEBUG)
 
 

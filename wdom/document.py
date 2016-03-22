@@ -70,7 +70,7 @@ class Document(Node):
         return ''.join(child.html for child in self.childNodes)
 
 
-def get_document(include_wdom: bool = True,
+def get_document(include_rimo: bool = True,
                  include_skeleton: bool = False,
                  include_normalizecss: bool = False,
                  app: Optional[Node] = None,
@@ -114,7 +114,7 @@ def get_document(include_wdom: bool = True,
 
     document.script.textContent = script
 
-    if include_wdom:
+    if include_rimo:
         document.add_jsfile_head('_static/js/rimo/rimo.js')
 
     return document

@@ -10,7 +10,7 @@ def sample_page() -> Div:
     text = H1(parent=app)
     text.textContent = 'Click!'
 
-    def reverse(data):
+    def reverse(event):
         text.textContent = text.textContent[::-1]
 
     text.addEventListener('click', reverse)

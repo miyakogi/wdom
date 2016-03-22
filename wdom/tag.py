@@ -2,14 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import json
 from collections import Iterable
-from functools import partial
-from asyncio import coroutine, ensure_future, iscoroutine, Future
-from inspect import iscoroutinefunction
-from typing import Callable, Tuple, Optional, Union
+from typing import Tuple, Union
 
-from wdom.node import Node, Text, DOMTokenList, RawHtml
+from wdom.node import Node, DOMTokenList, RawHtml
 from wdom.web_node import WebElement
 
 logger = logging.getLogger(__name__)
@@ -114,12 +110,12 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def removeClass(self, class_: str):
         if class_ not in self.classList:
             if class_ in self.__class__.get_class_list():
-                logger.warn(
+                logger.warning(
                     'tried to remove class-level class: '
                     '{}'.format(class_)
                 )
             else:
-                logger.warn(
+                logger.warning(
                     'tried to remove non-existing class: {}'.format(class_)
                 )
         else:
@@ -185,11 +181,12 @@ class Input(Tag):
         self.addEventListener('change', self._update)
         self.addEventListener('input', self._update)
 
-    def _update(self, data) -> None:
+    def _update(self, event) -> None:
+        target = getattr(event, 'currentTarget', {})
         if self.type in ('checkbox', 'radio'):
-            self.checked = data.get('checked')
+            self.checked = target.get('checked')
         else:
-            self.value = data.get('value')
+            self.value = target.get('value')
 
     @property
     def checked(self) -> bool:

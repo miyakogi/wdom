@@ -57,7 +57,8 @@ class Editor(Row):
         for style in styles:
             style_selector.appendChild(Option(style, value=style))
         style_selector.addEventListener(
-            'change', lambda data: self.set_style(data['value']))
+            'change', lambda event: self.set_style(
+                event.currentTarget['value']))
 
         self.viewer = Div(parent=viewer_col)
         self.viewer.setAttribute(
@@ -78,8 +79,8 @@ class Editor(Row):
         self.editor.textContent = src
         self.viewer.innerHTML = self.md(src)
 
-    def render(self, data):
-        self.viewer.innerHTML = self.md(data['value'])
+    def render(self, event):
+        self.viewer.innerHTML = self.md(event.currentTarget['value'])
 
     def set_style(self, style:str):
         self.css.innerHTML = HtmlFormatter(style=style).get_style_defs()

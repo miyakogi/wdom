@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.themes.bootstrap3 import Node, Div, DefaultButton, PrimaryButton, DangerButton
+from wdom.themes.bootstrap3 import Tag, Div, DefaultButton, PrimaryButton, DangerButton
 from wdom.themes.bootstrap3 import FormGroup, TextArea, TextInput, Option, Select
 from wdom.themes.bootstrap3 import js_files, css_files
-from wdom.view import Document, get_document
+from wdom.document import Document, get_document
 
 
-def sample_app() -> Node:
+def sample_app() -> Tag:
     app = Div(class_='container')
     content_wrapper = Div()
     content_wrapper['style'] = '''\

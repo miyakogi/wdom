@@ -13,7 +13,7 @@ from wdom.document import Document
 from wdom.server import MainHandler, Application, get_app
 
 
-def setup_module():
+def setUpModule():
     if not IOLoop.initialized():
         AsyncIOMainLoop().install()
     import logging

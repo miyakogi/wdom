@@ -7,7 +7,7 @@ import json
 from asyncio import coroutine, Future, ensure_future
 from typing import Callable, Optional
 
-from wdom.event import EventListener
+from wdom.event import Event
 from wdom.node import HTMLElement, Node
 
 logger = logging.getLogger(__name__)
@@ -26,7 +26,6 @@ class WebElement(HTMLElement):
 
     def __init__(self, *args, parent=None, **kwargs):
         self.id = kwargs.pop('id', str(id(self)))
-        self.listeners = dict()
         self._reqid = 0
         self._tasks = {}
         super().__init__(*args, **kwargs)
@@ -46,7 +45,7 @@ class WebElement(HTMLElement):
         return bool(self.ownerDocument and self.ownerDocument.connections)
 
     def _on_mount(self, *args, **kwargs):
-        for event in self.listeners:
+        for event in self._listeners:
             self.js_exec('addEventListener', event=event)
 
     def on_message(self, msg: dict):
@@ -55,24 +54,24 @@ class WebElement(HTMLElement):
 
         msg_type = msg.get('type')
         if msg_type == 'event':
-            ensure_future(self.handle_event(msg))
+            self._handle_event(msg)
         elif msg_type == 'response':
-            self.handle_response(msg)
+            self._handle_response(msg)
 
-    @coroutine
-    def handle_event(self, msg):
-        event = msg.get('event', False)
-        if event:
-            data = msg.get('data')
-            for listener in self.listeners.get(event, []):
-                listener(data=data)
+    def _handle_event(self, msg):
+        _e = msg.get('event', {})
+        event = Event(**_e)
+        self.dispatchEvent(event=event)
 
-    def handle_response(self, msg):
+    def _handle_response(self, msg):
         response = msg.get('data', False)
         if response:
-            req = self._tasks.pop(msg.get('reqid'), False)
-            if req and not req.cancelled() and not req.done():
-                req.set_result(msg.get('data'))
+            task = self._tasks.pop(msg.get('reqid'), False)
+            if task and not task.cancelled() and not task.done():
+                task.set_result(msg.get('data'))
+
+    def _add_event_listener_web(self, event:str, *args, **kwargs):
+        self.js_exec('addEventListener', event=event)
 
     def addEventListener(self, event: str, listener: Callable):
         '''Add event listener to this node. ``event`` is a string which
@@ -81,24 +80,21 @@ class WebElement(HTMLElement):
         listener which is called when this node is clicked, event is
         ``'click``.
         '''
-        if event not in self.listeners:
-            self.listeners[event] = []
-            self.js_exec('addEventListener', event=event)
-        self.listeners[event].append(EventListener(listener))
+        self._add_event_listener(event, listener)
+        self._add_event_listener_web(event)
 
-    def removeEventListener(self, event: str, listener: Callable):
+    def _remove_event_listener_web(self, event:str, *args, **kwargs):
+        if event not in self._listeners:
+            self.js_exec('removeEventListener', event=event)
+
+    def removeEventListener(self, event:str, listener:Callable):
         '''Remove an event listener of this node. The listener is removed only
         when both event type and listener is matched.
         '''
-        listeners = self.listeners[event]
-        for l in listeners:
-            if l.listener == listener:
-                listeners.remove(l)
-                break
-        if len(listeners) == 0:
-            del self.listeners[event]
+        self._remove_event_listener(event, listener)
+        self._remove_event_listener_web(event, listener)
 
-    def js_exec(self, method: str, **kwargs) -> Optional[Future]:
+    def js_exec(self, method:str, **kwargs) -> Optional[Future]:
         '''Execute ``method`` in the related node on browser, via web socket
         connection. Other keyword arguments are passed to ``params`` attribute.
         If this node is not in any document tree (namely, this node does not
@@ -249,7 +245,7 @@ class WebElement(HTMLElement):
         return self._get_text_content()
 
     def _set_text_content_web(self, text:str):
-        self.js_exec(method='textContent', text=self.textContent)
+        self.js_exec('textContent', text=self.textContent)
 
     @textContent.setter
     def textContent(self, text: str):
@@ -257,7 +253,7 @@ class WebElement(HTMLElement):
         self._set_text_content_web(text)
 
     def _set_inner_html_web(self, html:str):
-        self.js_exec(method='innerHTML', html=html)
+        self.js_exec('innerHTML', html=html)
 
     @property
     def innerHTML(self) -> str:
@@ -286,12 +282,8 @@ class WebElement(HTMLElement):
     def scrollBy(self, x:int, y:int):
         self.js_exec('scrollBy', x=x, y=y)
 
-    @coroutine
     def scrollX(self):
-        fut = yield from self.js_query('scrollX')
-        return fut
+        return self.js_query('scrollX')
 
-    @coroutine
     def scrollY(self):
-        fut = yield from self.js_query('scrollY')
-        return fut
+        return self.js_query('scrollY')

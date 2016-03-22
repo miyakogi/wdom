@@ -1,36 +1,36 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.tag import Node
-from wdom.view import get_document
+from wdom.tag import Tag
+from wdom.document import get_document
 
 
-class App(Node):
+class App(Tag):
     tag = 'wdom-app'
 
 
-class H1(Node):
+class H1(Tag):
     tag = 'h1'
 
 
-class Input(Node):
+class Input(Tag):
     tag = 'input'
 
 
-class Button(Node):
+class Button(Tag):
     tag = 'button'
 
-class Div(Node):
+class Div(Tag):
     tag = 'div'
 
 
-class Item(Node):
+class Item(Tag):
     tag = 'span'
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
 
-def sample_page() -> Node:
+def sample_page() -> Tag:
     app = App()
     title = H1(parent=app)
     title.textContent = 'Todo example'
@@ -43,7 +43,7 @@ def sample_page() -> Node:
     todo_heading.appendChild('Todo list')
     # add_button.addEventListener('click')
 
-    def new_item(data=None) -> Node:
+    def new_item(event=None) -> Tag:
         item = Item()
         item.appendChild('New Item')
         todo_list.appendChild(item)

@@ -3,7 +3,6 @@
 
 import sys
 from os import path
-import time
 
 import pytest
 
