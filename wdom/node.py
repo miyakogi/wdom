@@ -277,7 +277,7 @@ class Node(Node):
     def _set_text_content(self, value:str):
         self._empty()
         if value:
-            self.appendChild(Text(value))
+            self._append_child(Text(value))
 
     @property
     def textContent(self) -> str:
@@ -574,7 +574,7 @@ class Element(appendTextMixin, Node, EventTarget):
 
     def _set_inner_html(self, html:str):
         self._empty()
-        self.appendChild(RawHtml(html))
+        self._append_child(RawHtml(html))
 
     @property
     def innerHTML(self) -> str:

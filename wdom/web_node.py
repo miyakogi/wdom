@@ -7,7 +7,7 @@ import json
 from asyncio import coroutine, Future, ensure_future
 from typing import Callable, Optional
 
-from wdom.event import EventListener, Event
+from wdom.event import Event
 from wdom.node import HTMLElement, Node
 
 logger = logging.getLogger(__name__)
@@ -94,7 +94,7 @@ class WebElement(HTMLElement):
         self._remove_event_listener(event, listener)
         self._remove_event_listener_web(event, listener)
 
-    def js_exec(self, method: str, **kwargs) -> Optional[Future]:
+    def js_exec(self, method:str, **kwargs) -> Optional[Future]:
         '''Execute ``method`` in the related node on browser, via web socket
         connection. Other keyword arguments are passed to ``params`` attribute.
         If this node is not in any document tree (namely, this node does not
@@ -245,7 +245,7 @@ class WebElement(HTMLElement):
         return self._get_text_content()
 
     def _set_text_content_web(self, text:str):
-        self.js_exec(method='textContent', text=self.textContent)
+        self.js_exec('textContent', text=self.textContent)
 
     @textContent.setter
     def textContent(self, text: str):
@@ -253,7 +253,7 @@ class WebElement(HTMLElement):
         self._set_text_content_web(text)
 
     def _set_inner_html_web(self, html:str):
-        self.js_exec(method='innerHTML', html=html)
+        self.js_exec('innerHTML', html=html)
 
     @property
     def innerHTML(self) -> str:
