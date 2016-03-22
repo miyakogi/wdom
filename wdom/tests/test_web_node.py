@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import re
 from unittest.mock import MagicMock, call
 
 from syncer import sync
@@ -131,7 +130,7 @@ class TestEventMessage(TestCase):
         self.elm.js_exec = MagicMock()
         self.mock = MagicMock(_is_coroutine=False)
         self.elm.addEventListener('click', self.mock)
-        self.msg_e = {
+        self.msg = {
             'type': 'event',
             'id': self.elm.id,
             'event': {
@@ -141,11 +140,31 @@ class TestEventMessage(TestCase):
 
     def test_handle_event(self):
         self.elm.js_exec.assert_called_once_with('addEventListener', event='click')
-        self.elm.on_message(self.msg_e)
+        self.elm.on_message(self.msg)
         self.assertTrue(self.mock.called)
 
     def test_remove_event(self):
         self.elm.removeEventListener('click', self.mock)
         self.elm.js_exec.assert_called_with('removeEventListener', event='click')
-        self.elm.on_message(self.msg_e)
+        self.elm.on_message(self.msg)
         self.mock.assert_not_called()
+
+
+class TestQuery(TestCase):
+    def setUp(self):
+        self._dummy_parent = MagicMock(connected=True, connections=True)
+        self.elm = WebElement('tag')
+        self.elm.parent = self._dummy_parent
+        self.elm.js_exec = MagicMock()
+        self.msg = {
+            'type': 'response',
+            'id': self.elm.id,
+        }
+
+    def test_query(self):
+        fut = self.elm.js_query('test')
+        self.elm.js_exec.assert_called_once_with('test', reqid=0)
+        self.msg['reqid'] = 0
+        self.msg['data'] = 1
+        self.elm._handle_response(self.msg)
+        self.assertEqual(fut.result(), 1)
