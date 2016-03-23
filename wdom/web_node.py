@@ -9,13 +9,14 @@ from typing import Callable, Optional
 
 from wdom.event import Event
 from wdom.node import HTMLElement, Node
+from wdom.interface import WebIF
 
 logger = logging.getLogger(__name__)
 js_logger = logger.getChild('ws')
 elements = dict()
 
 
-class WebElement(HTMLElement):
+class WebElement(HTMLElement, WebIF):
     @property
     def id(self) -> str:
         return self._id
@@ -105,7 +106,7 @@ class WebElement(HTMLElement):
                 self.ws_send(dict(method=method, params=kwargs))
             )
 
-    def js_query(self, query):
+    def js_query(self, query) -> Future:
         if self.connected:
             self.js_exec(query, reqid=self._reqid)
             fut = Future()
