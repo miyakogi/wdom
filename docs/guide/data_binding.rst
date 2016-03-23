@@ -24,8 +24,8 @@ Data Binding
             self.h2.style = 'border: dotted 1px #999;'
             self.input.addEventListener('input', self.update)
 
-        def update(self, data):
-            self.h2.textContent = data.value
+        def update(self, event):
+            self.h2.textContent = event.value
 
 
     install_asyncio()

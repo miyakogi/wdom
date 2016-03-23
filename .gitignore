@@ -10,7 +10,7 @@ __pycache__/
 *.py[cod]
 
 # Sphinx build dir
-docs/_build/*
+_build/
 
 # node files
 node_modules

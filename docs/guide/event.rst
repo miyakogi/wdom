@@ -20,7 +20,7 @@ MyApp!``）がクリックされるたびに反転するようにしてみまし
     doc = get_document()
 
     text = H1('Hello, MyApp!', parent=doc.body)
-    def reverse(data):
+    def reverse(event):
         rev_text = reversed(text.textContent)
         text.textContent = rev_text
     text.addEventListener('click', reverse)
@@ -61,8 +61,8 @@ Event Listner
 
 次に ``reverse`` 関数を定義しています。
 これが ``H1`` 要素がクリックされた時に実行される処理になります。
-引数の ``data``
-にはイベントが発行された時に送られてきたデータが入りますが、今回は使っていません [#data]_。
+引数の ``event``
+にはイベントが発行された時に送られてきたデータが入りますが、今回は使っていません [#event]_。
 
 textContent
 ^^^^^^^^^^^
@@ -98,13 +98,13 @@ addEventListener
 今回は一度 ``def`` 文で関数を定義しましたが、次のように無名関数をつかって関数の定義と登録を一気に行うことも可能です。 ::
 
     text.addEventListener('click',
-        lambda data: text.textContent = reversed(text.textContent))
+        lambda event: text.textContent = reversed(text.textContent))
 
 イベントのあつかいがわかったところで、次はユーザーからのテキスト入力を処理してみましょう。
 
 .. rubric:: 脚注
 
-.. [#data] 使わない場合でも関数呼び出し時に ``data``
+.. [#event] 使わない場合でも関数呼び出し時に ``event``
     引数が渡されるので、引数を一つ取る関数として定義しないとエラーになってしまいます。
 .. [#get_text_content] JavaScript で要素の ``textContent``
     属性にアクセスした時と同じ振る舞いです。
