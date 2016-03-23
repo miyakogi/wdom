@@ -53,7 +53,7 @@ class TestWebElement(TestCase):
         self.js_mock1.assert_not_called()
         self.assertEqual(self.js_mock.call_count, 1)
         self.js_mock.assert_called_once_with(
-            'insertAdjacentHTML', position='beforeend', text=self.c1.html)
+            'insertAdjacentHTML', position='beforeend', html=self.c1.html)
 
         removed_child1 = self.elm.removeChild(self.c1)
         self.assertIs(removed_child1, self.c1)
@@ -87,7 +87,7 @@ class TestWebElement(TestCase):
         self.assertNotIn(self.c1, self.elm)
         self.assertNotIn(self.c2, self.elm)
         self.js_mock1.assert_called_once_with(
-            'insertAdjacentHTML', position='beforebegin', text=self.c2.html)
+            'insertAdjacentHTML', position='beforebegin', html=self.c2.html)
         self.assertEqual(self.js_mock.call_count, 3)
 
         with self.assertRaises(ValueError):
