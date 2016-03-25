@@ -192,7 +192,7 @@ class WebElement(HTMLElement, WebIF):
             ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
                                 html=html)
         else:
-            index = self.childNodes.index(ref_node)
+            index = self._children.index(ref_node)
             self.js_exec('insert', index=index, html=html)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement') -> Node:
@@ -208,7 +208,7 @@ class WebElement(HTMLElement, WebIF):
         if isinstance(child, WebElement):
             self.js_exec('removeChild', id=child.id)
         else:
-            index = self.childNodes.index(child)
+            index = self._children.index(child)
             self.js_exec(
                 'eval',
                 script='node.removeChild(node.childNodes[{}])'.format(index),
@@ -268,8 +268,10 @@ class WebElement(HTMLElement, WebIF):
     @property
     def html_noid(self) -> str:
         html = self.start_tag.replace(' id="{}"'.format(self.id), '')
-        html += ''.join(elm.html_noid if isinstance(elm, WebElement) else elm.html
-                       for elm in self.childNodes)
+        html += ''.join(
+            elm.html_noid if isinstance(elm, WebElement) else elm.html
+            for elm in self.childNodes
+        )
         html += self.end_tag
         return html
 

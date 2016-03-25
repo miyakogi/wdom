@@ -497,7 +497,7 @@ class TestTagBase(TestCase):
         self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', self.tag.html)
         self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', clone.html)
 
-        clone.children[0].removeClass('b')
+        clone.childNodes[0].removeClass('b')
         self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', self.tag.html)
         self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', clone.html)
 

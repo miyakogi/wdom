@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from collections import Iterable
-from xml.dom.minicompat import NodeList
 from xml.dom import Node
 from xml.etree.ElementTree import HTML_EMPTY
 import html
@@ -91,6 +90,41 @@ class NamedNodeMap(dict):
             return None
 
 
+class NodeList:
+    def __init__(self, ref:list):
+        self.ref = ref
+
+    def __getitem__(self, index:int) -> Node:
+        return self.item(index)
+
+    def __len__(self) -> int:
+        return len(self.ref)
+
+    def __iter__(self) -> Node:
+        for n in self.ref:
+            yield n
+
+    @property
+    def length(self) -> int:
+        return len(self)
+
+    def item(self, index:int) -> Node:
+        if not isinstance(index, int):
+            raise TypeError(
+                'Indeces must be integer, not {}'.format(type(index)))
+        return self.ref[index] if 0 <= index < self.length else None
+
+
+class HTMLCollection(NodeList):
+    def namedItem(self, name:str) -> Node:
+        for n in self.ref:
+            if n.getAttribute('id') == name:
+                return n
+        for n in self.ref:
+            if n.getAttribute('name') == name:
+                return n
+
+
 class Node(Node):
     # DOM Level 1
     nodeType = None
@@ -110,7 +144,7 @@ class Node(Node):
 
     def __init__(self, parent=None):
         super().__init__()  # Need to call init in multiple inheritce
-        self.children = NodeList()
+        self._children = list()
         self.parent = None
         if parent is not None:
             parent.appendChild(self)
@@ -119,7 +153,7 @@ class Node(Node):
         return self.length
 
     def __contains__(self, other: Node) -> bool:
-        return other in self.children
+        return other in self._children
 
     def __copy__(self) -> Node:
         clone = type(self)()
@@ -134,7 +168,7 @@ class Node(Node):
     # DOM Level 1
     @property
     def length(self) -> int:
-        return len(self.children)
+        return len(self._children)
 
     @property
     def parentNode(self) -> Node:
@@ -142,19 +176,19 @@ class Node(Node):
 
     @property
     def childNodes(self) -> NodeList:
-        return self.children
+        return NodeList(self._children)
 
     @property
     def firstChild(self) -> Node:
         if self.hasChildNodes():
-            return self.childNodes[0]
+            return self._children[0]
         else:
             return None
 
     @property
     def lastChild(self) -> Node:
         if self.hasChildNodes():
-            return self.childNodes[-1]
+            return self._children[-1]
         else:
             return None
 
@@ -163,14 +197,14 @@ class Node(Node):
         parent = self.parentNode
         if parent is None:
             return None
-        return parent.childNodes.item(parent.childNodes.index(self) - 1)
+        return parent.childNodes.item(parent._children.index(self) - 1)
 
     @property
     def nextSibling(self) -> Node:
         parent = self.parentNode
         if parent is None:
             return None
-        return parent.childNodes.item(parent.childNodes.index(self) + 1)
+        return parent.childNodes.item(parent._children.index(self) + 1)
 
     # DOM Level 2
     @property
@@ -184,14 +218,14 @@ class Node(Node):
 
     # Methods
     def _append_document_fragment(self, node) -> Node:
-        for c in tuple(node.childNodes):
+        for c in tuple(node._children):
             self._append_child(c)
         return node
 
     def _append_element(self, node) -> Node:
         if node.parentNode is not None:
             node.remove()
-        self.children.append(node)
+        self._children.append(node)
         node.parent = self
         return node
 
@@ -205,17 +239,17 @@ class Node(Node):
         return self._append_child(node)
 
     def index(self, node):
-        return self.children.index(node)
+        return self._children.index(node)
 
     def _insert_document_fragment_before(self, node, ref_node) -> Node:
-        for c in tuple(node.childNodes):
+        for c in tuple(node._children):
             self._insert_before(c, ref_node)
         return node
 
     def _insert_element_before(self, node, ref_node) -> Node:
         if node.parentNode is not None:
             node.remove()
-        self.children.insert(self.index(ref_node), node)
+        self._children.insert(self.index(ref_node), node)
         node.parent = self
         return node
 
@@ -229,12 +263,12 @@ class Node(Node):
         return self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
-        return bool(self.children)
+        return bool(self._children)
 
     def _remove_child(self, node) -> Node:
-        if node not in self.children:
+        if node not in self._children:
             raise ValueError('node to be removed is not a child of this node.')
-        self.childNodes.remove(node)
+        self._children.remove(node)
         node.parent = None
         return node
 
@@ -265,14 +299,14 @@ class Node(Node):
         self._remove()
 
     def _empty(self):
-        for child in tuple(self.childNodes):
+        for child in tuple(self._children):
             self.removeChild(child)
 
     def empty(self):
         self._empty()
 
     def _get_text_content(self) -> str:
-        return ''.join(child.textContent for child in self.childNodes)
+        return ''.join(child.textContent for child in self._children)
 
     def _set_text_content(self, value:str):
         self._empty()
@@ -349,7 +383,7 @@ class Attr(Node):
 
     @property
     def childNodes(self) -> NodeList:
-        return NodeList()
+        return NodeList([])
 
     # Methods
     def appendChild(self, node) -> None:
@@ -429,7 +463,7 @@ class CharacterData(Node):
 
     @property
     def childNodes(self) -> NodeList:
-        return NodeList()
+        return NodeList([])
 
     # Methods
     def appendChild(self, node) -> None:
@@ -570,7 +604,7 @@ class Element(appendTextMixin, Node, EventTarget):
         return tag + '>'
 
     def _get_inner_html(self) -> str:
-        return ''.join(child.html for child in self.childNodes)
+        return ''.join(child.html for child in self._children)
 
     def _set_inner_html(self, html:str):
         self._empty()
@@ -673,12 +707,12 @@ class Element(appendTextMixin, Node, EventTarget):
         This searches all child nodes recursively.
         '''
         elements = []
-        for child in self.childNodes:
+        for child in self._children:
             if cond(child):
                 elements.append(child)
             if isinstance(child, Element):
                 elements.extend(child.getElementsBy(cond))
-        return elements
+        return NodeList(elements)
 
     def getElementsByTagName(self, tag:str):
         _tag = tag.upper()
@@ -704,7 +738,7 @@ class DocumentFragment(appendTextMixin, Node):
 
     @property
     def html(self) -> str:
-        return ''.join(child.html for child in self.childNodes)
+        return ''.join(child.html for child in self._children)
 
 
 class Document(Node):
@@ -743,7 +777,7 @@ class Document(Node):
         self.charset_element.setAttribute('charset', value)
 
     def render(self) -> str:
-        return ''.join(child.html for child in self.childNodes)
+        return ''.join(child.html for child in self._children)
 
 
 class HTMLElement(Element):
