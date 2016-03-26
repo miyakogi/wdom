@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, call
 
 from syncer import sync
 
@@ -53,7 +53,7 @@ class TestWebElement(TestCase):
         self.js_mock1.assert_not_called()
         self.assertEqual(self.js_mock.call_count, 1)
         self.js_mock.assert_called_once_with(
-            'insertAdjacentHTML', position='beforeend', text=self.c1.html)
+            'insertAdjacentHTML', position='beforeend', html=self.c1.html)
 
         removed_child1 = self.elm.removeChild(self.c1)
         self.assertIs(removed_child1, self.c1)
@@ -87,7 +87,7 @@ class TestWebElement(TestCase):
         self.assertNotIn(self.c1, self.elm)
         self.assertNotIn(self.c2, self.elm)
         self.js_mock1.assert_called_once_with(
-            'insertAdjacentHTML', position='beforebegin', text=self.c2.html)
+            'insertAdjacentHTML', position='beforebegin', html=self.c2.html)
         self.assertEqual(self.js_mock.call_count, 3)
 
         with self.assertRaises(ValueError):
@@ -98,6 +98,32 @@ class TestWebElement(TestCase):
         self.js_mock.assert_called_with('setAttribute', attr='src', value='a')
         self.elm.removeAttribute('src')
         self.js_mock.assert_called_with('removeAttribute', attr='src')
+
+    def test_style(self):
+        self.elm.style = 'color: red;'
+        self.js_mock.assert_called_once_with(
+            'setAttribute', attr='style', value='color: red;')
+        self.elm.removeAttribute('style')
+        self.js_mock.assert_called_with('removeAttribute', attr='style')
+        self.elm.style.color = 'black'
+        self.js_mock.assert_called_with(
+            'setAttribute', attr='style', value='color: black;')
+
+    def test_style_init(self):
+        _js_exec = WebElement.js_exec
+        WebElement.js_exec = self.js_mock
+        WebElement('elm', style='color: red;')
+        _call = call('setAttribute', attr='style', value='color: red;')
+        _call_remove = call('removeAttribute', attr='style')
+        self.js_mock.assert_has_calls([_call])
+        count = 0
+        for c in self.js_mock.call_args_list:
+            if c == _call:
+                count += 1
+            elif c == _call_remove:
+                raise AssertionError('Unexpeted remove style')
+        self.assertEqual(count, 1)
+        WebElement.js_exec = _js_exec
 
     def test_set_text_content(self):
         self.elm.textContent = 'text'
@@ -154,7 +180,7 @@ class TestQuery(TestCase):
     def setUp(self):
         self._dummy_parent = MagicMock(connected=True, connections=True)
         self.elm = WebElement('tag')
-        self.elm.parent = self._dummy_parent
+        self.elm._parent = self._dummy_parent
         self.elm.js_exec = MagicMock()
         self.msg = {
             'type': 'response',

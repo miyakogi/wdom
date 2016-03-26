@@ -194,7 +194,7 @@ class TestCSSRuleList(TestCase):
 
     def test_append2(self):
         self.list.append(self.rule)
-        rule2 = CSSStyleRule('h2', CSSStyleDeclaration(background='black'))
+        rule2 = CSSStyleRule('h2', CSSStyleDeclaration('background: black;'))
         self.list.append(rule2)
         self.assertEqual(
             self.list.cssText, 'h1 {color: red;}\nh2 {background: black;}')

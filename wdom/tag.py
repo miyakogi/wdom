@@ -52,14 +52,14 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         '''Return class-level class list, including all super class's.
         '''
         l = []
-        l.append(DOMTokenList(cls.class_))
+        l.append(DOMTokenList(cls, cls.class_))
         if cls.inherit_class:
             for base_cls in cls.__bases__:
                 if issubclass(base_cls, Tag):
                     l.append(base_cls.get_class_list())
         # Reverse order so that parent's class comes to front
         l.reverse()
-        return DOMTokenList(l)
+        return DOMTokenList(cls, l)
 
     def append(self, child:Node):
         '''Shortcut method of ``appendChild``.'''
@@ -77,10 +77,10 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def __delitem__(self, attr: str):
         self.removeAttribute(attr)
 
-    def __copy__(self) -> 'TagBase':
+    def __copy__(self) -> 'Tag':
         clone = type(self)()
-        for attr in self.attributes.values():
-            clone.setAttributeNode(attr)
+        for attr in self.attributes:
+            clone.setAttribute(attr, self.getAttribute(attr))
         for c in self.classList:
             clone.addClass(c)
         return clone
@@ -88,7 +88,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def getAttribute(self, attr:str):
         if attr == 'class':
             cls = self.get_class_list()
-            cls.append(self.classList)
+            cls._append(self.classList)
             if cls:
                 return cls.to_string()
             else:
@@ -96,10 +96,8 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         else:
             return super().getAttribute(attr)
 
-    def addClass(self, class_: str):
-        if class_ and self.connected:
-            self.js_exec('addClass', **{'class': class_})
-        self.classList.append(class_)
+    def addClass(self, *classes:Tuple[str]):
+        self.classList.add(*classes)
 
     def hasClass(self, class_: str):
         return class_ in self.classList
@@ -107,21 +105,22 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def hasClasses(self):
         return len(self.classList) > 0
 
-    def removeClass(self, class_: str):
-        if class_ not in self.classList:
-            if class_ in self.__class__.get_class_list():
-                logger.warning(
-                    'tried to remove class-level class: '
-                    '{}'.format(class_)
-                )
+    def removeClass(self, *classes:Tuple[str]):
+        _remove_cl = []
+        for class_ in classes:
+            if class_ not in self.classList:
+                if class_ in self.__class__.get_class_list():
+                    logger.warning(
+                        'tried to remove class-level class: '
+                        '{}'.format(class_)
+                    )
+                else:
+                    logger.warning(
+                        'tried to remove non-existing class: {}'.format(class_)
+                    )
             else:
-                logger.warning(
-                    'tried to remove non-existing class: {}'.format(class_)
-                )
-        else:
-            if class_ and  class_ in self.classList and self.connected:
-                self.js_exec('removeClass', **{'class': class_})
-            self.classList.remove(class_)
+                _remove_cl.append(class_)
+        self.classList.remove(*_remove_cl)
 
     def show(self):
         self.hidden = False

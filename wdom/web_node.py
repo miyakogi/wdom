@@ -9,13 +9,14 @@ from typing import Callable, Optional
 
 from wdom.event import Event
 from wdom.node import HTMLElement, Node
+from wdom.interface import WebIF
 
 logger = logging.getLogger(__name__)
 js_logger = logger.getChild('ws')
 elements = dict()
 
 
-class WebElement(HTMLElement):
+class WebElement(HTMLElement, WebIF):
     @property
     def id(self) -> str:
         return self._id
@@ -105,7 +106,7 @@ class WebElement(HTMLElement):
                 self.ws_send(dict(method=method, params=kwargs))
             )
 
-    def js_query(self, query):
+    def js_query(self, query) -> Future:
         if self.connected:
             self.js_exec(query, reqid=self._reqid)
             fut = Future()
@@ -147,32 +148,12 @@ class WebElement(HTMLElement):
         self._empty_web()
         self._empty()
 
-    def _remove_attribute_web(self, attr:str):
-        self.js_exec('removeAttribute', attr=attr)
-
-    def removeAttribute(self, attr: str):
-        '''Remove attribute. Even if this node does not have the attribute,
-        this method does not raise any error errors will be raised.
-        '''
-        self._remove_attribute_web(attr)
-        self._remove_attribute(attr)
-
-    def _set_attribute_web(self, attr:str, value:str):
-        self.js_exec('setAttribute', attr=attr, value=value)
-
-    def setAttribute(self, attr: str, value: str, **kwargs):
-        '''Set attribute to ``value``. If the attribute already exists,
-        overwrite it by new ``value``.
-        '''
-        self._set_attribute_web(attr, value)
-        self._set_attribute(attr, value)
-
     def _append_child_web(self, child: 'WebElement'):
         if isinstance(child, Node):
-            text = child.html
+            html = child.html
         else:
-            text = str(child)
-        self.js_exec('insertAdjacentHTML', position='beforeend', text=text)
+            html = str(child)
+        self.js_exec('insertAdjacentHTML', position='beforeend', html=html)
 
     def appendChild(self, child: 'WebElement') -> Node:
         '''Append child node at the last of child nodes. If this instance is
@@ -183,16 +164,16 @@ class WebElement(HTMLElement):
 
     def _insert_before_web(self, child: 'WebElement', ref_node: 'WebElement'):
         if isinstance(child, WebElement):
-            text = child.html
+            html = child.html
         else:
-            text = str(child)
+            html = str(child)
 
         if isinstance(ref_node, WebElement):
             ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
-                                text=text)
+                                html=html)
         else:
-            index = self.childNodes.index(ref_node)
-            self.js_exec('insert', index=index, html=text)
+            index = self._children.index(ref_node)
+            self.js_exec('insert', index=index, html=html)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement') -> Node:
         '''Insert new child node before the reference child node. If the
@@ -207,7 +188,7 @@ class WebElement(HTMLElement):
         if isinstance(child, WebElement):
             self.js_exec('removeChild', id=child.id)
         else:
-            index = self.childNodes.index(child)
+            index = self._children.index(child)
             self.js_exec(
                 'eval',
                 script='node.removeChild(node.childNodes[{}])'.format(index),
@@ -267,8 +248,10 @@ class WebElement(HTMLElement):
     @property
     def html_noid(self) -> str:
         html = self.start_tag.replace(' id="{}"'.format(self.id), '')
-        html += ''.join(elm.html_noid if isinstance(elm, WebElement) else elm.html
-                       for elm in self.childNodes)
+        html += ''.join(
+            elm.html_noid if isinstance(elm, WebElement) else elm.html
+            for elm in self.childNodes
+        )
         html += self.end_tag
         return html
 

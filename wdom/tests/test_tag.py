@@ -53,12 +53,10 @@ class TestTag(TestCase):
         self.assertIsFalse(self.tag.hasAttribute('b'))
         self.assertEqual('b', self.tag.getAttribute('a'))
         self.assertMatch('<tag a="b" id="\d+"></tag>', self.tag.html)
-        self.assertEqual(self.tag.attributes['a'].value, 'b')
+        self.assertEqual(self.tag.getAttribute('a'), 'b')
         self.tag.removeAttribute('a')
         self.assertIsFalse(self.tag.hasAttributes())
         self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
-        self.assertEqual(self.tag.attributes, NamedNodeMap())
-
         self.assertIsNone(self.tag.getAttribute('aaaa'))
 
     def test_attr_multi(self):
@@ -132,7 +130,7 @@ class TestTag(TestCase):
         self.assertIsTrue(self.tag.hasChildNodes())
         self.assertMatch('<tag id="\d+">text</tag>', self.tag.html)
         # self.assertIn('text', self.tag)
-        self.assertEqual(self.tag[0].parent, self.tag)
+        self.assertEqual(self.tag[0].parentNode, self.tag)
 
         self.tag.textContent = ''
         self.assertIsFalse(self.tag.hasChildNodes())
@@ -280,17 +278,17 @@ class TestTag(TestCase):
 
 class TestClassList(TestCase):
     def setUp(self):
-        self.cl = DOMTokenList()
+        self.cl = DOMTokenList(self)
 
     def test_addremove(self):
         self.assertIsFalse(bool(self.cl))
         self.assertEqual(len(self.cl), 0)
-        self.cl.append('a')
+        self.cl.add('a')
         self.assertIsTrue(bool(self.cl))
         self.assertEqual(len(self.cl), 1)
         self.assertIn('a', self.cl)
         self.assertEqual('a', self.cl.to_string())
-        self.cl.append('b')
+        self.cl.add('b')
         self.assertIsTrue(bool(self.cl))
         self.assertEqual(len(self.cl), 2)
         self.assertIn('a', self.cl)
@@ -302,64 +300,6 @@ class TestClassList(TestCase):
         self.assertNotIn('a', self.cl)
         self.assertIn('b', self.cl)
         self.assertEqual('b', self.cl.to_string())
-
-    def test_add_multi_string(self):
-        self.cl.append('a b')
-        self.assertEqual(len(self.cl), 2)
-        self.assertEqual('a b', self.cl.to_string())
-        self.cl.remove('a')
-        self.assertEqual(len(self.cl), 1)
-        self.assertEqual('b', self.cl.to_string())
-
-    def test_add_multi_list(self):
-        self.cl.append(['a', 'b'])
-        self.assertEqual(len(self.cl), 2)
-        self.assertEqual('a b', self.cl.to_string())
-        self.cl.remove('a')
-        self.assertEqual(len(self.cl), 1)
-        self.assertEqual('b', self.cl.to_string())
-
-    def test_add_multi_mixed(self):
-        self.cl.append(['a', 'b c'])
-        self.assertEqual(len(self.cl), 3)
-        self.assertEqual('a b c', self.cl.to_string())
-        self.cl.remove('b')
-        self.assertEqual(len(self.cl), 2)
-        self.assertEqual('a c', self.cl.to_string())
-
-    def test_add_none(self):
-        self.cl.append(None)
-        self.assertEqual(len(self.cl), 0)
-        self.assertIsFalse(bool(self.cl))
-        self.assertEqual('', self.cl.to_string())
-
-    def test_add_blank(self):
-        self.cl.append('')
-        self.assertEqual(len(self.cl), 0)
-        self.assertIsFalse(bool(self.cl))
-        self.assertEqual('', self.cl.to_string())
-
-    def test_add_invlalid(self):
-        with self.assertRaises(TypeError):
-            self.cl.append(1)
-        with self.assertRaises(TypeError):
-            self.cl.append(Tag())
-        self.assertEqual(len(self.cl), 0)
-        self.assertIsFalse(bool(self.cl))
-        self.assertEqual('', self.cl.to_string())
-
-    def test_iter(self):
-        cls = ['a', 'b', 'c']
-        self.cl.append(cls)
-        for c in self.cl:
-            self.assertIn(c, cls)
-            cls.remove(c)
-        self.assertEqual(len(cls), 0)
-
-    def test_reverse(self):
-        self.cl.append('a b c d')
-        self.cl.reverse()
-        self.assertEqual('d c b a', self.cl.to_string())
 
 
 class TestTagBase(TestCase):
@@ -392,29 +332,23 @@ class TestTagBase(TestCase):
         self.assertIsFalse(tag.hasClasses())
         self.assertMatch('<tag id="\d+"></tag>', tag.html)
 
-    def test_class_addremove_multi_string(self):
-        self.tag.addClass('a b')
+    def test_class_addremove_multi(self):
+        self.tag.addClass('a', 'b', 'c')
         self.assertIsTrue(self.tag.hasClasses())
         self.assertIsTrue(self.tag.hasClass('a'))
         self.assertIsTrue(self.tag.hasClass('b'))
-        self.assertMatch('<tag class="a b" id="\d+"></tag>', self.tag.html)
-        self.tag.removeClass('a')
+        self.assertIsTrue(self.tag.hasClass('c'))
+        self.assertMatch('<tag class="a b c" id="\d+"></tag>', self.tag.html)
+        self.tag.removeClass('a', 'c')
         self.assertIsTrue(self.tag.hasClasses())
         self.assertIsFalse(self.tag.hasClass('a'))
         self.assertIsTrue(self.tag.hasClass('b'))
+        self.assertIsFalse(self.tag.hasClass('c'))
         self.assertMatch('<tag class="b" id="\d+"></tag>', self.tag.html)
 
-    def test_class_addremove_multi_list(self):
-        self.tag.addClass(['a', 'b'])
-        self.assertIsTrue(self.tag.hasClasses())
-        self.assertIsTrue(self.tag.hasClass('a'))
-        self.assertIsTrue(self.tag.hasClass('b'))
-        self.assertMatch('<tag class="a b" id="\d+"></tag>', self.tag.html)
-        self.tag.removeClass('a')
-        self.assertIsTrue(self.tag.hasClasses())
-        self.assertIsFalse(self.tag.hasClass('a'))
-        self.assertIsTrue(self.tag.hasClass('b'))
-        self.assertMatch('<tag class="b" id="\d+"></tag>', self.tag.html)
+    def test_class_addremove_multi_string(self):
+        with self.assertRaises(ValueError):
+            self.tag.addClass('a b')
 
     def test_class_getset(self) -> None:
         self.assertEqual(self.tag['class'], None)
@@ -497,7 +431,7 @@ class TestTagBase(TestCase):
         self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', self.tag.html)
         self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', clone.html)
 
-        clone.children[0].removeClass('b')
+        clone.childNodes[0].removeClass('b')
         self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', self.tag.html)
         self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', clone.html)
 
@@ -543,7 +477,7 @@ class TestTagBase(TestCase):
             class_ = 'a1 a2'
         self.assertEqual(A.get_class_list().to_string(), 'a1 a2')
         a = A()
-        a.addClass('a3 a4')
+        a.addClass('a3', 'a4')
         self.assertMatch('<a class="a1 a2 a3 a4" id="\d+"></a>', a.html)
 
     def test_classes_inherit_class(self):

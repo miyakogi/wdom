@@ -1,33 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import Iterable
-from xml.dom.minicompat import NodeList
-from xml.dom import Node
+from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
 import html
+from typing import Union, Tuple
 
-from wdom.css import parse_style_decl, CSSStyleDeclaration
+from wdom.css import CSSStyleDeclaration
 from wdom.event import EventTarget
+from wdom.interface import WebIF, Node
 
 
-class DOMTokenList(list):
-    def __init__(self, *args):
-        super().__init__()
-        self.append(args)
+class DOMTokenList:
+    def __init__(self, owner, *args):
+        self._list = list()
+        self._owner = owner
+        self._append(args)
+
+    def __len__(self) -> int:
+        return len(self._list)
+
+    def __contains__(self, item:str) -> bool:
+        return item in self._list
+
+    def __iter__(self) -> str:
+        for token in self._list:
+            yield token
 
     def _validate_token(self, token:str):
+        if not isinstance(token, str):
+            raise TypeError(
+                'Token must be str, but {} passed.'.format(type(token)))
         if ' ' in token:
             raise ValueError(
                 'Token contains space characters, which are invalid.')
 
-    def append(self, token):
+    def _append(self, token):
         if isinstance(token, str):
             for t in token.split(' '):
                 self.add(t)
         elif isinstance(token, Iterable):
             for t in token:
-                self.append(t)
+                self._append(t)
         elif token is None:
             pass
         else:
@@ -37,26 +51,36 @@ class DOMTokenList(list):
     def length(self) -> int:
         return len(self)
 
-    def add(self, token:str):
-        self._validate_token(token)
-        if token and token not in self:
-            super().append(token)
+    def add(self, *tokens:Tuple[str]):
+        _new_tokens = []
+        for token in tokens:
+            self._validate_token(token)
+            if token and token not in self:
+                self._list.append(token)
+                _new_tokens.append(token)
+        if isinstance(self._owner, WebIF) and _new_tokens:
+            self._owner.js_exec('addClass', classes=_new_tokens)
 
-    def remove(self, token:str):
-        self._validate_token(token)
-        if token in self:
-            super().remove(token)
+    def remove(self, *tokens:Tuple[str]):
+        _removed_tokens = []
+        for token in tokens:
+            self._validate_token(token)
+            if token in self:
+                self._list.remove(token)
+                _removed_tokens.append(token)
+        if isinstance(self._owner, WebIF) and _removed_tokens:
+            self._owner.js_exec('removeClass', classes=_removed_tokens)
 
     def toggle(self, token:str):
         self._validate_token(token)
         if token in self:
-            super().remove(token)
+            self.remove(token)
         else:
-            super().append(token)
+            self.add(token)
 
     def item(self, index:int) -> str:
         if 0 <= index < len(self):
-            return self[index]
+            return self._list[index]
         else:
             return None
 
@@ -68,27 +92,92 @@ class DOMTokenList(list):
         return ' '.join(self)
 
 
-class NamedNodeMap(dict):
+class NamedNodeMap:
+    def __init__(self, owner):
+        self._owner = owner
+        self._dict = OrderedDict()
+
+    def __len__(self) -> int:
+        return len(self._dict)
+
+    def __contains__(self, item:str) -> bool:
+        return item in self._dict
+
+    def __getitem__(self, index: Union[int, str]) -> 'Attr':
+        if isinstance(index, int):
+            return tuple(self._dict.values())[index]
+        else:
+            return None
+
+    def __iter__(self) -> 'Attr':
+        for attr in self._dict.keys():
+            yield attr
+
     @property
     def length(self) -> int:
         return len(self)
 
     def getNamedItem(self, name:str) -> 'Attr':
-        return self.get(name, None)
+        return self._dict.get(name, None)
 
     def setNamedItem(self, item: 'Attr'):
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
-        self[item.name] = item
+        if isinstance(self._owner, WebIF):
+            self._owner.js_exec('setAttribute', attr=item.name,
+                                value=item.value)
+        self._dict[item.name] = item
 
-    def removeNamedItem(self, name:str) -> 'Attr':
-        return self.pop(name, None)
+    def removeNamedItem(self, item:'Attr') -> 'Attr':
+        if not isinstance(item, Attr):
+            raise TypeError('item must be an instance of Attr')
+        if isinstance(self._owner, WebIF):
+            self._owner.js_exec('removeAttribute', attr=item.name)
+        return self._dict.pop(item.name, None)
 
     def item(self, index:int) -> 'Attr':
         if 0 <= index < len(self):
-            return self[tuple(self.keys())[index]]
+            return self._dict[tuple(self._dict.keys())[index]]
         else:
             return None
+
+    def toString(self) -> str:
+        return ' '.join(attr.html for attr in self._dict.values())
+
+
+class NodeList:
+    def __init__(self, ref:list):
+        self.ref = ref
+
+    def __getitem__(self, index:int) -> Node:
+        return self.item(index)
+
+    def __len__(self) -> int:
+        return len(self.ref)
+
+    def __iter__(self) -> Node:
+        for n in self.ref:
+            yield n
+
+    @property
+    def length(self) -> int:
+        return len(self)
+
+    def item(self, index:int) -> Node:
+        if not isinstance(index, int):
+            raise TypeError(
+                'Indeces must be integer, not {}'.format(type(index)))
+        return self.ref[index] if 0 <= index < self.length else None
+
+
+class HTMLCollection(NodeList):
+    def namedItem(self, name:str) -> Node:
+        for n in self.ref:
+            if n.getAttribute('id') == name:
+                return n
+        for n in self.ref:
+            if n.getAttribute('name') == name:
+                return n
 
 
 class Node(Node):
@@ -110,8 +199,8 @@ class Node(Node):
 
     def __init__(self, parent=None):
         super().__init__()  # Need to call init in multiple inheritce
-        self.children = NodeList()
-        self.parent = None
+        self._children = list()
+        self._parent = None
         if parent is not None:
             parent.appendChild(self)
 
@@ -119,7 +208,7 @@ class Node(Node):
         return self.length
 
     def __contains__(self, other: Node) -> bool:
-        return other in self.children
+        return other in self._children
 
     def __copy__(self) -> Node:
         clone = type(self)()
@@ -134,27 +223,27 @@ class Node(Node):
     # DOM Level 1
     @property
     def length(self) -> int:
-        return len(self.children)
+        return len(self._children)
 
     @property
     def parentNode(self) -> Node:
-        return self.parent
+        return self._parent
 
     @property
     def childNodes(self) -> NodeList:
-        return self.children
+        return NodeList(self._children)
 
     @property
     def firstChild(self) -> Node:
         if self.hasChildNodes():
-            return self.childNodes[0]
+            return self._children[0]
         else:
             return None
 
     @property
     def lastChild(self) -> Node:
         if self.hasChildNodes():
-            return self.childNodes[-1]
+            return self._children[-1]
         else:
             return None
 
@@ -163,14 +252,14 @@ class Node(Node):
         parent = self.parentNode
         if parent is None:
             return None
-        return parent.childNodes.item(parent.childNodes.index(self) - 1)
+        return parent.childNodes.item(parent._children.index(self) - 1)
 
     @property
     def nextSibling(self) -> Node:
         parent = self.parentNode
         if parent is None:
             return None
-        return parent.childNodes.item(parent.childNodes.index(self) + 1)
+        return parent.childNodes.item(parent._children.index(self) + 1)
 
     # DOM Level 2
     @property
@@ -184,15 +273,15 @@ class Node(Node):
 
     # Methods
     def _append_document_fragment(self, node) -> Node:
-        for c in tuple(node.childNodes):
+        for c in tuple(node._children):
             self._append_child(c)
         return node
 
     def _append_element(self, node) -> Node:
         if node.parentNode is not None:
             node.remove()
-        self.children.append(node)
-        node.parent = self
+        self._children.append(node)
+        node._parent = self
         return node
 
     def _append_child(self, node) -> Node:
@@ -205,18 +294,18 @@ class Node(Node):
         return self._append_child(node)
 
     def index(self, node):
-        return self.children.index(node)
+        return self._children.index(node)
 
     def _insert_document_fragment_before(self, node, ref_node) -> Node:
-        for c in tuple(node.childNodes):
+        for c in tuple(node._children):
             self._insert_before(c, ref_node)
         return node
 
     def _insert_element_before(self, node, ref_node) -> Node:
         if node.parentNode is not None:
             node.remove()
-        self.children.insert(self.index(ref_node), node)
-        node.parent = self
+        self._children.insert(self.index(ref_node), node)
+        node._parent = self
         return node
 
     def _insert_before(self, node, ref_node) -> Node:
@@ -229,13 +318,13 @@ class Node(Node):
         return self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
-        return bool(self.children)
+        return bool(self._children)
 
     def _remove_child(self, node) -> Node:
-        if node not in self.children:
+        if node not in self._children:
             raise ValueError('node to be removed is not a child of this node.')
-        self.childNodes.remove(node)
-        node.parent = None
+        self._children.remove(node)
+        node._parent = None
         return node
 
     def removeChild(self, node) -> Node:
@@ -265,14 +354,14 @@ class Node(Node):
         self._remove()
 
     def _empty(self):
-        for child in tuple(self.childNodes):
+        for child in tuple(self._children):
             self.removeChild(child)
 
     def empty(self):
         self._empty()
 
     def _get_text_content(self) -> str:
-        return ''.join(child.textContent for child in self.childNodes)
+        return ''.join(child.textContent for child in self._children)
 
     def _set_text_content(self, value:str):
         self._empty()
@@ -349,7 +438,7 @@ class Attr(Node):
 
     @property
     def childNodes(self) -> NodeList:
-        return NodeList()
+        return NodeList([])
 
     # Methods
     def appendChild(self, node) -> None:
@@ -429,7 +518,7 @@ class CharacterData(Node):
 
     @property
     def childNodes(self) -> NodeList:
-        return NodeList()
+        return NodeList([])
 
     # Methods
     def appendChild(self, node) -> None:
@@ -540,8 +629,8 @@ class Element(appendTextMixin, Node, EventTarget):
     def __init__(self, tag:str='', parent=None, **kwargs):
         super().__init__(parent=parent)
         self.tag = tag
-        self.attributes = NamedNodeMap()
-        self.classList = DOMTokenList()
+        self.attributes = NamedNodeMap(self)
+        self.classList = DOMTokenList(self)
 
         if 'class_' in kwargs:
             kwargs['class'] = kwargs.pop('class_')
@@ -550,12 +639,13 @@ class Element(appendTextMixin, Node, EventTarget):
 
     def __copy__(self) -> 'Element':
         clone = type(self)(self.tag)
-        for attr in self.attributes.values():
-            clone.setAttributeNode(attr)
+        for attr in self.attributes:
+            clone.setAttribute(attr, self.getAttribute(attr))
         return clone
 
     def _get_attrs_by_string(self) -> str:
-        attrs = ' '.join(attr.html for attr in self.attributes.values())
+        # attrs = ' '.join(attr.html for attr in self.attributes.values())
+        attrs = self.attributes.toString()
         classes = self.getAttribute('class')
         if classes:
             attrs = ' '.join((attrs.strip(), 'class="{}"'.format(classes)))
@@ -570,7 +660,7 @@ class Element(appendTextMixin, Node, EventTarget):
         return tag + '>'
 
     def _get_inner_html(self) -> str:
-        return ''.join(child.html for child in self.childNodes)
+        return ''.join(child.html for child in self._children)
 
     def _set_inner_html(self, html:str):
         self._empty()
@@ -622,11 +712,11 @@ class Element(appendTextMixin, Node, EventTarget):
                 return self.classList.to_string()
             else:
                 return None
-        attr = self.getAttributeNode(attr)
-        if attr is None:
+        attr_node = self.getAttributeNode(attr)
+        if attr_node is None:
             return None
         else:
-            return attr.value
+            return attr_node.value
 
     def getAttributeNode(self, attr:str) -> Attr:
         return self.attributes.getNamedItem(attr)
@@ -642,10 +732,10 @@ class Element(appendTextMixin, Node, EventTarget):
 
     def _set_attribute(self, attr:str, value=None):
         if attr == 'class':
-            self.classList = DOMTokenList(value)
+            self.classList = DOMTokenList(self, value)
         else:
-            new_attr = Attr(attr, value)
-            self.setAttributeNode(new_attr)
+            new_attr_node = Attr(attr, value)
+            self.setAttributeNode(new_attr_node)
 
     def setAttribute(self, attr:str, value=None):
         self._set_attribute(attr, value)
@@ -655,15 +745,15 @@ class Element(appendTextMixin, Node, EventTarget):
 
     def _remove_attribute(self, attr:str):
         if attr == 'class':
-            self.classList = DOMTokenList()
+            self.classList = DOMTokenList(self)
         else:
-            self.attributes.removeNamedItem(attr)
+            self.attributes.removeNamedItem(Attr(attr))
 
     def removeAttribute(self, attr:str):
         self._remove_attribute(attr)
 
     def removeAttributeNode(self, attr:Attr):
-        self.attributes.removeNamedItem(attr.name)
+        self.attributes.removeNamedItem(attr)
 
     def getElementsBy(self, cond):
         '''Return list of child nodes which matches ``cond``.
@@ -673,12 +763,12 @@ class Element(appendTextMixin, Node, EventTarget):
         This searches all child nodes recursively.
         '''
         elements = []
-        for child in self.childNodes:
+        for child in self._children:
             if cond(child):
                 elements.append(child)
             if isinstance(child, Element):
                 elements.extend(child.getElementsBy(cond))
-        return elements
+        return NodeList(elements)
 
     def getElementsByTagName(self, tag:str):
         _tag = tag.upper()
@@ -704,7 +794,7 @@ class DocumentFragment(appendTextMixin, Node):
 
     @property
     def html(self) -> str:
-        return ''.join(child.html for child in self.childNodes)
+        return ''.join(child.html for child in self._children)
 
 
 class Document(Node):
@@ -743,13 +833,13 @@ class Document(Node):
         self.charset_element.setAttribute('charset', value)
 
     def render(self) -> str:
-        return ''.join(child.html for child in self.childNodes)
+        return ''.join(child.html for child in self._children)
 
 
 class HTMLElement(Element):
     def __init__(self, *args, style:str=None, **kwargs):
-        self.style = style
         super().__init__(*args, **kwargs)
+        self._style = CSSStyleDeclaration(style, owner=self)
 
     def _get_attrs_by_string(self) -> str:
         attrs = super()._get_attrs_by_string()
@@ -802,11 +892,16 @@ class HTMLElement(Element):
     @style.setter
     def style(self, style:str):
         if isinstance(style, str):
-            self._style = parse_style_decl(style)
+            self._style._parse_str(style)
         elif style is None:
-            self._style = CSSStyleDeclaration()
-        else:
+            self._style._parse_str('')
+        elif isinstance(style, CSSStyleDeclaration):
+            self._style._owner = None
+            style._owner = self
             self._style = style
+            self._style.update()
+        else:
+            raise TypeError('Invalid type for style: {}'.format(type(style)))
 
     def getAttribute(self, attr:str) -> str:
         if attr == 'style':
