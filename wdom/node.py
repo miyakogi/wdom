@@ -798,8 +798,8 @@ class Document(Node):
 
 class HTMLElement(Element):
     def __init__(self, *args, style:str=None, **kwargs):
-        self.style = style
         super().__init__(*args, **kwargs)
+        self._style = CSSStyleDeclaration(style, owner=self)
 
     def _get_attrs_by_string(self) -> str:
         attrs = super()._get_attrs_by_string()
@@ -852,12 +852,14 @@ class HTMLElement(Element):
     @style.setter
     def style(self, style:str):
         if isinstance(style, str):
-            self._style = parse_style_decl(style, owner=self)
+            self._style._parse_str(style)
         elif style is None:
-            self._style = CSSStyleDeclaration(owner=self)
+            self._style._parse_str('')
         elif isinstance(style, CSSStyleDeclaration):
+            self._style._owner = None
             style._owner = self
             self._style = style
+            self._style.update()
         else:
             raise TypeError('Invalid type for style: {}'.format(type(style)))
 

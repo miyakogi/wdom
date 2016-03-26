@@ -26,11 +26,47 @@ def _normalize_css_property(prop):
 
 
 class CSSStyleDeclaration(OrderedDict):
-    def __init__(self, *args, parent=Optional['CSSRule'],
-                 owner=Optional['Node'], **kwargs):
+    def __init__(self, style: str = None, parent: Optional['CSSRule'] = None,
+                 owner: Optional['Node'] = None):
         self.parentRule = parent
         self._owner = owner
-        super().__init__(*args, **kwargs)
+        if style:
+            self._parse_str(style)
+
+    def _update(self):
+        if isinstance(self._owner, WebIF):
+            css = self.cssText
+            if css:
+                self._owner.js_exec('setAttribute', attr='style', value=css)
+            else:
+                self._owner.js_exec('removeAttribute', attr='style')
+
+    def _parse_str(self, style: str) -> None:
+        if self: self.clear()
+        orig_style = style
+        style_str = _style_cleanup_re.sub(r'\1', style.strip())
+        if len(style_str) == 0:
+            # do nothing, just clear and update
+            self._update()
+            return
+
+        # temporary disable udpating browser for better performance
+        self._owner, _owner = None, self._owner
+        for decls in style_str.split(';'):
+            if ':' not in decls:
+                if len(decls) > 0:
+                    logger.warning('[skip] unknown style: {}'.format(decls))
+                continue
+            decl_list = decls.split(':')
+            if len(decl_list) != 2:
+                raise ValueError(
+                    'Invalid style declaration: {0} in {1}'.format(
+                        decls, orig_style))
+            prop = decl_list[0]
+            value = decl_list[1]
+            self[prop] = value
+        self._owner = _owner
+        self._update()
 
     @property
     def cssText(self) -> str:
@@ -55,7 +91,10 @@ class CSSStyleDeclaration(OrderedDict):
         return self.get(prop, '')
 
     def removeProperty(self, prop: str) -> str:
-        return self.pop(prop, '')
+        removed_prop = self.get(prop)
+        if removed_prop is not None:
+            del self[prop]
+        return removed_prop
 
     def setProperty(self, prop: str, value: str, priority=None):
         self[prop] = value
@@ -65,9 +104,11 @@ class CSSStyleDeclaration(OrderedDict):
 
     def __setitem__(self, attr, value) -> str:
         super().__setitem__(_normalize_css_property(attr), value)
+        self._update()
 
     def __delitem__(self, attr):
         super().__delitem__(_normalize_css_property(attr))
+        self._update()
 
     def __getattr__(self, attr: str) -> str:
         if attr.startswith('_') or attr in dir(self):
@@ -89,25 +130,7 @@ class CSSStyleDeclaration(OrderedDict):
 
 
 def parse_style_decl(style: str, owner: Node = None) -> CSSStyleDeclaration:
-    orig_style = style
-    style_str = _style_cleanup_re.sub(r'\1', style.strip())
-    if len(style_str) == 0:
-        return CSSStyleDeclaration(owner=owner)
-
-    style = CSSStyleDeclaration(owner=owner)
-    for decls in style_str.split(';'):
-        if ':' not in decls:
-            if len(decls) > 0:
-                logger.warning('[skip] unknown style: {}'.format(decls))
-            continue
-        decl_list = decls.split(':')
-        if len(decl_list) != 2:
-            raise ValueError(
-                'Invalid style declaration: {0} in {1}'.format(
-                    decls, orig_style))
-        prop = decl_list[0]
-        value = decl_list[1]
-        style[prop] = value
+    style = CSSStyleDeclaration(style, owner=owner)
     return style
 
 
