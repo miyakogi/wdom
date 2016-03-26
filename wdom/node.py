@@ -145,7 +145,7 @@ class Node(Node):
     def __init__(self, parent=None):
         super().__init__()  # Need to call init in multiple inheritce
         self._children = list()
-        self.parent = None
+        self._parent = None
         if parent is not None:
             parent.appendChild(self)
 
@@ -172,7 +172,7 @@ class Node(Node):
 
     @property
     def parentNode(self) -> Node:
-        return self.parent
+        return self._parent
 
     @property
     def childNodes(self) -> NodeList:
@@ -226,7 +226,7 @@ class Node(Node):
         if node.parentNode is not None:
             node.remove()
         self._children.append(node)
-        node.parent = self
+        node._parent = self
         return node
 
     def _append_child(self, node) -> Node:
@@ -250,7 +250,7 @@ class Node(Node):
         if node.parentNode is not None:
             node.remove()
         self._children.insert(self.index(ref_node), node)
-        node.parent = self
+        node._parent = self
         return node
 
     def _insert_before(self, node, ref_node) -> Node:
@@ -269,7 +269,7 @@ class Node(Node):
         if node not in self._children:
             raise ValueError('node to be removed is not a child of this node.')
         self._children.remove(node)
-        node.parent = None
+        node._parent = None
         return node
 
     def removeChild(self, node) -> Node:

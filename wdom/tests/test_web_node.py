@@ -154,7 +154,7 @@ class TestQuery(TestCase):
     def setUp(self):
         self._dummy_parent = MagicMock(connected=True, connections=True)
         self.elm = WebElement('tag')
-        self.elm.parent = self._dummy_parent
+        self.elm._parent = self._dummy_parent
         self.elm.js_exec = MagicMock()
         self.msg = {
             'type': 'response',

@@ -132,7 +132,7 @@ class TestTag(TestCase):
         self.assertIsTrue(self.tag.hasChildNodes())
         self.assertMatch('<tag id="\d+">text</tag>', self.tag.html)
         # self.assertIn('text', self.tag)
-        self.assertEqual(self.tag[0].parent, self.tag)
+        self.assertEqual(self.tag[0].parentNode, self.tag)
 
         self.tag.textContent = ''
         self.assertIsFalse(self.tag.hasChildNodes())
