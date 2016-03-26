@@ -53,12 +53,10 @@ class TestTag(TestCase):
         self.assertIsFalse(self.tag.hasAttribute('b'))
         self.assertEqual('b', self.tag.getAttribute('a'))
         self.assertMatch('<tag a="b" id="\d+"></tag>', self.tag.html)
-        self.assertEqual(self.tag.attributes['a'].value, 'b')
+        self.assertEqual(self.tag.getAttribute('a'), 'b')
         self.tag.removeAttribute('a')
         self.assertIsFalse(self.tag.hasAttributes())
         self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
-        self.assertEqual(self.tag.attributes, NamedNodeMap(self.tag))
-
         self.assertIsNone(self.tag.getAttribute('aaaa'))
 
     def test_attr_multi(self):

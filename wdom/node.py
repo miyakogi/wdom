@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import Iterable
+from copy import deepcopy
+from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
 import html
+from typing import Union
 
-from wdom.css import parse_style_decl, CSSStyleDeclaration
+from wdom.css import CSSStyleDeclaration
 from wdom.event import EventTarget
 from wdom.interface import WebIF, Node
 
@@ -72,17 +74,33 @@ class DOMTokenList(list):
         return ' '.join(self)
 
 
-class NamedNodeMap(dict):
-    def __init__(self, owner, **kwargs):
+class NamedNodeMap:
+    def __init__(self, owner):
         self._owner = owner
-        super().__init__(**kwargs)
+        self._dict = OrderedDict()
+
+    def __len__(self) -> int:
+        return len(self._dict)
+
+    def __contains__(self, item:str) -> bool:
+        return item in self._dict
+
+    def __getitem__(self, index: Union[int, str]) -> 'Attr':
+        if isinstance(index, int):
+            return tuple(self._dict.values())[index]
+        else:
+            return None
+
+    def __iter__(self) -> 'Attr':
+        for attr in self._dict.keys():
+            yield attr
 
     @property
     def length(self) -> int:
         return len(self)
 
     def getNamedItem(self, name:str) -> 'Attr':
-        return self.get(name, None)
+        return self._dict.get(name, None)
 
     def setNamedItem(self, item: 'Attr'):
         if not isinstance(item, Attr):
@@ -90,20 +108,23 @@ class NamedNodeMap(dict):
         if isinstance(self._owner, WebIF):
             self._owner.js_exec('setAttribute', attr=item.name,
                                 value=item.value)
-        self[item.name] = item
+        self._dict[item.name] = item
 
     def removeNamedItem(self, item:'Attr') -> 'Attr':
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
             self._owner.js_exec('removeAttribute', attr=item.name)
-        return self.pop(item.name, None)
+        return self._dict.pop(item.name, None)
 
     def item(self, index:int) -> 'Attr':
         if 0 <= index < len(self):
-            return self[tuple(self.keys())[index]]
+            return self._dict[tuple(self._dict.keys())[index]]
         else:
             return None
+
+    def toString(self) -> str:
+        return ' '.join(attr.html for attr in self._dict.values())
 
 
 class NodeList:
@@ -600,12 +621,13 @@ class Element(appendTextMixin, Node, EventTarget):
 
     def __copy__(self) -> 'Element':
         clone = type(self)(self.tag)
-        for attr in self.attributes.values():
-            clone.setAttributeNode(attr)
+        for attr in self.attributes:
+            clone.setAttribute(attr, self.getAttribute(attr))
         return clone
 
     def _get_attrs_by_string(self) -> str:
-        attrs = ' '.join(attr.html for attr in self.attributes.values())
+        # attrs = ' '.join(attr.html for attr in self.attributes.values())
+        attrs = self.attributes.toString()
         classes = self.getAttribute('class')
         if classes:
             attrs = ' '.join((attrs.strip(), 'class="{}"'.format(classes)))

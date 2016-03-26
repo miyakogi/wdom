@@ -716,6 +716,64 @@ class TestElement(TestCase):
         self.assertEqual(len(c2_classes), 1)
         self.assertIs(c2_classes[0], self.c2)
 
+    def test_clone_shallow_child(self):
+        self.elm.appendChild(self.c1)
+        clone = self.elm.cloneNode()
+        self.assertFalse(clone.hasChildNodes())
+
+        clone.appendChild(self.c2)
+        self.assertFalse(self.c2 in self.elm)
+        self.assertEqual(len(self.elm.childNodes), 1)
+
+    def test_clone_shallow_attr(self):
+        self.elm.setAttribute('src', 'a')
+        clone = self.elm.cloneNode()
+
+        self.assertTrue(clone.hasAttribute('src'))
+        self.assertTrue(clone.getAttribute('src'), 'a')
+        self.assertEqual(self.elm.attributes.toString(),
+                         clone.attributes.toString())
+        clone.setAttribute('src', 'b')
+        self.assertNotEqual(self.elm.attributes.toString(),
+                            clone.attributes.toString())
+        self.assertTrue(self.elm.getAttribute('src'), 'a')
+        self.assertTrue(clone.getAttribute('src'), 'b')
+
+    def test_clone_deep_child(self):
+        self.elm.appendChild(self.c1)
+        clone = self.elm.cloneNode(deep=True)
+        self.assertTrue(clone.hasChildNodes())
+        self.assertEqual(len(clone.childNodes), 1)
+        self.assertTrue(self.c1 in self.elm)
+        self.assertFalse(self.c1 in clone)
+        self.assertIsNot(self.c1, clone.firstChild)
+
+        clone.appendChild(self.c2)
+        self.assertFalse(self.c2 in self.elm)
+        self.assertEqual(len(self.elm.childNodes), 1)
+        self.assertEqual(len(clone.childNodes), 2)
+
+    def test_clone_deep_attr(self):
+        self.elm.setAttribute('src', 'a')
+        self.elm.appendChild(self.c1)
+        self.c1.setAttribute('src', 'c1')
+        clone = self.elm.cloneNode(deep=True)
+
+        self.assertTrue(clone.hasAttribute('src'))
+        self.assertTrue(clone.getAttribute('src'), 'a')
+        self.assertTrue(clone.firstChild.hasAttribute('src'))
+        self.assertTrue(clone.firstChild.getAttribute('src'), 'c1')
+        self.assertEqual(self.elm.attributes.toString(),
+                         clone.attributes.toString())
+        self.assertEqual(self.c1.attributes.toString(),
+                         clone.firstChild.attributes.toString())
+
+        clone.firstChild.setAttribute('src', 'b')
+        self.assertNotEqual(self.c1.attributes.toString(),
+                            clone.firstChild.attributes.toString())
+        self.assertTrue(self.c1.getAttribute('src'), 'a')
+        self.assertTrue(clone.firstChild.getAttribute('src'), 'b')
+
 
 class TestHTMLElement(TestCase):
     def setUp(self):
@@ -791,6 +849,10 @@ class TestHTMLElement(TestCase):
         self.elm.style = 'color: red;'
         clone = self.elm.cloneNode()
         self.assertEqual(clone.style.cssText, 'color: red;')
+
+        clone.style.color = 'black'
+        self.assertEqual(clone.style.cssText, 'color: black;')
+        self.assertEqual(self.elm.style.cssText, 'color: red;')
 
 
 class TestDocument(TestCase):
