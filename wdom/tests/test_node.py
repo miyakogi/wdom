@@ -30,6 +30,8 @@ class TestDOMTokenList(TestCase):
 
         with self.assertRaises(ValueError):
             self.tokens.add('a c')
+        with self.assertRaises(ValueError):
+            self.tokens.add('a', 'b c')
 
     def test_remove(self):
         self.tokens.add('a')
@@ -81,6 +83,76 @@ class TestDOMTokenList(TestCase):
 
         with self.assertRaises(ValueError):
             self.tokens.contains('a c')
+
+    def test_add_multi(self):
+        self.tokens.add('a', 'b')
+        self.assertEqual(len(self.tokens), 2)
+        self.assertEqual('a b', self.tokens.to_string())
+        self.tokens.remove('a')
+        self.assertEqual(len(self.tokens), 1)
+        self.assertEqual('b', self.tokens.to_string())
+
+    def test_add_multi_string(self):
+        # used at initialization of Element
+        self.tokens._append('a b')
+        self.assertEqual(len(self.tokens), 2)
+        self.assertEqual('a b', self.tokens.to_string())
+        self.tokens.remove('a')
+        self.assertEqual(len(self.tokens), 1)
+        self.assertEqual('b', self.tokens.to_string())
+
+    def test_add_multi_list(self):
+        # used at initialization of Element
+        self.tokens._append(['a', 'b'])
+        self.assertEqual(len(self.tokens), 2)
+        self.assertEqual('a b', self.tokens.to_string())
+        self.tokens.remove('a')
+        self.assertEqual(len(self.tokens), 1)
+        self.assertEqual('b', self.tokens.to_string())
+
+    def test_add_multi_mixed(self):
+        # used at initialization of Element
+        self.tokens._append(['a', 'b c'])
+        self.assertEqual(len(self.tokens), 3)
+        self.assertEqual('a b c', self.tokens.to_string())
+        self.tokens.remove('b')
+        self.assertEqual(len(self.tokens), 2)
+        self.assertEqual('a c', self.tokens.to_string())
+
+    def test_remove_multi(self):
+        self.tokens.add('a', 'b', 'c')
+        self.tokens.remove('a', 'c')
+        self.assertEqual(self.tokens.length, 1)
+        self.assertNotIn('a', self.tokens)
+        self.assertIn('b', self.tokens)
+        self.assertNotIn('c', self.tokens)
+
+    def test_add_none(self):
+        with self.assertRaises(TypeError):
+            self.tokens.add(None)
+
+    def test_add_blank(self):
+        self.tokens.add('')
+        self.assertEqual(len(self.tokens), 0)
+        self.assertFalse(bool(self.tokens))
+        self.assertEqual('', self.tokens.to_string())
+
+    def test_add_invlalid(self):
+        with self.assertRaises(TypeError):
+            self.tokens.add(1)
+        with self.assertRaises(TypeError):
+            self.tokens.add(Element('a'))
+        self.assertEqual(len(self.tokens), 0)
+        self.assertFalse(bool(self.tokens))
+        self.assertEqual('', self.tokens.to_string())
+
+    def test_iter(self):
+        cls = ['a', 'b', 'c']
+        self.tokens.add(*cls)
+        for c in self.tokens:
+            self.assertIn(c, cls)
+            cls.remove(c)
+        self.assertEqual(len(cls), 0)
 
 
 class TestNamedNodeMap(TestCase):
@@ -773,6 +845,42 @@ class TestElement(TestCase):
                             clone.firstChild.attributes.toString())
         self.assertTrue(self.c1.getAttribute('src'), 'a')
         self.assertTrue(clone.firstChild.getAttribute('src'), 'b')
+
+    def test_init_class(self):
+        elm = Element('a', class_ = 'a')
+        self.assertEqual(elm.html, '<a class="a"></a>')
+        self.assertEqual(elm.classList.length, 1)
+        self.assertIn('a', elm.classList)
+
+        elm2 = Element('a', **{'class': 'b'})
+        self.assertEqual(elm2.html, '<a class="b"></a>')
+        self.assertEqual(elm2.classList.length, 1)
+        self.assertIn('b', elm2.classList)
+
+    def test_init_class_multi_str(self):
+        elm = Element('a', class_ = 'a1 a2')
+        self.assertEqual(elm.html, '<a class="a1 a2"></a>')
+        self.assertEqual(elm.classList.length, 2)
+        self.assertIn('a1', elm.classList)
+        self.assertIn('a2', elm.classList)
+        self.assertNotIn('a1 a2', elm.classList)
+
+    def test_init_class_multi_list(self):
+        elm = Element('a', class_ = ['a1', 'a2'])
+        self.assertEqual(elm.html, '<a class="a1 a2"></a>')
+        self.assertEqual(elm.classList.length, 2)
+        self.assertIn('a1', elm.classList)
+        self.assertIn('a2', elm.classList)
+        self.assertNotIn('a1 a2', elm.classList)
+
+    def test_init_class_multi_mixed(self):
+        elm = Element('a', class_ = ['a1', 'a2 a3'])
+        self.assertEqual(elm.html, '<a class="a1 a2 a3"></a>')
+        self.assertEqual(elm.classList.length, 3)
+        self.assertIn('a1', elm.classList)
+        self.assertIn('a2', elm.classList)
+        self.assertIn('a3', elm.classList)
+        self.assertNotIn('a2 a3', elm.classList)
 
 
 class TestHTMLElement(TestCase):

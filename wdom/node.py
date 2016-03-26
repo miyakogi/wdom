@@ -1,35 +1,47 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from copy import deepcopy
 from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
 import html
-from typing import Union
+from typing import Union, Tuple
 
 from wdom.css import CSSStyleDeclaration
 from wdom.event import EventTarget
 from wdom.interface import WebIF, Node
 
 
-class DOMTokenList(list):
+class DOMTokenList:
     def __init__(self, owner, *args):
-        super().__init__()
+        self._list = list()
         self._owner = owner
-        self.append(args)
+        self._append(args)
+
+    def __len__(self) -> int:
+        return len(self._list)
+
+    def __contains__(self, item:str) -> bool:
+        return item in self._list
+
+    def __iter__(self) -> str:
+        for token in self._list:
+            yield token
 
     def _validate_token(self, token:str):
+        if not isinstance(token, str):
+            raise TypeError(
+                'Token must be str, but {} passed.'.format(type(token)))
         if ' ' in token:
             raise ValueError(
                 'Token contains space characters, which are invalid.')
 
-    def append(self, token):
+    def _append(self, token):
         if isinstance(token, str):
             for t in token.split(' '):
                 self.add(t)
         elif isinstance(token, Iterable):
             for t in token:
-                self.append(t)
+                self._append(t)
         elif token is None:
             pass
         else:
@@ -39,19 +51,25 @@ class DOMTokenList(list):
     def length(self) -> int:
         return len(self)
 
-    def add(self, token:str):
-        self._validate_token(token)
-        if token and token not in self:
-            super().append(token)
-            if isinstance(self._owner, WebIF):
-                self._owner.js_exec('addClass', **{'class': token})
+    def add(self, *tokens:Tuple[str]):
+        _new_tokens = []
+        for token in tokens:
+            self._validate_token(token)
+            if token and token not in self:
+                self._list.append(token)
+                _new_tokens.append(token)
+        if isinstance(self._owner, WebIF) and _new_tokens:
+            self._owner.js_exec('addClass', classes=_new_tokens)
 
-    def remove(self, token:str):
-        self._validate_token(token)
-        if token in self:
-            super().remove(token)
-            if isinstance(self._owner, WebIF):
-                self._owner.js_exec('removeClass', **{'class': token})
+    def remove(self, *tokens:Tuple[str]):
+        _removed_tokens = []
+        for token in tokens:
+            self._validate_token(token)
+            if token in self:
+                self._list.remove(token)
+                _removed_tokens.append(token)
+        if isinstance(self._owner, WebIF) and _removed_tokens:
+            self._owner.js_exec('removeClass', classes=_removed_tokens)
 
     def toggle(self, token:str):
         self._validate_token(token)
@@ -62,7 +80,7 @@ class DOMTokenList(list):
 
     def item(self, index:int) -> str:
         if 0 <= index < len(self):
-            return self[index]
+            return self._list[index]
         else:
             return None
 

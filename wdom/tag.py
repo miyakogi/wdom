@@ -88,7 +88,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def getAttribute(self, attr:str):
         if attr == 'class':
             cls = self.get_class_list()
-            cls.append(self.classList)
+            cls._append(self.classList)
             if cls:
                 return cls.to_string()
             else:
@@ -96,8 +96,8 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         else:
             return super().getAttribute(attr)
 
-    def addClass(self, class_: str):
-        self.classList.append(class_)
+    def addClass(self, *classes:Tuple[str]):
+        self.classList.add(*classes)
 
     def hasClass(self, class_: str):
         return class_ in self.classList
@@ -105,19 +105,22 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def hasClasses(self):
         return len(self.classList) > 0
 
-    def removeClass(self, class_: str):
-        if class_ not in self.classList:
-            if class_ in self.__class__.get_class_list():
-                logger.warning(
-                    'tried to remove class-level class: '
-                    '{}'.format(class_)
-                )
+    def removeClass(self, *classes:Tuple[str]):
+        _remove_cl = []
+        for class_ in classes:
+            if class_ not in self.classList:
+                if class_ in self.__class__.get_class_list():
+                    logger.warning(
+                        'tried to remove class-level class: '
+                        '{}'.format(class_)
+                    )
+                else:
+                    logger.warning(
+                        'tried to remove non-existing class: {}'.format(class_)
+                    )
             else:
-                logger.warning(
-                    'tried to remove non-existing class: {}'.format(class_)
-                )
-        else:
-            self.classList.remove(class_)
+                _remove_cl.append(class_)
+        self.classList.remove(*_remove_cl)
 
     def show(self):
         self.hidden = False
