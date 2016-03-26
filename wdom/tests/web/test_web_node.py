@@ -165,6 +165,23 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertEqual(self.get_attribute('style'), 'color: black;')
 
+    def test_classlist(self):
+        self.set_element(self.tag)
+        self.assertEqual(self.get_attribute('class'), '')
+        self.tag.classList.add('a')
+        self.wait()
+        self.assertEqual(self.get_attribute('class'), 'a')
+        self.tag.classList.add('b', 'c', 'd')
+        self.wait()
+        self.assertEqual(self.get_attribute('class'), 'a b c d')
+
+        self.tag.classList.remove('c')
+        self.wait()
+        self.assertEqual(self.get_attribute('class'), 'a b d')
+        self.tag.classList.remove('a', 'd')
+        self.wait()
+        self.assertEqual(self.get_attribute('class'), 'b')
+
     @sync
     async def test_get_rect(self):
         rect = WebElement('div', style='width:200px;height:100px;')
