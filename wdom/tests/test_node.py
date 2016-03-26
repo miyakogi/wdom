@@ -85,7 +85,7 @@ class TestDOMTokenList(TestCase):
 
 class TestNamedNodeMap(TestCase):
     def setUp(self):
-        self.map = NamedNodeMap()
+        self.map = NamedNodeMap(self)
         self.attr = Attr('src', value='a')
 
     def test_addremove(self):
@@ -94,9 +94,9 @@ class TestNamedNodeMap(TestCase):
         self.assertEqual(self.map.length, 1)
         self.assertEqual(self.map.getNamedItem('src').value, 'a')
         self.assertIsNone(self.map.getNamedItem('aaa'))
-        self.map.removeNamedItem('aaa')
+        self.map.removeNamedItem(Attr('aaa'))
         self.assertEqual(self.map.length, 1)
-        self.map.removeNamedItem('src')
+        self.map.removeNamedItem(Attr('src'))
         self.assertEqual(self.map.length, 0)
 
     def test_item(self):

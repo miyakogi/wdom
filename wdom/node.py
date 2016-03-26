@@ -74,6 +74,10 @@ class DOMTokenList(list):
 
 
 class NamedNodeMap(dict):
+    def __init__(self, owner, **kwargs):
+        self._owner = owner
+        super().__init__(**kwargs)
+
     @property
     def length(self) -> int:
         return len(self)
@@ -84,10 +88,17 @@ class NamedNodeMap(dict):
     def setNamedItem(self, item: 'Attr'):
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
+        if isinstance(self._owner, WebIF):
+            self._owner.js_exec('setAttribute', attr=item.name,
+                                value=item.value)
         self[item.name] = item
 
-    def removeNamedItem(self, name:str) -> 'Attr':
-        return self.pop(name, None)
+    def removeNamedItem(self, item:'Attr') -> 'Attr':
+        if not isinstance(item, Attr):
+            raise TypeError('item must be an instance of Attr')
+        if isinstance(self._owner, WebIF):
+            self._owner.js_exec('removeAttribute', attr=item.name)
+        return self.pop(item.name, None)
 
     def item(self, index:int) -> 'Attr':
         if 0 <= index < len(self):
@@ -580,7 +591,7 @@ class Element(appendTextMixin, Node, EventTarget):
     def __init__(self, tag:str='', parent=None, **kwargs):
         super().__init__(parent=parent)
         self.tag = tag
-        self.attributes = NamedNodeMap()
+        self.attributes = NamedNodeMap(self)
         self.classList = DOMTokenList(self)
 
         if 'class_' in kwargs:
@@ -662,11 +673,11 @@ class Element(appendTextMixin, Node, EventTarget):
                 return self.classList.to_string()
             else:
                 return None
-        attr = self.getAttributeNode(attr)
-        if attr is None:
+        attr_node = self.getAttributeNode(attr)
+        if attr_node is None:
             return None
         else:
-            return attr.value
+            return attr_node.value
 
     def getAttributeNode(self, attr:str) -> Attr:
         return self.attributes.getNamedItem(attr)
@@ -684,8 +695,8 @@ class Element(appendTextMixin, Node, EventTarget):
         if attr == 'class':
             self.classList = DOMTokenList(self, value)
         else:
-            new_attr = Attr(attr, value)
-            self.setAttributeNode(new_attr)
+            new_attr_node = Attr(attr, value)
+            self.setAttributeNode(new_attr_node)
 
     def setAttribute(self, attr:str, value=None):
         self._set_attribute(attr, value)
@@ -697,13 +708,13 @@ class Element(appendTextMixin, Node, EventTarget):
         if attr == 'class':
             self.classList = DOMTokenList(self)
         else:
-            self.attributes.removeNamedItem(attr)
+            self.attributes.removeNamedItem(Attr(attr))
 
     def removeAttribute(self, attr:str):
         self._remove_attribute(attr)
 
     def removeAttributeNode(self, attr:Attr):
-        self.attributes.removeNamedItem(attr.name)
+        self.attributes.removeNamedItem(attr)
 
     def getElementsBy(self, cond):
         '''Return list of child nodes which matches ``cond``.

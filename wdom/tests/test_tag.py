@@ -57,7 +57,7 @@ class TestTag(TestCase):
         self.tag.removeAttribute('a')
         self.assertIsFalse(self.tag.hasAttributes())
         self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
-        self.assertEqual(self.tag.attributes, NamedNodeMap())
+        self.assertEqual(self.tag.attributes, NamedNodeMap(self.tag))
 
         self.assertIsNone(self.tag.getAttribute('aaaa'))
 
