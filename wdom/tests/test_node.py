@@ -755,6 +755,12 @@ class TestHTMLElement(TestCase):
 
         self.assertEqual(self.elm.html, '<a></a>')
 
+    def test_style_invalid_type(self):
+        with self.assertRaises(TypeError):
+            self.elm.style = 1
+        with self.assertRaises(TypeError):
+            self.elm.style = self.elm
+
     def test_init_style_string(self):
         elm = HTMLElement('a', style='color: red;')
         self.assertEqual(elm.style.cssText, 'color: red;')

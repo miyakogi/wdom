@@ -3,6 +3,9 @@
 
 from asyncio import coroutine, Future
 from typing import Optional
+from xml.dom import Node
+
+__all__ = ('Node', 'WebIF')
 
 
 class WebIF:

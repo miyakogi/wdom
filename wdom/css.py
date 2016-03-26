@@ -4,6 +4,9 @@
 import re
 from collections import OrderedDict
 import logging
+from typing import Optional
+
+from wdom.interface import Node, WebIF
 
 logger = logging.getLogger(__name__)
 _css_norm_re = re.compile(r'([a-z])([A-Z])')
@@ -23,8 +26,10 @@ def _normalize_css_property(prop):
 
 
 class CSSStyleDeclaration(OrderedDict):
-    def __init__(self, *args, parent=None, **kwargs):
+    def __init__(self, *args, parent=Optional['CSSRule'],
+                 owner=Optional['Node'], **kwargs):
         self.parentRule = parent
+        self._owner = owner
         super().__init__(*args, **kwargs)
 
     @property
@@ -46,13 +51,13 @@ class CSSStyleDeclaration(OrderedDict):
     def parentRule(self, parent):
         self._parent = parent
 
-    def getPropertyValue(self, prop:str) -> str:
+    def getPropertyValue(self, prop: str) -> str:
         return self.get(prop, '')
 
-    def removeProperty(self, prop:str) -> str:
+    def removeProperty(self, prop: str) -> str:
         return self.pop(prop, '')
 
-    def setProperty(self, prop:str, value:str, priority=None):
+    def setProperty(self, prop: str, value: str, priority=None):
         self[prop] = value
 
     def __getitem__(self, attr) -> str:
@@ -83,13 +88,13 @@ class CSSStyleDeclaration(OrderedDict):
             self.__delitem__(_normalize_css_property(attr))
 
 
-def parse_style_decl(style:str) -> CSSStyleDeclaration:
+def parse_style_decl(style: str, owner: Node = None) -> CSSStyleDeclaration:
     orig_style = style
     style_str = _style_cleanup_re.sub(r'\1', style.strip())
     if len(style_str) == 0:
-        return CSSStyleDeclaration()
+        return CSSStyleDeclaration(owner=owner)
 
-    style = CSSStyleDeclaration()
+    style = CSSStyleDeclaration(owner=owner)
     for decls in style_str.split(';'):
         if ':' not in decls:
             if len(decls) > 0:
@@ -107,7 +112,7 @@ def parse_style_decl(style:str) -> CSSStyleDeclaration:
 
 
 class CSSStyleRule(object):
-    def __init__(self, selector:str = '', style:CSSStyleDeclaration = None):
+    def __init__(self, selector: str = '', style: CSSStyleDeclaration = None):
         self.selectorText = selector
         if style is None:
             self.style = CSSStyleDeclaration()
@@ -131,7 +136,7 @@ class CSSRuleList(list):
     def length(self) -> int:
         return len(self)
 
-    def item(self, index:int) -> CSSStyleRule:
+    def item(self, index: int) -> CSSStyleRule:
         return self[index]
 
     @property
@@ -139,7 +144,7 @@ class CSSRuleList(list):
         return '\n'.join(rule.cssText for rule in self)
 
 
-def parse_style_rules(styles:str) -> CSSRuleList:
+def parse_style_rules(styles: str) -> CSSRuleList:
     rules = CSSRuleList()
     for m in _style_rule_re.finditer(styles):
         rules.append(CSSStyleRule(m.group(1), parse_style_decl(m.group(2))))

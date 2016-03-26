@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from collections import Iterable
-from xml.dom import Node
 from xml.etree.ElementTree import HTML_EMPTY
 import html
 
 from wdom.css import parse_style_decl, CSSStyleDeclaration
 from wdom.event import EventTarget
-from wdom.interface import WebIF
+from wdom.interface import WebIF, Node
 
 
 class DOMTokenList(list):
@@ -853,11 +852,14 @@ class HTMLElement(Element):
     @style.setter
     def style(self, style:str):
         if isinstance(style, str):
-            self._style = parse_style_decl(style)
+            self._style = parse_style_decl(style, owner=self)
         elif style is None:
-            self._style = CSSStyleDeclaration()
-        else:
+            self._style = CSSStyleDeclaration(owner=self)
+        elif isinstance(style, CSSStyleDeclaration):
+            style._owner = self
             self._style = style
+        else:
+            raise TypeError('Invalid type for style: {}'.format(type(style)))
 
     def getAttribute(self, attr:str) -> str:
         if attr == 'style':
