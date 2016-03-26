@@ -10,7 +10,7 @@ from wdom.node import Element, HTMLElement, RawHtml, Comment, CharacterData
 
 class TestDOMTokenList(TestCase):
     def setUp(self):
-        self.tokens = DOMTokenList()
+        self.tokens = DOMTokenList(self)
 
     def test_add(self):
         self.assertEqual(self.tokens.length, 0)

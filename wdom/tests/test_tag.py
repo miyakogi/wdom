@@ -280,7 +280,7 @@ class TestTag(TestCase):
 
 class TestClassList(TestCase):
     def setUp(self):
-        self.cl = DOMTokenList()
+        self.cl = DOMTokenList(self)
 
     def test_addremove(self):
         self.assertIsFalse(bool(self.cl))

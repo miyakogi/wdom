@@ -52,14 +52,14 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         '''Return class-level class list, including all super class's.
         '''
         l = []
-        l.append(DOMTokenList(cls.class_))
+        l.append(DOMTokenList(cls, cls.class_))
         if cls.inherit_class:
             for base_cls in cls.__bases__:
                 if issubclass(base_cls, Tag):
                     l.append(base_cls.get_class_list())
         # Reverse order so that parent's class comes to front
         l.reverse()
-        return DOMTokenList(l)
+        return DOMTokenList(cls, l)
 
     def append(self, child:Node):
         '''Shortcut method of ``appendChild``.'''
@@ -97,8 +97,6 @@ class Tag(WebElement, metaclass=TagBaseMeta):
             return super().getAttribute(attr)
 
     def addClass(self, class_: str):
-        if class_ and self.connected:
-            self.js_exec('addClass', **{'class': class_})
         self.classList.append(class_)
 
     def hasClass(self, class_: str):
@@ -119,8 +117,6 @@ class Tag(WebElement, metaclass=TagBaseMeta):
                     'tried to remove non-existing class: {}'.format(class_)
                 )
         else:
-            if class_ and  class_ in self.classList and self.connected:
-                self.js_exec('removeClass', **{'class': class_})
             self.classList.remove(class_)
 
     def show(self):

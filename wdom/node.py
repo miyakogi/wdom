@@ -8,11 +8,13 @@ import html
 
 from wdom.css import parse_style_decl, CSSStyleDeclaration
 from wdom.event import EventTarget
+from wdom.interface import WebIF
 
 
 class DOMTokenList(list):
-    def __init__(self, *args):
+    def __init__(self, owner, *args):
         super().__init__()
+        self._owner = owner
         self.append(args)
 
     def _validate_token(self, token:str):
@@ -40,18 +42,22 @@ class DOMTokenList(list):
         self._validate_token(token)
         if token and token not in self:
             super().append(token)
+            if isinstance(self._owner, WebIF):
+                self._owner.js_exec('addClass', **{'class': token})
 
     def remove(self, token:str):
         self._validate_token(token)
         if token in self:
             super().remove(token)
+            if isinstance(self._owner, WebIF):
+                self._owner.js_exec('removeClass', **{'class': token})
 
     def toggle(self, token:str):
         self._validate_token(token)
         if token in self:
-            super().remove(token)
+            self.remove(token)
         else:
-            super().append(token)
+            self.add(token)
 
     def item(self, index:int) -> str:
         if 0 <= index < len(self):
@@ -575,7 +581,7 @@ class Element(appendTextMixin, Node, EventTarget):
         super().__init__(parent=parent)
         self.tag = tag
         self.attributes = NamedNodeMap()
-        self.classList = DOMTokenList()
+        self.classList = DOMTokenList(self)
 
         if 'class_' in kwargs:
             kwargs['class'] = kwargs.pop('class_')
@@ -676,7 +682,7 @@ class Element(appendTextMixin, Node, EventTarget):
 
     def _set_attribute(self, attr:str, value=None):
         if attr == 'class':
-            self.classList = DOMTokenList(value)
+            self.classList = DOMTokenList(self, value)
         else:
             new_attr = Attr(attr, value)
             self.setAttributeNode(new_attr)
@@ -689,7 +695,7 @@ class Element(appendTextMixin, Node, EventTarget):
 
     def _remove_attribute(self, attr:str):
         if attr == 'class':
-            self.classList = DOMTokenList()
+            self.classList = DOMTokenList(self)
         else:
             self.attributes.removeNamedItem(attr)
 
