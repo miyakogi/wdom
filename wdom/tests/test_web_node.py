@@ -105,6 +105,9 @@ class TestWebElement(TestCase):
             'setAttribute', attr='style', value='color: red;')
         self.elm.removeAttribute('style')
         self.js_mock.assert_called_with('removeAttribute', attr='style')
+        self.elm.style.color = 'black'
+        self.js_mock.assert_called_with(
+            'setAttribute', attr='style', value='color: black;')
 
     def test_style_init(self):
         _js_exec = WebElement.js_exec

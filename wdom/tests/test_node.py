@@ -761,19 +761,22 @@ class TestHTMLElement(TestCase):
         with self.assertRaises(TypeError):
             self.elm.style = self.elm
 
-    def test_init_style_string(self):
+    def test_init_style_init(self):
         elm = HTMLElement('a', style='color: red;')
         self.assertEqual(elm.style.cssText, 'color: red;')
         self.assertEqual(elm.getAttribute('style'), 'color: red;')
-
         self.assertEqual(elm.html, '<a style="color: red;"></a>')
 
     def test_style_setter(self):
         self.elm.style = 'color: red;'
         self.assertEqual(self.elm.style.cssText, 'color: red;')
         self.assertEqual(self.elm.getAttribute('style'), 'color: red;')
-
         self.assertEqual(self.elm.html, '<a style="color: red;"></a>')
+
+        self.elm.style.color = 'black'
+        self.elm.style.background = 'red'
+        self.assertEqual(self.elm.style.cssText,
+                         'color: black; background: red;')
 
     def test_style_remove(self):
         self.elm.style = 'color: red;'

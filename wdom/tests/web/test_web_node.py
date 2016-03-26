@@ -152,6 +152,19 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertIsTrue(self.is_displayed())
 
+    def test_style(self):
+        self.tag.textContent = 'Style'
+        self.wait()
+        self.set_element(self.tag)
+        self.assertEqual(self.get_attribute('style'), '')
+        style = 'color: red;'
+        self.tag.style = style
+        self.wait()
+        self.assertEqual(self.get_attribute('style'), style)
+        self.tag.style.color = 'black'
+        self.wait()
+        self.assertEqual(self.get_attribute('style'), 'color: black;')
+
     @sync
     async def test_get_rect(self):
         rect = WebElement('div', style='width:200px;height:100px;')
