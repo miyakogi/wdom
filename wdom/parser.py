@@ -34,7 +34,7 @@ class DocumentParser(HTMLParser):
         else:
             elm = WebElement(tag, parent=self.elm, **dict(attrs))
             if self.elm is not None:
-                self.elm.appendChild(elm)
+                self.elm.append(elm)
             if tag not in HTML_EMPTY:
                 self.elm = elm
 
@@ -44,10 +44,10 @@ class DocumentParser(HTMLParser):
     def handle_data(self, data):
         _d = data.strip()
         if _d and self.elm is not None:
-            self.elm.appendChild(_d)
+            self.elm.append(_d)
 
     def handle_comment(self, comment:str):
-        self.elm.appendChild(Comment(comment))
+        self.elm.append(Comment(comment))
 
 
 class FragmentParser(HTMLParser):
@@ -59,7 +59,7 @@ class FragmentParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         elm = WebElement(tag, parent=self.elm, **dict(attrs))
         if self.elm is not None:
-            self.elm.appendChild(elm)
+            self.elm.append(elm)
         if tag not in HTML_EMPTY:
             self.elm = elm
 
@@ -68,10 +68,10 @@ class FragmentParser(HTMLParser):
 
     def handle_data(self, data):
         if data and self.elm is not None:
-            self.elm.appendChild(data)
+            self.elm.append(data)
 
     def handle_comment(self, comment:str):
-        self.elm.appendChild(Comment(comment))
+        self.elm.append(Comment(comment))
 
 
 def parse_document(doc:str):

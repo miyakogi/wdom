@@ -3,8 +3,9 @@
 
 from unittest import TestCase
 from wdom.css import CSSStyleDeclaration
-from wdom.node import DOMTokenList, NamedNodeMap
-from wdom.node import Node, Attr, Text, DocumentType, Document, DocumentFragment
+from wdom.node import DOMTokenList, NamedNodeMap, Attr
+from wdom.node import Node, ParentNode, ChildNode
+from wdom.node import Text, DocumentType, Document, DocumentFragment
 from wdom.node import Element, HTMLElement, RawHtml, Comment, CharacterData
 
 
@@ -412,6 +413,193 @@ class TestNode(TestCase):
         self.assertEqual(self.node.index(self.c3), 2)
 
 
+class P(Node, ParentNode): pass
+class C(Node, ChildNode): pass
+
+
+def is_equal_nodes(p, nodes2):
+    nodes1 = p.childNodes
+    assert len(nodes1) == len(nodes2)
+    for n1, n2 in zip(nodes1, nodes2):
+        if isinstance(n1, Text):
+            if isinstance(n2, Text):
+                assert n1.textContent == n2.textContent
+            elif isinstance(n2, str):
+                assert n1.textContent == n2
+            else:
+                raise AssertionError(n1, n2)
+        elif isinstance(n1, Node):
+            assert n1 is n2
+        else:
+            raise AssertionError(n1, n2)
+
+
+class TestParentNode(TestCase):
+    def setUp(self):
+        self.p = P()
+        self.c1 = C()
+        self.c2 = C()
+        self.c3 = C()
+        self.c4 = C()
+
+    def test_append(self):
+        self.assertFalse(self.p.hasChildNodes())
+        self.p.append(self.c1)
+        self.assertTrue(self.p.hasChildNodes())
+        self.assertEqual(self.p.length, 1)
+        is_equal_nodes(self.p, [self.c1])
+
+        self.p.append(self.c2)
+        self.assertEqual(self.p.length, 2)
+        self.assertIs(self.p.firstChild, self.c1)
+        self.assertIs(self.p.lastChild, self.c2)
+        is_equal_nodes(self.p, [self.c1, self.c2])
+
+    def test_append_multi(self):
+        self.p.append(self.c1, self.c2)
+        self.assertTrue(self.p.hasChildNodes())
+        self.assertEqual(self.p.length, 2)
+        is_equal_nodes(self.p, [self.c1, self.c2])
+
+        self.p.append(self.c3, self.c4)
+        self.assertEqual(self.p.length, 4)
+        is_equal_nodes(self.p, [self.c1, self.c2, self.c3, self.c4])
+
+    def test_append_text(self):
+        self.p.append('a')
+        self.assertTrue(self.p.hasChildNodes())
+        self.assertEqual(self.p.length, 1)
+        self.assertTrue(isinstance(self.p.firstChild, Text))
+        self.assertEqual(self.p.textContent, 'a')
+        is_equal_nodes(self.p, ['a'])
+
+        self.p.append('b')
+        self.assertEqual(self.p.length, 2)
+        self.assertTrue(isinstance(self.p.firstChild, Text))
+        self.assertTrue(isinstance(self.p.lastChild, Text))
+        self.assertEqual(self.p.textContent, 'ab')
+        is_equal_nodes(self.p, ['a', 'b'])
+
+        self.p.append('c', 'd')
+        self.assertEqual(self.p.length, 4)
+        self.assertTrue(isinstance(self.p.firstChild, Text))
+        self.assertTrue(isinstance(self.p.lastChild, Text))
+        self.assertEqual(self.p.textContent, 'abcd')
+        is_equal_nodes(self.p, ['a', 'b', 'c', 'd'])
+
+    def test_append_mixed_text_node(self):
+        self.p.append(self.c1, 'a', self.c2)
+        self.assertTrue(self.p.hasChildNodes())
+        self.assertEqual(self.p.length, 3)
+        self.assertIs(self.p.firstChild, self.c1)
+        self.assertIs(self.p.lastChild, self.c2)
+        is_equal_nodes(self.p, [self.c1, 'a', self.c2])
+
+        self.p.append(self.c3, 'b', self.c4)
+        is_equal_nodes(self.p, [self.c1, 'a', self.c2, self.c3, 'b', self.c4])
+
+    def test_prepend(self):
+        self.p.prepend(self.c1)
+        self.assertTrue(self.p.hasChildNodes())
+        self.assertEqual(self.p.length, 1)
+        is_equal_nodes(self.p, [self.c1])
+        self.p.prepend(self.c2)
+        is_equal_nodes(self.p, [self.c2, self.c1])
+
+    def test_prepend_multi(self):
+        self.p.append(self.c1)
+        self.p.prepend(self.c2, self.c3)
+        self.assertEqual(self.p.length, 3)
+        is_equal_nodes(self.p, [self.c2, self.c3, self.c1])
+
+    def test_prepend_text(self):
+        self.p.prepend('a')
+        self.assertEqual(self.p.length, 1)
+        self.assertTrue(isinstance(self.p.firstChild, Text))
+        self.assertEqual(self.p.textContent, 'a')
+        is_equal_nodes(self.p, ['a'])
+
+        self.p.prepend('b', 'c')
+        self.assertEqual(self.p.length, 3)
+        self.assertTrue(isinstance(self.p.firstChild, Text))
+        self.assertTrue(isinstance(self.p.lastChild, Text))
+        self.assertEqual(self.p.textContent, 'bca')
+        is_equal_nodes(self.p, ['b', 'c', 'a'])
+
+    def test_prepend_mixed_text_node(self):
+        self.p.prepend(self.c1, 'a', self.c2)
+        self.assertTrue(self.p.hasChildNodes())
+        self.assertEqual(self.p.length, 3)
+        self.assertIs(self.p.firstChild, self.c1)
+        self.assertEqual(self.p.textContent, 'a')
+        self.assertIs(self.p.lastChild, self.c2)
+        is_equal_nodes(self.p, [self.c1, 'a', self.c2])
+
+
+class TestChildNode(TestCase):
+    def setUp(self):
+        self.p = P()
+        self.c1 = C()
+        self.c2 = C()
+        self.c3 = C()
+        self.c4 = C()
+        self.p.append(self.c1, self.c2)
+
+    def test_after(self):
+        self.c1.after(self.c3)
+        is_equal_nodes(self.p, [self.c1, self.c3, self.c2])
+
+        self.c1.after(self.c4)
+        is_equal_nodes(self.p, [self.c1, self.c4, self.c3, self.c2])
+
+    def test_after_text(self):
+        self.c1.after('a')
+        self.assertIs(self.p.firstChild, self.c1)
+        self.assertEqual(self.p.textContent, 'a')
+        is_equal_nodes(self.p, [self.c1, 'a', self.c2])
+
+        self.c1.after('b', 'c')
+        self.assertEqual(self.p.length, 5)
+        self.assertEqual(self.p.textContent, 'bca')
+        is_equal_nodes(self.p, [self.c1, 'b', 'c', 'a', self.c2])
+
+    def test_after_multi(self):
+        self.c1.after(self.c3, self.c4)
+        is_equal_nodes(self.p, [self.c1, self.c3, self.c4, self.c2])
+
+        self.c1.after(self.c2)
+        # Is this behaviour correct?
+        is_equal_nodes(self.p, [self.c1, self.c2, self.c3, self.c4])
+
+    def test_arter_mixed_text_node(self):
+        self.c1.after(self.c3, 'a', self.c4)
+        is_equal_nodes(self.p, [self.c1, self.c3, 'a', self.c4, self.c2])
+
+    def test_before(self):
+        self.c1.before(self.c3)
+        is_equal_nodes(self.p, [self.c3, self.c1, self.c2])
+
+        self.c1.before(self.c4)
+        is_equal_nodes(self.p, [self.c3, self.c4, self.c1, self.c2])
+
+    def test_before_text(self):
+        self.c1.before('a')
+        self.assertEqual(self.p.textContent, 'a')
+        is_equal_nodes(self.p, ['a', self.c1, self.c2])
+
+        self.c1.before('b', 'c')
+        is_equal_nodes(self.p, ['a', 'b', 'c', self.c1, self.c2])
+
+    def test_before_multi(self):
+        self.c2.before(self.c3, self.c4)
+        is_equal_nodes(self.p, [self.c1, self.c3, self.c4, self.c2])
+
+    def test_before_mixed(self):
+        self.c2.before(self.c3, 'ab', self.c4, 'c')
+        self.assertEqual(self.p.textContent, 'abc')
+        is_equal_nodes(self.p, [self.c1, self.c3, 'ab', self.c4, 'c', self.c2])
+
+
 class TestCharacterData(TestCase):
     def setUp(self):
         self.node = Node()
@@ -554,14 +742,6 @@ class TestDocumentFragment(TestCase):
         appended_child = self.df.appendChild(self.elm)
         self.assertEqual(self.df.html, '<a></a>')
         self.assertIs(appended_child, self.elm)
-
-    def test_init_append(self):
-        df = DocumentFragment(self.c1, self.c2)
-        self.assertEqual(df.length, 2)
-        self.assertIs(df.childNodes[0], self.c1)
-        self.assertIs(df.childNodes[1], self.c2)
-        self.assertIs(df.firstChild, self.c1)
-        self.assertIs(df.lastChild, self.c2)
 
     def test_append_to_element(self):
         appended_child1 = self.df.appendChild(self.c1)
@@ -721,8 +901,9 @@ class TestElement(TestCase):
         self.assertEqual(self.elm.html, '<tag></tag>')
 
     def test_append_string(self):
-        self.elm.appendChild('a')
-        self.assertTrue(self.elm.hasChildNodes())
+        with self.assertRaises(TypeError):
+            self.elm.appendChild('a')
+        self.assertFalse(self.elm.hasChildNodes())
 
     def test_get_elements_by_tagname(self):
         self.elm.appendChild(self.c1)
