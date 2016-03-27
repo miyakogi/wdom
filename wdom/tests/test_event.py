@@ -7,6 +7,7 @@ from syncer import sync
 
 from wdom.tests.util import TestCase
 from wdom.event import Event, EventListener, EventTarget
+from wdom.webif import WebIF
 
 
 class TestEvent(TestCase):

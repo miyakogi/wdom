@@ -7,8 +7,9 @@ import html
 from typing import Union, Tuple
 
 from wdom.css import CSSStyleDeclaration
+from wdom.interface import Node
 from wdom.event import EventTarget
-from wdom.interface import WebIF, Node
+from wdom.webif import WebIF
 
 
 class DOMTokenList:
