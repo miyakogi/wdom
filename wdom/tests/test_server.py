@@ -76,11 +76,11 @@ class TestStaticFileHandler(AsyncHTTPTestCase):
 
     def test_static_file(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
-            res = self.fetch('/_static/js/wdom.js')
+            res = self.fetch('/_static/js/rimo/rimo.js')
         self.assertEqual(res.code, 200)
         body = res.body.decode('utf8')
-        self.assertIn('Wlog', body)
-        self.assertIn('Wdom', body)
+        self.assertIn('rimo', body)
+        self.assertIn('rimo.log', body)
 
     def test_add_static_path(self) -> None:
         from os import path
