@@ -441,8 +441,7 @@ def _to_node_list(nodes:Tuple[str, 'ChildNode']) -> Node:
 
 
 class ParentNode:
-    '''Defined in DOM Level 4. Mixin class for Document, DocumentFragment, and
-    Element.
+    '''[DOM Level 4] Mixin class for Document, DocumentFragment, and Element.
     '''
     @property
     def children(self):
@@ -456,14 +455,14 @@ class ParentNode:
     def lastElement(self):
         raise NotImplementedError
 
-    def prepend(self, *nodes:Tuple['ChildNode']):
+    def prepend(self, *nodes:Tuple['ChildNode', str]):
         node = _to_node_list(nodes)
         if self.firstChild is not None:
             self.insertBefore(node, self.firstChild)
         else:
             self.appendChild(node)
 
-    def append(self, *nodes:Tuple['ChildNode']):
+    def append(self, *nodes:Tuple['ChildNode', str]):
         node = _to_node_list(nodes)
         self.appendChild(node)
 
@@ -485,11 +484,18 @@ class ParentNode:
 
 
 class ChildNode:
-    '''Defined in DOM Level 4. Mixin class for DocumentType, Element, and
-    CharacterData (Text, RawHTML, Comment).
+    '''[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData
+    (Text, RawHTML, Comment).
     '''
-    def after(self, *nodes:Tuple['ChildNode']):
-        '''Append nodes after this node. Is nodes contains ``str``, it will be
+    def before(self, *nodes:Tuple['ChildNode', str]) -> None:
+        '''Insert nodes before this node. If nodes contains ``str``, it will be
+        converted to Text node.'''
+        if self.parentNode:
+            node = _to_node_list(nodes)
+            self.parentNode.insertBefore(node, self)
+
+    def after(self, *nodes:Tuple['ChildNode', str]) -> None:
+        '''Append nodes after this node. If nodes contains ``str``, it will be
         converted to Text node.'''
         if self.parentNode:
             node = _to_node_list(nodes)
@@ -499,20 +505,21 @@ class ChildNode:
             else:
                 self.parentNode.insertBefore(node, _next_node)
 
-    def before(self, *nodes:Tuple['ChildNode']):
-        '''Insert nodes before this node. Is nodes contains ``str``, it will be
+    def replaceWith(self, *nodes:Tuple['ChildNode', str]) -> None:
+        '''Replace this node with nodes. If nodes contains ``str``, it will be
         converted to Text node.'''
         if self.parentNode:
             node = _to_node_list(nodes)
-            self.parentNode.insertBefore(node, self)
+            self.parentNode.replaceChild(node, self)
 
     def _remove(self):
         if self.parentNode is not None:
             self.parentNode.removeChild(self)
 
-    def remove(self):
+    def remove(self) -> None:
         '''Remove this node from the parent node.'''
         self._remove()
+
 
 
 class CharacterData(Node, ChildNode):

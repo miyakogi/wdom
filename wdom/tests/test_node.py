@@ -599,6 +599,18 @@ class TestChildNode(TestCase):
         self.assertEqual(self.p.textContent, 'abc')
         is_equal_nodes(self.p, [self.c1, self.c3, 'ab', self.c4, 'c', self.c2])
 
+    def test_replace(self):
+        self.c1.replaceWith(self.c3)
+        is_equal_nodes(self.p, [self.c3, self.c2])
+
+    def test_replace_multi(self):
+        self.c1.replaceWith(self.c3, self.c4)
+        is_equal_nodes(self.p, [self.c3, self.c4, self.c2])
+
+    def test_replace_text(self):
+        self.c1.replaceWith('a', 'b')
+        is_equal_nodes(self.p, ['a', 'b', self.c2])
+
     def test_remove(self):
         self.c2.remove()
         is_equal_nodes(self.p, [self.c1])
