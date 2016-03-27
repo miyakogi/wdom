@@ -2,6 +2,7 @@ build
 tmp
 .cache
 .coverage
+.tox
 coverage.xml
 pytest.xml
 
