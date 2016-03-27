@@ -337,7 +337,14 @@ class Node(Node):
         return self._append_child(node)
 
     def index(self, node):
-        return self._children.index(node)
+        if node in self._children:
+            return self._children.index(node)
+        elif isinstance(node, Text):
+            for i, n in self._children:
+                # should consider multiple match?
+                if isinstance(n, Text) and n.data == node:
+                    return i
+        raise ValueError('node is not in this node')
 
     def _insert_document_fragment_before(self, node:Node, ref_node:Node
                                          ) -> Node:

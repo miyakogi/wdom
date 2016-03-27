@@ -11,6 +11,7 @@ from syncer import sync
 from wdom.tests.util import TestCase
 from wdom.document import get_document
 from wdom.misc import install_asyncio
+from wdom.node import DocumentFragment
 from wdom.web_node import WebElement
 from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
 
@@ -33,6 +34,15 @@ class WebElementTestCase(ElementTestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
+        self.df = DocumentFragment()
+        self.c1 = WebElement('c1')
+        self.c2 = WebElement('c2')
+        self.c3 = WebElement('c3')
+        self.c4 = WebElement('c4')
+        self.c1.textContent = 'child1'
+        self.c2.textContent = 'child2'
+        self.c3.textContent = 'child3'
+        self.c4.textContent = 'child4'
         return self.root
 
     def test_connection(self):
@@ -47,9 +57,8 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertEqual(self.get_text(), 'text')
 
-        child = WebElement('a')
-        child.textContent = 'child'
-        self.tag.appendChild(child)
+        self.c1.textContent = 'child'
+        self.tag.appendChild(self.c1)
         self.wait()
         self.assertEqual(self.get_text(), 'textchild')
 
@@ -57,7 +66,7 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertEqual(self.get_text(), 'NewText')
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child)
+            self.set_element(self.c1)
 
     def test_attr(self):
         self.set_element(self.tag)
@@ -68,44 +77,42 @@ class WebElementTestCase(ElementTestCase):
         self.assertIsNone(self.get_attribute('src'))
 
     def test_addremove_child(self):
-        child = WebElement('a')
-        self.tag.appendChild(child)
+        self.tag.appendChild(self.c1)
         self.wait()
-        self.assertIsTrue(self.set_element(child))
-        self.assertEqual(self.get_text(), '')
-        child.textContent = 'Child'
+        self.assertIsTrue(self.set_element(self.c1))
+        self.assertEqual(self.get_text(), 'child1')
+        self.c1.textContent = 'Child'
         self.wait()
         self.assertEqual(self.get_text(), 'Child')
 
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), 'Child')
 
-        self.tag.removeChild(child)
+        self.tag.removeChild(self.c1)
         self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child)
+            self.set_element(self.c1)
 
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), '')
 
     def test_insert_child(self):
         self.set_element(self.tag)
-        child1 = WebElement('a', parent=self.tag)
-        child1.textContent = 'child1'
-        child2 = WebElement('b')
-        child2.textContent = 'child2'
+        # test parent in constructor
+        self.c1 = WebElement('c1', parent=self.tag)
+        self.c1.textContent = 'child1'
         self.wait()
 
-        self.assertIsTrue(self.set_element(child1))
+        self.assertIsTrue(self.set_element(self.c1))
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child2)
+            self.set_element(self.c2)
 
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), 'child1')
 
-        self.tag.insertBefore(child2, child1)
+        self.tag.insertBefore(self.c2, self.c1)
         self.wait()
-        self.assertIsTrue(self.set_element(child2))
+        self.assertIsTrue(self.set_element(self.c2))
 
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), 'child2child1')
@@ -114,31 +121,112 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertEqual(self.get_text(), '')
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child1)
+            self.set_element(self.c1)
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child2)
+            self.set_element(self.c2)
+
+    def test_add_df(self):
+        self.set_element(self.tag)
+        self.df.append(self.c1, self.c2, 'text')
+        self.tag.appendChild(self.df)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1child2text')
+
+        df = DocumentFragment()
+        df.append(self.c3, 'text2')
+        self.tag.appendChild(df)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1child2textchild3text2')
+
+    def test_insert_df(self):
+        self.set_element(self.tag)
+        self.tag.appendChild(self.c1)
+        self.df.append(self.c2, self.c3, 'text')
+        self.tag.insertBefore(self.df, self.c1)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child2child3textchild1')
+
+        df = DocumentFragment()
+        df.append(self.c4, 'text2')
+        self.tag.insertBefore(df, self.c3)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child2child4text2child3textchild1')
 
     def test_replace_child(self):
         self.set_element(self.tag)
-        child1 = WebElement('a')
-        child1.textContent = 'child1'
-        child2 = WebElement('b')
-        child2.textContent = 'child2'
-        self.tag.appendChild(child1)
+        self.tag.appendChild(self.c1)
         self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child2)
-        self.assertIsTrue(self.set_element(child1))
+            self.set_element(self.c2)
+        self.assertIsTrue(self.set_element(self.c1))
         self.assertEqual(self.get_text(), 'child1')
 
-        self.tag.replaceChild(child2, child1)
+        self.tag.replaceChild(self.c2, self.c1)
         self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child1)
-        self.assertIsTrue(self.set_element(child2))
+            self.set_element(self.c1)
+        self.assertIsTrue(self.set_element(self.c2))
         self.assertEqual(self.get_text(), 'child2')
         self.set_element(self.tag)
         self.assertEqual(self.get_text(), 'child2')
+
+    def test_append(self):
+        self.set_element(self.tag)
+        self.tag.append(self.c1)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1')
+
+        self.tag.append(self.c2, self.c3)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1child2child3')
+
+        self.tag.append(self.c4, self.c1)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child2child3child4child1')
+
+        self.tag.append('t1', 't2')
+        self.wait()
+        self.assertEqual(self.get_text(), 'child2child3child4child1t1t2')
+
+    def test_prepend(self):
+        self.set_element(self.tag)
+        self.tag.prepend(self.c1)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1')
+
+        self.tag.prepend(self.c2, self.c3)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child2child3child1')
+
+        self.tag.prepend(self.c4, self.c1)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child4child1child2child3')
+
+        self.tag.prepend('t1', 't2')
+        self.wait()
+        self.assertEqual(self.get_text(), 't1t2child4child1child2child3')
+
+    def test_prepend_append_text(self):
+        self.set_element(self.tag)
+        self.tag.append('t1')
+        self.wait()
+        self.assertEqual(self.get_text(), 't1')
+
+        self.tag.firstChild.remove()
+        self.wait()
+        self.assertEqual(self.get_text(), '')
+
+        self.tag.prepend('t2')
+        self.wait()
+        self.assertEqual(self.get_text(), 't2')
+
+        self.tag.append('t3', 't4')
+        self.wait()
+        self.assertEqual(self.get_text(), 't2t3t4')
+
+        self.tag.prepend('t5', 't6')
+        self.wait()
+        self.assertEqual(self.get_text(), 't5t6t2t3t4')
 
     def test_shortcut_attr(self):
         self.tag.textContent = 'TAG'
@@ -179,6 +267,13 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertEqual(self.get_attribute('class'), 'a b d')
         self.tag.classList.remove('a', 'd')
+        self.wait()
+        self.assertEqual(self.get_attribute('class'), 'b')
+
+        self.tag.classList.toggle('b')
+        self.wait()
+        self.assertEqual(self.get_attribute('class'), '')
+        self.tag.classList.toggle('b')
         self.wait()
         self.assertEqual(self.get_attribute('class'), 'b')
 

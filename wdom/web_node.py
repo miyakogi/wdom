@@ -55,10 +55,7 @@ class WebElement(HTMLElement, WebIF):
         self._empty()
 
     def _append_child_web(self, child: 'WebElement'):
-        if isinstance(child, Node):
-            html = child.html
-        else:
-            html = str(child)
+        html = child.html if isinstance(child, Node) else str(child)
         self.js_exec('insertAdjacentHTML', position='beforeend', html=html)
 
     def appendChild(self, child: 'WebElement') -> Node:
@@ -69,16 +66,12 @@ class WebElement(HTMLElement, WebIF):
         return self._append_child(child)
 
     def _insert_before_web(self, child: 'WebElement', ref_node: 'WebElement'):
-        if isinstance(child, WebElement):
-            html = child.html
-        else:
-            html = str(child)
-
+        html = child.html if isinstance(child, Node) else str(child)
         if isinstance(ref_node, WebElement):
             ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
-                                html=html)
+                             html=html)
         else:
-            index = self._children.index(ref_node)
+            index = self.index(ref_node)
             self.js_exec('insert', index=index, html=html)
 
     def insertBefore(self, child: 'WebElement', ref_node: 'WebElement') -> Node:
