@@ -4,14 +4,8 @@
 from asyncio import ensure_future, iscoroutinefunction
 from typing import Callable
 
-
-class Event:
-    def __init__(self, type:str, **kwargs):
-        self.type = type
-        self.__dict__.update(kwargs)
-
-    def stopPrapagation(self):
-        raise NotImplementedError
+from wdom.interface import Event
+from wdom.webif import WebIF
 
 
 class EventListener:
@@ -48,8 +42,19 @@ class EventTarget:
     def _add_event_listener(self, event:str, listener:Callable):
         self._listeners.setdefault(event, []).append(EventListener(listener))
 
+    def _add_event_listener_web(self, event:str, *args, **kwargs):
+        if isinstance(self, WebIF):
+            self.js_exec('addEventListener', event=event)
+
     def addEventListener(self, event:str, listener:Callable):
+        '''Add event listener to this node. ``event`` is a string which
+        determines the event type when the new listener called. Acceptable
+        events are same as JavaScript, without ``on``. For example, to add a
+        listener which is called when this node is clicked, event is
+        ``'click``.
+        '''
         self._add_event_listener(event, listener)
+        self._add_event_listener_web(event)
 
     def _remove_event_listener(self, event:str, listener:Callable):
         listeners = self._listeners.get(event)
@@ -62,8 +67,16 @@ class EventTarget:
         if not listeners:
             del self._listeners[event]
 
+    def _remove_event_listener_web(self, event:str, *args, **kwargs):
+        if isinstance(self, WebIF) and event not in self._listeners:
+            self.js_exec('removeEventListener', event=event)
+
     def removeEventListener(self, event:str, listener:Callable):
+        '''Remove an event listener of this node. The listener is removed only
+        when both event type and listener is matched.
+        '''
         self._remove_event_listener(event, listener)
+        self._remove_event_listener_web(event)
 
     def _dispatch_event(self, event:Event):
         _tasks = []

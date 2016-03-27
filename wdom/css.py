@@ -6,7 +6,8 @@ from collections import OrderedDict
 import logging
 from typing import Optional
 
-from wdom.interface import Node, WebIF
+from wdom.interface import Node
+from wdom.webif import WebIF
 
 logger = logging.getLogger(__name__)
 _css_norm_re = re.compile(r'([a-z])([A-Z])')

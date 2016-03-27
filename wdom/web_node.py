@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import json
 
-from asyncio import coroutine, Future, ensure_future
-from typing import Callable, Optional
+from asyncio import coroutine
 
-from wdom.event import Event
 from wdom.node import HTMLElement, Node
-from wdom.interface import WebIF
+from wdom.webif import WebIF
 
 logger = logging.getLogger(__name__)
 js_logger = logger.getChild('ws')
@@ -27,8 +24,6 @@ class WebElement(HTMLElement, WebIF):
 
     def __init__(self, *args, parent=None, **kwargs):
         self.id = kwargs.pop('id', str(id(self)))
-        self._reqid = 0
-        self._tasks = {}
         super().__init__(*args, **kwargs)
         elements[self.id] = self
         self.addEventListener('mount', self._on_mount)
@@ -40,97 +35,9 @@ class WebElement(HTMLElement, WebIF):
                               'id="{}"'.format(self.id)))
         return attrs_str.strip()
 
-    @property
-    def connected(self) -> bool:
-        '''When this instance has any connection, return True.'''
-        return bool(self.ownerDocument and self.ownerDocument.connections)
-
     def _on_mount(self, *args, **kwargs):
         for event in self._listeners:
-            self.js_exec('addEventListener', event=event)
-
-    def on_message(self, msg: dict):
-        '''called when webscoket get message.'''
-        js_logger.debug('{tag}: {msg}'.format(tag=self.tag, msg=msg))
-
-        msg_type = msg.get('type')
-        if msg_type == 'event':
-            self._handle_event(msg)
-        elif msg_type == 'response':
-            self._handle_response(msg)
-
-    def _handle_event(self, msg):
-        _e = msg.get('event', {})
-        event = Event(**_e)
-        self.dispatchEvent(event=event)
-
-    def _handle_response(self, msg):
-        response = msg.get('data', False)
-        if response:
-            task = self._tasks.pop(msg.get('reqid'), False)
-            if task and not task.cancelled() and not task.done():
-                task.set_result(msg.get('data'))
-
-    def _add_event_listener_web(self, event:str, *args, **kwargs):
-        self.js_exec('addEventListener', event=event)
-
-    def addEventListener(self, event: str, listener: Callable):
-        '''Add event listener to this node. ``event`` is a string which
-        determines the event type when the new listener called. Acceptable
-        events are same as JavaScript, without ``on``. For example, to add a
-        listener which is called when this node is clicked, event is
-        ``'click``.
-        '''
-        self._add_event_listener(event, listener)
-        self._add_event_listener_web(event)
-
-    def _remove_event_listener_web(self, event:str, *args, **kwargs):
-        if event not in self._listeners:
-            self.js_exec('removeEventListener', event=event)
-
-    def removeEventListener(self, event:str, listener:Callable):
-        '''Remove an event listener of this node. The listener is removed only
-        when both event type and listener is matched.
-        '''
-        self._remove_event_listener(event, listener)
-        self._remove_event_listener_web(event, listener)
-
-    def js_exec(self, method:str, **kwargs) -> Optional[Future]:
-        '''Execute ``method`` in the related node on browser, via web socket
-        connection. Other keyword arguments are passed to ``params`` attribute.
-        If this node is not in any document tree (namely, this node does not
-        have parent node), the ``method`` is not executed.
-        '''
-        if self.connected:
-            return ensure_future(
-                self.ws_send(dict(method=method, params=kwargs))
-            )
-
-    def js_query(self, query) -> Future:
-        if self.connected:
-            self.js_exec(query, reqid=self._reqid)
-            fut = Future()
-            self._tasks[self._reqid] = fut
-            self._reqid += 1
-            return fut
-        else:
-            fut = Future()
-            fut.set_result(None)
-            return fut
-
-    @coroutine
-    def ws_send(self, obj):
-        '''Send message to the related nodes on browser, with ``tagname`` and
-        ``id`` which specifies relation between python's object and element
-        on browser. The message is serialized by JSON object and send via
-        WebSocket connection.
-        '''
-        obj['id'] = self.id
-        obj['tag'] = self.tag
-        msg = json.dumps(obj)
-        if self.ownerDocument is not None:
-            for conn in self.ownerDocument.connections:
-                conn.write_message(msg)
+            self._add_event_listener_web(event=event)
 
     def _remove_web(self):
         self.js_exec('remove')
