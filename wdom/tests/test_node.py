@@ -155,6 +155,38 @@ class TestDOMTokenList(TestCase):
         self.assertEqual(len(cls), 0)
 
 
+class TestAttr(TestCase):
+    def setUp(self):
+        self.id = Attr('id')
+        self.cls = Attr('class')
+        self.src = Attr('src')
+
+    def test_name(self):
+        self.assertEqual(self.id.name, 'id')
+        self.assertEqual(self.cls.name, 'class')
+        self.assertEqual(self.src.name, 'src')
+
+    def test_value(self):
+        self.src.value = 'a'
+        self.assertEqual(self.src.value, 'a')
+
+    def test_html(self):
+        self.src.value = 'a'
+        self.assertEqual(self.src.html, 'src="a"')
+
+    def test_boolean_attr(self):
+        hidden = Attr('hidden')
+        hidden.value = True
+        self.assertEqual(hidden.html, 'hidden')
+        hidden.value = False
+        self.assertEqual(hidden.html, '')
+
+    def test_isid(self):
+        self.assertTrue(self.id.isId)
+        self.assertFalse(self.cls.isId)
+        self.assertFalse(self.src.isId)
+
+
 class TestNamedNodeMap(TestCase):
     def setUp(self):
         self.map = NamedNodeMap(self)
@@ -378,58 +410,6 @@ class TestNode(TestCase):
         self.assertEqual(self.node.index(self.c1), 0)
         self.assertEqual(self.node.index(self.c2), 1)
         self.assertEqual(self.node.index(self.c3), 2)
-
-
-class TestAttr(TestCase):
-    def setUp(self):
-        self.id = Attr('id')
-        self.cls = Attr('class')
-        self.src = Attr('src')
-
-    def test_name(self):
-        self.assertEqual(self.id.name, 'id')
-        self.assertEqual(self.id.nodeName, 'id')
-        self.assertEqual(self.cls.name, 'class')
-        self.assertEqual(self.cls.nodeName, 'class')
-        self.assertEqual(self.src.name, 'src')
-        self.assertEqual(self.src.nodeName, 'src')
-
-    def test_value(self):
-        self.src.value = 'a'
-        self.assertEqual(self.src.value, 'a')
-        self.assertEqual(self.src.textContent, 'a')
-        self.src.textContent = 'b'
-        self.assertEqual(self.src.value, 'b')
-        self.assertEqual(self.src.textContent, 'b')
-
-    def test_html(self):
-        self.src.value = 'a'
-        self.assertEqual(self.src.html, 'src="a"')
-
-    def test_boolean_attr(self):
-        hidden = Attr('hidden')
-        hidden.value = True
-        self.assertEqual(hidden.html, 'hidden')
-        hidden.value = False
-        self.assertEqual(hidden.html, '')
-
-    def test_isid(self):
-        self.assertTrue(self.id.isId)
-        self.assertFalse(self.cls.isId)
-        self.assertFalse(self.src.isId)
-
-    def test_invalid_methods(self):
-        with self.assertRaises(NotImplementedError):
-            self.id.appendChild(self.cls)
-        with self.assertRaises(NotImplementedError):
-            self.id.removeChild(self.cls)
-        with self.assertRaises(NotImplementedError):
-            self.id.insertBefore(self.cls, self.src)
-        with self.assertRaises(NotImplementedError):
-            self.id.replaceChild(self.cls, self.src)
-        self.assertFalse(self.id.hasAttributes())
-        self.assertFalse(self.id.hasChildNodes())
-        self.assertEqual(len(self.id.childNodes), 0)
 
 
 class TestCharacterData(TestCase):

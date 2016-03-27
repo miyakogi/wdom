@@ -92,6 +92,43 @@ class DOMTokenList:
         return ' '.join(self)
 
 
+class Attr:
+    _boolean_attrs = (
+        'async', 'autofocus', 'autoplay', 'checked', 'contenteditable',
+        'defer', 'disabled', 'draggable', 'dropzone', 'formnovalidate',
+        'hidden', 'ismap', 'loop', 'multiple', 'muted', 'novalidate',
+        'readonly', 'required', 'reversed', 'spellcheck', 'scoped', 'selected',
+    )
+
+    def __init__(self, name:str, value=None, owner: Node = None):
+        self._name = name
+        self._value = value
+        self._owner = owner
+
+    @property
+    def html(self) -> str:
+        if self.name.lower() in self._boolean_attrs:
+            return self.name if self.value else ''
+        else:
+            return '{name}="{value}"'.format(name=self.name, value=self.value)
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
+    def value(self) -> str:
+        return self._value
+
+    @value.setter
+    def value(self, val):
+        self._value = val
+
+    @property
+    def isId(self) -> bool:
+        return self.name.lower() == 'id'
+
+
 class NamedNodeMap:
     def __init__(self, owner):
         self._owner = owner
@@ -103,13 +140,13 @@ class NamedNodeMap:
     def __contains__(self, item:str) -> bool:
         return item in self._dict
 
-    def __getitem__(self, index: Union[int, str]) -> 'Attr':
+    def __getitem__(self, index: Union[int, str]) -> Attr:
         if isinstance(index, int):
             return tuple(self._dict.values())[index]
         else:
             return None
 
-    def __iter__(self) -> 'Attr':
+    def __iter__(self) -> Attr:
         for attr in self._dict.keys():
             yield attr
 
@@ -117,10 +154,10 @@ class NamedNodeMap:
     def length(self) -> int:
         return len(self)
 
-    def getNamedItem(self, name:str) -> 'Attr':
+    def getNamedItem(self, name:str) -> Attr:
         return self._dict.get(name, None)
 
-    def setNamedItem(self, item: 'Attr'):
+    def setNamedItem(self, item: Attr):
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
@@ -128,14 +165,14 @@ class NamedNodeMap:
                                 value=item.value)
         self._dict[item.name] = item
 
-    def removeNamedItem(self, item:'Attr') -> 'Attr':
+    def removeNamedItem(self, item:Attr) -> Attr:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
             self._owner.js_exec('removeAttribute', attr=item.name)
         return self._dict.pop(item.name, None)
 
-    def item(self, index:int) -> 'Attr':
+    def item(self, index:int) -> Attr:
         if 0 <= index < len(self):
             return self._dict[tuple(self._dict.keys())[index]]
         else:
@@ -375,89 +412,6 @@ class Node(Node):
     @textContent.setter
     def textContent(self, value:str):
         self._set_text_content(value)
-
-
-class Attr(Node):
-    nodeType = Node.ATTRIBUTE_NODE
-    _child_node_types = ()
-    _boolean_attrs = (
-        'async', 'autofocus', 'autoplay', 'checked', 'contenteditable',
-        'defer', 'disabled', 'draggable', 'dropzone', 'formnovalidate',
-        'hidden', 'ismap', 'loop', 'multiple', 'muted', 'novalidate',
-        'readonly', 'required', 'reversed', 'spellcheck', 'scoped', 'selected',
-    )
-
-    # DOM Level 1
-    length = 0
-    parentNode = None
-    firstChild = None
-    lastChild = None
-    previousSibling = None
-    nextSibling = None
-    ownerDocument = None
-    specified = True
-
-    def __init__(self, name:str, value=None) -> None:
-        self._name = name
-        self._value = value
-
-    @property
-    def html(self) -> str:
-        if self.name in self._boolean_attrs:
-            return self.name if self.value else ''
-        else:
-            return '{name}="{value}"'.format(name=self.name, value=self.value)
-
-    @property
-    def nodeName(self) -> str:
-        return self.name
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def value(self) -> str:
-        return self._value
-
-    @value.setter
-    def value(self, val):
-        self._value = val
-
-    @property
-    def isId(self) -> bool:
-        return self.name.lower() == 'id'
-
-    @property
-    def textContent(self) -> str:
-        return self.value
-
-    @textContent.setter
-    def textContent(self, val):
-        self.value = val
-
-    @property
-    def childNodes(self) -> NodeList:
-        return NodeList([])
-
-    # Methods
-    def appendChild(self, node) -> None:
-        raise NotImplementedError('This node does not support this method.')
-
-    def insertBefore(self, node, ref_node) -> None:
-        raise NotImplementedError('This node does not support this method.')
-
-    def hasChildNodes(self) -> bool:
-        return False
-
-    def removeChild(self, node) -> None:
-        raise NotImplementedError('This node does not support this method.')
-
-    def replaceChild(self, old_child: Node, new_child: Node) -> None:
-        raise NotImplementedError('This node does not support this method.')
-
-    def hasAttributes(self) -> bool:
-        return False
 
 
 class CharacterData(Node):
