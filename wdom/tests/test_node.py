@@ -251,8 +251,8 @@ class TestNode(TestCase):
         self.assertEqual(len(self.node), 2)
         self.assertEqual(self.node.length, 2)
 
-        removed_child2 = self.c2.remove()
-        self.assertIsNone(removed_child2)
+        removed_child2 = self.node.removeChild(self.c2)
+        self.assertIs(removed_child2, self.c2)
         self.assertEqual(len(self.node), 1)
         self.assertEqual(self.node.length, 1)
         self.assertIsNone(self.c2.parentNode)
@@ -598,6 +598,10 @@ class TestChildNode(TestCase):
         self.c2.before(self.c3, 'ab', self.c4, 'c')
         self.assertEqual(self.p.textContent, 'abc')
         is_equal_nodes(self.p, [self.c1, self.c3, 'ab', self.c4, 'c', self.c2])
+
+    def test_remove(self):
+        self.c2.remove()
+        is_equal_nodes(self.p, [self.c1])
 
 
 class TestCharacterData(TestCase):

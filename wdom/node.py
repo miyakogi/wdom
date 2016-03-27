@@ -317,7 +317,7 @@ class Node(Node):
 
     def _append_element(self, node:Node) -> Node:
         if node.parentNode is not None:
-            node.remove()
+            node.parentNode.removeChild(node)
         self._children.append(node)
         node._parent = self
         return node
@@ -347,7 +347,7 @@ class Node(Node):
 
     def _insert_element_before(self, node:Node, ref_node:Node) -> Node:
         if node.parentNode is not None:
-            node.remove()
+            node.parentNode.removeChild(node)
         self._children.insert(self.index(ref_node), node)
         node._parent = self
         return node
@@ -395,18 +395,13 @@ class Node(Node):
         else:
             return self.__copy__()
 
-    def _remove(self):
-        if self.parentNode is not None:
-            self.parentNode.removeChild(self)
-
-    def remove(self):
-        self._remove()
-
     def _empty(self):
         for child in tuple(self._children):
             self.removeChild(child)
 
     def empty(self):
+        '''[Not Standard] Remove all child nodes from this node. This is
+        equivalent to ``node.textContent = ''``.'''
         self._empty()
 
     def _get_text_content(self) -> str:
@@ -494,6 +489,8 @@ class ChildNode:
     CharacterData (Text, RawHTML, Comment).
     '''
     def after(self, *nodes:Tuple['ChildNode']):
+        '''Append nodes after this node. Is nodes contains ``str``, it will be
+        converted to Text node.'''
         if self.parentNode:
             node = _to_node_list(nodes)
             _next_node = self.nextSibling
@@ -503,9 +500,19 @@ class ChildNode:
                 self.parentNode.insertBefore(node, _next_node)
 
     def before(self, *nodes:Tuple['ChildNode']):
+        '''Insert nodes before this node. Is nodes contains ``str``, it will be
+        converted to Text node.'''
         if self.parentNode:
             node = _to_node_list(nodes)
             self.parentNode.insertBefore(node, self)
+
+    def _remove(self):
+        if self.parentNode is not None:
+            self.parentNode.removeChild(self)
+
+    def remove(self):
+        '''Remove this node from the parent node.'''
+        self._remove()
 
 
 class CharacterData(Node, ChildNode):
