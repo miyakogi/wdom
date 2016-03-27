@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
+import builtins
 from asyncio import coroutine
 
 from wdom.node import HTMLElement, Node
 from wdom.webif import WebIF
 
 logger = logging.getLogger(__name__)
-js_logger = logger.getChild('ws')
 elements = dict()
 
 
@@ -22,8 +21,8 @@ class WebElement(HTMLElement, WebIF):
     def id(self, id:str):
         self._id = id
 
-    def __init__(self, *args, parent=None, **kwargs):
-        self.id = kwargs.pop('id', str(id(self)))
+    def __init__(self, *args, parent=None, id=None, **kwargs):
+        self.id = id or str(builtins.id(self))
         super().__init__(*args, **kwargs)
         elements[self.id] = self
         self.addEventListener('mount', self._on_mount)
