@@ -228,6 +228,56 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertEqual(self.get_text(), 't5t6t2t3t4')
 
+    def test_after(self):
+        self.set_element(self.tag)
+        self.tag.append(self.c1)
+        self.c1.after(self.c2)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1child2')
+
+        self.c1.after(self.c3, self.c4)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1child3child4child2')
+
+        self.c1.after(self.c2, 'text')
+        self.wait()
+        self.assertEqual(self.get_text(), 'child1child2textchild3child4')
+
+    def test_before(self):
+        self.set_element(self.tag)
+        self.tag.append(self.c1)
+        self.c1.before(self.c2)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child2child1')
+
+        self.c1.before(self.c3, self.c4)
+        self.wait()
+        self.assertEqual(self.get_text(), 'child2child3child4child1')
+
+        self.c1.before(self.c2, 'text')
+        self.wait()
+        self.assertEqual(self.get_text(), 'child3child4child2textchild1')
+
+    def test_after_before_text(self):
+        self.set_element(self.tag)
+        self.tag.append('a')
+        t = self.tag.firstChild
+        t.after('b')
+        self.wait()
+        self.assertEqual(self.get_text(), 'ab')
+
+        t.after('c', 'd')
+        self.wait()
+        self.assertEqual(self.get_text(), 'acdb')
+
+        t.before('e')
+        self.wait()
+        self.assertEqual(self.get_text(), 'eacdb')
+
+        t.before('f', 'g')
+        self.wait()
+        self.assertEqual(self.get_text(), 'efgacdb')
+
     def test_shortcut_attr(self):
         self.tag.textContent = 'TAG'
         self.wait()
