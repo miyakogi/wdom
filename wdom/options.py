@@ -9,7 +9,7 @@ Do not use ``tornado.options`` directly.
 import sys
 from os import path
 
-from argparse import ArgumentParser, SUPPRESS
+from argparse import ArgumentParser
 from tornado.log import define_logging_options
 
 __all__ = [

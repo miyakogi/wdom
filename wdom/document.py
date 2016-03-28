@@ -87,10 +87,7 @@ def get_document(include_rimo: bool = True,
         document.body.insertBefore(app, document.body.firstChild)
 
     if autoreload is None:
-        if 'autoreload' in options.config:
-            autoreload = options.config.autoreload
-        elif 'debug' in options.config:
-            autoreload = options.config.debug
+        autoreload = options.config.autoreload or options.config.debug
     if log_level is None:
         if 'logging' in options.config:
             log_level = options.config.logging
