@@ -5,7 +5,7 @@ import logging
 from collections import Iterable
 from typing import Tuple, Union
 
-from wdom.node import Node, DOMTokenList, RawHtml
+from wdom.node import DOMTokenList, RawHtml
 from wdom.web_node import WebElement
 
 logger = logging.getLogger(__name__)
@@ -44,8 +44,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         super().__init__(self.tag, parent=parent, **kwargs)
-        for arg in args:
-            self.appendChild(arg)
+        self.append(*args)
 
     @classmethod
     def get_class_list(cls) -> DOMTokenList:
@@ -60,10 +59,6 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         # Reverse order so that parent's class comes to front
         l.reverse()
         return DOMTokenList(cls, l)
-
-    def append(self, child:Node):
-        '''Shortcut method of ``appendChild``.'''
-        self.appendChild(child)
 
     def __getitem__(self, attr: Union[str, int]):
         if isinstance(attr, int):
