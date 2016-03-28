@@ -1,27 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.tag import Tag
-from wdom.document import get_document
+from wdom.themes.bootstrap3 import Tag, H1, Input, Button, Div
+from wdom.document import get_document, Document
 
 
-class App(Tag):
-    tag = 'wdom-app'
-
-
-class H1(Tag):
-    tag = 'h1'
-
-
-class Input(Tag):
-    tag = 'input'
-
-
-class Button(Tag):
-    tag = 'button'
-
-class Div(Tag):
-    tag = 'div'
+class App(Div):
+    pass
 
 
 class Item(Tag):
@@ -30,7 +15,7 @@ class Item(Tag):
         super().__init__(*args, **kwargs)
 
 
-def sample_page() -> Tag:
+def sample_page() -> Document:
     app = App()
     title = H1(parent=app)
     title.textContent = 'Todo example'
@@ -40,13 +25,13 @@ def sample_page() -> Tag:
     add_button.textContent = 'ADD'
     todo_list = Div(parent=app)
     todo_heading = Div(parent=todo_list)
-    todo_heading.appendChild('Todo list')
+    todo_heading.append('Todo list')
     # add_button.addEventListener('click')
 
     def new_item(event=None) -> Tag:
         item = Item()
-        item.appendChild('New Item')
-        todo_list.appendChild(item)
+        item.append('New Item')
+        todo_list.append(item)
         return item
 
     # textbox.addEventListener('input', update)
