@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 '''
-
+Remote browser controller using Selenium
 '''
 
 import time
@@ -11,14 +11,14 @@ import socket
 from multiprocessing import Process, Pipe
 
 from selenium import webdriver
-from selenium.webdriver.common.utils import free_port
 from selenium.common.exceptions import NoSuchElementException
 
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
 
 from wdom.misc import static_dir
-from wdom.tests.util import TestCase
+
+driver = webdriver.Firefox
 
 
 def _clear():
@@ -31,9 +31,9 @@ def _clear():
 
 def get_browser():
     '''Get existing webdriver. If no driver is running, start new one.'''
-    global wd
+    wd = globals().get('wd')
     if wd is None:
-        wd = webdriver.Firefox()
+        wd = driver()
         return wd
     else:
         return wd
@@ -183,8 +183,8 @@ class WDTest:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    from wdom import server_aio
-    module = server_aio
+    from wdom import server
+    module = server
     wait_time = 0.02
 
     def setUp(self):
@@ -300,58 +300,3 @@ class WDTest:
     def send_keys(self, keys: str) -> None:
         self.conn.send({'method': 'send_keys', 'keys': keys})
         return self.wait_for()
-
-
-class UITest(TestCase):
-    '''Base class for testing UI on browser. This class starts up an HTTP
-    server on a new subprocess.
-
-    Subclasses must override ``get_app()`` method, which returns the
-    ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
-    tested.
-    '''
-    def setUp(self):
-        self.wd = get_browser()
-        self.loop = asyncio.get_event_loop()
-
-        def start_server(app, port):
-            server = HTTPServer(app)
-            server.listen(port)
-            asyncio.get_event_loop().run_forever()
-
-        self.address = 'localhost'
-        self.port = free_port()
-        self.app = self.get_app()
-        self.url = 'http://{0}:{1}/'.format(self.address, self.port)
-
-        self.server = Process(
-            target=start_server,
-            args=(self.app, self.port)
-        )
-        self.server.start()
-        self.wait(0.1)
-        self.wd.get(self.url)
-        self.wait(0.05)
-
-    def tearDown(self):
-        '''Terminate server subprocess.'''
-        self.server.terminate()
-
-    def get_app(self) -> Application:
-        '''This method should be overridden. Return
-        ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
-        tested.
-        '''
-        NotImplementedError
-
-    def wait(self, timeout=0.0):
-        '''Wait until ``timeout``. The default timeout is zero, so wait a
-        single event loop.'''
-        self.loop.run_until_complete(asyncio.sleep(timeout))
-
-    def send_keys(self, element, keys: str):
-        '''Send ``keys`` to ``element`` one-by-one. Safer than using
-        ``element.send_keys`` method.
-        '''
-        for k in keys:
-            element.send_keys(k)
