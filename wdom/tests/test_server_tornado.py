@@ -10,7 +10,7 @@ from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 
 from wdom.document import Document
-from wdom.server import MainHandler, Application, get_app
+from wdom.server_tornado import MainHandler, Application, get_app
 
 
 def setUpModule():
@@ -34,7 +34,7 @@ class TestMainHandlerBlank(AsyncHTTPTestCase):
         return self.app
 
     def test_blank_mainpage(self) -> None:
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             res = self.fetch('/')
         self.assertEqual(res.code, 200)
         _re = re.compile('<!DOCTYPE html>\s*<html id="\d+">\s*<head id="\d+">'
@@ -59,7 +59,7 @@ class TestMainHandler(AsyncHTTPTestCase):
         return self.app
 
     def test_blank_mainpage(self) -> None:
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             res = self.fetch('/')
         self.assertEqual(res.code, 200)
         self.assertIn('testing', res.body.decode('utf8'))
@@ -75,7 +75,7 @@ class TestStaticFileHandler(AsyncHTTPTestCase):
         return self.app
 
     def test_static_file(self) -> None:
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             res = self.fetch('/_static/js/rimo/rimo.js')
         self.assertEqual(res.code, 200)
         body = res.body.decode('utf8')
@@ -85,7 +85,7 @@ class TestStaticFileHandler(AsyncHTTPTestCase):
     def test_add_static_path(self) -> None:
         from os import path
         self.app.add_static_path('a', path.abspath(path.dirname(__file__)))
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             res = self.fetch('/a/' + __file__)
         self.assertEqual(res.code, 200)
         self.assertIn('this text', res.body.decode('utf8'))
@@ -98,7 +98,7 @@ class TestRootWSHandler(AsyncHTTPTestCase):
         super().setUp()
         self.url = self.get_url('/rimo_ws')
 
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             ws_future = to_asyncio_future(websocket_connect(
                 self.url, callback=self.stop))
             self.wait()
@@ -118,33 +118,33 @@ class TestRootWSHandler(AsyncHTTPTestCase):
 
     @gen_test
     def test_ws_connection(self) -> None:
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             _ = yield websocket_connect(self.url, io_loop=self.io_loop)
             del _
 
     def test_logging_error(self) -> None:
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='error', message='test')
             ))
             self.sleep()
 
     def test_logging_warn(self) -> None:
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='warn', message='test')
             ))
             self.sleep()
 
     def test_logging_info(self) -> None:
-        with self.assertLogs('wdom.server', 'INFO'):
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='info', message='test')
             ))
             self.sleep()
 
     def test_logging_debug(self) -> None:
-        with self.assertLogs('wdom.server', 'DEBUG'):
+        with self.assertLogs('wdom.server_tornado', 'DEBUG'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='debug', message='test')
             ))

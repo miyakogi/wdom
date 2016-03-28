@@ -10,7 +10,7 @@ from syncer import sync
 from wdom.log import configure_logger
 from wdom.tests.util import TestCase
 from wdom.document import Document
-from wdom.aioserver import get_app, start_server, stop_server
+from wdom.server_aio import get_app, start_server, stop_server
 
 
 def setUpModule():
@@ -19,7 +19,7 @@ def setUpModule():
 
 class TestServer(TestCase):
     def setUp(self):
-        with self.assertLogs('wdom.aioserver', 'INFO'):
+        with self.assertLogs('wdom.server_aio', 'INFO'):
             self.server = start_server(self.get_app(), port=0)
         self.port = self.server.sockets[-1].getsockname()[1]
         self.addr = 'http://localhost:{}'.format(self.port)
@@ -30,7 +30,7 @@ class TestServer(TestCase):
         return self.app
 
     def tearDown(self):
-        with self.assertLogs('wdom.aioserver', 'INFO'):
+        with self.assertLogs('wdom.server_aio', 'INFO'):
             stop_server(self.server)
 
     async def fetch(self, url:str):
@@ -38,7 +38,7 @@ class TestServer(TestCase):
             url = '/' + url
         loop = asyncio.get_event_loop()
         with aiohttp.ClientSession(loop=loop) as session:
-            with self.assertLogs('wdom.aioserver', 'INFO'):
+            with self.assertLogs('wdom.server_aio', 'INFO'):
                 async with session.get(self.addr + url) as response:
                     assert response.status == 200
                     content = await response.read()

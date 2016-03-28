@@ -183,8 +183,8 @@ class WDTest:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    from wdom import aioserver
-    module = aioserver
+    from wdom import server_aio
+    module = server_aio
     wait_time = 0.02
 
     def setUp(self):
