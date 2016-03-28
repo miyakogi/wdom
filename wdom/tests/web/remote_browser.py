@@ -183,9 +183,9 @@ class WDTest:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    from wdom import server
-    module = server
-    wait_time = 0.1
+    from wdom import aioserver
+    module = aioserver
+    wait_time = 0.02
 
     def setUp(self):
         global conn
