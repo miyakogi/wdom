@@ -84,14 +84,11 @@ class WebElement(HTMLElement, WebIF):
         return self._insert_before(child, ref_node)
 
     def _remove_child_web(self, child: 'WebElement'):
-        if isinstance(child, WebElement):
-            self.js_exec('removeChild', id=child.id)
-        else:
-            index = self._children.index(child)
-            self.js_exec(
-                'eval',
-                script='node.removeChild(node.childNodes[{}])'.format(index),
-            )
+        if child in self.childNodes:
+            if isinstance(child, WebElement):
+                self.js_exec('removeChild', id=child.id)
+            else:
+                self.js_exec('removeChild', index=self.index(child))
 
     def removeChild(self, child: 'Tag') -> Node:
         '''Remove the child node from this node. If the node is not a child
@@ -100,12 +97,14 @@ class WebElement(HTMLElement, WebIF):
         return self._remove_child(child)
 
     def _replace_child_web(self, new_child, old_child):
-        # Does not work... why?
-        # self._insert_before_web(new_child, old_child)
-        # self._remove_child_web(old_child)
-        # This also not work...
-        # old_child.js_exec('outerHTML', html=new_child.html)
-        self.js_exec('replaceChild', id=old_child.id, html=new_child.html)
+        if isinstance(old_child, WebElement):
+            self.js_exec('replaceChild', id=old_child.id, html=new_child.html)
+        else:
+            # old_child will be Text Node
+            index = old_child.parentNode.index(old_child)
+            # Remove old_child before insert new child
+            self._remove_child_web(old_child)
+            self.js_exec('insert', index=index, html=new_child.html)
 
     def replaceChild(self, new_child, old_child) -> Node:
         self._replace_child_web(new_child, old_child)

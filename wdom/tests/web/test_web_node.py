@@ -11,7 +11,7 @@ from syncer import sync
 from wdom.tests.util import TestCase
 from wdom.document import get_document
 from wdom.misc import install_asyncio
-from wdom.node import DocumentFragment
+from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
 from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
 
@@ -67,6 +67,17 @@ class WebElementTestCase(ElementTestCase):
         self.assertEqual(self.get_text(), 'NewText')
         with self.assertRaises(NoSuchElementException):
             self.set_element(self.c1)
+
+        self.set_element(self.tag)
+        t_node = Text('TextNode')
+        self.tag.replaceChild(t_node, self.tag.childNodes[0])
+        self.wait()
+        self.assertEqual(self.get_text(), 'TextNode')
+
+        self.tag.removeChild(self.tag.childNodes[0])
+        self.set_element(self.tag)
+        self.wait()
+        self.assertEqual(self.get_text(), '')
 
     def test_attr(self):
         self.set_element(self.tag)
