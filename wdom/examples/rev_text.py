@@ -5,7 +5,7 @@ from wdom.tag import H1, Div
 from wdom.document import get_document
 
 
-def sample_page() -> Div:
+def sample_page(**kwargs) -> Div:
     app = Div()
     text = H1(parent=app)
     text.textContent = 'Click!'
@@ -15,6 +15,6 @@ def sample_page() -> Div:
 
     text.addEventListener('click', reverse)
 
-    page = get_document(app=app, autoreload=True)
+    page = get_document(app=app, **kwargs)
 
     return page

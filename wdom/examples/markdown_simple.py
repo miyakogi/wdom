@@ -86,8 +86,8 @@ class Editor(Row):
         self.css.innerHTML = HtmlFormatter(style=style).get_style_defs()
 
 
-def sample_page():
-    doc = get_document()
+def sample_page(**kwargs):
+    doc = get_document(**kwargs)
     for js in js_files:
         doc.add_jsfile(js)
     for css in css_files:

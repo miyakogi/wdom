@@ -15,7 +15,7 @@ class Item(Tag):
         super().__init__(*args, **kwargs)
 
 
-def sample_page() -> Document:
+def sample_page(**kwargs) -> Document:
     app = App()
     title = H1(parent=app)
     title.textContent = 'Todo example'
@@ -37,6 +37,6 @@ def sample_page() -> Document:
     # textbox.addEventListener('input', update)
     add_button.addEventListener('click', new_item)
 
-    page = get_document(app=app)
+    page = get_document(app=app, **kwargs)
 
     return page

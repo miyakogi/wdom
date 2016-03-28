@@ -13,7 +13,7 @@ class Check(Input):
     type_ = 'checkbox'
 
 
-def sample_page():
+def sample_page(**kwargs):
     app = Div()
     textbox = Input(parent=app)
     check1 = Check(parent=app)
@@ -28,6 +28,6 @@ def sample_page():
 
     textbox.addEventListener('input', update)
 
-    page = get_document(app=app, autoreload=True)
+    page = get_document(app=app, **kwargs)
 
     return page
