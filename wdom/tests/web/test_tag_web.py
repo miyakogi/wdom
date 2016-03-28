@@ -44,19 +44,24 @@ class NodeTestCase(WDTest):
     def test_node_attr(self):
         self.assertIsNone(self.get_attribute('src'))
         self.root.setAttribute('src', 'a')
+        self.wait()
         self.assertEqual(self.get_attribute('src'), 'a')
         self.root.removeAttribute('src')
+        self.wait()
         self.assertIsNone(self.get_attribute('src'))
 
     def test_node_class(self):
         self.root.addClass('a')
+        self.wait()
         self.assertEqual(self.get_attribute('class'), 'a')
         self.root.removeClass('a')
+        self.wait()
         self.assertEqual(self.get_attribute('class'), '')
 
     def test_addremove_child(self):
         child = Tag()
         self.root.appendChild(child)
+        self.wait()
         self.assertIsTrue(self.set_element_by_id(child.id))
         self.assertEqual(self.get_text(), '')
         child.textContent = 'Child'
@@ -64,6 +69,7 @@ class NodeTestCase(WDTest):
         self.assertEqual(self.get_text(), 'Child')
 
         self.root.removeChild(child)
+        self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element_by_id(child.id)
 
