@@ -3,6 +3,7 @@
 
 import re
 
+from wdom import options
 from wdom.document import Document, get_document
 from wdom.tag import Tag
 from wdom.tests.util import TestCase
@@ -116,6 +117,9 @@ class TestMainDocument(TestCase):
 
 
 class TestDocumentOptions(TestCase):
+    def setUp(self):
+        options.parse_command_line()
+
     def test_document_autoreload(self):
         doc = get_document(autoreload=True)
         html = doc.build()
