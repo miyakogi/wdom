@@ -404,7 +404,7 @@ class Node(Node):
 
     def _empty(self):
         for child in tuple(self._children):
-            self.removeChild(child)
+            self._remove_child(child)
 
     def empty(self):
         '''[Not Standard] Remove all child nodes from this node. This is
