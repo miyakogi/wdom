@@ -5,7 +5,7 @@
 Data binding example
 '''
 
-from wdom.tag import H1, Div, Input, TextArea
+from wdom.tag import H1, Div, Input
 from wdom.document import get_document
 
 
@@ -16,12 +16,9 @@ class Check(Input):
 def sample_page(**kwargs):
     app = Div()
     textbox = Input(parent=app)
-    check1 = Check(parent=app)
-    check2 = Check(parent=app)
-    textarea = TextArea(parent=app)
     text = H1(parent=app)
     textbox.setAttribute('type', 'text')
-    text.text = 'Hello!'
+    text.textContent = 'Hello!'
 
     def update(event):
         text.textContent = textbox.getAttribute('value')

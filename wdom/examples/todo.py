@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.themes.bootstrap3 import Tag, H1, Input, Button, Div
+from wdom.themes.bootstrap3 import Tag, H1, Button, Div
+from wdom.themes.bootstrap3 import Container, FormGroup, TextInput
+from wdom.themes.bootstrap3 import css_files, js_files
 from wdom.document import get_document, Document
-
-
-class App(Div):
-    pass
 
 
 class Item(Tag):
@@ -16,12 +14,13 @@ class Item(Tag):
 
 
 def sample_page(**kwargs) -> Document:
-    app = App()
+    app = Container()
     title = H1(parent=app)
     title.textContent = 'Todo example'
-    textbox = Input(parent=app)
-    textbox.setAttribute('type', 'text')
-    add_button = Button(parent=app)
+    form = FormGroup(parent=app)
+    text_input = TextInput()
+    form.append(text_input)
+    add_button = Button(parent=form)
     add_button.textContent = 'ADD'
     todo_list = Div(parent=app)
     todo_heading = Div(parent=todo_list)
@@ -34,9 +33,12 @@ def sample_page(**kwargs) -> Document:
         todo_list.append(item)
         return item
 
-    # textbox.addEventListener('input', update)
     add_button.addEventListener('click', new_item)
 
     page = get_document(app=app, **kwargs)
+    for css in css_files:
+        page.add_cssfile(css)
+    for js in js_files:
+        page.add_jsfile(js)
 
     return page

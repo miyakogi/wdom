@@ -3,13 +3,13 @@
 
 import unittest
 
+from selenium.webdriver.common.keys import Keys
+
 from wdom.tag import H1
 from wdom.document import get_document
 from wdom import server_aio
 from wdom.misc import install_asyncio
 from wdom.tests.ui import wd
-
-from wdom.examples.data_binding import sample_page
 
 
 def setUpModule():
@@ -37,20 +37,51 @@ class SimpleTestCase(wd.UITest):
 
 class DataBindingTestCase(wd.UITest):
     def get_app(self):
+        from wdom.examples.data_binding import sample_page
         self.document = sample_page(autoreload=False)
-        h1 = H1()
-        h1.textContent = 'TITLE'
-        self.document.body.append(h1)
         self.app = self.module.get_app(self.document)
         return self.app
 
     def test_app(self):
-        self.wd.get(self.url)
-        assert True
+        view = self.wd.find_element_by_tag_name('h1')
+        self.assertEqual(view.text, 'Hello!')
+        input = self.wd.find_element_by_tag_name('input')
+        self.send_keys(input, 'abcde')
+        self.assertEqual(view.text, 'abcde')
+        for i in range(5):
+            self.send_keys(input, Keys.BACKSPACE)
+        self.assertEqual(view.text, '')
+        self.send_keys(input, 'new')
+        self.assertEqual(view.text, 'new')
+
+
+class RevTextTestCase(wd.UITest):
+    def get_app(self):
+        from wdom.examples.rev_text import sample_page
+        self.document = sample_page(autoreload=False)
+        self.app = self.module.get_app(self.document)
+        return self.app
+
+    def test_app(self):
+        view = self.wd.find_element_by_tag_name('h1')
+        text = 'Click!'
+        self.assertEqual(view.text, text)
+        view.click()
+        self.assertEqual(view.text, text[::-1])
+        view.click()
+        self.assertEqual(view.text, text)
 
 
 class TestSimplePage(SimpleTestCase, unittest.TestCase):
     module = server_aio
+    wait_time = 0.02
+
 
 class TestDataBinding(DataBindingTestCase, unittest.TestCase):
     module = server_aio
+    wait_time = 0.02
+
+
+class TestRevText(RevTextTestCase, unittest.TestCase):
+    module = server_aio
+    wait_time = 0.02
