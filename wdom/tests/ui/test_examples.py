@@ -47,11 +47,14 @@ class DataBindingTestCase(wd.UITest):
         self.assertEqual(view.text, 'Hello!')
         input = self.wd.find_element_by_tag_name('input')
         self.send_keys(input, 'abcde')
+        self.wait()
         self.assertEqual(view.text, 'abcde')
         for i in range(5):
             self.send_keys(input, Keys.BACKSPACE)
+        self.wait()
         self.assertEqual(view.text, '')
         self.send_keys(input, 'new')
+        self.wait()
         self.assertEqual(view.text, 'new')
 
 
@@ -67,8 +70,10 @@ class RevTextTestCase(wd.UITest):
         text = 'Click!'
         self.assertEqual(view.text, text)
         view.click()
+        self.wait()
         self.assertEqual(view.text, text[::-1])
         view.click()
+        self.wait()
         self.assertEqual(view.text, text)
 
 
