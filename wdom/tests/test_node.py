@@ -15,19 +15,19 @@ class TestDOMTokenList(TestCase):
 
     def test_add(self):
         self.assertEqual(self.tokens.length, 0)
-        self.assertEqual(self.tokens.to_string(), '')
+        self.assertEqual(self.tokens.toString(), '')
 
         self.tokens.add('a')
         self.assertEqual(self.tokens.length, 1)
-        self.assertEqual(self.tokens.to_string(), 'a')
+        self.assertEqual(self.tokens.toString(), 'a')
 
         self.tokens.add('a')
         self.assertEqual(self.tokens.length, 1)
-        self.assertEqual(self.tokens.to_string(), 'a')
+        self.assertEqual(self.tokens.toString(), 'a')
 
         self.tokens.add('b')
         self.assertEqual(self.tokens.length, 2)
-        self.assertEqual(self.tokens.to_string(), 'a b')
+        self.assertEqual(self.tokens.toString(), 'a b')
 
         with self.assertRaises(ValueError):
             self.tokens.add('a c')
@@ -41,15 +41,15 @@ class TestDOMTokenList(TestCase):
 
         self.tokens.remove('a')
         self.assertEqual(self.tokens.length, 1)
-        self.assertEqual(self.tokens.to_string(), 'b')
+        self.assertEqual(self.tokens.toString(), 'b')
 
         self.tokens.remove('a')
         self.assertEqual(self.tokens.length, 1)
-        self.assertEqual(self.tokens.to_string(), 'b')
+        self.assertEqual(self.tokens.toString(), 'b')
 
         self.tokens.remove('b')
         self.assertEqual(self.tokens.length, 0)
-        self.assertEqual(self.tokens.to_string(), '')
+        self.assertEqual(self.tokens.toString(), '')
 
         with self.assertRaises(ValueError):
             self.tokens.remove('a c')
@@ -57,15 +57,15 @@ class TestDOMTokenList(TestCase):
     def test_toggle(self):
         self.tokens.toggle('a')
         self.assertEqual(self.tokens.length, 1)
-        self.assertEqual(self.tokens.to_string(), 'a')
+        self.assertEqual(self.tokens.toString(), 'a')
 
         self.tokens.toggle('b')
         self.assertEqual(self.tokens.length, 2)
-        self.assertEqual(self.tokens.to_string(), 'a b')
+        self.assertEqual(self.tokens.toString(), 'a b')
 
         self.tokens.toggle('a')
         self.assertEqual(self.tokens.length, 1)
-        self.assertEqual(self.tokens.to_string(), 'b')
+        self.assertEqual(self.tokens.toString(), 'b')
 
         with self.assertRaises(ValueError):
             self.tokens.toggle('a c')
@@ -88,37 +88,37 @@ class TestDOMTokenList(TestCase):
     def test_add_multi(self):
         self.tokens.add('a', 'b')
         self.assertEqual(len(self.tokens), 2)
-        self.assertEqual('a b', self.tokens.to_string())
+        self.assertEqual('a b', self.tokens.toString())
         self.tokens.remove('a')
         self.assertEqual(len(self.tokens), 1)
-        self.assertEqual('b', self.tokens.to_string())
+        self.assertEqual('b', self.tokens.toString())
 
     def test_add_multi_string(self):
         # used at initialization of Element
         self.tokens._append('a b')
         self.assertEqual(len(self.tokens), 2)
-        self.assertEqual('a b', self.tokens.to_string())
+        self.assertEqual('a b', self.tokens.toString())
         self.tokens.remove('a')
         self.assertEqual(len(self.tokens), 1)
-        self.assertEqual('b', self.tokens.to_string())
+        self.assertEqual('b', self.tokens.toString())
 
     def test_add_multi_list(self):
         # used at initialization of Element
         self.tokens._append(['a', 'b'])
         self.assertEqual(len(self.tokens), 2)
-        self.assertEqual('a b', self.tokens.to_string())
+        self.assertEqual('a b', self.tokens.toString())
         self.tokens.remove('a')
         self.assertEqual(len(self.tokens), 1)
-        self.assertEqual('b', self.tokens.to_string())
+        self.assertEqual('b', self.tokens.toString())
 
     def test_add_multi_mixed(self):
         # used at initialization of Element
         self.tokens._append(['a', 'b c'])
         self.assertEqual(len(self.tokens), 3)
-        self.assertEqual('a b c', self.tokens.to_string())
+        self.assertEqual('a b c', self.tokens.toString())
         self.tokens.remove('b')
         self.assertEqual(len(self.tokens), 2)
-        self.assertEqual('a c', self.tokens.to_string())
+        self.assertEqual('a c', self.tokens.toString())
 
     def test_remove_multi(self):
         self.tokens.add('a', 'b', 'c')
@@ -136,7 +136,7 @@ class TestDOMTokenList(TestCase):
         self.tokens.add('')
         self.assertEqual(len(self.tokens), 0)
         self.assertFalse(bool(self.tokens))
-        self.assertEqual('', self.tokens.to_string())
+        self.assertEqual('', self.tokens.toString())
 
     def test_add_invlalid(self):
         with self.assertRaises(TypeError):
@@ -145,7 +145,7 @@ class TestDOMTokenList(TestCase):
             self.tokens.add(Element('a'))
         self.assertEqual(len(self.tokens), 0)
         self.assertFalse(bool(self.tokens))
-        self.assertEqual('', self.tokens.to_string())
+        self.assertEqual('', self.tokens.toString())
 
     def test_iter(self):
         cls = ['a', 'b', 'c']

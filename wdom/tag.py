@@ -85,7 +85,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
             cls = self.get_class_list()
             cls._append(self.classList)
             if cls:
-                return cls.to_string()
+                return cls.toString()
             else:
                 return None
         else:

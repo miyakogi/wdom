@@ -287,19 +287,19 @@ class TestClassList(TestCase):
         self.assertIsTrue(bool(self.cl))
         self.assertEqual(len(self.cl), 1)
         self.assertIn('a', self.cl)
-        self.assertEqual('a', self.cl.to_string())
+        self.assertEqual('a', self.cl.toString())
         self.cl.add('b')
         self.assertIsTrue(bool(self.cl))
         self.assertEqual(len(self.cl), 2)
         self.assertIn('a', self.cl)
         self.assertIn('b', self.cl)
-        self.assertEqual('a b', self.cl.to_string())
+        self.assertEqual('a b', self.cl.toString())
         self.cl.remove('a')
         self.assertIsTrue(bool(self.cl))
         self.assertEqual(len(self.cl), 1)
         self.assertNotIn('a', self.cl)
         self.assertIn('b', self.cl)
-        self.assertEqual('b', self.cl.to_string())
+        self.assertEqual('b', self.cl.toString())
 
 
 class TestTagBase(TestCase):
@@ -462,7 +462,7 @@ class TestTagBase(TestCase):
         class A(Tag):
             tag = 'a'
             class_ = 'a1'
-        self.assertEqual(A.get_class_list().to_string(), 'a1')
+        self.assertEqual(A.get_class_list().toString(), 'a1')
         a = A()
         self.assertMatch('<a class="a1" id="\d+"></a>', a.html)
         a.addClass('a2')
@@ -475,7 +475,7 @@ class TestTagBase(TestCase):
         class A(Tag):
             tag = 'a'
             class_ = 'a1 a2'
-        self.assertEqual(A.get_class_list().to_string(), 'a1 a2')
+        self.assertEqual(A.get_class_list().toString(), 'a1 a2')
         a = A()
         a.addClass('a3', 'a4')
         self.assertMatch('<a class="a1 a2 a3 a4" id="\d+"></a>', a.html)
@@ -489,7 +489,7 @@ class TestTagBase(TestCase):
             tag = 'b'
             class_ = 'b1 b2'
 
-        self.assertEqual(B.get_class_list().to_string(), 'a1 a2 b1 b2')
+        self.assertEqual(B.get_class_list().toString(), 'a1 a2 b1 b2')
         b = B()
         b.addClass('b3')
         self.assertMatch('<b class="a1 a2 b1 b2 b3" id="\d+"></b>', b.html)
@@ -504,7 +504,7 @@ class TestTagBase(TestCase):
             class_ = 'b1 b2'
             inherit_class = False
 
-        self.assertEqual(B.get_class_list().to_string(), 'b1 b2')
+        self.assertEqual(B.get_class_list().toString(), 'b1 b2')
         b = B()
         b.addClass('b3')
         self.assertMatch('<b class="b1 b2 b3" id="\d+"></b>', b.html)
@@ -512,4 +512,4 @@ class TestTagBase(TestCase):
         class C(B):
             tag = 'c'
             class_ = 'c1 c2'
-        self.assertEqual(C.get_class_list().to_string(), 'b1 b2 c1 c2')
+        self.assertEqual(C.get_class_list().toString(), 'b1 b2 c1 c2')

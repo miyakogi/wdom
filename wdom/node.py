@@ -89,7 +89,7 @@ class DOMTokenList:
         self._validate_token(token)
         return token in self
 
-    def to_string(self) -> str:
+    def toString(self) -> str:
         return ' '.join(self)
 
 
@@ -192,6 +192,9 @@ class NodeList:
 
     def __len__(self) -> int:
         return len(self.ref)
+
+    def __contains__(self, other: Node) -> bool:
+        return other in self.ref
 
     def __iter__(self) -> Node:
         for n in self.ref:
@@ -748,7 +751,7 @@ class Element(Node, EventTarget, ParentNode, ChildNode):
     def getAttribute(self, attr:str) -> str:
         if attr == 'class':
             if self.classList:
-                return self.classList.to_string()
+                return self.classList.toString()
             else:
                 return None
         attr_node = self.getAttributeNode(attr)
