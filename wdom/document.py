@@ -40,7 +40,9 @@ class Document(Node):
         self.script = Script(parent=self.body)
 
     def getElementById(self, id):
-        return Element._elements_withid.get(id)
+        elm = Element._elements_withid.get(id)
+        if elm.ownerDocument is self:
+            return elm
 
     @property
     def title(self) -> str:
