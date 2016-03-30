@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import Iterable, OrderedDict
+from functools import partial
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
 from typing import Union, Tuple
@@ -197,12 +198,18 @@ class Parser(HTMLParser):
         self.elm = DocumentFragment()
         self.root = self.elm
 
-    def handle_starttag(self, tag, attrs):
-        base = self.registry.get(tag, self.default_class)
-        if isinstance(base, self._T):
-            elm = base(parent=self.elm, **dict(attrs))
+    def handle_starttag(self, tag, attr):
+        attrs = dict(attr)
+        is_ = attrs.get('is')
+        if is_:
+            base = self.registry.get((is_, tag))
         else:
-            elm = base(tag, parent=self.elm, **dict(attrs))
+            base = self.registry.get((tag, None))
+        params = dict(parent=self.elm, _registered=bool(base), **attrs)
+        base_class = base or self.default_class
+        if not issubclass(base_class, self._T):
+            params['tag'] = tag
+        elm = base_class(**params)
         if self.elm is not None:
             self.elm.append(elm)
         if tag not in HTML_EMPTY:
@@ -222,13 +229,13 @@ class Parser(HTMLParser):
 class Element(Node, EventTarget, ParentNode, ChildNode):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
-    _registered = True
     _parser_default_class = None
     _elements = WeakSet()
     _elements_withid = WeakValueDictionary()
 
-    def __init__(self, tag:str='', parent=None, **kwargs):
+    def __init__(self, tag:str='', parent=None, _registered=True, **kwargs):
         super().__init__(parent=parent)
+        self._registered = _registered
         self._elements.add(self)
         self.tag = tag
         self.attributes = NamedNodeMap(self)
@@ -236,6 +243,8 @@ class Element(Node, EventTarget, ParentNode, ChildNode):
 
         if 'class_' in kwargs:
             kwargs['class'] = kwargs.pop('class_')
+        if 'is_' in kwargs:
+            kwargs['is'] = kwargs.pop('is_')
         for k, v in kwargs.items():
             self.setAttribute(k, v)
 

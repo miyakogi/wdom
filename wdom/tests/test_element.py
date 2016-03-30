@@ -7,6 +7,7 @@ from unittest import TestCase
 from wdom.css import CSSStyleDeclaration
 from wdom.node import Text
 from wdom.element import DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement
+from wdom.window import customElements
 
 
 class TestDOMTokenList(TestCase):
@@ -212,6 +213,7 @@ class TestNamedNodeMap(TestCase):
 
 class TestElement(TestCase):
     def setUp(self):
+        customElements.clear()
         self.elm = Element('tag')
         self.c1 = Element('c1')
         self.c2 = Element('c2')
@@ -505,6 +507,52 @@ class TestElement(TestCase):
         elm.removeAttribute('id')
         self.assertNotIn('a', Element._elements_withid)
         self.assertNotIn(elm, Element._elements_withid.values())
+
+    def test_is_attr(self):
+        '''``is`` is a reserved word for python, so use ``is_`` in constructor.
+        '''
+        elm = Element('tag', is_='elm')
+        self.assertIn('is', elm.attributes)
+        self.assertNotIn('is_', elm.attributes)
+        self.assertEqual('elm', elm.getAttribute('is'))
+        self.assertIsNone(elm.getAttribute('is_'))
+
+        # ``is_`` is not treated as special at setAttribute
+        elm.setAttribute('is_', 'new')
+        self.assertEqual('elm', elm.getAttribute('is'))
+        self.assertEqual('new', elm.getAttribute('is_'))
+
+    class NewTag(HTMLElement):
+        pass
+
+    def test_custom_tag(self):
+        self.elm.innerHTML = '<new-tag></new-tag>'
+        child = self.elm.firstChild
+        self.assertEqual(child.__class__, HTMLElement)
+        customElements.define('new-tag', self.NewTag)
+        self.assertEqual(child.__class__, self.NewTag)
+
+    def test_custom_tag_registered(self):
+        customElements.define('new-tag', self.NewTag)
+        self.elm.innerHTML = '<new-tag></new-tag>'
+        self.assertEqual(self.elm.firstChild.__class__, self.NewTag)
+
+    def test_custom_tag_is(self):
+        self.elm.innerHTML = '<a is="my-a"></a>'
+        child = self.elm.firstChild
+        self.assertEqual(child.__class__, HTMLElement)
+        self.assertEqual(child.getAttribute('is'), 'my-a')
+        customElements.define('my-a', self.NewTag, {'extends': 'a'})
+        self.assertEqual(self.elm.firstChild.__class__, self.NewTag)
+
+    def test_custom_tag_is_registered(self):
+        customElements.define('my-a', self.NewTag, {'extends': 'a'})
+        self.elm.innerHTML = '<a is="my-a"></a>'
+        self.assertEqual(self.elm.firstChild.__class__, self.NewTag)
+
+    def test_invalid_define_args(self):
+        with self.assertRaises(TypeError):
+            customElements.define(1, 2, 3)
 
 
 class TestHTMLElement(TestCase):

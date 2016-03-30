@@ -45,6 +45,8 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         super().__init__(self.tag, parent=parent, **kwargs)
+        if self.is_ and 'is' not in self.attributes:
+            self.setAttribute('is', self.is_)
         self.append(*args)
 
     @classmethod
