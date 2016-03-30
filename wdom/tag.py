@@ -5,7 +5,8 @@ import logging
 from collections import Iterable
 from typing import Tuple, Union
 
-from wdom.node import DOMTokenList, RawHtml
+from wdom.node import RawHtml
+from wdom.element import DOMTokenList
 from wdom.web_node import WebElement
 
 logger = logging.getLogger(__name__)

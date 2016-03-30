@@ -5,17 +5,26 @@ from typing import Optional
 
 from wdom import options
 from wdom.node import Node, DocumentType, Text, RawHtml
-from wdom.web_node import elements
+from wdom.element import Element
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
+from wdom.window import Window
 
 
 class Document(Node):
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
 
+    @property
+    def defaultView(self) -> Window:
+        return self._window
+
+    @property
+    def connections(self) -> list:
+        return self.defaultView.connections
+
     def __init__(self, doctype='html', title='W-DOM', charset='utf-8'):
         super().__init__()
-        self.connections = []
+        self._window = Window(self)
         self.doctype = DocumentType(doctype)
         self.appendChild(self.doctype)
 
@@ -31,7 +40,9 @@ class Document(Node):
         self.script = Script(parent=self.body)
 
     def getElementById(self, id):
-        return elements.get(id)
+        elm = Element._elements_withid.get(id)
+        if elm.ownerDocument is self:
+            return elm
 
     @property
     def title(self) -> str:

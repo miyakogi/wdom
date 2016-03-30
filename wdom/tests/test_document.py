@@ -18,14 +18,14 @@ class TestMainDocument(TestCase):
             '\s*<!DOCTYPE html>'
             '\s*<html id="\d+">'
             '\s*<head id="\d+">'
-            '\s*<meta charset="utf-8" id="\d+">'
+            '\s*<meta( charset="utf-8"| id="\d+"){2}>'
             '\s*<title id="\d+">'
             '\s*W-DOM'
             '\s*</title>'
             '(\s*<style>.*?</style>)?'
             '\s*</head>'
             '\s*<body id="\d+">'
-            '\s*<script\s*type="text/javascript" id="\d+">'
+            '\s*<script( type="text/javascript"| id="\d+"){2}>'
             '.*?</script>'
             '\s*</body>'
             '\s*</html>'
@@ -37,13 +37,15 @@ class TestMainDocument(TestCase):
     def test_get_element_by_id(self):
         elm = Tag(parent=self.doc.body)
         self.assertIs(elm, self.doc.getElementById(elm.id))
+        elm2 = Tag()
+        self.assertIsNone(self.doc.getElementById(elm2.id))
 
     def test_add_jsfile(self) -> None:
         self.doc.add_jsfile('jsfile')
         _re = re.compile(
             '<body.*'
-            '<script( src="jsfile"| type="text/javascript"){2} '
-            'id="\d+">\s*</script>'
+            '<script( src="jsfile"| type="text/javascript"| id="\d+"){3}'
+            '>\s*</script>'
             '.*</body',
             re.S
         )
@@ -53,7 +55,7 @@ class TestMainDocument(TestCase):
         self.doc.add_cssfile('cssfile')
         _re = re.compile(
             '<head id="\d+">.*'
-            '<link( href="cssfile"| rel="stylesheet"){2} id="\d+">'
+            '<link( href="cssfile"| rel="stylesheet"| id="\d+"){3}>'
             '.*</head>'
             '', re.S
         )
@@ -88,7 +90,7 @@ class TestMainDocument(TestCase):
     def test_charset(self) -> None:
         doc = Document(charset='TEST')
         _re = re.compile(
-            '<meta charset="TEST" id="\d+">',
+            '<meta( charset="TEST"| id="\d+"){2}>',
             re.S
         )
         html = doc.build()
