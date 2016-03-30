@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import Iterable, OrderedDict
+from functools import partial
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
 from typing import Union, Tuple
@@ -198,11 +199,12 @@ class Parser(HTMLParser):
         self.root = self.elm
 
     def handle_starttag(self, tag, attrs):
-        base = self.registry.get(tag, self.default_class)
-        if isinstance(base, self._T):
-            elm = base(parent=self.elm, **dict(attrs))
-        else:
-            elm = base(tag, parent=self.elm, **dict(attrs))
+        base = self.registry.get(tag, False)
+        params = dict(parent=self.elm, _registered=bool(base), **dict(attrs))
+        base_class = base or self.default_class
+        if not issubclass(base_class, self._T):
+            params['tag'] = tag
+        elm = base_class(**params)
         if self.elm is not None:
             self.elm.append(elm)
         if tag not in HTML_EMPTY:
@@ -222,13 +224,13 @@ class Parser(HTMLParser):
 class Element(Node, EventTarget, ParentNode, ChildNode):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
-    _registered = True
     _parser_default_class = None
     _elements = WeakSet()
     _elements_withid = WeakValueDictionary()
 
-    def __init__(self, tag:str='', parent=None, **kwargs):
+    def __init__(self, tag:str='', parent=None, _registered=True, **kwargs):
         super().__init__(parent=parent)
+        self._registered = _registered
         self._elements.add(self)
         self.tag = tag
         self.attributes = NamedNodeMap(self)
