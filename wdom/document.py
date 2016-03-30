@@ -5,7 +5,7 @@ from typing import Optional
 
 from wdom import options
 from wdom.node import Node, DocumentType, Text, RawHtml
-from wdom.web_node import elements
+from wdom.element import Element
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
 
@@ -40,7 +40,7 @@ class Document(Node):
         self.script = Script(parent=self.body)
 
     def getElementById(self, id):
-        return elements.get(id)
+        return Element._elements_withid.get(id)
 
     @property
     def title(self) -> str:

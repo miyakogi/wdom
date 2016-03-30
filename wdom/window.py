@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 
 from wdom.interface import Node
-from wdom.web_node import elements
+from wdom.element import Element
 
 
 class CustomElementsRegistry(dict):
     def define(self, name:str, constructor:type, options:dict=None):
         tag = name.lower()
-        for elm in elements.values():
+        for elm in Element._elements:
             if not elm._registered and elm.tag == tag:
                 elm.__class__ = constructor
                 elm._registered = True

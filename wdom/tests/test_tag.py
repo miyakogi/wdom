@@ -38,31 +38,31 @@ class TestTag(TestCase):
         self.tag['a'] = 'b'
         self.assertEqual(self.tag['a'], 'b')
         self.assertIn('a="b"', self.tag.html)
-        self.assertMatch('<tag a="b" id="\d+">', self.tag.start_tag)
-        self.assertMatch('<tag a="b" id="\d+"></tag>', self.tag.html)
+        self.assertRegex(self.tag.start_tag, '<tag id="\d+" a="b">')
+        self.assertRegex(self.tag.html, '<tag id="\d+" a="b"></tag>')
         del self.tag['a']
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertRegex(self.tag.html, '<tag id="\d+"></tag>')
 
     def test_attr_addremove(self):
-        self.assertIsFalse(self.tag.hasAttributes())
-        self.assertIsFalse(self.tag.hasAttribute('a'))
+        self.assertTrue(self.tag.hasAttributes())  # has id
+        self.assertFalse(self.tag.hasAttribute('a'))
         self.tag.setAttribute('a', 'b')
-        self.assertIsTrue(self.tag.hasAttributes())
-        self.assertIsTrue(self.tag.hasAttribute('a'))
+        self.assertTrue(self.tag.hasAttributes())
+        self.assertTrue(self.tag.hasAttribute('a'))
         self.assertIsFalse(self.tag.hasAttribute('b'))
         self.assertEqual('b', self.tag.getAttribute('a'))
-        self.assertMatch('<tag a="b" id="\d+"></tag>', self.tag.html)
+        self.assertRegex(self.tag.html, r'<tag id="\d+" a="b"></tag>')
         self.assertEqual(self.tag.getAttribute('a'), 'b')
         self.tag.removeAttribute('a')
-        self.assertIsFalse(self.tag.hasAttributes())
+        self.assertTrue(self.tag.hasAttributes())
+        self.assertFalse(self.tag.hasAttribute('a'))
         self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
         self.assertIsNone(self.tag.getAttribute('aaaa'))
 
     def test_attr_multi(self):
         self.tag.setAttribute('c', 'd')
         self.tag.setAttribute('e', 'f')
-        self.assertIn('c="d"', self.tag.html)
-        self.assertIn('e="f"', self.tag.html)
+        self.assertIn('c="d" e="f"', self.tag.html)
 
     def test_attr_overwrite(self):
         self.tag.setAttribute('c', 'd')
@@ -162,13 +162,13 @@ class TestTag(TestCase):
         img = Img()
         self.assertMatch('<img id="\d+">', img.html)
         img.setAttribute('src', 'a')
-        self.assertMatch('<img src="a" id="\d+">', img.html)
+        self.assertMatch('<img id="\d+" src="a">', img.html)
 
     def _test_shallow_copy(self, clone):
         self.assertIsTrue(self.tag.hasChildNodes())
         self.assertIsFalse(clone.hasChildNodes())
         self.assertEqual(len(clone), 0)
-        self.assertMatch('<tag src="a" class="b" id="\d+"></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" src="a" class="b"></tag>', clone.html)
 
         self.assertIsTrue(clone.hasAttributes())
         self.assertEqual(clone.getAttribute('src'), 'a')
@@ -315,7 +315,7 @@ class TestTagBase(TestCase):
         self.assertIsTrue(self.tag.hasClasses())
         self.assertIsTrue(self.tag.hasClass('a'))
         self.assertIsFalse(self.tag.hasClass('b'))
-        self.assertMatch('<tag class="a" id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="a"></tag>', self.tag.html)
         self.tag.removeClass('a')
         self.assertIsFalse(self.tag.hasClasses())
         self.assertIsFalse(self.tag.hasClass('a'))
@@ -325,7 +325,7 @@ class TestTagBase(TestCase):
         tag = Tag(class_ = 'a')
         self.assertIsTrue(tag.hasClass('a'))
         self.assertIsTrue(tag.hasClasses())
-        self.assertMatch('<tag class="a" id="\d+"></tag>', tag.html)
+        self.assertMatch('<tag id="\d+" class="a"></tag>', tag.html)
         tag.removeClass('a')
         self.assertIsFalse(tag.hasClass('a'))
         self.assertIsFalse(tag.hasClasses())
@@ -337,13 +337,13 @@ class TestTagBase(TestCase):
         self.assertIsTrue(self.tag.hasClass('a'))
         self.assertIsTrue(self.tag.hasClass('b'))
         self.assertIsTrue(self.tag.hasClass('c'))
-        self.assertMatch('<tag class="a b c" id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="a b c"></tag>', self.tag.html)
         self.tag.removeClass('a', 'c')
         self.assertIsTrue(self.tag.hasClasses())
         self.assertIsFalse(self.tag.hasClass('a'))
         self.assertIsTrue(self.tag.hasClass('b'))
         self.assertIsFalse(self.tag.hasClass('c'))
-        self.assertMatch('<tag class="b" id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="b"></tag>', self.tag.html)
 
     def test_class_addremove_multi_string(self):
         with self.assertRaises(ValueError):
@@ -376,7 +376,7 @@ class TestTagBase(TestCase):
     def test_type_attr(self) -> None:
         a = Tag()
         a.setAttribute('type', 'checkbox')
-        self.assertMatch('<tag type="checkbox" id="\d+"></tag>', a.html)
+        self.assertMatch('<tag id="\d+" type="checkbox"></tag>', a.html)
 
     def test_type_setter(self) -> None:
         class Check(Tag):
@@ -396,7 +396,7 @@ class TestTagBase(TestCase):
         self.tag.show()
         self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
         self.tag.hide()
-        self.assertMatch('<tag hidden id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" hidden></tag>', self.tag.html)
         self.tag.show()
         self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
 
@@ -404,22 +404,22 @@ class TestTagBase(TestCase):
         self.tag.appendChild(self.c1)
         self.tag.addClass('a')
         clone = self.tag.cloneNode()
-        self.assertMatch('<tag class="a" id="\d+"></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" class="a"></tag>', clone.html)
 
         clone.removeClass('a')
         self.assertMatch('<tag id="\d+"></tag>', clone.html)
-        self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
 
         clone.addClass('b')
-        self.assertMatch('<tag class="b" id="\d+"></tag>', clone.html)
-        self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="b"></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
 
     def test_clone_node_sharrow_hidden(self):
         self.tag.hide()
         clone = self.tag.cloneNode()
-        self.assertMatch('<tag hidden id="\d+"></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" hidden></tag>', clone.html)
         clone.show()
-        self.assertMatch('<tag hidden id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" hidden></tag>', self.tag.html)
         self.assertMatch('<tag id="\d+"></tag>', clone.html)
 
     def test_clone_node_deep_class(self):
@@ -427,35 +427,35 @@ class TestTagBase(TestCase):
         self.tag.addClass('a')
         self.c1.addClass('b')
         clone = self.tag.cloneNode(deep=True)
-        self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+" class="b"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+" class="b"></tag></tag>', clone.html)
 
         clone.childNodes[0].removeClass('b')
-        self.assertMatch('<tag class="a" id="\d+"><tag class="b" id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+" class="b"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', clone.html)
 
         self.c1.removeClass('b')
-        self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', clone.html)
 
         clone.addClass('c')
-        self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag class="a c" id="\d+"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="a c"><tag id="\d+"></tag></tag>', clone.html)
 
         clone.removeClass('a')
-        self.assertMatch('<tag class="a" id="\d+"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag class="c" id="\d+"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+" class="c"><tag id="\d+"></tag></tag>', clone.html)
 
     def test_clone_node_deep_hidden(self):
         self.tag.appendChild(self.c1)
         self.c1.hide()
         clone = self.tag.cloneNode(deep=True)
-        self.assertMatch('<tag id="\d+"><tag hidden id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+"><tag hidden id="\d+"></tag></tag>', clone.html)
+        self.assertMatch('<tag id="\d+"><tag id="\d+" hidden></tag></tag>', self.tag.html)
+        self.assertMatch('<tag id="\d+"><tag id="\d+" hidden></tag></tag>', clone.html)
 
         self.c1.show()
         self.assertMatch('<tag id="\d+"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+"><tag hidden id="\d+"></tag></tag>', clone.html)
+        self.assertMatch('<tag id="\d+"><tag id="\d+" hidden></tag></tag>', clone.html)
 
     def test_class_of_class(self):
         class A(Tag):
@@ -463,12 +463,12 @@ class TestTagBase(TestCase):
             class_ = 'a1'
         self.assertEqual(A.get_class_list().toString(), 'a1')
         a = A()
-        self.assertMatch('<a class="a1" id="\d+"></a>', a.html)
+        self.assertMatch('<a id="\d+" class="a1"></a>', a.html)
         a.addClass('a2')
-        self.assertMatch('<a class="a1 a2" id="\d+"></a>', a.html)
+        self.assertMatch('<a id="\d+" class="a1 a2"></a>', a.html)
         with self.assertLogs('wdom.tag', 'WARNING'):
             a.removeClass('a1')
-        self.assertMatch('<a class="a1 a2" id="\d+"></a>', a.html)
+        self.assertMatch('<a id="\d+" class="a1 a2"></a>', a.html)
 
     def test_classes_multiclass(self):
         class A(Tag):
@@ -477,7 +477,7 @@ class TestTagBase(TestCase):
         self.assertEqual(A.get_class_list().toString(), 'a1 a2')
         a = A()
         a.addClass('a3', 'a4')
-        self.assertMatch('<a class="a1 a2 a3 a4" id="\d+"></a>', a.html)
+        self.assertMatch('<a id="\d+" class="a1 a2 a3 a4"></a>', a.html)
 
     def test_classes_inherit_class(self):
         class A(Tag):
@@ -491,7 +491,7 @@ class TestTagBase(TestCase):
         self.assertEqual(B.get_class_list().toString(), 'a1 a2 b1 b2')
         b = B()
         b.addClass('b3')
-        self.assertMatch('<b class="a1 a2 b1 b2 b3" id="\d+"></b>', b.html)
+        self.assertMatch('<b id="\d+" class="a1 a2 b1 b2 b3"></b>', b.html)
 
     def test_classes_notinherit_class(self):
         class A(Tag):
@@ -506,7 +506,7 @@ class TestTagBase(TestCase):
         self.assertEqual(B.get_class_list().toString(), 'b1 b2')
         b = B()
         b.addClass('b3')
-        self.assertMatch('<b class="b1 b2 b3" id="\d+"></b>', b.html)
+        self.assertMatch('<b id="\d+" class="b1 b2 b3"></b>', b.html)
 
         class C(B):
             tag = 'c'

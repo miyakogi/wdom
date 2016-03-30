@@ -10,7 +10,6 @@ from tornado import websocket
 from tornado.httpserver import HTTPServer
 
 from wdom import options
-from wdom.web_node import elements
 from wdom.misc import static_dir
 
 logger = logging.getLogger(__name__)
@@ -28,7 +27,8 @@ class MainHandler(web.RequestHandler):
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
         logger.info('WS OPEN')
-        self.application.document.connections.append(self)
+        self.doc = self.application.document
+        self.doc.connections.append(self)
 
     def on_message(self, message):
         # Log handling
@@ -41,8 +41,8 @@ class WSHandler(websocket.WebSocketHandler):
 
     def on_close(self):
         logger.info('RootWS CLOSED')
-        if self in self.application.document.connections:
-            self.application.document.connections.remove(self)
+        if self in self.doc.connections:
+            self.doc.connections.remove(self)
 
     def log_handler(self, level: str, message: str):
         message = 'JS: ' + str(message)
@@ -57,7 +57,7 @@ class WSHandler(websocket.WebSocketHandler):
 
     def element_handler(self, msg: dict):
         id = msg.get('id')
-        elm = elements.get(id, None)
+        elm = self.doc.getElementById(id)
         if elm is not None:
             elm.on_message(msg)
         else:

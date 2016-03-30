@@ -10,27 +10,25 @@ from wdom.webif import WebIF
 from wdom.element import HTMLElement
 
 logger = logging.getLogger(__name__)
-elements = dict()
 
 
 class WebElement(HTMLElement, WebIF):
-    @property
-    def id(self) -> str:
-        return self._id
-
-    @id.setter
-    def id(self, id:str):
-        self._id = id
-
     def __init__(self, *args, parent=None, id=None, **kwargs):
-        self.id = id or str(builtins.id(self))
         super().__init__(*args, **kwargs)
-        elements[self.id] = self
+        self.id = id or str(builtins.id(self))
         self.addEventListener('mount', self._on_mount)
         if parent is not None:
             parent.appendChild(self)
 
-    def _get_attrs_by_string(self) -> str:
+    def __copy__(self) -> HTMLElement:
+        clone = super().__copy__()
+        if clone.id == str(id(self)):
+            # change automatically added id
+            # overhead in __init__...
+            clone.id = id(clone)
+        return clone
+
+    def __get_attrs_by_string(self) -> str:
         attrs_str = ' '.join((super()._get_attrs_by_string(),
                               'id="{}"'.format(self.id)))
         return attrs_str.strip()

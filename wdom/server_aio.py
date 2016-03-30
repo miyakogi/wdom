@@ -7,11 +7,9 @@ import asyncio
 import socket
 import webbrowser
 
-import aiohttp
 from aiohttp import web, MsgType
 
 from wdom import options
-from wdom.web_node import elements
 from wdom.misc import static_dir
 
 logger = logging.getLogger(__name__)
@@ -37,7 +35,8 @@ class WSHandler(object):
         self.req = request
         self.ws = web.WebSocketResponse()
         await self.ws.prepare(request)
-        self.req.app['document'].connections.append(self)
+        self.doc = self.req.app['document']
+        self.doc.connections.append(self)
 
         while not self.ws.closed:
             msg = await self.ws.receive()
@@ -61,8 +60,8 @@ class WSHandler(object):
 
     def on_close(self):
         logger.info('RootWS CLOSED')
-        if self in self.req.app['document'].connections:
-            self.req.app['document'].connections.remove(self)
+        if self in self.doc.connections:
+            self.doc.connections.remove(self)
 
     async def log_handler(self, level: str, message: str):
         message = 'JS: ' + str(message)
@@ -77,7 +76,7 @@ class WSHandler(object):
 
     async def element_handler(self, msg: dict):
         id = msg.get('id')
-        elm = elements.get(id, None)
+        elm = self.doc.getElementById(id)
         if elm is not None:
             elm.on_message(msg)
         else:

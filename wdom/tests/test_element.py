@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import gc
 from unittest import TestCase
 
 from wdom.css import CSSStyleDeclaration
@@ -216,6 +217,11 @@ class TestElement(TestCase):
         self.c1.classList.add('c1')
         self.c2.classList.add('c2')
 
+    def tearDown(self):
+        del self.elm
+        del self.c1
+        del self.c2
+
     def test_constructor(self):
         elm = Element('a')
         self.assertEqual(elm.nodeName, 'A')
@@ -410,7 +416,7 @@ class TestElement(TestCase):
         self.assertTrue(clone.firstChild.getAttribute('src'), 'b')
 
     def test_init_class(self):
-        elm = Element('a', class_ = 'a')
+        elm = Element('a', class_='a')
         self.assertEqual(elm.html, '<a class="a"></a>')
         self.assertEqual(elm.classList.length, 1)
         self.assertIn('a', elm.classList)
@@ -421,7 +427,7 @@ class TestElement(TestCase):
         self.assertIn('b', elm2.classList)
 
     def test_init_class_multi_str(self):
-        elm = Element('a', class_ = 'a1 a2')
+        elm = Element('a', class_='a1 a2')
         self.assertEqual(elm.html, '<a class="a1 a2"></a>')
         self.assertEqual(elm.classList.length, 2)
         self.assertIn('a1', elm.classList)
@@ -429,7 +435,7 @@ class TestElement(TestCase):
         self.assertNotIn('a1 a2', elm.classList)
 
     def test_init_class_multi_list(self):
-        elm = Element('a', class_ = ['a1', 'a2'])
+        elm = Element('a', class_=['a1', 'a2'])
         self.assertEqual(elm.html, '<a class="a1 a2"></a>')
         self.assertEqual(elm.classList.length, 2)
         self.assertIn('a1', elm.classList)
@@ -437,13 +443,65 @@ class TestElement(TestCase):
         self.assertNotIn('a1 a2', elm.classList)
 
     def test_init_class_multi_mixed(self):
-        elm = Element('a', class_ = ['a1', 'a2 a3'])
+        elm = Element('a', class_=['a1', 'a2 a3'])
         self.assertEqual(elm.html, '<a class="a1 a2 a3"></a>')
         self.assertEqual(elm.classList.length, 3)
         self.assertIn('a1', elm.classList)
         self.assertIn('a2', elm.classList)
         self.assertIn('a3', elm.classList)
         self.assertNotIn('a2 a3', elm.classList)
+
+    def test_reference(self):
+        gc.collect()
+        elm = Element('a')
+        _id = id(elm)
+        self.assertIn(elm, Element._elements)
+        del elm
+        gc.collect()  # run gc
+        for elm in Element._elements:
+            assert id(elm) != _id
+
+    def test_reference_with_id(self):
+        gc.collect()
+        elm = Element('a', id='a')
+        _id = id(elm)
+        self.assertIn(elm.id, Element._elements_withid)
+        del elm
+        gc.collect()
+        self.assertNotIn('a', Element._elements_withid)
+        for elm in Element._elements:
+            assert id(elm) != _id
+
+    def test_reference_add_id(self):
+        gc.collect()
+        elm = Element('a')
+        _id = id(elm)
+        self.assertNotIn(elm, Element._elements_withid.values())
+        elm.id = 'a'
+        self.assertIn('a', Element._elements_withid)
+        self.assertIn(elm, Element._elements_withid.values())
+        elm.id = 'b'
+        self.assertNotIn('a', Element._elements_withid)
+        self.assertIn('b', Element._elements_withid)
+        self.assertIn(elm, Element._elements_withid.values())
+        elm.setAttribute('id', 'c')
+        self.assertNotIn('b', Element._elements_withid)
+        self.assertIn('c', Element._elements_withid)
+        self.assertIn(elm, Element._elements_withid.values())
+        del elm
+        gc.collect()
+        self.assertNotIn('c', Element._elements_withid)
+        for elm in Element._elements:
+            assert id(elm) != _id
+
+    def test_reference_del_id(self):
+        gc.collect()
+        elm = Element('a', id='a')
+        self.assertIn('a', Element._elements_withid)
+        self.assertIn(elm, Element._elements_withid.values())
+        elm.removeAttribute('id')
+        self.assertNotIn('a', Element._elements_withid)
+        self.assertNotIn(elm, Element._elements_withid.values())
 
 
 class TestHTMLElement(TestCase):

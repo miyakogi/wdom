@@ -5,6 +5,7 @@ from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
 from typing import Union, Tuple
+from weakref import WeakSet, WeakValueDictionary
 
 from wdom.interface import NodeList
 from wdom.css import CSSStyleDeclaration
@@ -221,10 +222,14 @@ class Parser(HTMLParser):
 class Element(Node, EventTarget, ParentNode, ChildNode):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
+    _registered = True
     _parser_default_class = None
+    _elements = WeakSet()
+    _elements_withid = WeakValueDictionary()
 
     def __init__(self, tag:str='', parent=None, **kwargs):
         super().__init__(parent=parent)
+        self._elements.add(self)
         self.tag = tag
         self.attributes = NamedNodeMap(self)
         self.classList = DOMTokenList(self)
@@ -333,6 +338,12 @@ class Element(Node, EventTarget, ParentNode, ChildNode):
         if attr == 'class':
             self.classList = DOMTokenList(self, value)
         else:
+            if attr == 'id':
+                if 'id' in self.attributes:
+                    # remove old reference to self
+                    self._elements_withid.pop(self.id, None)
+                # register this elements with new id
+                self._elements_withid[value] = self
             new_attr_node = Attr(attr, value)
             self.setAttributeNode(new_attr_node)
 
@@ -346,6 +357,8 @@ class Element(Node, EventTarget, ParentNode, ChildNode):
         if attr == 'class':
             self.classList = DOMTokenList(self)
         else:
+            if attr == 'id':
+                self._elements_withid.pop(self.id, None)
             self.attributes.removeNamedItem(Attr(attr))
 
     def removeAttribute(self, attr:str):
