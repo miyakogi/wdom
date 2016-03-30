@@ -909,6 +909,16 @@ class TestElement(TestCase):
 
         self.elm.innerHTML = '<b></b>'
         self.assertEqual(self.elm.innerHTML, '<b></b>')
+        self.assertEqual(self.elm.firstChild.tag, 'b')
+
+    def test_inner_html_nest(self):
+        html = '<b><c>d</c>e</b>'
+        self.elm.innerHTML = html
+        self.assertEqual(self.elm.innerHTML, html)
+        self.assertEqual(self.elm.firstChild.html, html)
+        self.assertEqual(self.elm.firstChild.firstChild.html, '<c>d</c>')
+        self.assertEqual(self.elm.firstChild.firstChild.innerHTML, 'd')
+        self.assertEqual(self.elm.firstChild.lastChild.html, 'e')
 
     def test_end_tag(self):
         self.assertEqual(self.elm.end_tag, '</tag>')

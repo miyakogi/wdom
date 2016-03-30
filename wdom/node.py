@@ -3,6 +3,7 @@
 
 from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
+from html.parser import HTMLParser
 import html
 from typing import Union, Tuple
 
@@ -664,9 +665,44 @@ class DocumentType(Node, ChildNode):
         return '<!DOCTYPE {}>'.format(self.name)
 
 
+class Parser(HTMLParser):
+    def __init__(self, *args, default_class=None, **kwargs):
+        # Import here
+        from wdom.tag import Tag
+        from wdom.window import customElements
+        self._T = Tag
+        self.registry = customElements
+        self.default_class = default_class or HTMLElement
+        super().__init__(*args, **kwargs)
+        self.elm = DocumentFragment()
+        self.root = self.elm
+
+    def handle_starttag(self, tag, attrs):
+        base = self.registry.get(tag, self.default_class)
+        if isinstance(base, self._T):
+            elm = base(parent=self.elm, **dict(attrs))
+        else:
+            elm = base(tag, parent=self.elm, **dict(attrs))
+        if self.elm is not None:
+            self.elm.append(elm)
+        if tag not in HTML_EMPTY:
+            self.elm = elm
+
+    def handle_endtag(self, tag):
+        self.elm = self.elm.parentNode
+
+    def handle_data(self, data):
+        if data and self.elm is not None:
+            self.elm.append(data)
+
+    def handle_comment(self, comment:str):
+        self.elm.append(Comment(comment))
+
+
 class Element(Node, EventTarget, ParentNode, ChildNode):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
+    _parser_default_class = None
 
     def __init__(self, tag:str='', parent=None, **kwargs):
         super().__init__(parent=parent)
@@ -706,7 +742,9 @@ class Element(Node, EventTarget, ParentNode, ChildNode):
 
     def _set_inner_html(self, html:str):
         self._empty()
-        self._append_child(RawHtml(html))
+        parser = Parser(default_class=self._parser_default_class)
+        parser.feed(html)
+        self._append_child(parser.root)
 
     @property
     def innerHTML(self) -> str:
