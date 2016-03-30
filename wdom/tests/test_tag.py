@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.node import NamedNodeMap
 from wdom.tag import Tag, DOMTokenList, NewTagClass
 from wdom.tests.util import TestCase
 

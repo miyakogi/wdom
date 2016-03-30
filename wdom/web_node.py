@@ -5,8 +5,9 @@ import logging
 import builtins
 from asyncio import coroutine
 
-from wdom.node import HTMLElement, Node
+from wdom.node import Node
 from wdom.webif import WebIF
+from wdom.element import HTMLElement
 
 logger = logging.getLogger(__name__)
 elements = dict()
