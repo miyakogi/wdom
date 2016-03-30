@@ -5,6 +5,7 @@ import gc
 from unittest import TestCase
 
 from wdom.css import CSSStyleDeclaration
+from wdom.node import Text
 from wdom.element import DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement
 
 
@@ -292,6 +293,7 @@ class TestElement(TestCase):
         self.elm.innerHTML = '<b></b>'
         self.assertEqual(self.elm.innerHTML, '<b></b>')
         self.assertEqual(self.elm.firstChild.tag, 'b')
+        self.assertTrue(isinstance(self.elm.firstChild, HTMLElement))
 
     def test_inner_html_nest(self):
         html = '<b><c>d</c>e</b>'
@@ -301,6 +303,7 @@ class TestElement(TestCase):
         self.assertEqual(self.elm.firstChild.firstChild.html, '<c>d</c>')
         self.assertEqual(self.elm.firstChild.firstChild.innerHTML, 'd')
         self.assertEqual(self.elm.firstChild.lastChild.html, 'e')
+        self.assertTrue(isinstance(self.elm.firstChild.lastChild, Text))
 
     def test_end_tag(self):
         self.assertEqual(self.elm.end_tag, '</tag>')
