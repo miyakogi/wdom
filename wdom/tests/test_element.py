@@ -550,6 +550,10 @@ class TestElement(TestCase):
         self.elm.innerHTML = '<a is="my-a"></a>'
         self.assertEqual(self.elm.firstChild.__class__, self.NewTag)
 
+    def test_invalid_define_args(self):
+        with self.assertRaises(TypeError):
+            customElements.define(1, 2, 3)
+
 
 class TestHTMLElement(TestCase):
     def setUp(self):

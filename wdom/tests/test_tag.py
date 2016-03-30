@@ -282,10 +282,10 @@ class TestTag(TestCase):
 
     def test_custom_tag(self):
         self.tag.innerHTML = '<new-tag></new-tag>'
-        self.assertIs(self.tag.firstChild.__class__, HTMLElement)
+        self.assertEqual(type(self.tag.firstChild), HTMLElement)
         self.assertFalse(self.tag.firstChild._registered)
         customElements.define('new-tag', self.NewTag)
-        self.assertIs(self.tag.firstChild.__class__, self.NewTag)
+        self.assertEqual(type(self.tag.firstChild), self.NewTag)
         self.assertTrue(self.tag.firstChild._registered)
 
     def test_custom_tag_registered(self):
@@ -300,22 +300,32 @@ class TestTag(TestCase):
 
     def test_custom_tag_is(self):
         self.tag.innerHTML = '<a is="new-a"></a>'
-        self.assertIs(self.tag.firstChild.__class__, HTMLElement)
+        self.assertEqual(type(self.tag.firstChild), HTMLElement)
         self.assertFalse(self.tag.firstChild._registered)
         customElements.define('new-a', self.NewTag, {'extends': 'a'})
-        self.assertIs(self.tag.firstChild.__class__, self.NewTag)
+        self.assertEqual(type(self.tag.firstChild), self.NewTag)
         self.assertTrue(self.tag.firstChild._registered)
 
     def test_custom_tag_is_registered(self):
-        customElements.define('new-a', self.NewTag, {'extends': 'a'})
+        customElements.define('new-a', self.ExtendTag, {'extends': 'a'})
         self.tag.innerHTML = '<a is="new-a"></a>'
-        self.assertIs(self.tag.firstChild.__class__, self.NewTag)
+        self.assertEqual(type(self.tag.firstChild), self.ExtendTag)
         self.assertTrue(self.tag.firstChild._registered)
 
         # test unregistered `is`
         self.tag.innerHTML = '<a is="new-b"></a>'
-        self.assertIs(self.tag.firstChild.__class__, HTMLElement)
+        self.assertEqual(type(self.tag.firstChild), HTMLElement)
         self.assertFalse(self.tag.firstChild._registered)
+
+    def test_custom_tag_define_by_class(self):
+        customElements.define(self.NewTag)
+        self.tag.innerHTML = '<new-tag></new-tag>'
+        self.assertEqual(type(self.tag.firstChild), self.NewTag)
+
+    def test_custom_tag_define_by_class_is(self):
+        customElements.define(self.ExtendTag)
+        self.tag.innerHTML = '<a is="new-a"></a>'
+        self.assertEqual(type(self.tag.firstChild), self.ExtendTag)
 
 
 class TestClassList(TestCase):

@@ -2,14 +2,11 @@
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
+from functools import singledispatch
+
 from wdom.interface import Node
 from wdom.element import Element
 from wdom.tag import Tag
-
-
-class ElementsDefineMap(defaultdict):
-    def __init__(self):
-        super().__init__(set)
 
 
 class CustomElementsRegistry(dict):
@@ -39,14 +36,35 @@ class CustomElementsRegistry(dict):
                 if isinstance(elm, Tag):
                     self._upgrage_to_tag_class(elm)
 
-    def define(self, name:str, constructor:type, options:dict=None):
-        normalized_name = name.lower()
-        extends = options.get('extends') if options else None
-        self[(normalized_name, extends)] = constructor
+    def _define(self, name:str, constructor:type, options:dict=None):
+        extends = options.get('extends').lower() if options else None
+        self[(name, extends)] = constructor
         if extends:
-            self._upgrade_by_is(normalized_name, constructor, extends)
+            self._upgrade_by_is(name, constructor, extends)
         else:
-            self._upgrade_by_tag(normalized_name, constructor)
+            self._upgrade_by_tag(name, constructor)
+
+    def _define_orig(self, name:str, constructor:type, options:dict=None):
+        self._define(name.lower(), constructor, options)
+
+    def _define_class(self, constructor:type):
+        is_ = getattr(constructor, 'is_', getattr(constructor, 'is', None))
+        if is_:
+            name = is_.lower()
+            options = {'extends': constructor.tag}
+        else:
+            name = constructor.tag.lower()
+            options = {}
+        self._define(name, constructor, options)
+
+    def define(self, *args, **kwargs):
+        if isinstance(args[0], str):
+            self._define_orig(*args, **kwargs)
+        elif isinstance(args[0], type):
+            self._define_class(*args, **kwargs)
+        else:
+            raise TypeError(
+                'Invalid argument for define: {}, {}'.format(args, kwargs))
 
 
 customElements = CustomElementsRegistry()
