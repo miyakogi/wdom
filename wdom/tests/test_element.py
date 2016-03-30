@@ -506,6 +506,20 @@ class TestElement(TestCase):
         self.assertNotIn('a', Element._elements_withid)
         self.assertNotIn(elm, Element._elements_withid.values())
 
+    def test_is_attr(self):
+        '''``is`` is a reserved word for python, so use ``is_`` in constructor.
+        '''
+        elm = Element('tag', is_='elm')
+        self.assertIn('is', elm.attributes)
+        self.assertNotIn('is_', elm.attributes)
+        self.assertEqual('elm', elm.getAttribute('is'))
+        self.assertIsNone(elm.getAttribute('is_'))
+
+        # ``is_`` is not treated as special at setAttribute
+        elm.setAttribute('is_', 'new')
+        self.assertEqual('elm', elm.getAttribute('is'))
+        self.assertEqual('new', elm.getAttribute('is_'))
+
 
 class TestHTMLElement(TestCase):
     def setUp(self):

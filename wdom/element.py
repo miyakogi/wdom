@@ -238,6 +238,8 @@ class Element(Node, EventTarget, ParentNode, ChildNode):
 
         if 'class_' in kwargs:
             kwargs['class'] = kwargs.pop('class_')
+        if 'is_' in kwargs:
+            kwargs['is'] = kwargs.pop('is_')
         for k, v in kwargs.items():
             self.setAttribute(k, v)
 
