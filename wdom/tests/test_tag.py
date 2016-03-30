@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from wdom.element import HTMLElement
 from wdom.tag import Tag, DOMTokenList, NewTagClass
+from wdom.window import customElements
 from wdom.tests.util import TestCase
 
 
 class TestTag(TestCase):
     '''Test for Basic Dom implementation'''
     def setUp(self):
+        customElements.clear()
         self.tag = Tag()
         self.c1 = Tag(c="1")
         self.c2 = Tag(c="2")
@@ -274,23 +277,45 @@ class TestTag(TestCase):
         self.assertEqual(len(b_sub_list), 1)
         self.assertIs(b_sub_list[0], b2)
 
+    class NewTag(Tag):
+        tag = 'new-tag'
 
     def test_custom_tag(self):
-        class NewTag(Tag):
-            tag = 'new-tag'
-        from wdom.element import HTMLElement
-        from wdom.window import customElements
-        html = '<new-tag></new-tag>'
-        self.tag.innerHTML = html
+        self.tag.innerHTML = '<new-tag></new-tag>'
         self.assertIs(self.tag.firstChild.__class__, HTMLElement)
         self.assertFalse(self.tag.firstChild._registered)
-        customElements.define('new-tag', NewTag)
-        self.assertIs(self.tag.firstChild.__class__, NewTag)
+        customElements.define('new-tag', self.NewTag)
+        self.assertIs(self.tag.firstChild.__class__, self.NewTag)
         self.assertTrue(self.tag.firstChild._registered)
 
-        self.c1.innerHTML = html
-        self.assertTrue(isinstance(self.c1.firstChild, NewTag))
+    def test_custom_tag_registered(self):
+        customElements.define('new-tag', self.NewTag)
+        self.c1.innerHTML = '<new-tag></new-tag>'
+        self.assertTrue(isinstance(self.c1.firstChild, self.NewTag))
         self.assertTrue(self.c1.firstChild._registered)
+
+    class ExtendTag(Tag):
+        tag = 'a'
+        is_ = 'new-a'
+
+    def test_custom_tag_is(self):
+        self.tag.innerHTML = '<a is="new-a"></a>'
+        self.assertIs(self.tag.firstChild.__class__, HTMLElement)
+        self.assertFalse(self.tag.firstChild._registered)
+        customElements.define('new-a', self.NewTag, {'extends': 'a'})
+        self.assertIs(self.tag.firstChild.__class__, self.NewTag)
+        self.assertTrue(self.tag.firstChild._registered)
+
+    def test_custom_tag_is_registered(self):
+        customElements.define('new-a', self.NewTag, {'extends': 'a'})
+        self.tag.innerHTML = '<a is="new-a"></a>'
+        self.assertIs(self.tag.firstChild.__class__, self.NewTag)
+        self.assertTrue(self.tag.firstChild._registered)
+
+        # test unregistered `is`
+        self.tag.innerHTML = '<a is="new-b"></a>'
+        self.assertIs(self.tag.firstChild.__class__, HTMLElement)
+        self.assertFalse(self.tag.firstChild._registered)
 
 
 class TestClassList(TestCase):

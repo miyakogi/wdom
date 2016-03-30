@@ -198,9 +198,14 @@ class Parser(HTMLParser):
         self.elm = DocumentFragment()
         self.root = self.elm
 
-    def handle_starttag(self, tag, attrs):
-        base = self.registry.get(tag, False)
-        params = dict(parent=self.elm, _registered=bool(base), **dict(attrs))
+    def handle_starttag(self, tag, attr):
+        attrs = dict(attr)
+        is_ = attrs.get('is')
+        if is_:
+            base = self.registry.get((is_, tag))
+        else:
+            base = self.registry.get((tag, None))
+        params = dict(parent=self.elm, _registered=bool(base), **attrs)
         base_class = base or self.default_class
         if not issubclass(base_class, self._T):
             params['tag'] = tag
