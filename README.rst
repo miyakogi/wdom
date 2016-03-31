@@ -20,5 +20,5 @@ WDOM's server-side implementation for python.
    :target: https://codecov.io/github/miyakogi/wdom_py?branch=master
 .. |Build Status dev| image:: https://travis-ci.org/miyakogi/wdom_py.svg?branch=dev
    :target: https://travis-ci.org/miyakogi/wdom_py
-.. |codecov.io master| image:: https://codecov.io/github/miyakogi/wdom_py/coverage.svg?branch=dev
+.. |codecov.io dev| image:: https://codecov.io/github/miyakogi/wdom_py/coverage.svg?branch=dev
    :target: https://codecov.io/github/miyakogi/wdom_py?branch=dev
