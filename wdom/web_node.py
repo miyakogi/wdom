@@ -5,6 +5,7 @@ import logging
 import builtins
 from asyncio import coroutine
 
+from wdom.interface import Event
 from wdom.node import Node
 from wdom.webif import WebIF
 from wdom.element import HTMLElement
@@ -151,6 +152,12 @@ class WebElement(HTMLElement, WebIF):
         )
         html += self.end_tag
         return html
+
+    def click(self):
+        if self.connected:
+            self.js_exec('click')
+        else:
+            self._dispatch_event(Event('click'))
 
     # Window controll
     def scroll(self, x:int, y:int):

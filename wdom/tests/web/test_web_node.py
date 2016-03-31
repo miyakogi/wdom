@@ -340,6 +340,13 @@ class WebElementTestCase(ElementTestCase):
         self.wait()
         self.assertEqual(self.get_attribute('class'), 'b')
 
+    def test_click(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.tag.addEventListener('click', mock)
+        self.tag.click()
+        self.wait()
+        self.assertEqual(mock.call_count, 1)
+
     @sync
     async def test_get_rect(self):
         rect = WebElement('div', style='width:200px;height:100px;')
