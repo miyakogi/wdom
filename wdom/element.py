@@ -186,13 +186,27 @@ class NamedNodeMap:
         return ' '.join(attr.html for attr in self._dict.values())
 
 
+def _create_element(tag:str, name:str=None, base:type=None, attr:dict=None):
+    from wdom.tag import Tag
+    from wdom.window import customElements
+    if attr is None:
+        attr = {}
+    if name:
+        base_class = customElements.get((name, tag))
+    else:
+        base_class = customElements.get((tag, None))
+    if base_class is None:
+        attr['_registered'] = False
+        base_class = base or HTMLElement
+    if issubclass(base_class, Tag):
+        return base_class(**attr)
+    else:
+        return base_class(tag, **attr)
+
+
 class Parser(HTMLParser):
     def __init__(self, *args, default_class=None, **kwargs):
         # Import here
-        from wdom.tag import Tag
-        from wdom.window import customElements
-        self._T = Tag
-        self.registry = customElements
         self.default_class = default_class or HTMLElement
         super().__init__(*args, **kwargs)
         self.elm = DocumentFragment()
@@ -200,16 +214,8 @@ class Parser(HTMLParser):
 
     def handle_starttag(self, tag, attr):
         attrs = dict(attr)
-        is_ = attrs.get('is')
-        if is_:
-            base = self.registry.get((is_, tag))
-        else:
-            base = self.registry.get((tag, None))
-        params = dict(parent=self.elm, _registered=bool(base), **attrs)
-        base_class = base or self.default_class
-        if not issubclass(base_class, self._T):
-            params['tag'] = tag
-        elm = base_class(**params)
+        params = dict(parent=self.elm, **attrs)
+        elm = _create_element(tag, attrs.get('is'), self.default_class, params)
         if self.elm is not None:
             self.elm.append(elm)
         if tag not in HTML_EMPTY:
