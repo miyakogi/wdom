@@ -4,6 +4,7 @@
 import re
 
 from wdom import options
+from wdom.element import HTMLElement
 from wdom.document import Document, get_document
 from wdom.tag import Tag
 from wdom.tests.util import TestCase
@@ -116,6 +117,27 @@ class TestMainDocument(TestCase):
     def test_set_body_error(self) -> None:
         with self.assertRaises(TypeError):
             self.doc.body.prepend(1)
+
+    def test_create_element(self):
+        self.doc.defaultView.customElements.clear()
+        elm = self.doc.createElement('a')
+        self.assertEqual(type(elm), HTMLElement)
+        self.assertEqual(elm.html, '<a></a>')
+
+    def test_create_custom_element(self):
+        class A(HTMLElement): pass
+        self.doc.defaultView.customElements.define('a', A)
+        elm = self.doc.createElement('a')
+        self.assertEqual(type(elm), A)
+        self.assertEqual(elm.html, '<a></a>')
+
+    def test_create_custom_element_tag(self):
+        class A(Tag):
+            tag = 'a'
+        self.doc.defaultView.customElements.define('a', A)
+        elm = self.doc.createElement('a')
+        self.assertEqual(type(elm), A)
+        self.assertRegex(elm.html, '<a id="\d+"></a>')
 
 
 class TestDocumentOptions(TestCase):
