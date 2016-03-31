@@ -197,13 +197,13 @@ class WDTest:
         self.start_server(self.app)
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
         super().setUp()
-        self.wait(0.1)
+        self.wait()
         self.get(self.url)
-        self.wait(0.1)
+        self.wait()
 
     def teardown(self):
         self.stop_server()
-        self.wait(0.1)
+        self.wait()
 
     @property
     def port(self) -> int:
@@ -215,7 +215,11 @@ class WDTest:
             return self.server.sockets[-1].getsockname()[1]
 
     def start_server(self, app, port=0):
-        self.server = self.module.start_server(app, port)
+        try:
+            self.server = self.module.start_server(app, port)
+        except OSError:
+            self.wait(0.2)
+            self.server = self.module.start_server(app, port)
 
     def stop_server(self):
         self.module.stop_server(self.server)

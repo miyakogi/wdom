@@ -149,6 +149,13 @@ class TestWebElement(TestCase):
         clone = self.elm.cloneNode(deep=True)
         self.assertNotEqual(clone.id, self.elm.id)
 
+    def test_click(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.elm.addEventListener('click', mock)
+        self.elm.click()
+        self.js_mock.assert_called_once_with('addEventListener', event='click')
+        self.assertEqual(mock.call_count, 1)
+
 
 class TestEventMessage(TestCase):
     def setUp(self):
