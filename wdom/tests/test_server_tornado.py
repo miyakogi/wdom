@@ -48,7 +48,7 @@ class TestMainHandlerBlank(AsyncHTTPTestCase):
 class TestMainHandler(AsyncHTTPTestCase):
     def setUp(self) -> None:
         self.document = Document()
-        self.document.set_body('testing')
+        self.document.body.prepend('testing')
         self.app = Application(
             [('/', MainHandler)],
             document=self.document,

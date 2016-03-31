@@ -32,7 +32,7 @@ class Document(Node):
 
         self.head = Head(parent=self.html)
         self.charset_element = Meta(parent=self.head)
-        self.charset = charset
+        self.characterSet = charset
         self.title_element = Title(parent=self.head)
         self.title = title
 
@@ -41,7 +41,7 @@ class Document(Node):
 
     def getElementById(self, id):
         elm = Element._elements_withid.get(id)
-        if elm.ownerDocument is self:
+        if elm is not None and elm.ownerDocument is self:
             return elm
 
     @property
@@ -53,12 +53,20 @@ class Document(Node):
         self.title_element.textContent = value
 
     @property
-    def charset(self) -> str:
+    def characterSet(self) -> str:
         return self.charset_element.getAttribute('charset')
+
+    @characterSet.setter
+    def characterSet(self, value:str):
+        self.charset_element.setAttribute('charset', value)
+
+    @property
+    def charset(self) -> str:
+        return self.characterSet
 
     @charset.setter
     def charset(self, value:str):
-        self.charset_element.setAttribute('charset', value)
+        self.characterSet = value
 
     def add_jsfile(self, src:str):
         self.body.appendChild(Script(src=src))
@@ -71,11 +79,6 @@ class Document(Node):
 
     def add_header(self, header:str):
         self.head.appendChild(RawHtml(header))
-
-    def set_body(self, node:Node):
-        if isinstance(node, (str, bytes)):
-            node = Text(node)
-        self.body.insertBefore(node, self.body.firstChild)
 
     def build(self) -> str:
         return ''.join(child.html for child in self.childNodes)

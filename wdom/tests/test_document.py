@@ -99,7 +99,7 @@ class TestMainDocument(TestCase):
         self.assertEqual('TEST', doc.charset)
 
     def test_set_body(self) -> None:
-        self.doc.set_body(Tag())
+        self.doc.body.prepend(Tag())
         html = self.doc.build()
         _re = re.compile(
             '<tag id="\d+">\s*</tag>',
@@ -109,13 +109,13 @@ class TestMainDocument(TestCase):
 
     def test_set_body_string(self) -> None:
         string = 'testing'
-        self.doc.set_body(string)
+        self.doc.body.prepend(string)
         html = self.doc.build()
         self.assertIn(string, html)
 
     def test_set_body_error(self) -> None:
         with self.assertRaises(TypeError):
-            self.doc.set_body(1)
+            self.doc.body.prepend(1)
 
 
 class TestDocumentOptions(TestCase):

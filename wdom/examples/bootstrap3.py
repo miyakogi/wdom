@@ -58,7 +58,7 @@ def sample_app() -> Tag:
 def sample_page() -> Document:
     page = get_document()
     app = sample_app()
-    page.set_body(app)
+    page.body.prepend(app)
     for css in css_files:
         page.add_cssfile(css)
     for js in js_files:

@@ -81,7 +81,7 @@ Example code using `py.test <http://pytest.org/>`_ as a test runner::
             self.root_node = wdom.dom.Node()
             self.root_node.textContent = 'RootNode'
             self.doc = wdom.view.get_document()
-            self.doc.set_body(self.root_node)
+            self.doc.body.prepend(self.root_node)
             self.app = wdom.server.get_app(document=self.doc)
             return self.app
 

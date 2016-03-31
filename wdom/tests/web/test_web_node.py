@@ -23,7 +23,7 @@ def setUpModule():
 class ElementTestCase(WDTest):
     def setUp(self):
         self.document = get_document(autoreload=False)
-        self.document.set_body(self.get_elements())
+        self.document.body.prepend(self.get_elements())
         super().setUp()
 
     def get_elements(self):

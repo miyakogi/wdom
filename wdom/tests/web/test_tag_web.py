@@ -26,7 +26,7 @@ class NodeTestCase(WDTest):
             tag = 'root'
 
         self.root = Root()
-        self.document.set_body(self.root)
+        self.document.body.prepend(self.root)
         super().setUp()
         self.set_element(self.root)
 
@@ -112,7 +112,7 @@ class InputTestCase(WDTest):
         self.input = Input(parent=self.root, type='text')
         self.textarea = TextArea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root)
-        self.document.set_body(self.root)
+        self.document.body.prepend(self.root)
         super().setUp()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
