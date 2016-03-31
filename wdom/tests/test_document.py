@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import re
+from unittest.mock import MagicMock
 
 from wdom import options
-from wdom.element import HTMLElement
+from wdom.interface import Event
+from wdom.node import DocumentFragment, Comment, Text
+from wdom.element import HTMLElement, Attr
 from wdom.document import Document, get_document
 from wdom.tag import Tag
 from wdom.tests.util import TestCase
@@ -138,6 +141,39 @@ class TestMainDocument(TestCase):
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), A)
         self.assertRegex(elm.html, '<a id="\d+"></a>')
+
+    def test_create_documentfragment(self):
+        df = self.doc.createDocumentFragment()
+        self.assertEqual(type(df), DocumentFragment)
+        self.assertFalse(df.hasChildNodes())
+
+    def test_create_textnode(self):
+        t = self.doc.createTextNode('text')
+        self.assertEqual(type(t), Text)
+        self.assertEqual(t.html, 'text')
+
+    def test_create_comment(self):
+        t = self.doc.createComment('text')
+        self.assertEqual(type(t), Comment)
+        self.assertEqual(t.html, '<!--text-->')
+
+    def test_create_attr(self):
+        a = self.doc.createAttribute('src')
+        a.value = 'a'
+        self.assertEqual(type(a), Attr)
+        self.assertEqual(a.html, 'src="a"')
+        tag = HTMLElement('tag')
+        tag.setAttributeNode(a)
+        self.assertEqual(tag.html, '<tag src="a"></tag>')
+
+    def test_create_event(self):
+        tag = HTMLElement('tag')
+        mock = MagicMock(_is_coroutine=False)
+        tag.addEventListener('a', mock)
+        e = self.doc.createEvent('a')
+        self.assertEqual(type(e), Event)
+        tag.dispatchEvent(e)
+        mock.assert_called_once_with(event=e)
 
 
 class TestDocumentOptions(TestCase):
