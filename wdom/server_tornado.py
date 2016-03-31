@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import asyncio
 import logging
 import webbrowser
 
@@ -39,10 +40,19 @@ class WSHandler(websocket.WebSocketHandler):
         elif _type in ('event', 'response'):
             self.element_handler(msg)
 
+    @asyncio.coroutine
+    def terminate(self):
+        yield from asyncio.sleep(options.config.shutdown_wait)
+        if not any(self.doc.connections):
+            stop_server(self.application.server)
+            self.application.server.io_loop.stop()
+
     def on_close(self):
         logger.info('RootWS CLOSED')
         if self in self.doc.connections:
             self.doc.connections.remove(self)
+        if options.config.autoshutdown and not any(self.doc.connections):
+            asyncio.ensure_future(self.terminate())
 
     def log_handler(self, level: str, message: str):
         message = 'JS: ' + str(message)
@@ -160,6 +170,7 @@ def start_server(app: web.Application, port=None, browser=None, **kwargs) -> HTT
         port = options.config.port
     logger.info('Start server on port {0:d}'.format(port))
     server = app.listen(port)
+    app.server = server
 
     if browser is not None:
         url = 'http://localhost:{}/'.format(port)

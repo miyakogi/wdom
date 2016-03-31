@@ -14,8 +14,8 @@ if __name__ == '__main__':
 
 
 def main():
-    from wdom.options import parse_command_line
-    parse_command_line()
+    from wdom import options
+    options.parse_command_line()
     from wdom.log import configure_logger
     configure_logger()
 
@@ -50,10 +50,8 @@ def main():
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        pass
-    finally:
         stop_server(server)
-    loop.close()
+        loop.close()
 
 
 if __name__ == '__main__':

@@ -30,7 +30,7 @@ async def ws_open(request):
     return handler.ws
 
 
-class WSHandler(object):
+class WSHandler:
     async def open(self, request):
         self.req = request
         self.ws = web.WebSocketResponse()
@@ -58,10 +58,19 @@ class WSHandler(object):
         elif _type in ('event', 'response'):
             await self.element_handler(msg)
 
+    async def terminate(self):
+        await asyncio.sleep(options.config.shutdown_wait)
+        if not any(self.doc.connections):
+            server = self.req.app['server']
+            await terminate_server(server)
+            server._loop.stop()
+
     def on_close(self):
         logger.info('RootWS CLOSED')
         if self in self.doc.connections:
             self.doc.connections.remove(self)
+        if options.config.autoshutdown and not any(self.doc.connections):
+            asyncio.ensure_future(self.terminate())
 
     async def log_handler(self, level: str, message: str):
         message = 'JS: ' + str(message)
@@ -116,7 +125,7 @@ async def close_connections(app):
 
 
 def start_server(app: web.Application, port=None, browser=None, loop=None,
-                 family=socket.AF_INET):
+                 address=None, family=socket.AF_INET):
     '''Start server with ``app`` on ``localhost:port``.
     If port is not specified, use command line option of ``--port``.
 
@@ -125,20 +134,20 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     name is not registered in ``webbrowser`` module, or, for example it is just
     ``True``, use system's default browser to open the page.
     '''
-    if port is None:
-        if 'port' not in options.config:
-            options.parse_command_line()
-        port = options.config.port
+    options.parse_command_line()
+    port = port if port is not None else options.config.port
+    address = address or options.config.address
 
     if loop is None:
         loop = asyncio.get_event_loop()
     handler = app.make_handler()
-    f = loop.create_server(handler, 'localhost', port)
+    f = loop.create_server(handler, address, port)
     server = loop.run_until_complete(f)
     server.app = app
     server.handler = handler
     app.on_shutdown.append(close_connections)
-    logger.info('Start server on port {0:d}'.format(port))
+    app['server'] = server
+    logger.info('Start server on {0}:{1:d}'.format(address, port))
 
     if browser is not None:
         url = 'http://localhost:{}/'.format(port)
@@ -150,11 +159,15 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     return server
 
 
-def stop_server(server):
+async def terminate_server(server):
     logger.info('Start server shutdown')
     server.close()
-    server._loop.run_until_complete(server.wait_closed())
-    server._loop.run_until_complete(server.app.shutdown())
-    server._loop.run_until_complete(server.handler.finish_connections(1.0))
-    server._loop.run_until_complete(server.app.cleanup())
+    await server.wait_closed()
+    await server.app.shutdown()
+    await server.handler.finish_connections(1.0)
+    await server.app.cleanup()
     logger.info('Server terminated')
+
+
+def stop_server(server):
+    server._loop.run_until_complete(terminate_server(server))
