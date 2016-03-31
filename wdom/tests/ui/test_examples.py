@@ -15,11 +15,6 @@ from wdom.tests.ui import wd
 
 def setUpModule():
     install_asyncio()
-    wd.start_wd()
-
-
-def tearDownModule():
-    wd.close_wd()
 
 
 class SimpleTestCase(wd.UITest):
