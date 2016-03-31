@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from os import path
 from os.path import dirname
 import time
 import logging
@@ -68,13 +69,14 @@ class TestServer(TestCase):
 
 class TestAutoShutdown(TestCase):
     def setUp(self):
-        self.root = dirname(dirname(dirname(__file__)))
+        curdir = path.dirname(__file__)
+        test_file = path.join(curdir, 'aio_server.py')
         self.port = free_port()
-        cmd = [sys.executable, '-m', 'wdom', '--port', str(self.port),
+        cmd = [sys.executable, test_file, '--port', str(self.port),
                '--autoshutdown', '--shutdown-wait', '0.2']
         self.addr = 'localhost:{}'.format(self.port)
         self.proc = subprocess.Popen(
-            cmd, cwd=self.root,
+            cmd, cwd=curdir,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
@@ -84,7 +86,7 @@ class TestAutoShutdown(TestCase):
         self.proc.terminate()
 
     async def ws_connect(self, url:str):
-        for i in range(10):
+        for i in range(20):
             await asyncio.sleep(0.05)
             try:
                 ws = await to_asyncio_future(websocket.websocket_connect(url))
@@ -93,7 +95,7 @@ class TestAutoShutdown(TestCase):
                 continue
             else:
                 break
-        raise OSError('connection refused')
+        raise OSError('connection refused to {}'.format(url))
 
     @sync
     async def test_autoshutdown(self):
