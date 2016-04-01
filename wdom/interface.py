@@ -44,7 +44,7 @@ class NodeList:
         if not isinstance(index, int):
             raise TypeError(
                 'Indeces must be integer, not {}'.format(type(index)))
-        return self.ref[index] if 0 <= index < self.length else None
+        return self.ref[index] if -self.length <= index < self.length else None
 
 
 class HTMLCollection(NodeList):
