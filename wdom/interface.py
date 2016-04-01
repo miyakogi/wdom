@@ -20,11 +20,7 @@ class NodeList:
         self.ref = ref
 
     def __getitem__(self, index:int) -> Node:
-        if isinstance(index, int):
-            return self.item(index)
-        else:
-            # support slice access
-            return self.ref[index]
+        return self.ref[index]
 
     def __len__(self) -> int:
         return len(self.ref)
@@ -41,10 +37,13 @@ class NodeList:
         return len(self)
 
     def item(self, index:int) -> Node:
+        '''Return item with the index. If the index is negative number or out
+        of the list, return None.
+        '''
         if not isinstance(index, int):
             raise TypeError(
                 'Indeces must be integer, not {}'.format(type(index)))
-        return self.ref[index] if -self.length <= index < self.length else None
+        return self.ref[index] if 0 <= index < self.length else None
 
 
 class HTMLCollection(NodeList):

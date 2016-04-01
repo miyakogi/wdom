@@ -25,12 +25,13 @@ class TestNodeList(TestCase):
     def test_index_access(self):
         self.assertEqual(self.nl[1], 1)
         self.assertEqual(self.nl[-1], 2)
-        self.assertEqual(self.nl[5], None)
         self.assertEqual(self.nl[1:2], [1])
+        with self.assertRaises(IndexError):
+            self.nl[5]
 
     def test_item(self):
         self.assertEqual(self.nl.item(1), 1)
-        self.assertEqual(self.nl.item(-1), 2)
+        self.assertEqual(self.nl.item(-1), None)
         self.assertEqual(self.nl.item(5), None)
         with self.assertRaises(TypeError):
             self.nl.item(slice(1,2))
