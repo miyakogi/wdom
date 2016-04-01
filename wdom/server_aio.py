@@ -11,6 +11,7 @@ from aiohttp import web, MsgType
 
 from wdom import options
 from wdom.misc import static_dir
+from wdom.handler import event_handler, log_handler, response_handler
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +55,13 @@ class WSHandler:
         msg = json.loads(message)
         _type = msg.get('type')
         if _type == 'log':
-            await self.log_handler(msg.get('level'), msg.get('message'))
-        elif _type in ('event', 'response'):
-            await self.element_handler(msg)
+            log_handler(msg.get('level'), msg.get('message'))
+        elif _type == 'event':
+            event_handler(msg, self.doc)
+        elif _type == 'response':
+            response_handler(msg, self.doc)
+        else:
+            raise ValueError('unkown message type: {}'.format(message))
 
     async def terminate(self):
         await asyncio.sleep(options.config.shutdown_wait)
@@ -71,25 +76,6 @@ class WSHandler:
             self.doc.connections.remove(self)
         if options.config.autoshutdown and not any(self.doc.connections):
             asyncio.ensure_future(self.terminate())
-
-    async def log_handler(self, level: str, message: str):
-        message = 'JS: ' + str(message)
-        if level == 'error':
-            logger.error(message)
-        elif level == 'warn':
-            logger.warn(message)
-        elif level == 'info':
-            logger.info(message)
-        elif level == 'debug':
-            logger.debug(message)
-
-    async def element_handler(self, msg: dict):
-        id = msg.get('id')
-        elm = self.doc.getElementById(id)
-        if elm is not None:
-            elm.on_message(msg)
-        else:
-            logger.warn('No such element: id={}'.format(id))
 
 
 class Application(web.Application):

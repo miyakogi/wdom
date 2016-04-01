@@ -606,6 +606,11 @@ class TestHTMLElement(TestCase):
         n.title = 'Image'
         self.assertEqual(n.start_tag, '<img title="Image">')
 
+    def test_type(self):
+        n = HTMLElement('input')
+        n.type = 'text'
+        self.assertEqual(n.start_tag, '<input type="text">')
+
     def test_init_attrs(self):
         elm = HTMLElement('a', src='b', hidden=True)
         self.assertFalse(elm.hasChildNodes())

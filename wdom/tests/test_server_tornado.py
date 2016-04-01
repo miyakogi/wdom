@@ -123,28 +123,28 @@ class TestRootWSHandler(AsyncHTTPTestCase):
             del _
 
     def test_logging_error(self) -> None:
-        with self.assertLogs('wdom.server_tornado', 'INFO'):
+        with self.assertLogs('wdom.handler', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='error', message='test')
             ))
             self.sleep()
 
     def test_logging_warn(self) -> None:
-        with self.assertLogs('wdom.server_tornado', 'INFO'):
+        with self.assertLogs('wdom.handler', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='warn', message='test')
             ))
             self.sleep()
 
     def test_logging_info(self) -> None:
-        with self.assertLogs('wdom.server_tornado', 'INFO'):
+        with self.assertLogs('wdom.handler', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='info', message='test')
             ))
             self.sleep()
 
     def test_logging_debug(self) -> None:
-        with self.assertLogs('wdom.server_tornado', 'DEBUG'):
+        with self.assertLogs('wdom.handler', 'DEBUG'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='debug', message='test')
             ))

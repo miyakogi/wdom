@@ -12,6 +12,7 @@ from tornado.httpserver import HTTPServer
 
 from wdom import options
 from wdom.misc import static_dir
+from wdom.handler import event_handler, log_handler, response_handler
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +37,11 @@ class WSHandler(websocket.WebSocketHandler):
         msg = json.loads(message)
         _type = msg.get('type')
         if _type == 'log':
-            self.log_handler(msg.get('level'), msg.get('message'))
-        elif _type in ('event', 'response'):
-            self.element_handler(msg)
+            log_handler(msg.get('level'), msg.get('message'))
+        elif _type == 'event':
+            event_handler(msg, self.doc)
+        elif _type == 'response':
+            response_handler(msg, self.doc)
 
     @asyncio.coroutine
     def terminate(self):
@@ -53,25 +56,6 @@ class WSHandler(websocket.WebSocketHandler):
             self.doc.connections.remove(self)
         if options.config.autoshutdown and not any(self.doc.connections):
             asyncio.ensure_future(self.terminate())
-
-    def log_handler(self, level: str, message: str):
-        message = 'JS: ' + str(message)
-        if level == 'error':
-            logger.error(message)
-        elif level.startswith('warn'):
-            logger.warning(message)
-        elif level == 'info':
-            logger.info(message)
-        elif level == 'debug':
-            logger.debug(message)
-
-    def element_handler(self, msg: dict):
-        id = msg.get('id')
-        elm = self.doc.getElementById(id)
-        if elm is not None:
-            elm.on_message(msg)
-        else:
-            logger.warn('No such element: id={}'.format(id))
 
 
 class Application(web.Application):

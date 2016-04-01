@@ -8,7 +8,7 @@ __all__ = ('Event', 'Node', 'NodeList', 'HTMLCollection')
 
 class Event:
     def __init__(self, type:str, **kwargs):
-        self.type = type
+        self.type = type.lower()
         self.__dict__.update(kwargs)
 
     def stopPrapagation(self):

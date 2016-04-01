@@ -176,15 +176,6 @@ class Input(Tag):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.type = self.type_
-        self.addEventListener('change', self._update)
-        self.addEventListener('input', self._update)
-
-    def _update(self, event) -> None:
-        target = getattr(event, 'currentTarget', {})
-        if self.type in ('checkbox', 'radio'):
-            self.checked = target.get('checked')
-        else:
-            self.value = target.get('value')
 
     @property
     def checked(self) -> bool:
