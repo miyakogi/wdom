@@ -20,7 +20,11 @@ class NodeList:
         self.ref = ref
 
     def __getitem__(self, index:int) -> Node:
-        return self.item(index)
+        if isinstance(index, int):
+            return self.item(index)
+        else:
+            # support slice access
+            return self.ref[index]
 
     def __len__(self) -> int:
         return len(self.ref)
