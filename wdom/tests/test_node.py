@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from unittest import TestCase
-from wdom.node import Node, ParentNode, ChildNode
+from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
 from wdom.node import Text, DocumentType, DocumentFragment
 from wdom.node import RawHtml, Comment, CharacterData
 from wdom.element import Element
@@ -212,6 +212,7 @@ class TestNode(TestCase):
 
 
 class P(Node, ParentNode): pass
+class NDTC(Node, NonDocumentTypeChildNode): pass
 class C(Node, ChildNode): pass
 
 
@@ -348,6 +349,26 @@ class TestParentNode(TestCase):
         self.assertEqual(self.p.textContent, 'a')
         self.assertIs(self.p.lastChild, self.c2)
         is_equal_nodes(self.p, [self.c1, 'a', self.c2])
+
+
+class TestNonDocumentTypeChildNode(TestCase):
+    def setUp(self):
+        self.p = P()
+        self.c1 = NDTC()
+        self.c2 = NDTC()
+        self.e1 = Element()
+        self.e2 = Element()
+
+    def test_element(self):
+        self.p.appendChild(self.c1)
+        self.assertIsNone(self.c1.previousElementSibling)
+        self.assertIsNone(self.c1.nextElementSibling)
+        self.p.appendChild(self.e1)
+        self.assertIsNone(self.c1.previousElementSibling)
+        self.assertIs(self.c1.nextElementSibling, self.e1)
+        self.p.prepend(self.e2)
+        self.assertIs(self.c1.previousElementSibling, self.e2)
+        self.assertIs(self.c1.nextElementSibling, self.e1)
 
 
 class TestChildNode(TestCase):

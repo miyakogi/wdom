@@ -10,7 +10,8 @@ from weakref import WeakSet, WeakValueDictionary
 
 from wdom.interface import NodeList
 from wdom.css import CSSStyleDeclaration
-from wdom.node import Node, ParentNode, ChildNode, DocumentFragment, Comment
+from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
+from wdom.node import DocumentFragment, Comment
 from wdom.event import EventTarget
 from wdom.webif import WebIF
 
@@ -232,7 +233,8 @@ class Parser(HTMLParser):
         self.elm.append(Comment(comment))
 
 
-class Element(Node, EventTarget, ParentNode, ChildNode):
+class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
+              ChildNode):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
     _parser_default_class = None

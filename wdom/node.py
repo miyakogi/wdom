@@ -286,6 +286,28 @@ class ParentNode:
         raise NotImplementedError
 
 
+class NonDocumentTypeChildNode:
+    @property
+    def previousElementSibling(self) -> Node:
+        if self.parentNode is None:
+            return None
+        siblings = self.parentNode._children
+        for i in range(siblings.index(self), 0, -1):
+            n = siblings[i-1]
+            if n.nodeType == Node.ELEMENT_NODE:
+                return n
+
+    @property
+    def nextElementSibling(self) -> Node:
+        if self.parentNode is None:
+            return None
+        siblings = self.parentNode._children
+        for i in range(siblings.index(self), len(siblings)):
+            n = siblings[i]
+            if n.nodeType == Node.ELEMENT_NODE:
+                return n
+
+
 class ChildNode:
     '''[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData
     (Text, RawHTML, Comment).
@@ -325,7 +347,7 @@ class ChildNode:
 
 
 
-class CharacterData(Node, ChildNode):
+class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
     # DOM Level 1
     firstChild = None
     lastChild = None
@@ -431,7 +453,7 @@ class Comment(CharacterData):
         return ''.join(('<!--', self.data, '-->'))
 
 
-class DocumentType(Node, ChildNode):
+class DocumentType(Node, NonDocumentTypeChildNode):
     nodeType = Node.DOCUMENT_TYPE_NODE
     nodeValue = None
     textContent = None
