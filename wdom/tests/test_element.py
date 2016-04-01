@@ -307,6 +307,19 @@ class TestElement(TestCase):
         self.assertEqual(self.elm.firstChild.lastChild.html, 'e')
         self.assertTrue(isinstance(self.elm.firstChild.lastChild, Text))
 
+    def test_parse_html_text(self):
+        html = '''
+        <a>a1</a1>
+        b
+        '''
+        self.elm.innerHTML = html
+        # fisrt node is empty (\n+spaces) text node
+        self.assertEqual(self.elm.childNodes.length, 3)
+        self.assertTrue(isinstance(self.elm.firstChild, Text))
+        self.assertTrue(isinstance(self.elm.lastChild, Text))
+        self.assertTrue(isinstance(self.elm.firstElementChild, HTMLElement))
+        self.assertTrue(isinstance(self.elm.lastElementChild, HTMLElement))
+
     def test_end_tag(self):
         self.assertEqual(self.elm.end_tag, '</tag>')
 

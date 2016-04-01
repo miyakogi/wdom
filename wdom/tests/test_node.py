@@ -240,6 +240,22 @@ class TestParentNode(TestCase):
         self.c3 = C()
         self.c4 = C()
 
+    def test_children(self):
+        self.p.appendChild(Text('a'))
+        self.p.appendChild(Comment('b'))
+        self.assertEqual(self.p.children.length, 0)
+        elm1 = Element('c1')
+        self.p.appendChild(elm1)
+        self.p.appendChild(Text('d'))
+        self.assertEqual(self.p.children.length, 1)
+        self.assertIs(self.p.firstElementChild, elm1)
+        self.assertIs(self.p.lastElementChild, elm1)
+        elm2 = Element('c2')
+        self.p.appendChild(elm2)
+        self.p.appendChild(Text('e'))
+        self.assertIs(self.p.firstElementChild, elm1)
+        self.assertIs(self.p.lastElementChild, elm2)
+
     def test_append(self):
         self.assertFalse(self.p.hasChildNodes())
         self.p.append(self.c1)

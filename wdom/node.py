@@ -241,15 +241,22 @@ class ParentNode:
     '''
     @property
     def children(self):
-        raise NotImplementedError
+        '''Currently this is not a live object'''
+        return NodeList([
+            e for e in self.childNodes if e.nodeType == Node.ELEMENT_NODE
+        ])
 
     @property
-    def firstElement(self):
-        raise NotImplementedError
+    def firstElementChild(self):
+        for child in self.childNodes:
+            if child.nodeType == Node.ELEMENT_NODE:
+                return child
 
     @property
-    def lastElement(self):
-        raise NotImplementedError
+    def lastElementChild(self):
+        for child in reversed(self.childNodes):
+            if child.nodeType == Node.ELEMENT_NODE:
+                return child
 
     def prepend(self, *nodes:Tuple['ChildNode', str]):
         node = _to_node_list(nodes)

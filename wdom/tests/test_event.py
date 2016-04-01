@@ -7,15 +7,6 @@ from syncer import sync
 
 from wdom.tests.util import TestCase
 from wdom.event import Event, EventListener, EventTarget
-from wdom.webif import WebIF
-
-
-class TestEvent(TestCase):
-    def setUp(self):
-        self.e = Event('event')
-
-    def test_event_type(self):
-        self.assertEqual(self.e.type, 'event')
 
 
 class TestEventListener(TestCase):
