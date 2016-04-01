@@ -26,13 +26,8 @@ class WebElement(HTMLElement, WebIF):
         if clone.id == str(id(self)):
             # change automatically added id
             # overhead in __init__...
-            clone.id = id(clone)
+            clone.id = str(id(clone))
         return clone
-
-    def __get_attrs_by_string(self) -> str:
-        attrs_str = ' '.join((super()._get_attrs_by_string(),
-                              'id="{}"'.format(self.id)))
-        return attrs_str.strip()
 
     def _on_mount(self, *args, **kwargs):
         for event in self._listeners:
