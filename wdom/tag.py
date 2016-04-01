@@ -175,6 +175,7 @@ class Input(Tag):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+        self.type = self.type_
         self.addEventListener('change', self._update)
         self.addEventListener('input', self._update)
 

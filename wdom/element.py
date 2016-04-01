@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from collections import Iterable, OrderedDict
-from functools import partial
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
 from typing import Union, Tuple
@@ -481,6 +480,14 @@ class HTMLElement(Element):
     @title.setter
     def title(self, value:str):
         self.setAttribute('title', value)
+
+    @property
+    def type(self) -> str:
+        return self.getAttribute('type')
+
+    @type.setter
+    def type(self, value:str):
+        self.setAttribute('type', value)
 
     @property
     def style(self) -> CSSStyleDeclaration:
