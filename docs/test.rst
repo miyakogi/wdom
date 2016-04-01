@@ -1,32 +1,42 @@
 Test Utilities
 ==============
 
-``wdom.tests.util`` module provides two Utility classes (``UITest`` and
-``WDTest``) and some functions for running test on browser with Selenium
-WebDriver. These test classes inherit ``unittest.TestCase``.
+WDOM provides two Utility classes (``UITest`` and ``WDTest``) and some functions
+for running test on browser with Selenium WebDriver.
 
 UITest class
 ------------
 
-``UITest`` class is designed for end-to-end UI test, which is useful for testing
-your app on browser. This class runs your app on subprocess and prepare
-WebDriver for tests.
+``wdom.tests.ui.wd.UITest`` class is designed for end-to-end UI test, which is
+useful for testing your app on browser. This class runs your app on subprocess
+and prepare WebDriver for tests.
 
 Usage
 ^^^^^
 
-Example code using `py.test <http://pytest.org/>`_ as a test runner::
+Example code using `py.test <http://pytest.org/>`_ as a test runner.
 
-    from wdom.tests.util import UITest, install_asyncio, get_browser
+.. code-block:: python
 
-    def setup_module():
-        install_asyncio()  # force tornado to use asyncio module
+    # in your_test_dir/conftest.py
+    import pytest
+    from wdom.tests.ui.wd import start_wd, close_wd
 
-    def teardown_module():
-        wd = get_browser()  # get running webdriver
-        wd.close()  # terminate webdriver
+    @pytest.fixture(scope='session', autouse=True)
+    def browser(request):
+        start_wd()  # Start WebDriver for this session
+        request.addfinalizer(close_wd)
 
-    class TestApp(UITest):
+
+    # in your test file
+    from unittest import TestCase
+    from wdom.misc import install_asyncio
+    form wdom.tests.ui.wd import UITest
+
+    def setUpModule():
+        install_asyncio()  # force tornado to use asyncio
+
+    class TestApp(UITest, TestCase):
         def setUp(self):
             # do some setup, if need.
             super().setUp()  # MUST call base class's setUp.
@@ -38,7 +48,6 @@ Example code using `py.test <http://pytest.org/>`_ as a test runner::
         def test_senario1(self):
             # Write your test here
             self.wd.get(self.url)  # you can access webdriver by self.wd
-            self.get(self.url)  # 
 
         def test_senario2(self):
             # Write your another test here
@@ -48,10 +57,10 @@ Example code using `py.test <http://pytest.org/>`_ as a test runner::
 WDTest Class
 ------------
 
-``WDTest`` class is design to test ``wdom.py`` itself. Its features might
-not be so useful for library's users. ``WDTest`` class helps you to test your
-app by directly controlling ``Node`` object on python, from test scripts in the
-same process. This class is **Largely Experimental**.
+``WDTest`` class is design to test ``wdom`` itself. Its features might not be so
+useful for library's users. ``WDTest`` class helps you to test your app by
+directly controlling ``Node`` object on python, from test scripts in the same
+process. This class is **Largely Experimental**.
 
 ``WDTest`` runs application server on the same process, which is running tests,
 so that objects on the server can be directly controlled from test scripts.
@@ -63,40 +72,55 @@ is available.
 Usage
 ^^^^^
 
-Example code using `py.test <http://pytest.org/>`_ as a test runner::
+Example code using `py.test <http://pytest.org/>`_ as a test runner.
 
-    from wdom.tests.util import WDTest
-    from wdom.tests.util import install_asyncio, start_browser, close_browser
+.. code-block:: python
+
+    # in your_test_dir/conftest.py
+    import pytest
+    from wdom.tests.web.remote_browser import start_browser, close_browser
+
+    @pytest.fixture(scope='session', autouse=True)
+    def browser(request):
+        start_browser()  # Start browser process for this session
+        request.addfinalizer(close_browser)
+
+
+    # in your test file
+    from unittest import TestCase
+    from wdom.tag import Div
+    from wdom.document import get_document
+    from wdom.server import get_app
+    from wdom.tests.util import install_asyncio
+    from wdom.tests.web.remote_browser import WDTest
 
     def setup_module():
         install_asyncio()  # force tornado to use asyncio module
-        start_browser()  # start browser on subprocess
 
-    def teardown_module():
-        close_browser()  # close browser's process
-
-    class TestYourApp(WDTest):
+    class TestYourApp(WDTest, TestCase):
         def get_app(self) -> wdom.server.Application:
             # Prepare and return application you want to test
-            self.root_node = wdom.dom.Node()
+            self.root_node = Div()
             self.root_node.textContent = 'RootNode'
-            self.doc = wdom.view.get_document()
+            self.doc = get_document()
             self.doc.body.prepend(self.root_node)
-            self.app = wdom.server.get_app(document=self.doc)
+            self.app = get_app(self.doc)
             return self.app
 
         def test_senario1(self):
             self.set_element(self.root)  # find and set element
             text = self.get_text()  # get text content of the target element
-            assert text == 'RootNode'
+            self.assertEqual(text, 'RootNode')
 
 
-For more examples, see wdon/tests/test_dom_web.py.
+For more examples, see wdom/tests/web and wdom/tests/ui directory.
 
-.. automodule:: wdom.tests.web.remote_browser
+.. automodule:: wdom.tests.ui.wd
 
    .. autoclass:: UITest
       :members:
+
+.. automodule:: wdom.tests.web.remote_browser
 
    .. autoclass:: WDTest
       :members:

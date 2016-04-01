@@ -11,14 +11,6 @@ python and browser.
       :members:
       :undoc-members:
 
-   .. autoclass:: Element
-      :members:
-      :undoc-members:
-
-   .. autoclass:: HTMLElement
-      :members:
-      :undoc-members:
-
    .. autoclass:: Text
       :members:
       :undoc-members:
@@ -27,19 +19,23 @@ python and browser.
       :members:
       :undoc-members:
 
-   .. autoclass:: Attr
-      :members:
-      :undoc-members:
-
    .. autoclass:: DocumentFragment
       :members:
       :undoc-members:
+
+   .. autoclass:: DocumentType
+      :members:
+      :undoc-members:
+
+.. automodule:: wdom.document
 
    .. autoclass:: Document
       :members:
       :undoc-members:
 
-   .. autoclass:: DocumentType
+.. automodule:: wdom.element
+
+   .. autoclass:: Attr
       :members:
       :undoc-members:
 
@@ -51,9 +47,21 @@ python and browser.
       :members:
       :undoc-members:
 
+   .. autoclass:: Element
+      :members:
+      :undoc-members:
+
+   .. autoclass:: HTMLElement
+      :members:
+      :undoc-members:
+
 .. automodule:: wdom.event
 
    .. autoclass:: EventListener
+      :members:
+      :undoc-members:
+
+   .. autoclass:: EventTarget
       :members:
       :undoc-members:
 
@@ -68,4 +76,3 @@ python and browser.
    .. autoclass:: TagBaseMeta
       :members:
       :undoc-members:
-
