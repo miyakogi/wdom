@@ -346,7 +346,6 @@ class ChildNode:
         self._remove()
 
 
-
 class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
     # DOM Level 1
     firstChild = None

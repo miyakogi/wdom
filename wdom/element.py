@@ -278,14 +278,17 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             tag = ' '.join((tag, attrs))
         return tag + '>'
 
+    def _parse_html(self, html:str) -> DocumentFragment:
+        parser = Parser(default_class=self._parser_default_class)
+        parser.feed(html)
+        return parser.root
+
     def _get_inner_html(self) -> str:
         return ''.join(child.html for child in self._children)
 
     def _set_inner_html(self, html:str):
         self._empty()
-        parser = Parser(default_class=self._parser_default_class)
-        parser.feed(html)
-        self._append_child(parser.root)
+        self._append_child(self._parse_html(html))
 
     @property
     def innerHTML(self) -> str:
@@ -302,6 +305,27 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     @property
     def html(self) -> str:
         return self.start_tag + self.innerHTML + self.end_tag
+
+    def insertAdjacentHTML(self, position:str, html:str):
+        '''Parse ``html`` to DOM and insert to ``position``. ``position`` is a
+        case-insensive string, and must be one of "beforeBegin", "afterBegin",
+        "beforeEnd", or "afterEnd".
+        '''
+        df = self._parse_html(html)
+        pos = position.lower()
+        if pos == 'beforebegin':
+            self.before(df)
+        elif pos == 'afterbegin':
+            self.prepend(df)
+        elif pos == 'beforeend':
+            self.append(df)
+        elif pos == 'afterend':
+            self.after(df)
+        else:
+            raise ValueError(
+                'The value provided ({}) is not one of "beforeBegin", '
+                '"afterBegin", "beforeEnd", or "afterEnd".'.format(position)
+            )
 
     @property
     def outerHTML(self) -> str:

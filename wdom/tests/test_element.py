@@ -320,6 +320,21 @@ class TestElement(TestCase):
         self.assertTrue(isinstance(self.elm.firstElementChild, HTMLElement))
         self.assertTrue(isinstance(self.elm.lastElementChild, HTMLElement))
 
+    def test_insert_adjacent_html(self):
+        self.elm.appendChild(self.c1)
+        self.c1.insertAdjacentHTML('beforebegin', '<a></a>')
+        self.assertEqual(self.elm.childNodes.length, 2)
+        self.assertIs(self.elm.lastElementChild, self.c1)
+        self.c1.insertAdjacentHTML('afterend', 'text')
+        self.assertEqual(self.elm.childNodes.length, 3)
+        self.assertIs(self.elm.lastElementChild, self.c1)
+        self.c1.insertAdjacentHTML('afterBegin', '<b></b>')
+        self.assertEqual(self.c1.childNodes.length, 1)
+        self.c1.insertAdjacentHTML('BeforeEnd', '<c></c>')
+        self.assertEqual(self.c1.childNodes.length, 2)
+        with self.assertRaises(ValueError):
+            self.c1.insertAdjacentHTML('a', 'b')
+
     def test_end_tag(self):
         self.assertEqual(self.elm.end_tag, '</tag>')
 
