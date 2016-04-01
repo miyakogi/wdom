@@ -1,5 +1,5 @@
-Node Object
-===========
+DOM Reference
+=============
 
 ``wdom.dom.Tag`` class provides dom implementation which is syncronized on
 python and browser.
