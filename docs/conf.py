@@ -122,7 +122,7 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinx_rtd_theme'
 html_theme = 'alabaster'
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -140,9 +140,9 @@ html_theme_options = {
     'description': 'DOM manipulation library for python',
     'description': 'All you need is DOM',
     'github_user': 'miyakogi',
-    'github_repo': 'wdom_py',
-    'travis_button': 'miyakogi/wdom_py',
-    'codecov_button': 'miyakogi/wdom_py',
+    'github_repo': 'wdom',
+    'travis_button': 'miyakogi/wdom',
+    'codecov_button': 'miyakogi/wdom',
     'font_family': ', '.join(['Georgia', font]),
     'head_font_family': ', '.join(['"PT Serif"', head_font]),
     'code_font_family': ', '.join(['"PT Mono"', code_font]),
