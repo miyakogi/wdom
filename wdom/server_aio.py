@@ -12,6 +12,7 @@ from aiohttp import web, MsgType
 from wdom import options
 from wdom.misc import static_dir
 from wdom.handler import event_handler, log_handler, response_handler
+from wdom.document import Document
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +27,16 @@ class MainHandler(web.View):
 
 
 async def ws_open(request):
+    '''Open websocket for aiohttp.'''
     handler = WSHandler()
     await handler.open(request)
     return handler.ws
 
 
 class WSHandler:
+    '''Wrapper class for aiohttp websockets. APIs are similar to
+    ``tornaod.websocket.WebSocketHandler``.
+    '''
     async def open(self, request):
         self.req = request
         self.ws = web.WebSocketResponse()
@@ -88,7 +93,7 @@ class Application(web.Application):
         self.router.add_static('/(favicon.ico)', path)
 
 
-def get_app(document, debug=None, **kwargs) -> web.Application:
+def get_app(document:Document, debug=None, **kwargs) -> web.Application:
     '''Return Application object to serve ``document``.'''
     if debug is None:
         if 'debug' not in options.config:
@@ -105,14 +110,15 @@ def get_app(document, debug=None, **kwargs) -> web.Application:
     return app
 
 
-async def close_connections(app):
+async def close_connections(app:web.Application):
     for conn in app['document'].connections:
         await conn.ws.close(code=999, message='server shutdown')
 
 
 def start_server(app: web.Application, port=None, browser=None, loop=None,
-                 address=None, family=socket.AF_INET):
-    '''Start server with ``app`` on ``localhost:port``.
+                 address=None, family=socket.AF_INET,
+                 ) -> asyncio.base_events.Server:
+    '''Start server with ``app`` on ``address:port``.
     If port is not specified, use command line option of ``--port``.
 
     If ``browser`` is not specified, do not open the page. When ``browser`` is
@@ -145,7 +151,7 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     return server
 
 
-async def terminate_server(server):
+async def terminate_server(server:asyncio.base_events.Server):
     logger.info('Start server shutdown')
     server.close()
     await server.wait_closed()
@@ -155,5 +161,6 @@ async def terminate_server(server):
     logger.info('Server terminated')
 
 
-def stop_server(server):
+def stop_server(server:asyncio.base_events.Server):
+    '''Terminate given server.'''
     server._loop.run_until_complete(terminate_server(server))

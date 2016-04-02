@@ -16,10 +16,6 @@ If you want to force to use either library, use ``wdom.server_aio`` module or
 
 .. automodule:: wdom.server_aio
 
-   .. autoclass:: Application
-      :members:
-      :undoc-members:
-
    .. autofunction:: get_app
 
    .. autofunction:: start_server
@@ -27,10 +23,6 @@ If you want to force to use either library, use ``wdom.server_aio`` module or
    .. autofunction:: stop_server
 
 .. automodule:: wdom.server_tornado
-
-   .. autoclass:: Application
-      :members:
-      :undoc-members:
 
    .. autofunction:: get_app
 

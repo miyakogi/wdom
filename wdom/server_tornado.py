@@ -13,6 +13,7 @@ from tornado.httpserver import HTTPServer
 from wdom import options
 from wdom.misc import static_dir
 from wdom.handler import event_handler, log_handler, response_handler
+from wdom.document import Document
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +120,7 @@ class Application(web.Application):
         handlers.append(spec)
 
 
-def get_app(document, debug=None, **kwargs) -> Application:
+def get_app(document:Document, debug=None, **kwargs) -> Application:
     '''Return Application object to serve ``document``.'''
     if debug is None:
         if 'debug' not in options.config:
@@ -139,7 +140,8 @@ def get_app(document, debug=None, **kwargs) -> Application:
     return app
 
 
-def start_server(app: web.Application, port=None, browser=None, **kwargs) -> HTTPServer:
+def start_server(app: web.Application, port=None, browser=None, **kwargs
+                 ) -> HTTPServer:
     '''Start server with ``app`` on ``localhost:port``.
     If port is not specified, use command line option of ``--port``.
 
@@ -165,6 +167,7 @@ def start_server(app: web.Application, port=None, browser=None, **kwargs) -> HTT
 
     return server
 
-def stop_server(server):
+def stop_server(server:HTTPServer):
+    '''Terminate given server.'''
     server.stop()
     logger.info('Server terminated')

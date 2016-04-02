@@ -23,4 +23,4 @@ server.watch('../*/*.py', shell('make html'))
 server.watch('../*/*/*.py', shell('make html'))
 server.watch('../*/*/*/*.py', shell('make html'))
 
-server.serve(port=8889, root='_build/html')
+server.serve(port=8889, root='_build/html', debug=True)
