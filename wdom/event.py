@@ -46,7 +46,7 @@ class EventTarget:
 
     def _add_event_listener_web(self, event:str, *args, **kwargs):
         if isinstance(self, WebIF):
-            self.js_exec('addEventListener', event=event)
+            self.js_exec('addEventListener', event)
 
     def addEventListener(self, event:str,
                          listener:Callable[[Event], None]):
@@ -73,7 +73,7 @@ class EventTarget:
 
     def _remove_event_listener_web(self, event:str, *args, **kwargs):
         if isinstance(self, WebIF) and event not in self._listeners:
-            self.js_exec('removeEventListener', event=event)
+            self.js_exec('removeEventListener', event)
 
     def removeEventListener(self, event:str, listener:Callable[[Event], None]):
         '''Remove an event listener of this node. The listener is removed only

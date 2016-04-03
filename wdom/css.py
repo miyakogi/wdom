@@ -38,9 +38,9 @@ class CSSStyleDeclaration(OrderedDict):
         if isinstance(self._owner, WebIF):
             css = self.cssText
             if css:
-                self._owner.js_exec('setAttribute', attr='style', value=css)
+                self._owner.js_exec('setAttribute', 'style', css)
             else:
-                self._owner.js_exec('removeAttribute', attr='style')
+                self._owner.js_exec('removeAttribute', 'style')
 
     def _parse_str(self, style: str) -> None:
         if self: self.clear()

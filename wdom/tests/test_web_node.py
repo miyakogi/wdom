@@ -53,14 +53,14 @@ class TestWebElement(TestCase):
         self.js_mock1.assert_not_called()
         self.assertEqual(self.js_mock.call_count, 1)
         self.js_mock.assert_called_once_with(
-            'insertAdjacentHTML', position='beforeend', html=self.c1.html)
+            'insertAdjacentHTML', 'beforeend', self.c1.html)
 
         removed_child1 = self.elm.removeChild(self.c1)
         self.assertIs(removed_child1, self.c1)
         self.assertIsNone(self.c1.parentNode)
         self.assertEqual(self.js_mock.call_count, 2)
         self.js_mock1.assert_not_called()
-        self.js_mock.assert_called_with('removeChild', id=self.c1.id)
+        self.js_mock.assert_called_with('removeChildById', self.c1.id)
 
     def test_addremove_child(self):
         self.assertFalse(self.elm.hasChildNodes())
@@ -87,7 +87,7 @@ class TestWebElement(TestCase):
         self.assertNotIn(self.c1, self.elm)
         self.assertNotIn(self.c2, self.elm)
         self.js_mock1.assert_called_once_with(
-            'insertAdjacentHTML', position='beforebegin', html=self.c2.html)
+            'insertAdjacentHTML', 'beforebegin', self.c2.html)
         self.assertEqual(self.js_mock.call_count, 3)
 
         with self.assertRaises(ValueError):
@@ -95,26 +95,26 @@ class TestWebElement(TestCase):
 
     def test_addremove_attr(self):
         self.elm.setAttribute('src', 'a')
-        self.js_mock.assert_called_with('setAttribute', attr='src', value='a')
+        self.js_mock.assert_called_with('setAttribute', 'src', 'a')
         self.elm.removeAttribute('src')
-        self.js_mock.assert_called_with('removeAttribute', attr='src')
+        self.js_mock.assert_called_with('removeAttribute', 'src')
 
     def test_style(self):
         self.elm.style = 'color: red;'
         self.js_mock.assert_called_once_with(
-            'setAttribute', attr='style', value='color: red;')
+            'setAttribute', 'style', 'color: red;')
         self.elm.removeAttribute('style')
-        self.js_mock.assert_called_with('removeAttribute', attr='style')
+        self.js_mock.assert_called_with('removeAttribute', 'style')
         self.elm.style.color = 'black'
         self.js_mock.assert_called_with(
-            'setAttribute', attr='style', value='color: black;')
+            'setAttribute', 'style', 'color: black;')
 
     def test_style_init(self):
         _js_exec = WebElement.js_exec
         WebElement.js_exec = self.js_mock
         WebElement('elm', style='color: red;')
-        _call = call('setAttribute', attr='style', value='color: red;')
-        _call_remove = call('removeAttribute', attr='style')
+        _call = call('setAttribute', 'style', 'color: red;')
+        _call_remove = call('removeAttribute', 'style')
         self.js_mock.assert_has_calls([_call])
         count = 0
         for c in self.js_mock.call_args_list:
@@ -127,11 +127,11 @@ class TestWebElement(TestCase):
 
     def test_set_text_content(self):
         self.elm.textContent = 'text'
-        self.js_mock.assert_called_once_with('textContent', text='text')
+        self.js_mock.assert_called_once_with('textContent', 'text')
 
     def test_set_inner_html(self):
         self.elm.innerHTML = 'html'
-        self.js_mock.assert_called_once_with('innerHTML', html='html')
+        self.js_mock.assert_called_once_with('innerHTML', 'html')
 
     def test_shallow_copy(self):
         from copy import copy
@@ -153,7 +153,7 @@ class TestWebElement(TestCase):
         mock = MagicMock(_is_coroutine=False)
         self.elm.addEventListener('click', mock)
         self.elm.click()
-        self.js_mock.assert_called_once_with('addEventListener', event='click')
+        self.js_mock.assert_called_once_with('addEventListener', 'click')
         self.assertEqual(mock.call_count, 1)
 
 
@@ -172,13 +172,13 @@ class TestEventMessage(TestCase):
         }
 
     def test_handle_event(self):
-        self.elm.js_exec.assert_called_once_with('addEventListener', event='click')
+        self.elm.js_exec.assert_called_once_with('addEventListener', 'click')
         self.elm.on_message(self.msg)
         self.assertTrue(self.mock.called)
 
     def test_remove_event(self):
         self.elm.removeEventListener('click', self.mock)
-        self.elm.js_exec.assert_called_with('removeEventListener', event='click')
+        self.elm.js_exec.assert_called_with('removeEventListener', 'click')
         self.elm.on_message(self.msg)
         self.mock.assert_not_called()
 
@@ -196,7 +196,7 @@ class TestQuery(TestCase):
 
     def test_query(self):
         fut = self.elm.js_query('test')
-        self.elm.js_exec.assert_called_once_with('test', reqid=0)
+        self.elm.js_exec.assert_called_once_with('test', 0)
         self.msg['reqid'] = 0
         self.msg['data'] = 1
         self.elm._handle_response(self.msg)
