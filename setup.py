@@ -23,7 +23,7 @@ setup(
     author='Hiroyuki Takagi',
     author_email='miyako.dev@gmail.com',
     url='https://github.com/miyakogi/wdom_py',
-    py_modules=['wdom'],
+    packages=['wdom'],
     include_package_data=True,
     license="MIT",
     zip_safe=False,
