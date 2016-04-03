@@ -49,7 +49,7 @@ class WebIF:
             if task and not task.cancelled() and not task.done():
                 task.set_result(msg.get('data'))
 
-    def js_exec(self, method:str, **kwargs) -> Optional[Future]:
+    def js_exec(self, method:str, *args) -> Optional[Future]:
         '''Execute ``method`` in the related node on browser, via web socket
         connection. Other keyword arguments are passed to ``params`` attribute.
         If this node is not in any document tree (namely, this node does not
@@ -57,12 +57,12 @@ class WebIF:
         '''
         if self.connected:
             return ensure_future(
-                self.ws_send(dict(method=method, params=kwargs))
+                self.ws_send(dict(method=method, params=args))
             )
 
     def js_query(self, query) -> Future:
         if self.connected:
-            self.js_exec(query, reqid=self._reqid)
+            self.js_exec(query, self._reqid)
             fut = Future()
             self._tasks[self._reqid] = fut
             self._reqid += 1
@@ -79,9 +79,10 @@ class WebIF:
         on browser. The message is serialized by JSON object and send via
         WebSocket connection.
         '''
+        obj['target'] = 'node'
         obj['id'] = self.id
         obj['tag'] = self.tag
         msg = json.dumps(obj)
-        if self.ownerDocument is not None:
+        if self.ownerDocument:
             for conn in self.ownerDocument.connections:
                 conn.write_message(msg)

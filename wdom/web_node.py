@@ -51,7 +51,7 @@ class WebElement(HTMLElement, WebIF):
 
     def _append_child_web(self, child: 'WebElement'):
         html = child.html if isinstance(child, Node) else str(child)
-        self.js_exec('insertAdjacentHTML', position='beforeend', html=html)
+        self.js_exec('insertAdjacentHTML', 'beforeend', html)
 
     def appendChild(self, child: 'WebElement') -> Node:
         '''Append child node at the last of child nodes. If this instance is
@@ -60,16 +60,15 @@ class WebElement(HTMLElement, WebIF):
         self._append_child_web(child)
         return self._append_child(child)
 
-    def _insert_before_web(self, child: 'WebElement', ref_node: 'WebElement'):
+    def _insert_before_web(self, child: Node, ref_node: Node):
         html = child.html if isinstance(child, Node) else str(child)
         if isinstance(ref_node, WebElement):
-            ref_node.js_exec('insertAdjacentHTML', position='beforebegin',
-                             html=html)
+            ref_node.js_exec('insertAdjacentHTML', 'beforebegin', html)
         else:
             index = self.index(ref_node)
-            self.js_exec('insert', index=index, html=html)
+            self.js_exec('insert', index, html)
 
-    def insertBefore(self, child: 'WebElement', ref_node: 'WebElement') -> Node:
+    def insertBefore(self, child: Node, ref_node: Node) -> Node:
         '''Insert new child node before the reference child node. If the
         reference node is not a child of this node, raise ValueError. If this
         instance is connected to the node on browser, the child node is also
@@ -78,28 +77,28 @@ class WebElement(HTMLElement, WebIF):
         self._insert_before_web(child, ref_node)
         return self._insert_before(child, ref_node)
 
-    def _remove_child_web(self, child: 'WebElement'):
+    def _remove_child_web(self, child: Node):
         if child in self.childNodes:
             if isinstance(child, WebElement):
-                self.js_exec('removeChild', id=child.id)
+                self.js_exec('removeChildById', child.id)
             else:
-                self.js_exec('removeChild', index=self.index(child))
+                self.js_exec('removeChildByIndex', self.index(child))
 
-    def removeChild(self, child: 'Tag') -> Node:
+    def removeChild(self, child: Node) -> Node:
         '''Remove the child node from this node. If the node is not a child
         of this node, raise ValueError.'''
         self._remove_child_web(child)
         return self._remove_child(child)
 
-    def _replace_child_web(self, new_child, old_child):
+    def _replace_child_web(self, new_child: Node, old_child: Node):
         if isinstance(old_child, WebElement):
-            self.js_exec('replaceChild', id=old_child.id, html=new_child.html)
+            self.js_exec('replaceChildById', new_child.html, old_child.id)
         else:
             # old_child will be Text Node
             index = old_child.parentNode.index(old_child)
             # Remove old_child before insert new child
             self._remove_child_web(old_child)
-            self.js_exec('insert', index=index, html=new_child.html)
+            self.js_exec('insert', index, new_child.html)
 
     def replaceChild(self, new_child, old_child) -> Node:
         self._replace_child_web(new_child, old_child)
@@ -119,7 +118,7 @@ class WebElement(HTMLElement, WebIF):
         return self._get_text_content()
 
     def _set_text_content_web(self, text:str):
-        self.js_exec('textContent', text=self.textContent)
+        self.js_exec('textContent', self.textContent)
 
     @textContent.setter
     def textContent(self, text: str):
@@ -127,7 +126,7 @@ class WebElement(HTMLElement, WebIF):
         self._set_text_content_web(text)
 
     def _set_inner_html_web(self, html:str):
-        self.js_exec('innerHTML', html=html)
+        self.js_exec('innerHTML', html)
 
     @property
     def innerHTML(self) -> str:
@@ -156,13 +155,13 @@ class WebElement(HTMLElement, WebIF):
 
     # Window controll
     def scroll(self, x:int, y:int):
-        self.js_exec('scroll', x=x, y=y)
+        self.js_exec('scroll', x, y)
 
     def scrollTo(self, x:int, y:int):
-        self.js_exec('scrollTo', x=x, y=y)
+        self.js_exec('scrollTo', x, y)
 
     def scrollBy(self, x:int, y:int):
-        self.js_exec('scrollBy', x=x, y=y)
+        self.js_exec('scrollBy', x, y)
 
     def scrollX(self):
         return self.js_query('scrollX')

@@ -63,7 +63,7 @@ class DOMTokenList:
                 self._list.append(token)
                 _new_tokens.append(token)
         if isinstance(self._owner, WebIF) and _new_tokens:
-            self._owner.js_exec('addClass', classes=_new_tokens)
+            self._owner.js_exec('addClass', _new_tokens)
 
     def remove(self, *tokens:Tuple[str]):
         _removed_tokens = []
@@ -73,7 +73,7 @@ class DOMTokenList:
                 self._list.remove(token)
                 _removed_tokens.append(token)
         if isinstance(self._owner, WebIF) and _removed_tokens:
-            self._owner.js_exec('removeClass', classes=_removed_tokens)
+            self._owner.js_exec('removeClass', _removed_tokens)
 
     def toggle(self, token:str):
         self._validate_token(token)
@@ -165,15 +165,14 @@ class NamedNodeMap:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
-            self._owner.js_exec('setAttribute', attr=item.name,
-                                value=item.value)
+            self._owner.js_exec('setAttribute', item.name, item.value)
         self._dict[item.name] = item
 
     def removeNamedItem(self, item:Attr) -> Attr:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
-            self._owner.js_exec('removeAttribute', attr=item.name)
+            self._owner.js_exec('removeAttribute', item.name)
         return self._dict.pop(item.name, None)
 
     def item(self, index:int) -> Attr:
