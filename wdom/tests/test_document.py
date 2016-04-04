@@ -40,9 +40,9 @@ class TestMainDocument(TestCase):
 
     def test_get_element_by_id(self):
         elm = Tag(parent=self.doc.body)
-        self.assertIs(elm, self.doc.getElementById(elm.rimo_id))
+        self.assertIs(elm, self.doc.getElementByRimoId(elm.rimo_id))
         elm2 = Tag()
-        self.assertIsNone(self.doc.getElementById(elm2.rimo_id))
+        self.assertIsNone(self.doc.getElementByRimoId(elm2.rimo_id))
 
     def test_add_jsfile(self) -> None:
         self.doc.add_jsfile('jsfile')

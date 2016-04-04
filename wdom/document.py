@@ -42,7 +42,7 @@ class Document(Node):
         self.body = Body(parent=self.html)
         self.script = Script(parent=self.body)
 
-    def getElementById(self, id):
+    def getElementByRimoId(self, id):
         elm = Element._elements_withid.get(id)
         if elm.ownerDocument is self:
             return elm
