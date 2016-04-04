@@ -26,7 +26,7 @@ def event_handler(msg: dict, doc: Document):
     _id = e.currentTarget.get('id')
     currentTarget = doc.getElementByRimoId(_id)
     if currentTarget is None:
-        logger.warn('No such element: id={}'.format(_id))
+        logger.warn('No such element: rimo_id={}'.format(_id))
         return
 
     if e.type in ('input', 'change'):
@@ -49,4 +49,4 @@ def response_handler(msg: dict, doc:Document):
     if elm is not None:
         elm.on_message(msg)
     else:
-        logger.warn('No such element: id={}'.format(id))
+        logger.warn('No such element: rimo_id={}'.format(id))
