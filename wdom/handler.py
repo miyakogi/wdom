@@ -24,9 +24,9 @@ def log_handler(level: str, message: str):
 def event_handler(msg: dict, doc: Document):
     e = Event(**msg.get('event'))
     _id = e.currentTarget.get('id')
-    currentTarget = doc.getElementById(_id)
+    currentTarget = doc.getElementByRimoId(_id)
     if currentTarget is None:
-        logger.warn('No such element: id={}'.format(_id))
+        logger.warn('No such element: rimo_id={}'.format(_id))
         return
 
     if e.type in ('input', 'change'):
@@ -39,14 +39,14 @@ def event_handler(msg: dict, doc: Document):
         elif currentTarget.tagName == 'TEXTAREA':
             currentTarget.value = e.currentTarget.get('value')
     e.currentTarget = currentTarget
-    e.target = doc.getElementById(e.target.get('id'))
+    e.target = doc.getElementByRimoId(e.target.get('id'))
     e.currentTarget.dispatchEvent(e)
 
 
 def response_handler(msg: dict, doc:Document):
     id = msg.get('id')
-    elm = doc.getElementById(id)
+    elm = doc.getElementByRimoId(id)
     if elm is not None:
         elm.on_message(msg)
     else:
-        logger.warn('No such element: id={}'.format(id))
+        logger.warn('No such element: rimo_id={}'.format(id))

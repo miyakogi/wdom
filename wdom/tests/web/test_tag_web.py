@@ -63,7 +63,7 @@ class NodeTestCase(WDTest):
         child = Tag()
         self.root.appendChild(child)
         self.wait()
-        self.assertIsTrue(self.set_element_by_id(child.id))
+        self.assertIsTrue(self.set_element(child))
         self.assertEqual(self.get_text(), '')
         child.textContent = 'Child'
         self.wait()
@@ -72,7 +72,7 @@ class NodeTestCase(WDTest):
         self.root.removeChild(child)
         self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element_by_id(child.id)
+            self.set_element(child)
 
     def test_replace_child(self):
         child1 = Tag()
@@ -82,15 +82,15 @@ class NodeTestCase(WDTest):
         self.root.appendChild(child1)
         self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element_by_id(child2.id)
-        self.assertIsTrue(self.set_element_by_id(child1.id))
+            self.set_element(child2)
+        self.assertIsTrue(self.set_element(child1))
         self.assertEqual(self.get_text(), 'child1')
 
         self.root.replaceChild(child2, child1)
         self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element_by_id(child1.id)
-        self.assertIsTrue(self.set_element_by_id(child2.id))
+            self.set_element(child1)
+        self.assertIsTrue(self.set_element(child2))
         self.assertEqual(self.get_text(), 'child2')
 
     def test_showhide(self):

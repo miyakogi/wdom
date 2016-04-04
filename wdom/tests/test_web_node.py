@@ -22,8 +22,8 @@ class TestWebElement(TestCase):
         self.c2.js_exec = self.js_mock2
 
     def test_id(self):
-        self.assertRegex(self.elm.html, r'<tag id="\d+"></tag>')
-        self.assertRegex(self.elm.id, r'\d+')
+        self.assertRegex(self.elm.html, r'<tag rimo_id="\d+"></tag>')
+        self.assertRegex(self.elm.rimo_id, r'\d+')
 
     def test_noid(self):
         self.assertEqual('<tag></tag>', self.elm.html_noid)
@@ -39,8 +39,8 @@ class TestWebElement(TestCase):
         self.assertEqual('<tag><c1><c2></c2></c1></tag>', self.elm.html_noid)
 
     def test_id_init(self):
-        elm = WebElement('tag', id='myid')
-        self.assertEqual('<tag id="myid"></tag>', elm.html)
+        elm = WebElement('tag', rimo_id='myid')
+        self.assertEqual('<tag rimo_id="myid"></tag>', elm.html)
 
     def test_not_connected(self):
         self.assertFalse(self.elm.connected)
@@ -60,7 +60,7 @@ class TestWebElement(TestCase):
         self.assertIsNone(self.c1.parentNode)
         self.assertEqual(self.js_mock.call_count, 2)
         self.js_mock1.assert_not_called()
-        self.js_mock.assert_called_with('removeChildById', self.c1.id)
+        self.js_mock.assert_called_with('removeChildById', self.c1.rimo_id)
 
     def test_addremove_child(self):
         self.assertFalse(self.elm.hasChildNodes())
@@ -136,18 +136,18 @@ class TestWebElement(TestCase):
     def test_shallow_copy(self):
         from copy import copy
         clone = copy(self.elm)
-        self.assertNotEqual(clone.id, self.elm.id)
+        self.assertNotEqual(clone.rimo_id, self.elm.rimo_id)
 
         clone = self.elm.cloneNode()
-        self.assertNotEqual(clone.id, self.elm.id)
+        self.assertNotEqual(clone.rimo_id, self.elm.rimo_id)
 
     def test_deep_copy(self):
         from copy import deepcopy
         clone = deepcopy(self.elm)
-        self.assertNotEqual(clone.id, self.elm.id)
+        self.assertNotEqual(clone.rimo_id, self.elm.rimo_id)
 
         clone = self.elm.cloneNode(deep=True)
-        self.assertNotEqual(clone.id, self.elm.id)
+        self.assertNotEqual(clone.rimo_id, self.elm.rimo_id)
 
     def test_click(self):
         mock = MagicMock(_is_coroutine=False)
@@ -165,7 +165,7 @@ class TestEventMessage(TestCase):
         self.elm.addEventListener('click', self.mock)
         self.msg = {
             'type': 'event',
-            'id': self.elm.id,
+            'id': self.elm.rimo_id,
             'event': {
                 'type': 'click',
             },
@@ -191,7 +191,7 @@ class TestQuery(TestCase):
         self.elm.js_exec = MagicMock()
         self.msg = {
             'type': 'response',
-            'id': self.elm.id,
+            'id': self.elm.rimo_id,
         }
 
     def test_query(self):

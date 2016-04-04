@@ -65,7 +65,8 @@ class BrowserController:
         successfully find the element, send ``True``. If failed to find the
         element, send message ``Error NoSuchElement: {{ id }}``.'''
         try:
-            self.element = self.wd.find_element_by_id(id)
+            self.element = self.wd.find_element_by_css_selector(
+                '[rimo_id="{}"]'.format(id))
             self.conn.send(True)
         except NoSuchElementException:
             self.conn.send('Error NoSuchElement: ' + id)
@@ -262,7 +263,7 @@ class WDTest:
     def set_element(self, node):
         '''Wrapper method of ``set_element_by_id``. Set the ``node`` as a
         target node of the browser process.'''
-        return self.set_element_by_id(node.id)
+        return self.set_element_by_id(node.rimo_id)
 
     def set_element_by_id(self, id):
         '''Set the ``node`` specified by ``id`` as a target element of the

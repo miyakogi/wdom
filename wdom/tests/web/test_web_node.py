@@ -403,7 +403,7 @@ class EventTestCase(ElementTestCase):
                         reason='This test not pass only on travis')
     def test_click(self):
         self.set_element(self.btn)
-        self.wait()
+        self.wait(0.3)
         self.click()
         self.wait()
         self.assertEqual(self.click_event_mock.call_count, 1)

@@ -28,23 +28,23 @@ class TestTag(TestCase):
         self.assertEqual(a.localName, 'atag')
 
     def test_tag_string(self):
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
 
     def test_attr_init(self):
         tag = Tag(attrs={'src': 'a'})
-        self.assertMatch('<tag src="a" id="\d+"></tag>', tag.html)
+        self.assertMatch('<tag src="a" rimo_id="\d+"></tag>', tag.html)
         tag.removeAttribute('src')
-        self.assertMatch('<tag id="\d+"></tag>', tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', tag.html)
 
     def test_attr_atomic(self):
         # test add tag-attr
         self.tag['a'] = 'b'
         self.assertEqual(self.tag['a'], 'b')
         self.assertIn('a="b"', self.tag.html)
-        self.assertRegex(self.tag.start_tag, '<tag id="\d+" a="b">')
-        self.assertRegex(self.tag.html, '<tag id="\d+" a="b"></tag>')
+        self.assertRegex(self.tag.start_tag, '<tag rimo_id="\d+" a="b">')
+        self.assertRegex(self.tag.html, '<tag rimo_id="\d+" a="b"></tag>')
         del self.tag['a']
-        self.assertRegex(self.tag.html, '<tag id="\d+"></tag>')
+        self.assertRegex(self.tag.html, '<tag rimo_id="\d+"></tag>')
 
     def test_attr_addremove(self):
         self.assertTrue(self.tag.hasAttributes())  # has id
@@ -54,12 +54,12 @@ class TestTag(TestCase):
         self.assertTrue(self.tag.hasAttribute('a'))
         self.assertIsFalse(self.tag.hasAttribute('b'))
         self.assertEqual('b', self.tag.getAttribute('a'))
-        self.assertRegex(self.tag.html, r'<tag id="\d+" a="b"></tag>')
+        self.assertRegex(self.tag.html, r'<tag rimo_id="\d+" a="b"></tag>')
         self.assertEqual(self.tag.getAttribute('a'), 'b')
         self.tag.removeAttribute('a')
         self.assertTrue(self.tag.hasAttributes())
         self.assertFalse(self.tag.hasAttribute('a'))
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
         self.assertIsNone(self.tag.getAttribute('aaaa'))
 
     def test_attr_multi(self):
@@ -79,12 +79,15 @@ class TestTag(TestCase):
         self.assertIsFalse(self.tag.hasChildNodes())
         self.tag.appendChild(self.c1)
         self.assertIsTrue(self.tag.hasChildNodes())
-        self.assertMatch('<tag id="\d+"><tag c="1" id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag c="1" rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
         self.assertIn(self.c1, self.tag)
         self.tag.removeChild(self.c1)
         self.assertIsFalse(self.tag.hasChildNodes())
         self.assertNotIn(self.c1, self.tag)
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
 
     def test_child_exception(self) -> None:
         with self.assertRaises(ValueError):
@@ -107,7 +110,11 @@ class TestTag(TestCase):
         self.c1.appendChild(self.c2)
         self.assertNotIn(self.c2, self.tag)
         self.assertIn(self.c2, self.c1)
-        self.assertMatch('<tag id="\d+"><tag c="1" id="\d+"><tag c="2" id="\d+"></tag></tag></tag>', self.tag.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag c="1" rimo_id="\d+">'
+            '<tag c="2" rimo_id="\d+"></tag></tag></tag>',
+            self.tag.html,
+        )
 
     def test_child_nodes(self):
         self.tag.appendChild(self.c1)
@@ -120,58 +127,73 @@ class TestTag(TestCase):
         self.tag.append(self.c1)
         self.assertIn(self.c1, self.tag)
         self.assertNotIn(self.c2, self.tag)
-        self.assertMatch('<tag id="\d+"><tag c="1" id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag c="1" rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
 
         self.tag.replaceChild(self.c2, self.c1)
         self.assertNotIn(self.c1, self.tag)
         self.assertIn(self.c2, self.tag)
-        self.assertMatch('<tag id="\d+"><tag c="2" id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag c="2" rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
 
     def test_text_addremove(self):
         self.tag.textContent = 'text'
         self.assertIsTrue(self.tag.hasChildNodes())
-        self.assertMatch('<tag id="\d+">text</tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+">text</tag>', self.tag.html)
         # self.assertIn('text', self.tag)
         self.assertEqual(self.tag[0].parentNode, self.tag)
 
         self.tag.textContent = ''
         self.assertIsFalse(self.tag.hasChildNodes())
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
 
     def test_textcontent(self):
         self.assertEqual(self.tag.textContent, '')
         self.tag.textContent = 'a'
         self.assertEqual(self.tag.textContent, 'a')
-        self.assertMatch('<tag id="\d+">a</tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+">a</tag>', self.tag.html)
         self.tag.textContent = 'b'
         self.assertEqual(self.tag.textContent, 'b')
-        self.assertMatch('<tag id="\d+">b</tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+">b</tag>', self.tag.html)
 
     def test_textcontent_child(self):
         self.tag.textContent = 'a'
         self.tag.appendChild(self.c1)
-        self.assertMatch('<tag id="\d+">a<tag c="1" id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+">a<tag c="1" rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
         self.c1.textContent = 'c1'
-        self.assertMatch('<tag id="\d+">a<tag c="1" id="\d+">c1</tag></tag>', self.tag.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+">a<tag c="1" rimo_id="\d+">c1</tag></tag>',
+            self.tag.html,
+        )
         self.assertEqual('ac1', self.tag.textContent)
         self.tag.textContent = 'b'
         self.assertEqual(self.tag.length, 1)
-        self.assertMatch('<tag id="\d+">b</tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+">b</tag>', self.tag.html)
         self.assertIsNone(self.c1.parentNode)
 
     def test_closing_tag(self):
         class Img(Tag):
             tag = 'img'
         img = Img()
-        self.assertMatch('<img id="\d+">', img.html)
+        self.assertMatch('<img rimo_id="\d+">', img.html)
         img.setAttribute('src', 'a')
-        self.assertMatch('<img id="\d+" src="a">', img.html)
+        self.assertMatch('<img rimo_id="\d+" src="a">', img.html)
 
     def _test_shallow_copy(self, clone):
         self.assertIsTrue(self.tag.hasChildNodes())
         self.assertIsFalse(clone.hasChildNodes())
         self.assertEqual(len(clone), 0)
-        self.assertMatch('<tag id="\d+" src="a" class="b"></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" src="a" class="b"></tag>',
+            clone.html,
+        )
 
         self.assertIsTrue(clone.hasAttributes())
         self.assertEqual(clone.getAttribute('src'), 'a')
@@ -363,26 +385,26 @@ class TestTagBase(TestCase):
     def test_class_addremove(self):
         self.assertIsFalse(self.tag.hasClasses())
         self.assertIsFalse(self.tag.hasClass('a'))
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
         self.tag.addClass('a')
         self.assertIsTrue(self.tag.hasClasses())
         self.assertIsTrue(self.tag.hasClass('a'))
         self.assertIsFalse(self.tag.hasClass('b'))
-        self.assertMatch('<tag id="\d+" class="a"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+" class="a"></tag>', self.tag.html)
         self.tag.removeClass('a')
         self.assertIsFalse(self.tag.hasClasses())
         self.assertIsFalse(self.tag.hasClass('a'))
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
 
     def test_class_in_init(self) -> None:
         tag = Tag(class_ = 'a')
         self.assertIsTrue(tag.hasClass('a'))
         self.assertIsTrue(tag.hasClasses())
-        self.assertMatch('<tag id="\d+" class="a"></tag>', tag.html)
+        self.assertMatch('<tag rimo_id="\d+" class="a"></tag>', tag.html)
         tag.removeClass('a')
         self.assertIsFalse(tag.hasClass('a'))
         self.assertIsFalse(tag.hasClasses())
-        self.assertMatch('<tag id="\d+"></tag>', tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', tag.html)
 
     def test_class_addremove_multi(self):
         self.tag.addClass('a', 'b', 'c')
@@ -390,13 +412,16 @@ class TestTagBase(TestCase):
         self.assertIsTrue(self.tag.hasClass('a'))
         self.assertIsTrue(self.tag.hasClass('b'))
         self.assertIsTrue(self.tag.hasClass('c'))
-        self.assertMatch('<tag id="\d+" class="a b c"></tag>', self.tag.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a b c"></tag>',
+            self.tag.html,
+        )
         self.tag.removeClass('a', 'c')
         self.assertIsTrue(self.tag.hasClasses())
         self.assertIsFalse(self.tag.hasClass('a'))
         self.assertIsTrue(self.tag.hasClass('b'))
         self.assertIsFalse(self.tag.hasClass('c'))
-        self.assertMatch('<tag id="\d+" class="b"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+" class="b"></tag>', self.tag.html)
 
     def test_class_addremove_multi_string(self):
         with self.assertRaises(ValueError):
@@ -420,16 +445,16 @@ class TestTagBase(TestCase):
             tag = 'input'
             type_ = 'button'
         a = A()
-        self.assertMatch('<input type="button" id="\d+">', a.html)
+        self.assertMatch('<input type="button" rimo_id="\d+">', a.html)
 
     def test_type_init(self) -> None:
         a = Tag(type='button')
-        self.assertMatch('<tag type="button" id="\d+"></tag>', a.html)
+        self.assertMatch('<tag type="button" rimo_id="\d+"></tag>', a.html)
 
     def test_type_attr(self) -> None:
         a = Tag()
         a.setAttribute('type', 'checkbox')
-        self.assertMatch('<tag id="\d+" type="checkbox"></tag>', a.html)
+        self.assertMatch('<tag rimo_id="\d+" type="checkbox"></tag>', a.html)
 
     def test_type_setter(self) -> None:
         class Check(Tag):
@@ -440,75 +465,126 @@ class TestTagBase(TestCase):
         b['type'] = 'radio'
         c.setAttribute('type', 'text')
         d = Check()
-        self.assertMatch('<tag type="checkbox" id="\d+"></tag>', a.html)
-        self.assertMatch('<tag type="radio" id="\d+"></tag>', b.html)
-        self.assertMatch('<tag type="text" id="\d+"></tag>', c.html)
-        self.assertMatch('<tag type="checkbox" id="\d+"></tag>', d.html)
+        self.assertMatch('<tag type="checkbox" rimo_id="\d+"></tag>', a.html)
+        self.assertMatch('<tag type="radio" rimo_id="\d+"></tag>', b.html)
+        self.assertMatch('<tag type="text" rimo_id="\d+"></tag>', c.html)
+        self.assertMatch('<tag type="checkbox" rimo_id="\d+"></tag>', d.html)
 
     def test_hidden(self):
         self.tag.show()
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
         self.tag.hide()
-        self.assertMatch('<tag id="\d+" hidden></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+" hidden></tag>', self.tag.html)
         self.tag.show()
-        self.assertMatch('<tag id="\d+"></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', self.tag.html)
 
     def test_clone_node_sharrow_class(self):
         self.tag.appendChild(self.c1)
         self.tag.addClass('a')
         clone = self.tag.cloneNode()
-        self.assertMatch('<tag id="\d+" class="a"></tag>', clone.html)
+        self.assertMatch('<tag rimo_id="\d+" class="a"></tag>', clone.html)
 
         clone.removeClass('a')
-        self.assertMatch('<tag id="\d+"></tag>', clone.html)
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
 
         clone.addClass('b')
-        self.assertMatch('<tag id="\d+" class="b"></tag>', clone.html)
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+" class="b"></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
 
     def test_clone_node_sharrow_hidden(self):
         self.tag.hide()
         clone = self.tag.cloneNode()
-        self.assertMatch('<tag id="\d+" hidden></tag>', clone.html)
+        self.assertMatch('<tag rimo_id="\d+" hidden></tag>', clone.html)
         clone.show()
-        self.assertMatch('<tag id="\d+" hidden></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+"></tag>', clone.html)
+        self.assertMatch('<tag rimo_id="\d+" hidden></tag>', self.tag.html)
+        self.assertMatch('<tag rimo_id="\d+"></tag>', clone.html)
 
     def test_clone_node_deep_class(self):
         self.tag.appendChild(self.c1)
         self.tag.addClass('a')
         self.c1.addClass('b')
         clone = self.tag.cloneNode(deep=True)
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+" class="b"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+" class="b"></tag></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+" class="b">'
+            '</tag></tag>',
+            self.tag.html,
+        )
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+" class="b">'
+            '</tag></tag>',
+            clone.html,
+        )
 
         clone.childNodes[0].removeClass('b')
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+" class="b"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+" class="b">'
+            '</tag></tag>',
+            self.tag.html,
+        )
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+            clone.html,
+        )
 
         self.c1.removeClass('b')
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+            clone.html,
+        )
 
         clone.addClass('c')
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+" class="a c"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a c"><tag rimo_id="\d+"></tag></tag>',
+            clone.html,
+        )
 
         clone.removeClass('a')
-        self.assertMatch('<tag id="\d+" class="a"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+" class="c"><tag id="\d+"></tag></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
+        self.assertMatch(
+            '<tag rimo_id="\d+" class="c"><tag rimo_id="\d+"></tag></tag>',
+            clone.html,
+        )
 
     def test_clone_node_deep_hidden(self):
         self.tag.appendChild(self.c1)
         self.c1.hide()
         clone = self.tag.cloneNode(deep=True)
-        self.assertMatch('<tag id="\d+"><tag id="\d+" hidden></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+"><tag id="\d+" hidden></tag></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" hidden></tag></tag>',
+            self.tag.html,
+        )
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" hidden></tag></tag>',
+            clone.html,
+        )
 
         self.c1.show()
-        self.assertMatch('<tag id="\d+"><tag id="\d+"></tag></tag>', self.tag.html)
-        self.assertMatch('<tag id="\d+"><tag id="\d+" hidden></tag></tag>', clone.html)
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag rimo_id="\d+"></tag></tag>',
+            self.tag.html,
+        )
+        self.assertMatch(
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" hidden></tag></tag>',
+            clone.html,
+        )
 
     def test_class_of_class(self):
         class A(Tag):
@@ -516,12 +592,12 @@ class TestTagBase(TestCase):
             class_ = 'a1'
         self.assertEqual(A.get_class_list().toString(), 'a1')
         a = A()
-        self.assertMatch('<a id="\d+" class="a1"></a>', a.html)
+        self.assertMatch('<a rimo_id="\d+" class="a1"></a>', a.html)
         a.addClass('a2')
-        self.assertMatch('<a id="\d+" class="a1 a2"></a>', a.html)
+        self.assertMatch('<a rimo_id="\d+" class="a1 a2"></a>', a.html)
         with self.assertLogs('wdom.tag', 'WARNING'):
             a.removeClass('a1')
-        self.assertMatch('<a id="\d+" class="a1 a2"></a>', a.html)
+        self.assertMatch('<a rimo_id="\d+" class="a1 a2"></a>', a.html)
 
     def test_classes_multiclass(self):
         class A(Tag):
@@ -530,7 +606,7 @@ class TestTagBase(TestCase):
         self.assertEqual(A.get_class_list().toString(), 'a1 a2')
         a = A()
         a.addClass('a3', 'a4')
-        self.assertMatch('<a id="\d+" class="a1 a2 a3 a4"></a>', a.html)
+        self.assertMatch('<a rimo_id="\d+" class="a1 a2 a3 a4"></a>', a.html)
 
     def test_classes_inherit_class(self):
         class A(Tag):
@@ -544,7 +620,10 @@ class TestTagBase(TestCase):
         self.assertEqual(B.get_class_list().toString(), 'a1 a2 b1 b2')
         b = B()
         b.addClass('b3')
-        self.assertMatch('<b id="\d+" class="a1 a2 b1 b2 b3"></b>', b.html)
+        self.assertMatch(
+            '<b rimo_id="\d+" class="a1 a2 b1 b2 b3"></b>',
+            b.html,
+        )
 
     def test_classes_notinherit_class(self):
         class A(Tag):
@@ -559,7 +638,7 @@ class TestTagBase(TestCase):
         self.assertEqual(B.get_class_list().toString(), 'b1 b2')
         b = B()
         b.addClass('b3')
-        self.assertMatch('<b id="\d+" class="b1 b2 b3"></b>', b.html)
+        self.assertMatch('<b rimo_id="\d+" class="b1 b2 b3"></b>', b.html)
 
         class C(B):
             tag = 'c'

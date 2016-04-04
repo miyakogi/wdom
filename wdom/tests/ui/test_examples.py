@@ -27,7 +27,7 @@ class SimpleTestCase(wd.UITest):
         return self.app
 
     def test_page(self):
-        tag = self.wd.find_element_by_id(self.h1.id)
+        tag = self.wd.find_element_by_css_selector('[rimo_id="{}"]'.format(self.h1.rimo_id))
         assert tag.text == 'TITLE'
 
 
@@ -69,6 +69,7 @@ class RevTextTestCase(wd.UITest):
         view = self.wd.find_element_by_tag_name('h1')
         text = 'Click!'
         self.assertEqual(view.text, text)
+        self.wait(0.3)
         view.click()
         self.wait()
         self.assertEqual(view.text, text[::-1])

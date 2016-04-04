@@ -48,8 +48,8 @@ class TestServer(TestCase):
     async def test_mainpage(self):
         content = await self.fetch('/')
         self.assertMatch(
-            r'<!DOCTYPE html><html id="\d+">\s*<head id="\d+">\s*'
-            r'.*<meta .*<title id="\d+">\s*W-DOM\s*</title>.*'
+            r'<!DOCTYPE html><html rimo_id="\d+">\s*<head rimo_id="\d+">\s*'
+            r'.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
             r'</head>\s*<body.*>.*<script.*>.*</script>.*'
             r'</body>\s*</html>'
             r'', content

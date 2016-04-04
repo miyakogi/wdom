@@ -3,6 +3,7 @@
 
 import logging
 import builtins
+from typing import Union
 from asyncio import coroutine
 
 from wdom.interface import Event
@@ -14,24 +15,41 @@ logger = logging.getLogger(__name__)
 
 
 class WebElement(HTMLElement, WebIF):
-    def __init__(self, *args, parent=None, id=None, **kwargs):
+    @property
+    def rimo_id(self) -> str:
+        return self.getAttribute('rimo_id')
+
+    @rimo_id.setter
+    def rimo_id(self, id:Union[str, int]):
+        self.setAttribute('rimo_id', id)
+
+    def __init__(self, *args, parent=None, rimo_id=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.id = id or str(builtins.id(self))
+        self.rimo_id = rimo_id or str(builtins.id(self))
         self.addEventListener('mount', self._on_mount)
         if parent is not None:
             parent.appendChild(self)
 
     def __copy__(self) -> HTMLElement:
         clone = super().__copy__()
-        if clone.id == str(id(self)):
+        if clone.rimo_id == str(id(self)):
             # change automatically added id
             # overhead in __init__...
-            clone.id = str(id(clone))
+            clone.rimo_id = str(id(clone))
         return clone
 
     def _on_mount(self, *args, **kwargs):
         for event in self._listeners:
             self._add_event_listener_web(event=event)
+
+    def _set_attribute(self, attr:str, value:str):
+        if attr == 'rimo_id':
+            if 'rimo_id' in self.attributes:
+                # remove old reference to self
+                self._elements_withid.pop(self.rimo_id, None)
+            # register this elements with new id
+            self._elements_withid[value] = self
+        super()._set_attribute(attr, value)
 
     def _remove_web(self):
         self.js_exec('remove')
@@ -80,7 +98,7 @@ class WebElement(HTMLElement, WebIF):
     def _remove_child_web(self, child: Node):
         if child in self.childNodes:
             if isinstance(child, WebElement):
-                self.js_exec('removeChildById', child.id)
+                self.js_exec('removeChildById', child.rimo_id)
             else:
                 self.js_exec('removeChildByIndex', self.index(child))
 
@@ -92,7 +110,7 @@ class WebElement(HTMLElement, WebIF):
 
     def _replace_child_web(self, new_child: Node, old_child: Node):
         if isinstance(old_child, WebElement):
-            self.js_exec('replaceChildById', new_child.html, old_child.id)
+            self.js_exec('replaceChildById', new_child.html, old_child.rimo_id)
         else:
             # old_child will be Text Node
             index = old_child.parentNode.index(old_child)
@@ -139,7 +157,7 @@ class WebElement(HTMLElement, WebIF):
 
     @property
     def html_noid(self) -> str:
-        html = self.start_tag.replace(' id="{}"'.format(self.id), '')
+        html = self.start_tag.replace(' rimo_id="{}"'.format(self.rimo_id), '')
         html += ''.join(
             elm.html_noid if isinstance(elm, WebElement) else elm.html
             for elm in self.childNodes

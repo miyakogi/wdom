@@ -80,7 +80,7 @@ class WebIF:
         WebSocket connection.
         '''
         obj['target'] = 'node'
-        obj['id'] = self.id
+        obj['id'] = self.rimo_id
         obj['tag'] = self.tag
         msg = json.dumps(obj)
         if self.ownerDocument:
