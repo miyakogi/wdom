@@ -20,16 +20,16 @@ class TestMainDocument(TestCase):
     def test_blankpage(self) -> None:
         _re = re.compile(
             '\s*<!DOCTYPE html>'
-            '\s*<html id="\d+">'
-            '\s*<head id="\d+">'
-            '\s*<meta( charset="utf-8"| id="\d+"){2}>'
-            '\s*<title id="\d+">'
+            '\s*<html rimo_id="\d+">'
+            '\s*<head rimo_id="\d+">'
+            '\s*<meta( charset="utf-8"| rimo_id="\d+"){2}>'
+            '\s*<title rimo_id="\d+">'
             '\s*W-DOM'
             '\s*</title>'
             '(\s*<style>.*?</style>)?'
             '\s*</head>'
-            '\s*<body id="\d+">'
-            '\s*<script( type="text/javascript"| id="\d+"){2}>'
+            '\s*<body rimo_id="\d+">'
+            '\s*<script( type="text/javascript"| rimo_id="\d+"){2}>'
             '.*?</script>'
             '\s*</body>'
             '\s*</html>'
@@ -40,15 +40,15 @@ class TestMainDocument(TestCase):
 
     def test_get_element_by_id(self):
         elm = Tag(parent=self.doc.body)
-        self.assertIs(elm, self.doc.getElementById(elm.id))
+        self.assertIs(elm, self.doc.getElementById(elm.rimo_id))
         elm2 = Tag()
-        self.assertIsNone(self.doc.getElementById(elm2.id))
+        self.assertIsNone(self.doc.getElementById(elm2.rimo_id))
 
     def test_add_jsfile(self) -> None:
         self.doc.add_jsfile('jsfile')
         _re = re.compile(
             '<body.*'
-            '<script( src="jsfile"| type="text/javascript"| id="\d+"){3}'
+            '<script( src="jsfile"| type="text/javascript"| rimo_id="\d+"){3}'
             '>\s*</script>'
             '.*</body',
             re.S
@@ -58,8 +58,8 @@ class TestMainDocument(TestCase):
     def test_add_cssfile(self) -> None:
         self.doc.add_cssfile('cssfile')
         _re = re.compile(
-            '<head id="\d+">.*'
-            '<link( href="cssfile"| rel="stylesheet"| id="\d+"){3}>'
+            '<head rimo_id="\d+">.*'
+            '<link( href="cssfile"| rel="stylesheet"| rimo_id="\d+"){3}>'
             '.*</head>'
             '', re.S
         )
@@ -83,7 +83,7 @@ class TestMainDocument(TestCase):
     def test_title(self) -> None:
         doc = Document(title='TEST')
         _re = re.compile(
-            '<title id="\d+">\s*TEST\s*</title>',
+            '<title rimo_id="\d+">\s*TEST\s*</title>',
             re.S
         )
         html = doc.build()
@@ -94,7 +94,7 @@ class TestMainDocument(TestCase):
     def test_charset(self) -> None:
         doc = Document(charset='TEST')
         _re = re.compile(
-            '<meta( charset="TEST"| id="\d+"){2}>',
+            '<meta( charset="TEST"| rimo_id="\d+"){2}>',
             re.S
         )
         html = doc.build()
@@ -106,7 +106,7 @@ class TestMainDocument(TestCase):
         self.doc.body.prepend(Tag())
         html = self.doc.build()
         _re = re.compile(
-            '<tag id="\d+">\s*</tag>',
+            '<tag rimo_id="\d+">\s*</tag>',
             re.S
         )
         self.assertIsNotNone(_re.search(html))
@@ -140,7 +140,7 @@ class TestMainDocument(TestCase):
         self.doc.defaultView.customElements.define('a', A)
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), A)
-        self.assertRegex(elm.html, '<a id="\d+"></a>')
+        self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
 
     def test_create_documentfragment(self):
         df = self.doc.createDocumentFragment()

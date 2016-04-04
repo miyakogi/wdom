@@ -44,7 +44,7 @@ class Document(Node):
 
     def getElementById(self, id):
         elm = Element._elements_withid.get(id)
-        if elm is not None and elm.ownerDocument is self:
+        if elm.ownerDocument is self:
             return elm
 
     def createElement(self, tag:str):

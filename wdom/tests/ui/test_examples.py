@@ -27,7 +27,7 @@ class SimpleTestCase(wd.UITest):
         return self.app
 
     def test_page(self):
-        tag = self.wd.find_element_by_id(self.h1.id)
+        tag = self.wd.find_element_by_css_selector('[rimo_id="{}"]'.format(self.h1.rimo_id))
         assert tag.text == 'TITLE'
 
 

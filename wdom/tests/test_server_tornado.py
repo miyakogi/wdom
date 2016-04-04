@@ -37,8 +37,8 @@ class TestMainHandlerBlank(AsyncHTTPTestCase):
         with self.assertLogs('wdom.server_tornado', 'INFO'):
             res = self.fetch('/')
         self.assertEqual(res.code, 200)
-        _re = re.compile('<!DOCTYPE html>\s*<html id="\d+">\s*<head id="\d+">'
-                         '.*<meta .*<title id="\d+">\s*W-DOM\s*</title>.*'
+        _re = re.compile('<!DOCTYPE html>\s*<html rimo_id="\d+">\s*<head rimo_id="\d+">'
+                         '.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
                          '</head>\s*<body.*>.*<script.*>.*</script>.*'
                          '</body>\s*</html>'
                          , re.S)
