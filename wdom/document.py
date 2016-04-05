@@ -7,8 +7,8 @@ from wdom import options
 from wdom.interface import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
-from wdom.element import Element, HTMLElement, Attr, _create_element
-from wdom.tag import Tag
+from wdom.element import Element, Attr, _create_element
+from wdom.tag import HTMLElement
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
 
@@ -48,7 +48,7 @@ class Document(Node):
             return elm
 
     def createElement(self, tag:str):
-        return _create_element(tag)
+        return _create_element(tag, base=HTMLElement)
 
     def createDocumentFragment(self):
         return DocumentFragment()

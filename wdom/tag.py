@@ -12,6 +12,10 @@ from wdom.web_node import WebElement
 logger = logging.getLogger(__name__)
 
 
+class HTMLElement(WebElement):
+    pass
+
+
 class TagBaseMeta(type):
     '''Meta class to set default class variable of HtmlDom'''
     def __prepare__(name, bases, **kwargs) -> dict:
