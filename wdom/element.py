@@ -354,7 +354,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             if self.classList:
                 return self.classList.toString()
             else:
-                return None
+                return ''
         attr_node = self.getAttributeNode(attr)
         if attr_node is None:
             return None
@@ -474,7 +474,7 @@ class HTMLElement(Element):
 
     @property
     def title(self) -> str:
-        return self.getAttribute('title')
+        return self.getAttribute('title') or ''
 
     @title.setter
     def title(self, value:str):
@@ -482,7 +482,7 @@ class HTMLElement(Element):
 
     @property
     def type(self) -> str:
-        return self.getAttribute('type')
+        return self.getAttribute('type') or ''
 
     @type.setter
     def type(self, value:str):

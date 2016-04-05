@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class WebElement(HTMLElement, WebIF):
     @property
     def rimo_id(self) -> str:
-        return self.getAttribute('rimo_id')
+        return self.getAttribute('rimo_id') or ''
 
     @rimo_id.setter
     def rimo_id(self, id:Union[str, int]):
