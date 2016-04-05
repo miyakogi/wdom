@@ -25,9 +25,11 @@ class Document(Node):
     def connections(self) -> list:
         return self.defaultView.connections
 
-    def __init__(self, doctype='html', title='W-DOM', charset='utf-8'):
+    def __init__(self, doctype='html', title='W-DOM', charset='utf-8',
+                 default_class=HTMLElement):
         super().__init__()
         self._window = Window(self)
+        self._default_class=default_class
         self.doctype = DocumentType(doctype)
         self.appendChild(self.doctype)
 
@@ -48,7 +50,7 @@ class Document(Node):
             return elm
 
     def createElement(self, tag:str):
-        return _create_element(tag, base=HTMLElement)
+        return _create_element(tag, base=self._default_class)
 
     def createDocumentFragment(self):
         return DocumentFragment()

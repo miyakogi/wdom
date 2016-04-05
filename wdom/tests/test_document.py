@@ -7,9 +7,9 @@ from unittest.mock import MagicMock
 from wdom import options
 from wdom.interface import Event
 from wdom.node import DocumentFragment, Comment, Text
-from wdom.element import HTMLElement, Attr
+from wdom.element import Attr
 from wdom.document import Document, get_document
-from wdom.tag import Tag
+from wdom.tag import Tag, HTMLElement
 from wdom.tests.util import TestCase
 
 
@@ -125,6 +125,13 @@ class TestMainDocument(TestCase):
         self.doc.defaultView.customElements.clear()
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), HTMLElement)
+        self.assertRegex(elm.html, r'<a rimo_id="\d+"></a>')
+
+    def test_create_element_defclass(self):
+        from wdom import element
+        doc = Document(default_class=element.HTMLElement)
+        elm = doc.createElement('a')
+        self.assertEqual(type(elm), element.HTMLElement)
         self.assertEqual(elm.html, '<a></a>')
 
     def test_create_custom_element(self):
@@ -132,7 +139,7 @@ class TestMainDocument(TestCase):
         self.doc.defaultView.customElements.define('a', A)
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), A)
-        self.assertEqual(elm.html, '<a></a>')
+        self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
 
     def test_create_custom_element_tag(self):
         class A(Tag):
@@ -164,7 +171,7 @@ class TestMainDocument(TestCase):
         self.assertEqual(a.html, 'src="a"')
         tag = HTMLElement('tag')
         tag.setAttributeNode(a)
-        self.assertEqual(tag.html, '<tag src="a"></tag>')
+        self.assertRegex(tag.html, '<tag rimo_id="\d+" src="a"></tag>')
 
     def test_create_event(self):
         tag = HTMLElement('tag')
