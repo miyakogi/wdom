@@ -354,7 +354,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             if self.classList:
                 return self.classList.toString()
             else:
-                return ''
+                return None
         attr_node = self.getAttributeNode(attr)
         if attr_node is None:
             return None
