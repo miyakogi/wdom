@@ -179,7 +179,8 @@ class Input(Tag):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.type = self.type_
+        if self.type_:
+            self.type = self.type_
 
     @property
     def checked(self) -> bool:
