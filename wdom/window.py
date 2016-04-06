@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import defaultdict
-from functools import singledispatch
-
 from wdom.interface import Node
 from wdom.element import Element
-from wdom.tag import Tag
+from wdom.tag import Tag, default_classes
 
 
 class CustomElementsRegistry(dict):
@@ -66,8 +63,17 @@ class CustomElementsRegistry(dict):
             raise TypeError(
                 'Invalid argument for define: {}, {}'.format(args, kwargs))
 
+    def _define_default(self):
+        for cls in default_classes:
+            self.define(cls)
+
+    def reset(self):
+        self.clear()
+        self._define_default()
+
 
 customElements = CustomElementsRegistry()
+customElements._define_default()
 
 
 class Window:

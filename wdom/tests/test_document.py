@@ -9,13 +9,17 @@ from wdom.interface import Event
 from wdom.node import DocumentFragment, Comment, Text
 from wdom.element import Attr
 from wdom.document import Document, get_document
-from wdom.tag import Tag, HTMLElement
+from wdom.tag import Tag, HTMLElement, A
 from wdom.tests.util import TestCase
 
 
 class TestMainDocument(TestCase):
     def setUp(self) -> None:
         self.doc = Document()
+        self.doc.defaultView.customElements.reset()
+
+    def tearDown(self):
+        self.doc.defaultView.customElements.reset()
 
     def test_blankpage(self) -> None:
         _re = re.compile(
@@ -122,17 +126,28 @@ class TestMainDocument(TestCase):
             self.doc.body.prepend(1)
 
     def test_create_element(self):
-        self.doc.defaultView.customElements.clear()
         elm = self.doc.createElement('a')
-        self.assertEqual(type(elm), HTMLElement)
+        self.assertEqual(type(elm), A)
         self.assertRegex(elm.html, r'<a rimo_id="\d+"></a>')
+
+    def test_create_element_unknown(self):
+        elm = self.doc.createElement('aa')
+        self.assertEqual(type(elm), HTMLElement)
+        self.assertRegex(elm.html, r'<aa rimo_id="\d+"></aa>')
 
     def test_create_element_defclass(self):
         from wdom import element
         doc = Document(default_class=element.HTMLElement)
         elm = doc.createElement('a')
+        self.assertEqual(type(elm), A)
+        self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
+
+    def test_create_element_defclass_unknown(self):
+        from wdom import element
+        doc = Document(default_class=element.HTMLElement)
+        elm = doc.createElement('aa')
         self.assertEqual(type(elm), element.HTMLElement)
-        self.assertEqual(elm.html, '<a></a>')
+        self.assertRegex(elm.html, '<aa></aa>')
 
     def test_create_custom_element(self):
         class A(HTMLElement): pass
