@@ -6,7 +6,7 @@ import unittest
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.tag import Tag, TextArea, Input, CheckBox, Div
+from wdom.tag import Tag, Textarea, Input, CheckBox, Div
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.tests.util import TestCase
@@ -110,7 +110,7 @@ class InputTestCase(WDTest):
         self.document = get_document(autoreload=False)
         self.root = Div()
         self.input = Input(parent=self.root, type='text')
-        self.textarea = TextArea(parent=self.root)
+        self.textarea = Textarea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root)
         self.document.body.prepend(self.root)
         super().setUp()
