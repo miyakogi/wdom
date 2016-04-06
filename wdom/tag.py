@@ -178,9 +178,9 @@ class Input(Tag):
     type_ = ''
 
     def __init__(self, *args, **kwargs) -> None:
+        if self.type_ and 'type' not in kwargs:
+            kwargs['type'] = self.type_
         super().__init__(*args, **kwargs)
-        if self.type_:
-            self.type = self.type_
 
     @property
     def checked(self) -> bool:
@@ -207,7 +207,7 @@ class Input(Tag):
         self.setAttribute('value', value)
 
 
-class TextArea(Input):
+class Textarea(Input):
     '''Base class for ``<textarea>`` element.'''
     tag = 'textarea'
 
