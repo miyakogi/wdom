@@ -54,7 +54,7 @@ class TestAutoReload(unittest.TestCase):
         self.proc = None
 
     def tearDown(self):
-        if self.proc is not None and self.proc.returncode is not None:
+        if self.proc is not None and self.proc.returncode is None:
             self.proc.terminate()
         if path.exists(self.tmpfilename):
             os.remove(self.tmpfilename)
