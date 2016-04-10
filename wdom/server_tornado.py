@@ -124,8 +124,7 @@ class Application(web.Application):
 def get_app(document:Document, debug=None, **kwargs) -> Application:
     '''Return Application object to serve ``document``.'''
     if debug is None:
-        if 'debug' not in options.config:
-            options.parse_command_line()
+        options.check_options('debug')
         debug = options.config.debug
     app = Application(
         [(r'/', MainHandler),
@@ -133,6 +132,7 @@ def get_app(document:Document, debug=None, **kwargs) -> Application:
          ],
         document=document,
         debug=debug,
+        autoreload=document._autoreload,
         **kwargs
     )
 

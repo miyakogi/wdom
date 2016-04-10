@@ -4,6 +4,7 @@
 import sys
 import os
 from os import path
+import re
 import time
 import subprocess
 import unittest
@@ -33,17 +34,21 @@ server = start_server(app, loop=loop)
 loop.run_forever()
 '''.format(rootdir=ROOTDIR)
 
-src_tornado = src_aio.replace('_aio', '_tornado')
+_src = src_aio.replace('_aio', '_tornado').splitlines()
+_src.insert(8, 'from wdom.misc import install_asyncio\ninstall_asyncio()')
+src_tornado = '\n'.join(_src)
+src_aio_force_reload = src_aio.replace(
+    'get_document()', 'get_document(autoreload=True)')
+src_tornado_force_reload = src_tornado.replace(
+    'get_document()', 'get_document(autoreload=True)')
 
 
-class TestAioServer(unittest.TestCase):
-    src = src_aio
+class TestAutoReload(unittest.TestCase):
     def setUp(self):
         self.port = free_port()
         self.url = 'http://localhost:{}'.format(self.port)
         tmpfile = NamedTemporaryFile(mode='w+', dir=CURDIR, suffix='.py', delete=False)
         self.tmpfilename = tmpfile.name
-        tmpfile.write(src_aio)
         tmpfile.close()
         self.wd = get_wd()
         self.proc = None
@@ -71,16 +76,48 @@ class TestAioServer(unittest.TestCase):
         h1 = self.wd.find_element_by_id('h1')
         self.assertEqual(h1.text, 'SECOND')
 
-    def test_autoreload(self):
+    def test_autoreload_aio(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(src_aio)
+        time.sleep(0.1)
         args = self._base_args()
         args.append('--autoreload')
         self.check_reload(args)
 
-    def test_autoreload_debug(self):
+    def test_autoreload_debug_aio(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(src_aio)
+        time.sleep(0.1)
         args = self._base_args()
         args.append('--debug')
         self.check_reload(args)
 
+    def test_autoreload_force_aio(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(src_aio_force_reload)
+        time.sleep(0.1)
+        args = self._base_args()
+        self.check_reload(args)
 
-class TestTornadoServer(TestAioServer):
-    src = src_tornado
+    def test_autoreload_tornado(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(src_tornado)
+        time.sleep(0.1)
+        args = self._base_args()
+        args.append('--autoreload')
+        self.check_reload(args)
+
+    def test_autoreload_debug_tornado(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(src_tornado)
+        time.sleep(0.1)
+        args = self._base_args()
+        args.append('--debug')
+        self.check_reload(args)
+
+    def test_autoreload_force_tornado(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(src_tornado_force_reload)
+        time.sleep(0.1)
+        args = self._base_args()
+        self.check_reload(args)
