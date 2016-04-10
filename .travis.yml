@@ -18,6 +18,5 @@ install:
 script:
   - py.test --cov wdom
 after_success:
-  - echo $TRAVIS_BRANCH
   - codecov -b $TRAVIS_BRANCH
   - coveralls
