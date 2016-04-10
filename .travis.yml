@@ -18,5 +18,5 @@ install:
 script:
   - py.test --cov wdom
 after_success:
-  - codecov -b dev
+  - codecov -b `git rev-parse --abbrev-ref HEAD`
   - coveralls
