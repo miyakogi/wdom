@@ -94,7 +94,7 @@ class Application(web.Application):
 
 
 def get_app(document:Document, debug=None, **kwargs) -> web.Application:
-    '''Return Application object to serve ``document``.'''
+    '''Make Application object to serve ``document``.'''
     if debug is None:
         if 'debug' not in options.config:
             options.parse_command_line()
@@ -116,18 +116,19 @@ async def close_connections(app:web.Application):
 
 
 def start_server(app: web.Application, port=None, browser=None, loop=None,
-                 address=None, family=socket.AF_INET,
+                 address=None, family=socket.AF_INET, check_time=500,
                  ) -> asyncio.base_events.Server:
     '''Start server with ``app`` on ``address:port``.
     If port is not specified, use command line option of ``--port``.
 
-    If ``browser`` is not specified, do not open the page. When ``browser`` is
-    specified, open the page with the specified browser. The specified browser
-    name is not registered in ``webbrowser`` module, or, for example it is just
-    ``True``, use system's default browser to open the page.
+    When ``browser`` is specified, open the page with the specified browser.
+    The specified browser name is not registered in ``webbrowser`` module, or,
+    for example it is just ``True``, use system's default browser to open the
+    page.
     '''
-    options.parse_command_line()
-    port = port if port is not None else options.config.port
+    if ('port' not in options.config) or ('address' not in options.config):
+        options.parse_command_line()
+    port = port or options.config.port
     address = address or options.config.address
 
     if loop is None:
@@ -139,6 +140,9 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     server.handler = handler
     app.on_shutdown.append(close_connections)
     app['server'] = server
+    if app['document']._autoreload:
+        from tornado import autoreload
+        autoreload.start(check_time=check_time)
     logger.info('Start server on {0}:{1:d}'.format(address, port))
 
     if browser is not None:

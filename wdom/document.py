@@ -26,10 +26,11 @@ class Document(Node):
         return self.defaultView.connections
 
     def __init__(self, doctype='html', title='W-DOM', charset='utf-8',
-                 default_class=HTMLElement):
+                 default_class=HTMLElement, autoreload=None, reload_wait=None):
         super().__init__()
         self._window = Window(self)
-        self._default_class=default_class
+        self._default_class = default_class
+        self._reload_wait = reload_wait
         self.doctype = DocumentType(doctype)
         self.appendChild(self.doctype)
 
@@ -43,6 +44,25 @@ class Document(Node):
 
         self.body = Body(parent=self.html)
         self.script = Script(parent=self.body)
+        self._set_autoreload(autoreload, reload_wait)
+
+    def _set_autoreload(self, autoreload, reload_wait:int=None):
+        if autoreload is None:
+            if 'autoreload' not in options.config:
+                options.parse_command_line()
+            self._autoreload = (options.config.autoreload or
+                                options.config.debug)
+        else:
+            self._autoreload = autoreload
+
+        if self._autoreload:
+            ar_script = []
+            ar_script.append('var RIMO_AUTORELOAD = true')
+            if reload_wait is not None:
+                ar_script.append('var RIMO_RELOAD_WAIT = {}'.format(
+                    reload_wait))
+            _s = Script(parent=self.head)
+            _s.textContent = '\n{}\n'.format('\n'.join(ar_script))
 
     def getElementByRimoId(self, id):
         elm = Element._elements_withid.get(id)
@@ -115,40 +135,33 @@ def get_document(include_rimo: bool = True,
                  reload_wait: int = None,
                  log_level: int = None,
                  log_prefix: str = None,
-                 log_console: bool = None,
+                 log_console: bool = False,
                  ws_url: str = None,
                  ) -> Document:
-
-    document = Document()
+    options.parse_command_line()
+    document = Document(autoreload=autoreload, reload_wait=reload_wait)
     if app is not None:
         document.body.insertBefore(app, document.body.firstChild)
-
-    if autoreload is None:
-        if 'autoreload' not in options.config:
-            options.parse_command_line()
-        autoreload = options.config.autoreload or options.config.debug
     if log_level is None:
-        if 'logging' in options.config:
-            log_level = options.config.logging
+        log_level = options.config.logging
 
-    script = '\n'
-    if autoreload:
-        script += 'var RIMO_AUTORELOAD = true\n'
-        if reload_wait is not None:
-            script += 'var RIMO_RELOAD_WAIT = {}\n'.format(reload_wait)
+    log_script = []
     if log_level is not None:
         if isinstance(log_level, str):
-            script += 'var RIMO_LOG_LEVEL = \'{}\'\n'.format(log_level)
+            log_script.append('var RIMO_LOG_LEVEL = \'{}\''.format(log_level))
         elif isinstance(log_level, int):
-            script += 'var RIMO_LOG_LEVEL = {}\n'.format(log_level)
+            log_script.append('var RIMO_LOG_LEVEL = {}'.format(log_level))
     if log_prefix is not None:
-        script += 'var RIMO_LOG_PREFIX = {}\n'.format(log_prefix)
+        log_script.append('var RIMO_LOG_PREFIX = \'{}\''.format(log_prefix))
     if log_console:
-        script += 'var RIMO_LOG_CONSOLE = true\n'
-    if ws_url is not None:
-        script += 'var RIMO_WS_URL = \'{}\'\n'.format(ws_url)
+        log_script.append('var RIMO_LOG_CONSOLE = true')
+    if log_script:
+        _s = Script(parent=document.head)
+        _s.textContent = '\n{}\n'.format('\n'.join(log_script))
 
-    document.script.textContent = script
+    if ws_url is not None:
+        _s = Script(parent=document.head)
+        _s.textContent = '\nvar RIMO_WS_URL = \'{}\'\n'.format(ws_url)
 
     if include_rimo:
         document.add_jsfile_head('_static/js/rimo/rimo.js')
