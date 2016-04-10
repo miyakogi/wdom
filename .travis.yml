@@ -18,5 +18,5 @@ install:
 script:
   - py.test --cov wdom
 after_success:
-  - codecov
+  - codecov --token=$CODECOV_TOKEN
   - coveralls
