@@ -14,6 +14,7 @@ from wdom import options
 from wdom.misc import static_dir
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import Document
+from wdom.server_base import open_browser
 
 logger = logging.getLogger(__name__)
 
@@ -123,8 +124,7 @@ class Application(web.Application):
 def get_app(document:Document, debug=None, **kwargs) -> Application:
     '''Return Application object to serve ``document``.'''
     if debug is None:
-        if 'debug' not in options.config:
-            options.parse_command_line()
+        options.check_options('debug')
         debug = options.config.debug
     app = Application(
         [(r'/', MainHandler),
@@ -132,6 +132,7 @@ def get_app(document:Document, debug=None, **kwargs) -> Application:
          ],
         document=document,
         debug=debug,
+        autoreload=document._autoreload,
         **kwargs
     )
 
@@ -140,8 +141,8 @@ def get_app(document:Document, debug=None, **kwargs) -> Application:
     return app
 
 
-def start_server(app: web.Application, port=None, browser=None, **kwargs
-                 ) -> HTTPServer:
+def start_server(app: web.Application, port=None, browser=None, address=None,
+                 **kwargs) -> HTTPServer:
     '''Start server with ``app`` on ``localhost:port``.
     If port is not specified, use command line option of ``--port``.
 
@@ -150,20 +151,15 @@ def start_server(app: web.Application, port=None, browser=None, **kwargs
     name is not registered in ``webbrowser`` module, or, for example it is just
     ``True``, use system's default browser to open the page.
     '''
-    if port is None:
-        if 'port' not in options.config:
-            options.parse_command_line()
-        port = options.config.port
+    options.check_options('port', 'address', 'browser')
+    port = port if port is not None else options.config.port
+    address = address if address is not None else options.config.address
     logger.info('Start server on port {0:d}'.format(port))
-    server = app.listen(port)
+    server = app.listen(port, address=address)
     app.server = server
 
     if browser is not None:
-        url = 'http://localhost:{}/'.format(port)
-        if browser in webbrowser._browsers:
-            webbrowser.get(browser).open(url)
-        else:
-            webbrowser.open(url)
+        open_browser('http://{}:{}/'.format(address, port), browser)
 
     return server
 

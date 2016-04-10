@@ -233,7 +233,7 @@ class TestDocumentOptions(TestCase):
     def test_document_log_prefix(self):
         doc = get_document(log_prefix='TEST')
         html = doc.build()
-        self.assertIn('RIMO_LOG_PREFIX = TEST', html)
+        self.assertIn('RIMO_LOG_PREFIX = \'TEST\'', html)
 
     def test_document_log_console(self):
         doc = get_document(log_console=True)
