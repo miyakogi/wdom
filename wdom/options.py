@@ -61,6 +61,14 @@ def parse_command_line(*args, **kwargs):
             tornado.options.options.__setattr__(k, v)
 
 
+def check_options(*args):
+    global config
+    for opt in args:
+        if opt not in config:
+            parse_command_line()
+            break
+
+
 if __name__ == '__main__':
     config.log_rotate_mode = 'size'
     config.logging
