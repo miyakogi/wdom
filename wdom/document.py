@@ -48,8 +48,7 @@ class Document(Node):
 
     def _set_autoreload(self, autoreload, reload_wait:int=None):
         if autoreload is None:
-            if 'autoreload' not in options.config:
-                options.parse_command_line()
+            options.check_options('autoreload', 'debug')
             self._autoreload = (options.config.autoreload or
                                 options.config.debug)
         else:
@@ -138,7 +137,7 @@ def get_document(include_rimo: bool = True,
                  log_console: bool = False,
                  ws_url: str = None,
                  ) -> Document:
-    options.parse_command_line()
+    options.check_options('autoreload', 'logging')
     document = Document(autoreload=autoreload, reload_wait=reload_wait)
     if app is not None:
         document.body.insertBefore(app, document.body.firstChild)
