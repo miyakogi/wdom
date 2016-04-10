@@ -5,7 +5,6 @@ import json
 import logging
 import asyncio
 import socket
-import webbrowser
 
 from aiohttp import web, MsgType
 
@@ -13,6 +12,7 @@ from wdom import options
 from wdom.misc import static_dir
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import Document
+from wdom.server_base import check_options, open_browser
 
 logger = logging.getLogger(__name__)
 
@@ -126,10 +126,9 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     for example it is just ``True``, use system's default browser to open the
     page.
     '''
-    if ('port' not in options.config) or ('address' not in options.config):
-        options.parse_command_line()
-    port = port or options.config.port
-    address = address or options.config.address
+    check_options()
+    port = port if port is not None else options.config.port
+    address = address if address is not None else options.config.address
 
     if loop is None:
         loop = asyncio.get_event_loop()
@@ -146,11 +145,7 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     logger.info('Start server on {0}:{1:d}'.format(address, port))
 
     if browser is not None:
-        url = 'http://localhost:{}/'.format(port)
-        if browser in webbrowser._browsers:
-            webbrowser.get(browser).open(url)
-        else:
-            webbrowser.open(url)
+        open_browser('http://{}:{}/'.format(address, port), browser)
 
     return server
 
