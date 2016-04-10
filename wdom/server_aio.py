@@ -140,7 +140,9 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     app.on_shutdown.append(close_connections)
     app['server'] = server
     if app['document']._autoreload:
+        from wdom.misc import install_asyncio
         from tornado import autoreload
+        install_asyncio()
         autoreload.start(check_time=check_time)
     logger.info('Start server on {0}:{1:d}'.format(address, port))
 
