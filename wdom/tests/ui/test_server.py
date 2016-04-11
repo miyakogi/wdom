@@ -33,12 +33,12 @@ doc = get_document()
 doc.body.appendChild(H1('FIRST', id='h1'))
 doc.add_cssfile('testdir/test.css')
 app = get_app(doc)
-app.add_static_path('testdir', 'testdir')
+app.add_static_path('testdir', '{curdir}/testdir')
 server = start_server(app, loop=loop)
 loop.run_forever()
-'''.format(rootdir=ROOTDIR)
+'''.format(rootdir=ROOTDIR, curdir=CURDIR)
 
-css_path = './testdir/test.css'
+css_path = path.join(CURDIR, 'testdir/test.css')
 src_css = '''
 h1 {color: #000000;}
 '''
@@ -67,7 +67,8 @@ class TestAutoReload(unittest.TestCase):
             f.write(src_css)
         self.port = free_port()
         self.url = 'http://localhost:{}'.format(self.port)
-        tmpfile = NamedTemporaryFile(mode='w+', dir=CURDIR, suffix='.py', delete=False)
+        tmpfile = NamedTemporaryFile(mode='w+', dir=CURDIR, suffix='.py',
+                                     delete=False)
         self.tmpfilename = tmpfile.name
         tmpfile.close()
         self.wd = get_wd()
