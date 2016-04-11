@@ -108,7 +108,7 @@ class TestOpenServer(TestCase):
             self.proc.terminate()
 
     def test_open_browser(self):
-        time.sleep(1)
+        time.sleep(0.5)
         self.assertIn('Start server on', self.proc.stdout.readline())
         self.assertIn('connected', self.proc.stdout.readline())
 

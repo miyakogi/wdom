@@ -10,6 +10,7 @@ from aiohttp import web, MsgType
 
 from wdom import options
 from wdom.misc import static_dir
+from wdom.log import configure_logger
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import Document
 from wdom.server_base import open_browser
@@ -127,11 +128,13 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     page.
     '''
     options.check_options('port', 'address', 'open_browser')
+    configure_logger()
     port = port if port is not None else options.config.port
     address = address if address is not None else options.config.address
 
     if loop is None:
         loop = asyncio.get_event_loop()
+    logger.info('Start server on {0}:{1:d}'.format(address, port))
     handler = app.make_handler()
     f = loop.create_server(handler, address, port)
     server = loop.run_until_complete(f)
@@ -144,7 +147,6 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
         from tornado import autoreload
         install_asyncio()
         autoreload.start(check_time=check_time)
-    logger.info('Start server on {0}:{1:d}'.format(address, port))
 
     if options.config.open_browser:
         open_browser('http://{}:{}/'.format(address, port), browser)

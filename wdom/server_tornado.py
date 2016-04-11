@@ -4,7 +4,6 @@
 import json
 import asyncio
 import logging
-import webbrowser
 
 from tornado import web
 from tornado import websocket
@@ -12,6 +11,7 @@ from tornado.httpserver import HTTPServer
 
 from wdom import options
 from wdom.misc import static_dir
+from wdom.log import configure_logger
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import Document
 from wdom.server_base import open_browser
@@ -152,6 +152,7 @@ def start_server(app: web.Application, port=None, browser=None, address=None,
     ``True``, use system's default browser to open the page.
     '''
     options.check_options('port', 'address', 'open_browser')
+    configure_logger()
     port = port if port is not None else options.config.port
     address = address if address is not None else options.config.address
     logger.info('Start server on port {0:d}'.format(port))

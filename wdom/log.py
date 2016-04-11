@@ -8,9 +8,7 @@ from wdom import options
 
 def configure_logger(level=None):
     logger = logging.getLogger('wdom')
-
-    if 'logging' not in options.config:
-        options.parse_command_line()
+    options.check_options('logging')
 
     if level is not None:
         level = level
