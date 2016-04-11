@@ -14,11 +14,6 @@ if __name__ == '__main__':
 
 
 def main():
-    from wdom import options
-    options.parse_command_line()
-    from wdom.log import configure_logger
-    configure_logger()
-
     # ADD js/css/template files for autoreload
     from tornado import autoreload
     for file_ in (_CURDIR.glob('_static/js/**/*.js')):

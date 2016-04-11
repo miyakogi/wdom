@@ -66,7 +66,7 @@ class TestAutoReload(unittest.TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR)
         time.sleep(1)
         self.wd.get(self.url)
-        time.sleep(0.05)
+        time.sleep(0.1)
         h1 = self.wd.find_element_by_id('h1')
         self.assertEqual(h1.text, 'FIRST')
 
