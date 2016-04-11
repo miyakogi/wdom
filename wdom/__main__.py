@@ -14,15 +14,6 @@ if __name__ == '__main__':
 
 
 def main():
-    # ADD js/css/template files for autoreload
-    from tornado import autoreload
-    for file_ in (_CURDIR.glob('_static/js/**/*.js')):
-        autoreload.watch(str(file_))
-    for file_ in (_CURDIR.glob('_static/css/*.css')):
-        autoreload.watch(str(file_))
-    for file_ in (_CURDIR.glob('_templates/*.html')):
-        autoreload.watch(str(file_))
-
     # from tornado.ioloop import IOLoop
     from tornado.platform.asyncio import AsyncIOMainLoop
     import asyncio

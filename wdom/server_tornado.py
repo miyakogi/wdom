@@ -14,7 +14,7 @@ from wdom.misc import static_dir
 from wdom.log import configure_logger
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import Document
-from wdom.server_base import open_browser
+from wdom.server_base import open_browser, watch_dir
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +106,7 @@ class Application(web.Application):
         # Need some check
         handlers = self.handlers[0][1]
         handlers.append(spec)
+        watch_dir(path)
 
     def add_favicon_path(self, path: str):
         '''Add path to the directory, which contains favicon file

@@ -87,7 +87,7 @@ class TestAutoShutdownAIO(TestCase):
         self.assertIsNotNone(self.proc.poll())
 
 
-class TestOpenServer(TestCase):
+class TestOpenBrowser(TestCase):
     test_file = path.join(curdir, 'aio_server.py')
 
     def setUp(self):
@@ -118,5 +118,5 @@ class TestAutoShutdownTornado(TestAutoShutdownAIO):
     test_file = path.join(curdir, 'tornado_server.py')
 
 
-class TestOpenServerTornado(TestOpenServer):
+class TestOpenBrowserTornado(TestOpenBrowser):
     test_file = path.join(curdir, 'tornado_server.py')

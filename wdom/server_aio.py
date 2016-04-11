@@ -7,13 +7,14 @@ import asyncio
 import socket
 
 from aiohttp import web, MsgType
+from tornado import autoreload
 
 from wdom import options
 from wdom.misc import static_dir
 from wdom.log import configure_logger
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import Document
-from wdom.server_base import open_browser
+from wdom.server_base import open_browser, watch_dir
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +90,7 @@ class Application(web.Application):
         if not prefix.startswith('/'):
             prefix = '/' + prefix
         self.router.add_static(prefix, path)
+        watch_dir(path)
 
     def add_favicon_path(self, path:str):
         self.router.add_static('/(favicon.ico)', path)
@@ -144,7 +146,6 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     app['server'] = server
     if app['document']._autoreload:
         from wdom.misc import install_asyncio
-        from tornado import autoreload
         install_asyncio()
         autoreload.start(check_time=check_time)
 
