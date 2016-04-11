@@ -87,5 +87,35 @@ class TestAutoShutdownAIO(TestCase):
         self.assertIsNotNone(self.proc.poll())
 
 
+class TestOpenServer(TestCase):
+    test_file = path.join(curdir, 'aio_server.py')
+
+    def setUp(self):
+        self.port = free_port()
+        cmd = [sys.executable, self.test_file, '--port', str(self.port),
+               '--debug', '--open-browser', '--browser', 'firefox', '--logging', 'debug']
+        self.addr = 'localhost:{}'.format(self.port)
+        self.proc = subprocess.Popen(
+            cmd, cwd=curdir,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            universal_newlines=True,
+        )
+        time.sleep(0.1)
+
+    def tearDown(self):
+        if self.proc.returncode is None:
+            self.proc.terminate()
+
+    def test_open_browser(self):
+        time.sleep(1)
+        self.assertIn('Start server on', self.proc.stdout.readline())
+        self.assertIn('connected', self.proc.stdout.readline())
+
+
 class TestAutoShutdownTornado(TestAutoShutdownAIO):
+    test_file = path.join(curdir, 'tornado_server.py')
+
+
+class TestOpenServerTornado(TestOpenServer):
     test_file = path.join(curdir, 'tornado_server.py')
