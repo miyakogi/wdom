@@ -126,7 +126,7 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     for example it is just ``True``, use system's default browser to open the
     page.
     '''
-    options.check_options('port', 'address', 'browser')
+    options.check_options('port', 'address', 'open_browser')
     port = port if port is not None else options.config.port
     address = address if address is not None else options.config.address
 
@@ -146,7 +146,7 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
         autoreload.start(check_time=check_time)
     logger.info('Start server on {0}:{1:d}'.format(address, port))
 
-    if browser is not None:
+    if options.config.open_browser:
         open_browser('http://{}:{}/'.format(address, port), browser)
 
     return server

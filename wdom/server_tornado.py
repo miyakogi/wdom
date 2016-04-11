@@ -151,14 +151,14 @@ def start_server(app: web.Application, port=None, browser=None, address=None,
     name is not registered in ``webbrowser`` module, or, for example it is just
     ``True``, use system's default browser to open the page.
     '''
-    options.check_options('port', 'address', 'browser')
+    options.check_options('port', 'address', 'open_browser')
     port = port if port is not None else options.config.port
     address = address if address is not None else options.config.address
     logger.info('Start server on port {0:d}'.format(port))
     server = app.listen(port, address=address)
     app.server = server
 
-    if browser is not None:
+    if options.config.open_browser:
         open_browser('http://{}:{}/'.format(address, port), browser)
 
     return server
