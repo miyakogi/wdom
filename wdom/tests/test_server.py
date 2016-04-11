@@ -33,7 +33,7 @@ class TestAutoShutdownAIO(TestCase):
     def setUp(self):
         self.port = free_port()
         cmd = [sys.executable, self.test_file, '--port', str(self.port),
-               '--autoshutdown', '--shutdown-wait', '0.2']
+               '--auto-shutdown', '--shutdown-wait', '0.2']
         self.addr = 'localhost:{}'.format(self.port)
         self.proc = subprocess.Popen(
             cmd, cwd=curdir,

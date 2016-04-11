@@ -56,7 +56,7 @@ class WSHandler(websocket.WebSocketHandler):
         logger.info('RootWS CLOSED')
         if self in self.doc.connections:
             self.doc.connections.remove(self)
-        if options.config.autoshutdown and not any(self.doc.connections):
+        if options.config.auto_shutdown and not any(self.doc.connections):
             asyncio.ensure_future(self.terminate())
 
 
