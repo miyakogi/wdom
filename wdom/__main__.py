@@ -32,7 +32,6 @@ def main():
     from tornado.platform.asyncio import AsyncIOMainLoop
     import asyncio
     AsyncIOMainLoop().install()
-    autoreload.start(check_time=200)
 
     from wdom.server import start_server, get_app, stop_server
     # from wdom.server_aio import start_server, get_app, stop_server
@@ -40,8 +39,8 @@ def main():
     # from wdom.examples.bootstrap3 import sample_page
     # from wdom.examples.markdown_simple import sample_page
     # from wdom.examples.rev_text import sample_page
-    # from wdom.examples.data_binding import sample_page
-    from wdom.examples.todo import sample_page
+    from wdom.examples.data_binding import sample_page
+    # from wdom.examples.todo import sample_page
     page = sample_page()
     app = get_app(document=page)
     loop = asyncio.get_event_loop()

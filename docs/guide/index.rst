@@ -3,6 +3,7 @@ User Guide
 
 .. toctree::
 
-    hello
-    event
-    data_binding
+    dom
+    wdom
+    load_resource
+    new_features

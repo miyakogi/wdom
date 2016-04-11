@@ -12,7 +12,7 @@ WDOM.py
 WORK IN PROGRESS
 ----------------
 
-WDOM's server-side implementation for python.
+WDOM is a browser-based GUI library for python.
 
 .. |Build Status master| image:: https://travis-ci.org/miyakogi/wdom.svg?branch=master
    :target: https://travis-ci.org/miyakogi/wdom
