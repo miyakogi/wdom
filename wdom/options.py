@@ -46,6 +46,9 @@ parser.define('--temptheme', default=None, help='Only for internal use.')
 parser.define(
     '--auto-shutdown', default=False, action='store_const', const=True)
 parser.define('--shutdown-wait', default=1.0, type=float)
+parser.define(
+    '--open-browser', default=False, action='store_const', const=True)
+parser.define('--browser', default=None)
 
 
 def parse_command_line(*args, **kwargs):
