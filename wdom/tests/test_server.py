@@ -93,7 +93,8 @@ class TestOpenServer(TestCase):
     def setUp(self):
         self.port = free_port()
         cmd = [sys.executable, self.test_file, '--port', str(self.port),
-               '--debug', '--open-browser', '--browser', 'firefox', '--logging', 'debug']
+               '--debug', '--logging', 'info',
+               '--open-browser', '--browser', 'firefox']
         self.addr = 'localhost:{}'.format(self.port)
         self.proc = subprocess.Popen(
             cmd, cwd=curdir,
