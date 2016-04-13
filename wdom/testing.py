@@ -11,6 +11,8 @@ from types import FunctionType, MethodType
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.utils import free_port
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
@@ -167,11 +169,21 @@ def wait_coro():
             res = conn.recv()
             return res
         else:
-            yield from asyncio.sleep(0.01)
+            yield from asyncio.sleep(0)
             continue
+
+
+def _get_properties(cls):
+    props = set()
+    for k, v in vars(cls).items():
+        if not isinstance(v, (FunctionType, MethodType)):
+            props.add(k)
+    return props
+
 
 class Controller:
     target = None
+    properties = set()
     def __getattr__(self, attr:str):
         global conn
         def wrapper(*args):
@@ -183,7 +195,10 @@ class Controller:
                 elif res.startswith('Error'):
                     raise ValueError(res)
             return res
-        return wrapper
+        if attr in self.properties:
+            return wrapper()
+        else:
+            return wrapper
 
 
 class ProcessController(Controller):
@@ -192,16 +207,12 @@ class ProcessController(Controller):
 
 class RemoteBrowserController(Controller):
     target = 'browser'
-    @property
-    def page_source(self) -> str:
-        return super().__getattr__('page_source')()
+    properties = _get_properties(WebDriver)
 
 
 class RemoteElementController(Controller):
     target = 'element'
-    @property
-    def text(self) -> str:
-        return super().__getattr__('text')()
+    properties = _get_properties(WebElement)
 
 
 class RemoteBrowserTestCase:
