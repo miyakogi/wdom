@@ -9,7 +9,7 @@ import subprocess
 import unittest
 from tempfile import NamedTemporaryFile
 
-from wdom.tests.ui.wd import get_wd, free_port
+from wdom.testing import get_webdriver, free_port
 
 
 CURDIR = path.dirname(path.abspath(__file__))
@@ -71,7 +71,7 @@ class TestAutoReload(unittest.TestCase):
                                      delete=False)
         self.tmpfilename = tmpfile.name
         tmpfile.close()
-        self.wd = get_wd()
+        self.wd = get_webdriver()
         self.proc = None
 
     def tearDown(self):

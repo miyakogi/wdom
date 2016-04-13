@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-'''
-Remote browser controller using Selenium
-'''
-
 import time
 import asyncio
 import socket
@@ -12,6 +8,7 @@ from multiprocessing import Process, Pipe
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.utils import free_port
 
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
@@ -21,22 +18,67 @@ from wdom.misc import static_dir
 driver = webdriver.Firefox
 
 
+def start_webdriver():
+    if globals().get('local_webdriver') is None:
+        global local_webdriver
+        local_webdriver = driver()
+
+
+def close_webdriver():
+    if globals().get('local_webdriver') is not None:
+        global local_webdriver
+        local_webdriver.close()
+        local_webdriver = None
+
+
+def get_webdriver():
+    if globals().get('local_webdriver') is None:
+        start_webdriver()
+    return local_webdriver
+
+
 def _clear():
-    global wd, conn, wd_conn, browser
-    wd = None
+    global conn, wd_conn, browser_manager, remote_webdriver
     conn = None
     wd_conn = None
-    browser = None
+    browser_manager = None
+    remote_webdriver = None
 
 
-def get_browser():
+def start_remote_browser():
+    '''Start broser process.'''
+    _clear()
+    global browser_manager, conn, wd_conn
+    conn, wd_conn = Pipe()
+    def start_browser():
+        global wd_conn
+        bc = BrowserController(wd_conn)
+        bc.run()
+
+    browser_manager = Process(target=start_browser)
+    browser_manager.start()
+
+
+def close_remote_browser():
+    '''Terminate browser process.'''
+    global conn, browser_manager
+    conn.send({'method': 'quit'})
+    time.sleep(0.3)
+    print('\nRemote Browser closed')
+    conn.close()
+    if browser_manager is not None:
+        browser_manager.terminate()
+    _clear()
+
+
+def get_remote_browser():
     '''Get existing webdriver. If no driver is running, start new one.'''
-    wd = globals().get('wd')
-    if wd is None:
-        wd = driver()
-        return wd
+    remote_webdriver = globals().get('remote_webdriver')
+    if remote_webdriver is None:
+        remote_webdriver = driver()
+        return remote_webdriver
     else:
-        return wd
+        return remote_webdriver
 
 
 class BrowserController:
@@ -48,7 +90,7 @@ class BrowserController:
         ``Pipe()``, which is used the inter-process communication.
         '''
         self.conn = conn
-        self.wd = get_browser()
+        self.wd = get_remote_browser()
         self.element = None
 
     def get(self, url):
@@ -145,33 +187,7 @@ class BrowserController:
                 break
 
 
-def start_browser():
-    '''Start broser process.'''
-    _clear()
-    global browser, conn, wd_conn
-    conn, wd_conn = Pipe()
-    def start_browser():
-        global wd_conn
-        bc = BrowserController(wd_conn)
-        bc.run()
-
-    browser = Process(target=start_browser)
-    browser.start()
-
-
-def close_browser():
-    '''Terminate browser process.'''
-    global conn, browser
-    conn.send({'method': 'quit'})
-    time.sleep(0.3)
-    print('\nBrowser closed')
-    conn.close()
-    if browser is not None:
-        browser.terminate()
-    _clear()
-
-
-class WDTest:
+class RemoteBrowserTestCase:
     '''This class is **Experimental**.
 
     Utility class for testing apps with webdriver in another process. Mainly
@@ -305,3 +321,61 @@ class WDTest:
     def send_keys(self, keys: str) -> None:
         self.conn.send({'method': 'send_keys', 'keys': keys})
         return self.wait_for()
+
+
+class WebDriverTestCase:
+    '''Base class for testing UI on browser. This class starts up an HTTP
+    server on a new subprocess.
+
+    Subclasses must override ``get_app()`` method, which returns the
+    ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
+    tested.
+    '''
+    from wdom import server_aio
+    module = server_aio
+    wait_time = 0.02
+
+    def setUp(self):
+        self.wd = get_webdriver()
+        self.loop = asyncio.get_event_loop()
+
+        def start_server(app, port):
+            self.module.start_server(app, port=port)
+            asyncio.get_event_loop().run_forever()
+
+        self.address = 'localhost'
+        self.port = free_port()
+        self.app = self.get_app()
+        self.url = 'http://{0}:{1}/'.format(self.address, self.port)
+
+        self.server = Process(
+            target=start_server,
+            args=(self.app, self.port)
+        )
+        self.server.start()
+        self.wait(0.1)
+        self.wd.get(self.url)
+        self.wait(0.05)
+
+    def tearDown(self):
+        '''Terminate server subprocess.'''
+        self.server.terminate()
+
+    def get_app(self):
+        '''This method should be overridden. Return
+        ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
+        tested.
+        '''
+        NotImplementedError
+
+    def wait(self, timeout=None):
+        '''Wait until ``timeout``. The default timeout is zero, so wait a
+        single event loop.'''
+        time.sleep(timeout or self.wait_time)
+
+    def send_keys(self, element, keys: str):
+        '''Send ``keys`` to ``element`` one-by-one. Safer than using
+        ``element.send_keys`` method.
+        '''
+        for k in keys:
+            element.send_keys(k)
