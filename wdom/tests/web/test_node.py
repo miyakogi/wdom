@@ -14,6 +14,7 @@ from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
 from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
+from wdom import server_aio
 
 
 def setUpModule():
@@ -47,24 +48,24 @@ class WebElementTestCase(ElementTestCase):
 
     def test_connection(self):
         self.assertTrue(self.root.connected)
-        self.get('http://example.com/')
+        self.browser.get('http://example.com/')
         self.assertIsFalse(self.root.connected)
 
     def test_text_content(self):
         self.set_element(self.tag)
-        self.assertEqual(self.get_text(), '')
+        self.assertEqual(self.element.text, '')
         self.tag.textContent = 'text'
         self.wait()
-        self.assertEqual(self.get_text(), 'text')
+        self.assertEqual(self.element.text, 'text')
 
         self.c1.textContent = 'child'
         self.tag.appendChild(self.c1)
         self.wait()
-        self.assertEqual(self.get_text(), 'textchild')
+        self.assertEqual(self.element.text, 'textchild')
 
         self.tag.textContent = 'NewText'
         self.wait()
-        self.assertEqual(self.get_text(), 'NewText')
+        self.assertEqual(self.element.text, 'NewText')
         with self.assertRaises(NoSuchElementException):
             self.set_element(self.c1)
 
@@ -72,34 +73,34 @@ class WebElementTestCase(ElementTestCase):
         t_node = Text('TextNode')
         self.tag.replaceChild(t_node, self.tag.childNodes[0])
         self.wait()
-        self.assertEqual(self.get_text(), 'TextNode')
+        self.assertEqual(self.element.text, 'TextNode')
 
         self.tag.removeChild(self.tag.childNodes[0])
         self.set_element(self.tag)
         self.wait()
-        self.assertEqual(self.get_text(), '')
+        self.assertEqual(self.element.text, '')
 
     def test_attr(self):
         self.set_element(self.tag)
-        self.assertIsNone(self.get_attribute('src'))
+        self.assertIsNone(self.element.get_attribute('src'))
         self.tag.setAttribute('src', 'a')
         self.wait()
-        self.assertEqual(self.get_attribute('src'), 'a')
+        self.assertEqual(self.element.get_attribute('src'), 'a')
         self.tag.removeAttribute('src')
         self.wait()
-        self.assertIsNone(self.get_attribute('src'))
+        self.assertIsNone(self.element.get_attribute('src'))
 
     def test_addremove_child(self):
         self.tag.appendChild(self.c1)
         self.wait()
         self.assertIsTrue(self.set_element(self.c1))
-        self.assertEqual(self.get_text(), 'child1')
+        self.assertEqual(self.element.text, 'child1')
         self.c1.textContent = 'Child'
         self.wait()
-        self.assertEqual(self.get_text(), 'Child')
+        self.assertEqual(self.element.text, 'Child')
 
         self.set_element(self.tag)
-        self.assertEqual(self.get_text(), 'Child')
+        self.assertEqual(self.element.text, 'Child')
 
         self.tag.removeChild(self.c1)
         self.wait()
@@ -107,7 +108,7 @@ class WebElementTestCase(ElementTestCase):
             self.set_element(self.c1)
 
         self.set_element(self.tag)
-        self.assertEqual(self.get_text(), '')
+        self.assertEqual(self.element.text, '')
 
     def test_insert_child(self):
         self.set_element(self.tag)
@@ -121,18 +122,18 @@ class WebElementTestCase(ElementTestCase):
             self.set_element(self.c2)
 
         self.set_element(self.tag)
-        self.assertEqual(self.get_text(), 'child1')
+        self.assertEqual(self.element.text, 'child1')
 
         self.tag.insertBefore(self.c2, self.c1)
         self.wait(0.1)
         self.assertIsTrue(self.set_element(self.c2))
 
         self.set_element(self.tag)
-        self.assertEqual(self.get_text(), 'child2child1')
+        self.assertEqual(self.element.text, 'child2child1')
 
         self.tag.empty()
         self.wait(0.1)
-        self.assertEqual(self.get_text(), '')
+        self.assertEqual(self.element.text, '')
         with self.assertRaises(NoSuchElementException):
             self.set_element(self.c1)
         with self.assertRaises(NoSuchElementException):
@@ -143,13 +144,13 @@ class WebElementTestCase(ElementTestCase):
         self.df.append(self.c1, self.c2, 'text')
         self.tag.appendChild(self.df)
         self.wait()
-        self.assertEqual(self.get_text(), 'child1child2text')
+        self.assertEqual(self.element.text, 'child1child2text')
 
         df = DocumentFragment()
         df.append(self.c3, 'text2')
         self.tag.appendChild(df)
         self.wait()
-        self.assertEqual(self.get_text(), 'child1child2textchild3text2')
+        self.assertEqual(self.element.text, 'child1child2textchild3text2')
 
     def test_insert_df(self):
         self.set_element(self.tag)
@@ -157,13 +158,13 @@ class WebElementTestCase(ElementTestCase):
         self.df.append(self.c2, self.c3, 'text')
         self.tag.insertBefore(self.df, self.c1)
         self.wait(0.1)
-        self.assertEqual(self.get_text(), 'child2child3textchild1')
+        self.assertEqual(self.element.text, 'child2child3textchild1')
 
         df = DocumentFragment()
         df.append(self.c4, 'text2')
         self.tag.insertBefore(df, self.c3)
         self.wait(0.1)
-        self.assertEqual(self.get_text(), 'child2child4text2child3textchild1')
+        self.assertEqual(self.element.text, 'child2child4text2child3textchild1')
 
     def test_replace_child(self):
         self.set_element(self.tag)
@@ -172,104 +173,104 @@ class WebElementTestCase(ElementTestCase):
         with self.assertRaises(NoSuchElementException):
             self.set_element(self.c2)
         self.assertIsTrue(self.set_element(self.c1))
-        self.assertEqual(self.get_text(), 'child1')
+        self.assertEqual(self.element.text, 'child1')
 
         self.tag.replaceChild(self.c2, self.c1)
         self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element(self.c1)
         self.assertIsTrue(self.set_element(self.c2))
-        self.assertEqual(self.get_text(), 'child2')
+        self.assertEqual(self.element.text, 'child2')
         self.set_element(self.tag)
-        self.assertEqual(self.get_text(), 'child2')
+        self.assertEqual(self.element.text, 'child2')
 
     def test_append(self):
         self.set_element(self.tag)
         self.tag.append(self.c1)
         self.wait()
-        self.assertEqual(self.get_text(), 'child1')
+        self.assertEqual(self.element.text, 'child1')
 
         self.tag.append(self.c2, self.c3)
         self.wait()
-        self.assertEqual(self.get_text(), 'child1child2child3')
+        self.assertEqual(self.element.text, 'child1child2child3')
 
         self.tag.append(self.c4, self.c1)
         self.wait()
-        self.assertEqual(self.get_text(), 'child2child3child4child1')
+        self.assertEqual(self.element.text, 'child2child3child4child1')
 
         self.tag.append('t1', 't2')
         self.wait()
-        self.assertEqual(self.get_text(), 'child2child3child4child1t1t2')
+        self.assertEqual(self.element.text, 'child2child3child4child1t1t2')
 
     def test_prepend(self):
         self.set_element(self.tag)
         self.tag.prepend(self.c1)
         self.wait()
-        self.assertEqual(self.get_text(), 'child1')
+        self.assertEqual(self.element.text, 'child1')
 
         self.tag.prepend(self.c2, self.c3)
         self.wait()
-        self.assertEqual(self.get_text(), 'child2child3child1')
+        self.assertEqual(self.element.text, 'child2child3child1')
 
         self.tag.prepend(self.c4, self.c1)
         self.wait()
-        self.assertEqual(self.get_text(), 'child4child1child2child3')
+        self.assertEqual(self.element.text, 'child4child1child2child3')
 
         self.tag.prepend('t1', 't2')
         self.wait()
-        self.assertEqual(self.get_text(), 't1t2child4child1child2child3')
+        self.assertEqual(self.element.text, 't1t2child4child1child2child3')
 
     def test_prepend_append_text(self):
         self.set_element(self.tag)
         self.tag.append('t1')
         self.wait()
-        self.assertEqual(self.get_text(), 't1')
+        self.assertEqual(self.element.text, 't1')
 
         self.tag.firstChild.remove()
         self.wait()
-        self.assertEqual(self.get_text(), '')
+        self.assertEqual(self.element.text, '')
 
         self.tag.prepend('t2')
         self.wait()
-        self.assertEqual(self.get_text(), 't2')
+        self.assertEqual(self.element.text, 't2')
 
         self.tag.append('t3', 't4')
         self.wait()
-        self.assertEqual(self.get_text(), 't2t3t4')
+        self.assertEqual(self.element.text, 't2t3t4')
 
         self.tag.prepend('t5', 't6')
         self.wait()
-        self.assertEqual(self.get_text(), 't5t6t2t3t4')
+        self.assertEqual(self.element.text, 't5t6t2t3t4')
 
     def test_after(self):
         self.set_element(self.tag)
         self.tag.append(self.c1)
         self.c1.after(self.c2)
         self.wait()
-        self.assertEqual(self.get_text(), 'child1child2')
+        self.assertEqual(self.element.text, 'child1child2')
 
         self.c1.after(self.c3, self.c4)
         self.wait()
-        self.assertEqual(self.get_text(), 'child1child3child4child2')
+        self.assertEqual(self.element.text, 'child1child3child4child2')
 
         self.c1.after(self.c2, 'text')
         self.wait()
-        self.assertEqual(self.get_text(), 'child1child2textchild3child4')
+        self.assertEqual(self.element.text, 'child1child2textchild3child4')
 
     def test_before(self):
         self.set_element(self.tag)
         self.tag.append(self.c1)
         self.c1.before(self.c2)
         self.wait(0.1)
-        self.assertEqual(self.get_text(), 'child2child1')
+        self.assertEqual(self.element.text, 'child2child1')
 
         self.c1.before(self.c3, self.c4)
         self.wait(0.1)
-        self.assertEqual(self.get_text(), 'child2child3child4child1')
+        self.assertEqual(self.element.text, 'child2child3child4child1')
 
         self.c1.before(self.c2, 'text')
         self.wait(0.1)
-        self.assertEqual(self.get_text(), 'child3child4child2textchild1')
+        self.assertEqual(self.element.text, 'child3child4child2textchild1')
 
     def test_after_before_text(self):
         self.set_element(self.tag)
@@ -277,68 +278,68 @@ class WebElementTestCase(ElementTestCase):
         t = self.tag.firstChild
         t.after('b')
         self.wait()
-        self.assertEqual(self.get_text(), 'ab')
+        self.assertEqual(self.element.text, 'ab')
 
         t.after('c', 'd')
         self.wait()
-        self.assertEqual(self.get_text(), 'acdb')
+        self.assertEqual(self.element.text, 'acdb')
 
         t.before('e')
         self.wait(0.1)
-        self.assertEqual(self.get_text(), 'eacdb')
+        self.assertEqual(self.element.text, 'eacdb')
 
         t.before('f', 'g')
         self.wait(0.1)
-        self.assertEqual(self.get_text(), 'efgacdb')
+        self.assertEqual(self.element.text, 'efgacdb')
 
     def test_shortcut_attr(self):
         self.tag.textContent = 'TAG'
         self.wait()
         self.set_element(self.tag)
-        self.assertIsTrue(self.is_displayed())
+        self.assertIsTrue(self.element.is_displayed())
         self.tag.hidden = True
         self.wait()
-        self.assertIsFalse(self.is_displayed())
+        self.assertIsFalse(self.element.is_displayed())
         self.tag.hidden = False
         self.wait()
-        self.assertIsTrue(self.is_displayed())
+        self.assertIsTrue(self.element.is_displayed())
 
     def test_style(self):
         self.tag.textContent = 'Style'
         self.wait()
         self.set_element(self.tag)
-        self.assertEqual(self.get_attribute('style'), '')
+        self.assertEqual(self.element.get_attribute('style'), '')
         style = 'color: red;'
         self.tag.style = style
         self.wait()
-        self.assertEqual(self.get_attribute('style'), style)
+        self.assertEqual(self.element.get_attribute('style'), style)
         self.tag.style.color = 'black'
         self.wait()
-        self.assertEqual(self.get_attribute('style'), 'color: black;')
+        self.assertEqual(self.element.get_attribute('style'), 'color: black;')
 
     def test_classlist(self):
         self.set_element(self.tag)
-        self.assertEqual(self.get_attribute('class'), '')
+        self.assertEqual(self.element.get_attribute('class'), '')
         self.tag.classList.add('a')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), 'a')
+        self.assertEqual(self.element.get_attribute('class'), 'a')
         self.tag.classList.add('b', 'c', 'd')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), 'a b c d')
+        self.assertEqual(self.element.get_attribute('class'), 'a b c d')
 
         self.tag.classList.remove('c')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), 'a b d')
+        self.assertEqual(self.element.get_attribute('class'), 'a b d')
         self.tag.classList.remove('a', 'd')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), 'b')
+        self.assertEqual(self.element.get_attribute('class'), 'b')
 
         self.tag.classList.toggle('b')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), '')
+        self.assertEqual(self.element.get_attribute('class'), '')
         self.tag.classList.toggle('b')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), 'b')
+        self.assertEqual(self.element.get_attribute('class'), 'b')
 
     def test_click(self):
         mock = MagicMock(_is_coroutine=False)
@@ -404,21 +405,21 @@ class EventTestCase(ElementTestCase):
     def test_click(self):
         self.set_element(self.btn)
         self.wait(0.3)
-        self.click()
+        self.element.click()
         self.wait()
         self.assertEqual(self.click_event_mock.call_count, 1)
 
     def test_input(self):
         self.set_element(self.input)
         self.wait()
-        self.send_keys('abc')
+        self.element.send_keys('abc')
         self.wait()
         self.assertEqual(self.input_event_mock.call_count, 3)
 
 
 class TestWebElement(WebElementTestCase, TestCase):
-    pass
+    module = server_aio
 
 
 class TestEvent(EventTestCase, TestCase):
-    pass
+    module = server_aio

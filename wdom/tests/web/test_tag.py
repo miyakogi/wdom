@@ -10,7 +10,7 @@ from wdom.tag import Tag, Textarea, Input, CheckBox, Div
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
-from wdom import server
+from wdom import server_aio
 
 
 def setUpModule():
@@ -32,41 +32,41 @@ class NodeTestCase(RemoteBrowserTestCase):
     def test_connection(self):
         self.assertIsTrue(self.root.connected)
         # this is an example, but valid domain for test
-        self.get('http://example.com/')
+        self.browser.get('http://example.com/')
         self.assertIsFalse(self.root.connected)
 
     def test_node_text(self):
-        self.assertEqual(self.get_text(), '')
+        self.assertEqual(self.element.text, '')
         self.root.textContent = 'ROOT'
         self.wait()
-        self.assertEqual(self.get_text(), 'ROOT')
+        self.assertEqual(self.element.text, 'ROOT')
 
     def test_node_attr(self):
-        self.assertIsNone(self.get_attribute('src'))
+        self.assertIsNone(self.element.get_attribute('src'))
         self.root.setAttribute('src', 'a')
         self.wait()
-        self.assertEqual(self.get_attribute('src'), 'a')
+        self.assertEqual(self.element.get_attribute('src'), 'a')
         self.root.removeAttribute('src')
         self.wait()
-        self.assertIsNone(self.get_attribute('src'))
+        self.assertIsNone(self.element.get_attribute('src'))
 
     def test_node_class(self):
         self.root.addClass('a')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), 'a')
+        self.assertEqual(self.element.get_attribute('class'), 'a')
         self.root.removeClass('a')
         self.wait()
-        self.assertEqual(self.get_attribute('class'), '')
+        self.assertEqual(self.element.get_attribute('class'), '')
 
     def test_addremove_child(self):
         child = Tag()
         self.root.appendChild(child)
         self.wait()
         self.assertIsTrue(self.set_element(child))
-        self.assertEqual(self.get_text(), '')
+        self.assertEqual(self.element.text, '')
         child.textContent = 'Child'
         self.wait()
-        self.assertEqual(self.get_text(), 'Child')
+        self.assertEqual(self.element.text, 'Child')
 
         self.root.removeChild(child)
         self.wait()
@@ -83,25 +83,25 @@ class NodeTestCase(RemoteBrowserTestCase):
         with self.assertRaises(NoSuchElementException):
             self.set_element(child2)
         self.assertIsTrue(self.set_element(child1))
-        self.assertEqual(self.get_text(), 'child1')
+        self.assertEqual(self.element.text, 'child1')
 
         self.root.replaceChild(child2, child1)
         self.wait()
         with self.assertRaises(NoSuchElementException):
             self.set_element(child1)
         self.assertIsTrue(self.set_element(child2))
-        self.assertEqual(self.get_text(), 'child2')
+        self.assertEqual(self.element.text, 'child2')
 
     def test_showhide(self):
         self.root.textContent = 'root'
         self.wait()
-        self.assertIsTrue(self.is_displayed())
+        self.assertIsTrue(self.element.is_displayed())
         self.root.hide()
         self.wait()
-        self.assertIsFalse(self.is_displayed())
+        self.assertIsFalse(self.element.is_displayed())
         self.root.show()
         self.wait()
-        self.assertIsTrue(self.is_displayed())
+        self.assertIsTrue(self.element.is_displayed())
 
 
 class InputTestCase(RemoteBrowserTestCase):
@@ -119,52 +119,52 @@ class InputTestCase(RemoteBrowserTestCase):
     def test_textinput(self):
         self.set_element(self.input)
         self.wait()
-        self.send_keys('abc')
+        self.element.send_keys('abc')
         self.wait()
         self.assertEqual(self.input.value, 'abc')
 
-        self.get(self.url)
+        self.browser.get(self.url)
         self.set_element(self.input)
-        self.assertEqual(self.get_attribute('value'), 'abc')
+        self.assertEqual(self.element.get_attribute('value'), 'abc')
 
-        self.send_keys('def')
+        self.element.send_keys('def')
         self.wait()
         self.assertEqual(self.input.value, 'abcdef')
 
     def test_textarea(self):
         self.set_element(self.textarea)
-        self.send_keys('abc')
+        self.element.send_keys('abc')
         self.wait()
         self.assertEqual(self.textarea.value, 'abc')
 
-        self.get(self.url)
+        self.browser.get(self.url)
         self.set_element(self.textarea)
-        self.assertEqual(self.get_attribute('value'), 'abc')
+        self.assertEqual(self.element.get_attribute('value'), 'abc')
 
-        self.send_keys('def')
+        self.element.send_keys('def')
         self.wait()
         self.assertEqual(self.textarea.value, 'abcdef')
 
     def test_checkbox(self):
         self.set_element(self.checkbox)
-        self.click()
+        self.element.click()
         self.wait()
         self.assertIsTrue(self.checkbox.checked)
 
-        self.get(self.url)
+        self.browser.get(self.url)
         self.set_element(self.checkbox)
-        self.assertEqual(self.get_attribute('checked'), 'true')
+        self.assertEqual(self.element.get_attribute('checked'), 'true')
 
         self.wait()
-        self.click()
+        self.element.click()
         self.wait()
-        self.assertEqual(self.get_attribute('checked'), None)
+        self.assertEqual(self.element.get_attribute('checked'), None)
         self.assertIsFalse(self.checkbox.checked)
 
 
 class TestNode(NodeTestCase, TestCase):
-    module = server
+    module = server_aio
 
 
 class TestInput(InputTestCase, TestCase):
-    module = server
+    module = server_aio

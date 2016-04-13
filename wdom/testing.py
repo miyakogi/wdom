@@ -6,15 +6,19 @@ import asyncio
 import socket
 import unittest
 from multiprocessing import Process, Pipe
+from types import FunctionType, MethodType
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.utils import free_port
+from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
 
 from wdom.misc import static_dir
+from wdom import options
 
 driver = webdriver.Firefox
 
@@ -71,7 +75,7 @@ def start_remote_browser():
 def close_remote_browser():
     '''Terminate browser process.'''
     global conn, browser_manager
-    conn.send({'method': 'quit'})
+    conn.send({'target': 'process', 'method': 'quit'})
     time.sleep(0.3)
     print('\nRemote Browser closed')
     conn.close()
@@ -102,15 +106,6 @@ class BrowserController:
         self.wd = get_remote_browser()
         self.element = None
 
-    def get(self, url):
-        '''Open url. When page has been loaded, send ``True``.'''
-        self.wd.get(url)
-        self.conn.send(True)
-
-    def get_page_source(self):
-        src = self.wd.page_source
-        self.conn.send(src)
-
     def set_element_by_id(self, id):
         '''Find element with ``id`` and set it as operation target. When
         successfully find the element, send ``True``. If failed to find the
@@ -118,50 +113,24 @@ class BrowserController:
         try:
             self.element = self.wd.find_element_by_css_selector(
                 '[rimo_id="{}"]'.format(id))
-            self.conn.send(True)
+            return True
         except NoSuchElementException:
-            self.conn.send('Error NoSuchElement: ' + id)
+            return 'Error NoSuchElement: ' + id
 
-    def get_attribute(self, attr) -> str:
-        '''Get ``attr`` of the target element. If succeed to get, send the
-        value. The target element does not has the attribute, send ``None``
-        (deafult by selenium).
-        '''
-        if self.element is not None:
-            self.conn.send(self.element.get_attribute(attr))
-        else:
-            self.conn.send('No Element Set')
+    def quit(self, *args):
+        self.wd.quit()
+        return 'closed'
 
-    def get_text(self) -> str:
-        '''Get text content of the target element and send it.'''
-        if self.element is not None:
-            text = self.element.text
-            self.conn.send(text)
-        else:
-            self.conn.send('No Element Set')
+    def close(self, *args):
+        self.wd.close()
+        return 'closed'
 
-    def is_displayed(self) -> bool:
-        '''Return if the target element is visible for user or not.'''
-        if self.element is not None:
-            res = self.element.is_displayed()
-            self.conn.send(res)
+    def _execute_method(self, method, args):
+        if isinstance(method, (FunctionType, MethodType)):
+            self.conn.send(method(*args))
         else:
-            self.conn.send('No Element Set')
-
-    def click(self) -> None:
-        if self.element is not None:
-            res = self.element.click()
-            self.conn.send(res)
-        else:
-            self.conn.send('No Element Set')
-
-    def send_keys(self, keys: str) -> None:
-        if self.element is not None:
-            for s in keys:
-                self.element.send_keys(s)
-            self.conn.send(True)
-        else:
-            self.conn.send('No Element Set')
+            # not callable, just send it back
+            self.conn.send(method)
 
     def run(self):
         '''Running process. Wait message from the other end of the connection,
@@ -170,30 +139,80 @@ class BrowserController:
         '''
         while True:
             req = self.conn.recv()
-            if req['method'] == 'get':
-                self.get(req['url'])
-            if req['method'] == 'get_page_source':
-                self.get_page_source()
-            elif req['method'] == 'set_element_by_id':
-                self.set_element_by_id(req['id'])
-            elif req['method'] == 'get_attribute':
-                self.get_attribute(req['attr'])
-            elif req['method'] == 'get_text':
-                self.get_text()
-            elif req['method'] == 'is_displayed':
-                self.is_displayed()
-            elif req['method'] == 'click':
-                self.click()
-            elif req['method'] == 'send_keys':
-                self.send_keys(req['keys'])
-            elif req['method'] == 'close':
-                self.wd.close()
-                self.conn.send('CLOSED')
-                break
-            elif req['method'] == 'quit':
-                self.wd.quit()
-                self.conn.send('CLOSED')
-                break
+            target = req.get('target', '')
+            method_name = req.get('method', '')
+            args = req.get('args', [])
+            if target == 'process':
+                method = getattr(self, method_name)
+            elif target == 'browser':
+                method = getattr(self.wd, method_name)
+            elif target == 'element':
+                if self.element is None:
+                    # Element must be set
+                    self.conn.send('Error: No Element Set')
+                    continue
+                method = getattr(self.element, method_name)
+            self._execute_method(method, args)
+
+
+def wait_for():
+    '''Wait the action doing in the browser process, and afer finish it,
+    return the value.'''
+    return asyncio.get_event_loop().run_until_complete(wait_coro())
+
+
+@asyncio.coroutine
+def wait_coro():
+    while True:
+        state = conn.poll()
+        if state:
+            res = conn.recv()
+            return res
+        else:
+            yield from asyncio.sleep(0)
+            continue
+
+
+def _get_properties(cls):
+    props = set()
+    for k, v in vars(cls).items():
+        if not isinstance(v, (FunctionType, MethodType)):
+            props.add(k)
+    return props
+
+
+class Controller:
+    target = None
+    properties = set()
+    def __getattr__(self, attr:str):
+        global conn
+        def wrapper(*args):
+            conn.send({'target': self.target, 'method': attr, 'args': args})
+            res = wait_for()
+            if isinstance(res, str):
+                if res.startswith('Error NoSuchElement'):
+                    raise NoSuchElementException(res)
+                elif res.startswith('Error'):
+                    raise ValueError(res)
+            return res
+        if attr in self.properties:
+            return wrapper()
+        else:
+            return wrapper
+
+
+class ProcessController(Controller):
+    target = 'process'
+
+
+class RemoteBrowserController(Controller):
+    target = 'browser'
+    properties = _get_properties(WebDriver)
+
+
+class RemoteElementController(Controller):
+    target = 'element'
+    properties = _get_properties(WebElement)
 
 
 class RemoteBrowserTestCase:
@@ -214,9 +233,11 @@ class RemoteBrowserTestCase:
     wait_time = 0.02
 
     def setUp(self):
-        global conn
-        self.conn = conn
-        self.loop = asyncio.get_event_loop()
+        self._prev_logging = options.config.logging
+        options.config.logging = 'WARN'
+        self.proc = ProcessController()
+        self.browser = RemoteBrowserController()
+        self.element = RemoteElementController()
         self.address = 'localhost'
         self.app = self.get_app(self.document)
         self.app.add_favicon_path(static_dir)
@@ -224,10 +245,11 @@ class RemoteBrowserTestCase:
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
         super().setUp()
         self.wait()
-        self.get(self.url)
+        self.browser.get(self.url)
         self.wait()
 
     def teardown(self):
+        options.config.logging = self._prev_logging
         self.stop_server()
         self.wait()
 
@@ -257,79 +279,18 @@ class RemoteBrowserTestCase:
         '''
         return self.module.get_app(doc)
 
-    def get(self, url):
-        '''Load the url by browser.'''
-        self.conn.send({'method': 'get', 'url': url})
-        return self.wait_for()
-
     def wait(self, timeout=None):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
         single event loop. This method does not block the thread, so the server
         in test still can send response before timeout.
         '''
-        self.loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
-
-    def wait_for(self):
-        '''Wait the action doing in the browser process, and afer finish it,
-        return the value.'''
-        return self.loop.run_until_complete(self.wait_coro())
-
-    @asyncio.coroutine
-    def wait_coro(self):
-        while True:
-            state = self.conn.poll()
-            if state:
-                res = self.conn.recv()
-                return res
-            else:
-                yield from asyncio.sleep(0.01)
-                continue
+        asyncio.get_event_loop().run_until_complete(
+            asyncio.sleep(timeout or self.wait_time))
 
     def set_element(self, node):
         '''Wrapper method of ``set_element_by_id``. Set the ``node`` as a
         target node of the browser process.'''
-        return self.set_element_by_id(node.rimo_id)
-
-    def set_element_by_id(self, id):
-        '''Set the ``node`` specified by ``id`` as a target element of the
-        broser process. If no element which has the id is not found, in
-        browser, raise ``selenium.common.exceptions.NoSuchElementException``.
-        '''
-        self.conn.send({'method': 'set_element_by_id', 'id': id})
-        res = self.wait_for()
-        if res is True:
-            return res
-        elif res.startswith('Error NoSuchElement'):
-            raise NoSuchElementException(res)
-        else:
-            return res
-
-    def get_attribute(self, attr) -> str:
-        '''Get the attribute's value of the target element. If the current
-        target element does not have the attribute, return ``None``.'''
-        self.conn.send({'method': 'get_attribute', 'attr': attr})
-        return self.wait_for()
-
-    def get_page_source(self):
-        self.conn.send({'method': 'get_page_source'})
-        return self.wait_for()
-
-    def get_text(self) -> str:
-        '''Get the inner text content of the target element.'''
-        self.conn.send({'method': 'get_text'})
-        return self.wait_for()
-
-    def is_displayed(self) -> None:
-        self.conn.send({'method': 'is_displayed'})
-        return self.wait_for()
-
-    def click(self) -> None:
-        self.conn.send({'method': 'click'})
-        return self.wait_for()
-
-    def send_keys(self, keys: str) -> None:
-        self.conn.send({'method': 'send_keys', 'keys': keys})
-        return self.wait_for()
+        return self.proc.set_element_by_id(node.rimo_id)
 
 
 class WebDriverTestCase:
