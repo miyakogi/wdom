@@ -104,15 +104,6 @@ class BrowserController:
         self.wd = get_remote_browser()
         self.element = None
 
-    def get(self, url):
-        '''Open url. When page has been loaded, send ``True``.'''
-        self.wd.get(url)
-        self.conn.send(True)
-
-    def get_page_source(self):
-        src = self.wd.page_source
-        self.conn.send(src)
-
     def set_element_by_id(self, id):
         '''Find element with ``id`` and set it as operation target. When
         successfully find the element, send ``True``. If failed to find the
@@ -124,47 +115,6 @@ class BrowserController:
         except NoSuchElementException:
             return 'Error NoSuchElement: ' + id
 
-    def get_attribute(self, attr) -> str:
-        '''Get ``attr`` of the target element. If succeed to get, send the
-        value. The target element does not has the attribute, send ``None``
-        (deafult by selenium).
-        '''
-        if self.element is not None:
-            self.conn.send(self.element.get_attribute(attr))
-        else:
-            self.conn.send('No Element Set')
-
-    def get_text(self) -> str:
-        '''Get text content of the target element and send it.'''
-        if self.element is not None:
-            text = self.element.text
-            self.conn.send(text)
-        else:
-            self.conn.send('No Element Set')
-
-    def is_displayed(self) -> bool:
-        '''Return if the target element is visible for user or not.'''
-        if self.element is not None:
-            res = self.element.is_displayed()
-            self.conn.send(res)
-        else:
-            self.conn.send('No Element Set')
-
-    def click(self) -> None:
-        if self.element is not None:
-            res = self.element.click()
-            self.conn.send(res)
-        else:
-            self.conn.send('No Element Set')
-
-    def send_keys(self, keys: str) -> None:
-        if self.element is not None:
-            for s in keys:
-                self.element.send_keys(s)
-            self.conn.send(True)
-        else:
-            self.conn.send('No Element Set')
-
     def quit(self, *args):
         self.wd.quit()
         return 'closed'
@@ -172,6 +122,13 @@ class BrowserController:
     def close(self, *args):
         self.wd.close()
         return 'closed'
+
+    def _execute_method(self, method, args):
+        if isinstance(method, (FunctionType, MethodType)):
+            self.conn.send(method(*args))
+        else:
+            # not callable, just send it back
+            self.conn.send(method)
 
     def run(self):
         '''Running process. Wait message from the other end of the connection,
@@ -185,24 +142,15 @@ class BrowserController:
             args = req.get('args', [])
             if target == 'process':
                 method = getattr(self, method_name)
-                self.conn.send(method(*args))
             elif target == 'browser':
                 method = getattr(self.wd, method_name)
-                if isinstance(method, (FunctionType, MethodType)):
-                    self.conn.send(method(*args))
-                else:
-                    # not callable, just send it back
-                    self.conn.send(method)
             elif target == 'element':
                 if self.element is None:
                     # Element must be set
                     self.conn.send('Error: No Element Set')
+                    continue
                 method = getattr(self.element, method_name)
-                if isinstance(method, (FunctionType, MethodType)):
-                    self.conn.send(method(*args))
-                else:
-                    # not callable, just send it back
-                    self.conn.send(method)
+            self._execute_method(method, args)
 
 
 def wait_for():
