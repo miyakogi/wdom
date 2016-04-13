@@ -115,7 +115,7 @@ class InputTestCase(RemoteBrowserTestCase):
         super().setUp()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
-                        reason='This test not pass only on travis')
+                     reason='This test not pass only on travis')
     def test_textinput(self):
         self.set_element(self.input)
         self.wait()

@@ -401,7 +401,7 @@ class EventTestCase(ElementTestCase):
         return self.root
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
-                        reason='This test not pass only on travis')
+                     reason='This test not pass only on travis')
     def test_click(self):
         self.set_element(self.btn)
         self.wait(0.3)

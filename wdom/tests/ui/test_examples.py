@@ -39,7 +39,7 @@ class DataBindingTestCase(WebDriverTestCase):
         return self.app
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
-                        reason='This test not pass only on travis')
+                     reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
         self.assertEqual(view.text, 'Hello!')
@@ -64,7 +64,7 @@ class RevTextTestCase(WebDriverTestCase):
         return self.app
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
-                        reason='This test not pass only on travis')
+                     reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
         text = 'Click!'
