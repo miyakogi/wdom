@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import time
 import asyncio
 import socket
@@ -230,7 +231,10 @@ class RemoteBrowserTestCase:
     '''
     from wdom import server
     module = server
-    wait_time = 0.02
+    if os.environ.get('TRAVIS', False):
+        wait_time = 0.1
+    else:
+        wait_time = 0.02
 
     def setUp(self):
         self._prev_logging = options.config.logging
@@ -303,7 +307,10 @@ class WebDriverTestCase:
     '''
     from wdom import server_aio
     module = server_aio
-    wait_time = 0.02
+    if os.environ.get('TRAVIS', False):
+        wait_time = 0.1
+    else:
+        wait_time = 0.02
 
     def setUp(self):
         self.wd = get_webdriver()

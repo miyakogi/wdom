@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
+
 from wdom import server_tornado
 from wdom.misc import install_asyncio
 from wdom.testing import TestCase
@@ -13,10 +15,14 @@ def setUpModule():
 
 
 test_cases = (WebElementTestCase, EventTestCase, NodeTestCase, InputTestCase)
+if os.environ.get('TRAVIS', False):
+    wait_time = 0.2
+else:
+    wait_time = 0.05
 
 for case in test_cases:
     name = 'Test' + case.__name__.replace('TestCase', 'AIO')
     globals()[name] = type(name, (case, TestCase), {
         'module': server_tornado,
-        'wait_time': 0.05,
+        'wait_time': wait_time,
     })
