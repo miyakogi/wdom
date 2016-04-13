@@ -14,6 +14,7 @@ from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
 from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
+from wdom import server_aio
 
 
 def setUpModule():
@@ -417,8 +418,8 @@ class EventTestCase(ElementTestCase):
 
 
 class TestWebElement(WebElementTestCase, TestCase):
-    pass
+    module = server_aio
 
 
 class TestEvent(EventTestCase, TestCase):
-    pass
+    module = server_aio
