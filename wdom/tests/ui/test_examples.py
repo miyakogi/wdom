@@ -80,14 +80,11 @@ class RevTextTestCase(WebDriverTestCase):
 
 class TestSimplePage(SimpleTestCase, unittest.TestCase):
     module = server_aio
-    wait_time = 0.02
 
 
 class TestDataBinding(DataBindingTestCase, unittest.TestCase):
     module = server_aio
-    wait_time = 0.02
 
 
 class TestRevText(RevTextTestCase, unittest.TestCase):
     module = server_aio
-    wait_time = 0.02
