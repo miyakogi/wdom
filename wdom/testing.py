@@ -15,6 +15,7 @@ from tornado.web import Application
 from tornado.httpserver import HTTPServer
 
 from wdom.misc import static_dir
+from wdom import options
 
 driver = webdriver.Firefox
 
@@ -170,30 +171,53 @@ class BrowserController:
         '''
         while True:
             req = self.conn.recv()
-            if req['method'] == 'get':
-                self.get(req['url'])
-            if req['method'] == 'get_page_source':
-                self.get_page_source()
-            elif req['method'] == 'set_element_by_id':
-                self.set_element_by_id(req['id'])
-            elif req['method'] == 'get_attribute':
-                self.get_attribute(req['attr'])
-            elif req['method'] == 'get_text':
+            method = req.get('method', '')
+            args = req.get('args', [])
+            if method in ('close', 'quit'):
+                getattr(self.wd, method)()
+                self.conn.send('CLOSED')
+                break
+            elif method in ('get_page_source', 'get', 'set_element_by_id'):
+                # page-level browser methods
+                getattr(self, method)(*args)
+            elif self.element is None:
+                # For other methods, element must be set
+                self.conn.send('No Element Set')
+            elif method == 'get_text':
                 self.get_text()
-            elif req['method'] == 'is_displayed':
-                self.is_displayed()
-            elif req['method'] == 'click':
-                self.click()
-            elif req['method'] == 'send_keys':
-                self.send_keys(req['keys'])
-            elif req['method'] == 'close':
-                self.wd.close()
-                self.conn.send('CLOSED')
-                break
-            elif req['method'] == 'quit':
-                self.wd.quit()
-                self.conn.send('CLOSED')
-                break
+            else:
+                self.conn.send(getattr(self.element, method)(*args))
+
+
+def wait_for():
+    '''Wait the action doing in the browser process, and afer finish it,
+    return the value.'''
+    return asyncio.get_event_loop().run_until_complete(wait_coro())
+
+
+@asyncio.coroutine
+def wait_coro():
+    while True:
+        state = conn.poll()
+        if state:
+            res = conn.recv()
+            return res
+        else:
+            yield from asyncio.sleep(0.01)
+            continue
+
+
+class RemoteBrowserController:
+    def __getattr__(self, attr:str):
+        global conn
+        def wrapper(*args):
+            conn.send({'method': attr, 'args': args})
+            res = wait_for()
+            if isinstance(res, str) and res.startswith('Error NoSuchElement'):
+                raise NoSuchElementException(res)
+            else:
+                return res
+        return wrapper
 
 
 class RemoteBrowserTestCase:
@@ -214,9 +238,9 @@ class RemoteBrowserTestCase:
     wait_time = 0.02
 
     def setUp(self):
-        global conn
-        self.conn = conn
-        self.loop = asyncio.get_event_loop()
+        self._prev_logging = options.config.logging
+        options.config.logging = 'WARN'
+        self.browser = RemoteBrowserController()
         self.address = 'localhost'
         self.app = self.get_app(self.document)
         self.app.add_favicon_path(static_dir)
@@ -224,10 +248,11 @@ class RemoteBrowserTestCase:
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
         super().setUp()
         self.wait()
-        self.get(self.url)
+        self.browser.get(self.url)
         self.wait()
 
     def teardown(self):
+        options.config.logging = self._prev_logging
         self.stop_server()
         self.wait()
 
@@ -257,79 +282,18 @@ class RemoteBrowserTestCase:
         '''
         return self.module.get_app(doc)
 
-    def get(self, url):
-        '''Load the url by browser.'''
-        self.conn.send({'method': 'get', 'url': url})
-        return self.wait_for()
-
     def wait(self, timeout=None):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
         single event loop. This method does not block the thread, so the server
         in test still can send response before timeout.
         '''
-        self.loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
-
-    def wait_for(self):
-        '''Wait the action doing in the browser process, and afer finish it,
-        return the value.'''
-        return self.loop.run_until_complete(self.wait_coro())
-
-    @asyncio.coroutine
-    def wait_coro(self):
-        while True:
-            state = self.conn.poll()
-            if state:
-                res = self.conn.recv()
-                return res
-            else:
-                yield from asyncio.sleep(0.01)
-                continue
+        asyncio.get_event_loop().run_until_complete(
+            asyncio.sleep(timeout or self.wait_time))
 
     def set_element(self, node):
         '''Wrapper method of ``set_element_by_id``. Set the ``node`` as a
         target node of the browser process.'''
-        return self.set_element_by_id(node.rimo_id)
-
-    def set_element_by_id(self, id):
-        '''Set the ``node`` specified by ``id`` as a target element of the
-        broser process. If no element which has the id is not found, in
-        browser, raise ``selenium.common.exceptions.NoSuchElementException``.
-        '''
-        self.conn.send({'method': 'set_element_by_id', 'id': id})
-        res = self.wait_for()
-        if res is True:
-            return res
-        elif res.startswith('Error NoSuchElement'):
-            raise NoSuchElementException(res)
-        else:
-            return res
-
-    def get_attribute(self, attr) -> str:
-        '''Get the attribute's value of the target element. If the current
-        target element does not have the attribute, return ``None``.'''
-        self.conn.send({'method': 'get_attribute', 'attr': attr})
-        return self.wait_for()
-
-    def get_page_source(self):
-        self.conn.send({'method': 'get_page_source'})
-        return self.wait_for()
-
-    def get_text(self) -> str:
-        '''Get the inner text content of the target element.'''
-        self.conn.send({'method': 'get_text'})
-        return self.wait_for()
-
-    def is_displayed(self) -> None:
-        self.conn.send({'method': 'is_displayed'})
-        return self.wait_for()
-
-    def click(self) -> None:
-        self.conn.send({'method': 'click'})
-        return self.wait_for()
-
-    def send_keys(self, keys: str) -> None:
-        self.conn.send({'method': 'send_keys', 'keys': keys})
-        return self.wait_for()
+        return self.browser.set_element_by_id(node.rimo_id)
 
 
 class WebDriverTestCase:
