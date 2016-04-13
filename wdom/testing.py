@@ -6,6 +6,7 @@ import asyncio
 import socket
 import unittest
 from multiprocessing import Process, Pipe
+from types import FunctionType, MethodType
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -72,7 +73,7 @@ def start_remote_browser():
 def close_remote_browser():
     '''Terminate browser process.'''
     global conn, browser_manager
-    conn.send({'method': 'quit'})
+    conn.send({'target': 'process', 'method': 'quit'})
     time.sleep(0.3)
     print('\nRemote Browser closed')
     conn.close()
@@ -119,9 +120,9 @@ class BrowserController:
         try:
             self.element = self.wd.find_element_by_css_selector(
                 '[rimo_id="{}"]'.format(id))
-            self.conn.send(True)
+            return True
         except NoSuchElementException:
-            self.conn.send('Error NoSuchElement: ' + id)
+            return 'Error NoSuchElement: ' + id
 
     def get_attribute(self, attr) -> str:
         '''Get ``attr`` of the target element. If succeed to get, send the
@@ -164,6 +165,14 @@ class BrowserController:
         else:
             self.conn.send('No Element Set')
 
+    def quit(self, *args):
+        self.wd.quit()
+        return 'closed'
+
+    def close(self, *args):
+        self.wd.close()
+        return 'closed'
+
     def run(self):
         '''Running process. Wait message from the other end of the connection,
         and when gat message, execute the method specified by the message.
@@ -171,22 +180,29 @@ class BrowserController:
         '''
         while True:
             req = self.conn.recv()
-            method = req.get('method', '')
+            target = req.get('target', '')
+            method_name = req.get('method', '')
             args = req.get('args', [])
-            if method in ('close', 'quit'):
-                getattr(self.wd, method)()
-                self.conn.send('CLOSED')
-                break
-            elif method in ('get_page_source', 'get', 'set_element_by_id'):
-                # page-level browser methods
-                getattr(self, method)(*args)
-            elif self.element is None:
-                # For other methods, element must be set
-                self.conn.send('No Element Set')
-            elif method == 'get_text':
-                self.get_text()
-            else:
-                self.conn.send(getattr(self.element, method)(*args))
+            if target == 'process':
+                method = getattr(self, method_name)
+                self.conn.send(method(*args))
+            elif target == 'browser':
+                method = getattr(self.wd, method_name)
+                if isinstance(method, (FunctionType, MethodType)):
+                    self.conn.send(method(*args))
+                else:
+                    # not callable, just send it back
+                    self.conn.send(method)
+            elif target == 'element':
+                if self.element is None:
+                    # Element must be set
+                    self.conn.send('Error: No Element Set')
+                method = getattr(self.element, method_name)
+                if isinstance(method, (FunctionType, MethodType)):
+                    self.conn.send(method(*args))
+                else:
+                    # not callable, just send it back
+                    self.conn.send(method)
 
 
 def wait_for():
@@ -206,18 +222,35 @@ def wait_coro():
             yield from asyncio.sleep(0.01)
             continue
 
-
-class RemoteBrowserController:
+class Controller:
+    target = None
     def __getattr__(self, attr:str):
         global conn
         def wrapper(*args):
-            conn.send({'method': attr, 'args': args})
+            conn.send({'target': self.target, 'method': attr, 'args': args})
             res = wait_for()
-            if isinstance(res, str) and res.startswith('Error NoSuchElement'):
-                raise NoSuchElementException(res)
-            else:
-                return res
+            if isinstance(res, str):
+                if res.startswith('Error NoSuchElement'):
+                    raise NoSuchElementException(res)
+                elif res.startswith('Error'):
+                    raise ValueError(res)
+            return res
         return wrapper
+
+
+class ProcessController(Controller):
+    target = 'process'
+
+
+class RemoteBrowserController(Controller):
+    target = 'browser'
+
+
+class RemoteElementController(Controller):
+    target = 'element'
+    @property
+    def text(self) -> str:
+        return super().__getattr__('text')()
 
 
 class RemoteBrowserTestCase:
@@ -240,7 +273,9 @@ class RemoteBrowserTestCase:
     def setUp(self):
         self._prev_logging = options.config.logging
         options.config.logging = 'WARN'
+        self.proc = ProcessController()
         self.browser = RemoteBrowserController()
+        self.element = RemoteElementController()
         self.address = 'localhost'
         self.app = self.get_app(self.document)
         self.app.add_favicon_path(static_dir)
@@ -293,7 +328,7 @@ class RemoteBrowserTestCase:
     def set_element(self, node):
         '''Wrapper method of ``set_element_by_id``. Set the ``node`` as a
         target node of the browser process.'''
-        return self.browser.set_element_by_id(node.rimo_id)
+        return self.proc.set_element_by_id(node.rimo_id)
 
 
 class WebDriverTestCase:
