@@ -244,6 +244,9 @@ class ProcessController(Controller):
 
 class RemoteBrowserController(Controller):
     target = 'browser'
+    @property
+    def page_source(self) -> str:
+        return super().__getattr__('page_source')()
 
 
 class RemoteElementController(Controller):
