@@ -9,8 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 from wdom.tag import Tag, Textarea, Input, CheckBox, Div
 from wdom.document import get_document
 from wdom.misc import install_asyncio
-from wdom.tests.util import TestCase
-from wdom.testing import RemoteBrowserTestCase
+from wdom.testing import RemoteBrowserTestCase, TestCase
 from wdom import server
 
 

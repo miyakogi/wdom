@@ -8,7 +8,7 @@ import aiohttp
 from syncer import sync
 
 from wdom.log import configure_logger
-from wdom.tests.util import TestCase
+from wdom.testing import TestCase
 from wdom.document import Document
 from wdom.server_aio import get_app, start_server, stop_server
 
@@ -47,10 +47,10 @@ class TestServer(TestCase):
     @sync
     async def test_mainpage(self):
         content = await self.fetch('/')
-        self.assertMatch(
+        self.assertRegex(
+            content,
             r'<!DOCTYPE html><html rimo_id="\d+">\s*<head rimo_id="\d+">\s*'
             r'.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
             r'</head>\s*<body.*>.*<script.*>.*</script>.*'
             r'</body>\s*</html>'
-            r'', content
         )

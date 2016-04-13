@@ -4,6 +4,7 @@
 import time
 import asyncio
 import socket
+import unittest
 from multiprocessing import Process, Pipe
 
 from selenium import webdriver
@@ -16,6 +17,14 @@ from tornado.httpserver import HTTPServer
 from wdom.misc import static_dir
 
 driver = webdriver.Firefox
+
+
+class TestCase(unittest.TestCase):
+    def assertIsTrue(self, bl):
+        self.assertIs(bl, True)
+
+    def assertIsFalse(self, bl):
+        self.assertIs(bl, False)
 
 
 def start_webdriver():

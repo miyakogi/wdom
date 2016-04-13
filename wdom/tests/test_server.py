@@ -15,7 +15,7 @@ from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 
 from wdom.log import configure_logger
-from wdom.tests.util import TestCase
+from wdom.testing import TestCase
 
 
 curdir = path.dirname(__file__)

@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 
 from syncer import sync
 
-from wdom.tests.util import TestCase
+from wdom.testing import TestCase
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
