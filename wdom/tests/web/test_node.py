@@ -115,7 +115,8 @@ class WebElementTestCase(ElementTestCase):
         # test parent in constructor
         self.c1 = WebElement('c1', parent=self.tag)
         self.c1.textContent = 'child1'
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
 
         self.assertIsTrue(self.set_element(self.c1))
         with self.assertRaises(NoSuchElementException):
@@ -125,14 +126,16 @@ class WebElementTestCase(ElementTestCase):
         self.assertEqual(self.element.text, 'child1')
 
         self.tag.insertBefore(self.c2, self.c1)
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertIsTrue(self.set_element(self.c2))
 
         self.set_element(self.tag)
         self.assertEqual(self.element.text, 'child2child1')
 
         self.tag.empty()
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, '')
         with self.assertRaises(NoSuchElementException):
             self.set_element(self.c1)
@@ -157,13 +160,15 @@ class WebElementTestCase(ElementTestCase):
         self.tag.appendChild(self.c1)
         self.df.append(self.c2, self.c3, 'text')
         self.tag.insertBefore(self.df, self.c1)
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, 'child2child3textchild1')
 
         df = DocumentFragment()
         df.append(self.c4, 'text2')
         self.tag.insertBefore(df, self.c3)
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, 'child2child4text2child3textchild1')
 
     def test_replace_child(self):
@@ -261,15 +266,18 @@ class WebElementTestCase(ElementTestCase):
         self.set_element(self.tag)
         self.tag.append(self.c1)
         self.c1.before(self.c2)
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, 'child2child1')
 
         self.c1.before(self.c3, self.c4)
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, 'child2child3child4child1')
 
         self.c1.before(self.c2, 'text')
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, 'child3child4child2textchild1')
 
     def test_after_before_text(self):
@@ -285,11 +293,13 @@ class WebElementTestCase(ElementTestCase):
         self.assertEqual(self.element.text, 'acdb')
 
         t.before('e')
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, 'eacdb')
 
         t.before('f', 'g')
-        self.wait(0.1)
+        for i in range(10):
+            self.wait()
         self.assertEqual(self.element.text, 'efgacdb')
 
     def test_shortcut_attr(self):
@@ -404,7 +414,8 @@ class EventTestCase(ElementTestCase):
                      reason='This test not pass only on travis')
     def test_click(self):
         self.set_element(self.btn)
-        self.wait(0.3)
+        for i in range(10):
+            self.wait()
         self.element.click()
         self.wait()
         self.assertEqual(self.click_event_mock.call_count, 1)

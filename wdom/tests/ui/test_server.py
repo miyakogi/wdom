@@ -34,7 +34,7 @@ doc.body.appendChild(H1('FIRST', id='h1'))
 doc.add_cssfile('testdir/test.css')
 app = get_app(doc)
 app.add_static_path('testdir', '{curdir}/testdir')
-server = start_server(app, loop=loop)
+server = start_server(app, loop=loop, check_time=10)
 loop.run_forever()
 '''.format(rootdir=ROOTDIR, curdir=CURDIR)
 
