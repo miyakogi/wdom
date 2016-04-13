@@ -3,10 +3,10 @@
 
 import pytest
 
-from wdom.tests.ui.wd import start_wd, close_wd
+from wdom.testing import start_webdriver, close_webdriver
 
 
 @pytest.fixture(scope='session', autouse=True)
 def browser(request):
-    start_wd()
-    request.addfinalizer(close_wd)
+    start_webdriver()
+    request.addfinalizer(close_webdriver)

@@ -10,14 +10,14 @@ from wdom.tag import H1
 from wdom.document import get_document
 from wdom import server_aio
 from wdom.misc import install_asyncio
-from wdom.tests.ui import wd
+from wdom.testing import WebDriverTestCase
 
 
 def setUpModule():
     install_asyncio()
 
 
-class SimpleTestCase(wd.UITest):
+class SimpleTestCase(WebDriverTestCase):
     def get_app(self):
         self.document = get_document(autoreload=False)
         self.h1 = H1()
@@ -31,7 +31,7 @@ class SimpleTestCase(wd.UITest):
         assert tag.text == 'TITLE'
 
 
-class DataBindingTestCase(wd.UITest):
+class DataBindingTestCase(WebDriverTestCase):
     def get_app(self):
         from wdom.examples.data_binding import sample_page
         self.document = sample_page(autoreload=False)
@@ -56,7 +56,7 @@ class DataBindingTestCase(wd.UITest):
         self.assertEqual(view.text, 'new')
 
 
-class RevTextTestCase(wd.UITest):
+class RevTextTestCase(WebDriverTestCase):
     def get_app(self):
         from wdom.examples.rev_text import sample_page
         self.document = sample_page(autoreload=False)

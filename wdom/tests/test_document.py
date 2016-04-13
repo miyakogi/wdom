@@ -10,7 +10,7 @@ from wdom.node import DocumentFragment, Comment, Text
 from wdom.element import Attr
 from wdom.document import Document, get_document
 from wdom.tag import Tag, HTMLElement, A
-from wdom.tests.util import TestCase
+from wdom.testing import TestCase
 
 
 class TestMainDocument(TestCase):

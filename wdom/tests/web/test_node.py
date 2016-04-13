@@ -8,19 +8,19 @@ from unittest.mock import MagicMock
 
 from syncer import sync
 
-from wdom.tests.util import TestCase
+from wdom.testing import TestCase
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
-from wdom.tests.web.remote_browser import WDTest, NoSuchElementException
+from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
 
 
 def setUpModule():
     install_asyncio()
 
 
-class ElementTestCase(WDTest):
+class ElementTestCase(RemoteBrowserTestCase):
     def setUp(self):
         self.document = get_document(autoreload=False)
         self.document.body.prepend(self.get_elements())

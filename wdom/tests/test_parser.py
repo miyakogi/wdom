@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.tests.util import TestCase
+from wdom.testing import TestCase
 
 from wdom.node import Node
 from wdom.parser import DocumentParser, FragmentParser

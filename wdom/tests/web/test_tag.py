@@ -9,8 +9,7 @@ from selenium.common.exceptions import NoSuchElementException
 from wdom.tag import Tag, Textarea, Input, CheckBox, Div
 from wdom.document import get_document
 from wdom.misc import install_asyncio
-from wdom.tests.util import TestCase
-from wdom.tests.web.remote_browser import WDTest
+from wdom.testing import RemoteBrowserTestCase, TestCase
 from wdom import server
 
 
@@ -18,7 +17,7 @@ def setUpModule():
     install_asyncio()
 
 
-class NodeTestCase(WDTest):
+class NodeTestCase(RemoteBrowserTestCase):
     def setUp(self):
         self.document = get_document(autoreload=False)
 
@@ -105,7 +104,7 @@ class NodeTestCase(WDTest):
         self.assertIsTrue(self.is_displayed())
 
 
-class InputTestCase(WDTest):
+class InputTestCase(RemoteBrowserTestCase):
     def setUp(self):
         self.document = get_document(autoreload=False)
         self.root = Div()

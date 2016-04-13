@@ -3,7 +3,7 @@
 
 from wdom import server_tornado
 from wdom.misc import install_asyncio
-from wdom.tests.util import TestCase
+from wdom.testing import TestCase
 from wdom.tests.web.test_node import WebElementTestCase, EventTestCase
 from wdom.tests.web.test_tag import NodeTestCase, InputTestCase
 
