@@ -31,6 +31,8 @@ TextInput = NewTag('TextInput', 'input', TextInput, class_='form-control')
 Textarea = NewTag('Textarea', 'textarea', Textarea, class_='form-control')
 Select = NewTag('Select', 'select', Select, class_='form-control')
 
+Table = NewTag('Table', 'table', Table, class_='table')
+
 Container = NewTag('Container', 'div', class_='container')
 Wrapper = Container
 Row = NewTag('Row', 'div', class_='row')
