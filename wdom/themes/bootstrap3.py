@@ -6,7 +6,7 @@ from wdom.tag import *
 
 
 css_files = [
-    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'
+    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
 ]
 
 js_files = [
