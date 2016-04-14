@@ -28,7 +28,7 @@ def sample_app(theme=tag) -> tag.Tag:
         theme.LinkButton('Link'),
     )
 
-    input_wrapper = theme.FormGroup(parent=body)
+    input_wrapper = theme.Form(parent=theme.FormGroup(parent=body))
     input_wrapper.append(theme.Textarea())
     input_wrapper.append(theme.Input())
 
@@ -63,7 +63,7 @@ def sample_app(theme=tag) -> tag.Tag:
     table_div = theme.Div(parent=body)
     table = theme.Table(parent=table_div)
 
-    thead = theme.Th(parent=table)
+    thead = theme.Thead(parent=table)
     tr1 = theme.Tr(parent=thead)
     tr1.append(
         theme.Th('Name'),
