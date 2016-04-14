@@ -108,9 +108,9 @@ def sample_app(theme=tag) -> tag.Tag:
         theme.H6('Heading 6'),
         theme.P('This is the base paragraph.'),
         theme.Strong('Bolded'),
-        theme.Em('Italicized'),
-        theme.A('Colored (link)'),
-        theme.U('Underlined'),
+        theme.Div(theme.Em('Italicized')),
+        theme.Div(theme.A('Colored (link)')),
+        theme.Div(theme.U('Underlined')),
     )
 
     return app
