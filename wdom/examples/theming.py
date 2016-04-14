@@ -1,11 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom import tag
+import re
+
+from wdom import themes, options, tag
 from wdom.document import Document, get_document
 
 
-def sample_app(theme=tag) -> tag.Tag:
+def _get_theme_name(theme) -> str:
+    if theme.__name__ == 'wdom.themes':
+        if options.config.theme:
+            theme_name = options.config.theme.upper()
+        else:
+            theme_name = 'DEFAULT'
+    else:
+        theme_name = re.search(r'.*\.(.*?)$', theme.__name__).group(1).upper()
+    return theme_name
+
+def sample_app(theme=themes) -> tag.Tag:
     app = theme.Container()
     content_wrapper = theme.Div()
     content_wrapper['style'] = '''\
@@ -16,6 +28,9 @@ def sample_app(theme=tag) -> tag.Tag:
     '''
     app.append(content_wrapper)
     body = content_wrapper
+    body.append(theme.Div(theme.H1(_get_theme_name(theme)),
+                          style='text-align: center;'))
+    body.append(theme.Hr())
 
     button_wrapper = theme.Div(parent=body)
     button_wrapper.append(
@@ -116,7 +131,7 @@ def sample_app(theme=tag) -> tag.Tag:
     return app
 
 
-def sample_page(theme=tag) -> Document:
+def sample_page(theme=themes) -> Document:
     page = get_document()
     app = sample_app(theme)
     page.body.prepend(app)
