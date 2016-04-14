@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.themes.bootstrap3 import Tag, Div, DefaultButton, PrimaryButton, DangerButton
-from wdom.themes.bootstrap3 import FormGroup, TextArea, TextInput, Option, Select
-from wdom.themes.bootstrap3 import js_files, css_files
+from wdom import tag
 from wdom.document import Document, get_document
 
 
-def sample_app() -> Tag:
-    app = Div(class_='container')
-    content_wrapper = Div()
+def sample_app(theme=tag) -> tag.Tag:
+    app = theme.Div(class_='container')
+    content_wrapper = theme.Div()
     content_wrapper['style'] = '''\
         margin-top: 2em;
         margin-bottom: 2em;
@@ -19,48 +17,33 @@ def sample_app() -> Tag:
     app.append(content_wrapper)
     body = content_wrapper
 
-    button_wrapper = Div()
+    button_wrapper = theme.Div(parent=body)
+    button_wrapper.append(theme.DefaultButton('Default'))
+    button_wrapper.append(theme.PrimaryButton('Primary'))
+    button_wrapper.append(theme.SuccessButton('Success'))
+    button_wrapper.append(theme.InfoButton('Info'))
+    button_wrapper.append(theme.WarningButton('Warning'))
+    button_wrapper.append(theme.DangerButton('Danger'))
+    button_wrapper.append(theme.LinkButton('Link'))
 
-    btn1 = DefaultButton()
-    btn2 = PrimaryButton()
-    btn3 = DangerButton()
-    button_wrapper.append(btn1)
-    button_wrapper.append(btn2)
-    button_wrapper.append(btn3)
-    btn1.textContent = 'default'
-    btn2.textContent = 'primary'
-    btn3.textContent = 'danger'
+    input_wrapper = theme.FormGroup(parent=body)
+    input_wrapper.append(theme.Textarea())
+    input_wrapper.append(theme.Input())
 
-    input_wrapper = FormGroup()
-    textarea = TextArea()
-    textinput = TextInput()
-    input_wrapper.append(textarea)
-    input_wrapper.append(textinput)
-
-    item1 = Option()
-    item2 = Option()
-    item3 = Option()
-    item1.textContent = 'Item 1'
-    item2.textContent = 'Item 2'
-    item3.textContent = 'Item 3'
-    dropdown_list = Select()
-    dropdown_list.append(item1)
-    dropdown_list.append(item2)
-    dropdown_list.append(item3)
-
-    body.append(button_wrapper)
-    body.append(input_wrapper)
-    body.append(dropdown_list)
+    dropdown_list = theme.Select(parent=body)
+    dropdown_list.append(theme.Option('Item 1'))
+    dropdown_list.append(theme.Option('Item 2'))
+    dropdown_list.append(theme.Option('Item 3'))
 
     return app
 
 
-def sample_page() -> Document:
+def sample_page(theme=tag) -> Document:
     page = get_document()
-    app = sample_app()
+    app = sample_app(theme)
     page.body.prepend(app)
-    for css in css_files:
+    for css in theme.css_files:
         page.add_cssfile(css)
-    for js in js_files:
+    for js in theme.js_files:
         page.add_jsfile(js)
     return page
