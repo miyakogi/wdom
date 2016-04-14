@@ -19,6 +19,7 @@ def sample_app(theme=tag) -> tag.Tag:
 
     button_wrapper = theme.Div(parent=body)
     button_wrapper.append(
+        theme.Button('Button'),
         theme.DefaultButton('Default'),
         theme.PrimaryButton('Primary'),
         theme.SuccessButton('Success'),
@@ -27,10 +28,13 @@ def sample_app(theme=tag) -> tag.Tag:
         theme.DangerButton('Danger'),
         theme.LinkButton('Link'),
     )
+    body.append(theme.Hr())
 
     input_wrapper = theme.Form(parent=theme.FormGroup(parent=body))
-    input_wrapper.append(theme.Textarea())
-    input_wrapper.append(theme.Input())
+    input_wrapper.append(
+        theme.Textarea(),
+        theme.Input(),
+    )
 
     dropdown_list = theme.Select(parent=body)
     dropdown_list.append(
@@ -38,6 +42,7 @@ def sample_app(theme=tag) -> tag.Tag:
         theme.Option('Item 2'),
         theme.Option('Item 3'),
     )
+    body.append(theme.Hr())
 
     # List
     list_div = theme.Div(parent=body)
@@ -50,6 +55,7 @@ def sample_app(theme=tag) -> tag.Tag:
         theme.Li('Item 2.2'),
         theme.Li('Item 3'),
     )
+    body.append(theme.Hr())
 
     code_div = theme.Div(parent=body)
     pre = theme.Pre(parent=code_div)
@@ -58,6 +64,7 @@ def sample_app(theme=tag) -> tag.Tag:
     def python(i: int) -> str:
         print(str(i))
     '''.rstrip()))
+    body.append(theme.Hr())
 
     # Table
     table_div = theme.Div(parent=body)
@@ -88,6 +95,7 @@ def sample_app(theme=tag) -> tag.Tag:
         theme.Td('Female'),
         theme.Td('Kyoto'),
     )
+    body.append(theme.Hr())
 
     # Typography
     typography = theme.Div(parent=body)
