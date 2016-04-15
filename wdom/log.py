@@ -3,17 +3,16 @@
 
 import logging
 
-from wdom import options
+from wdom.options import config
 
 
 def configure_logger(level=None):
     logger = logging.getLogger('wdom')
-    options.check_options('logging')
 
     if level is not None:
         level = level
-    elif options.config.logging:
-        level = getattr(logging, options.config.logging.upper())
+    elif config.logging:
+        level = getattr(logging, config.logging.upper())
     else:
         level = logging.WARN
     logger.setLevel(level)

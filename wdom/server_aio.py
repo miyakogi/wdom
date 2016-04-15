@@ -9,7 +9,7 @@ import socket
 from aiohttp import web, MsgType
 from tornado import autoreload
 
-from wdom import options
+from wdom.options import config
 from wdom.misc import static_dir
 from wdom.log import configure_logger
 from wdom.handler import event_handler, log_handler, response_handler
@@ -71,7 +71,7 @@ class WSHandler:
             raise ValueError('unkown message type: {}'.format(message))
 
     async def terminate(self):
-        await asyncio.sleep(options.config.shutdown_wait)
+        await asyncio.sleep(config.shutdown_wait)
         if not any(self.doc.connections):
             server = self.req.app['server']
             await terminate_server(server)
@@ -81,7 +81,7 @@ class WSHandler:
         logger.info('RootWS CLOSED')
         if self in self.doc.connections:
             self.doc.connections.remove(self)
-        if options.config.auto_shutdown and not any(self.doc.connections):
+        if config.auto_shutdown and not any(self.doc.connections):
             asyncio.ensure_future(self.terminate())
 
 
@@ -99,9 +99,7 @@ class Application(web.Application):
 def get_app(document:Document, debug=None, **kwargs) -> web.Application:
     '''Make Application object to serve ``document``.'''
     if debug is None:
-        if 'debug' not in options.config:
-            options.parse_command_line()
-        debug = options.config.debug
+        debug = config.debug
 
     app = Application()
     app.router.add_route('GET', '/', MainHandler)
@@ -129,10 +127,9 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     for example it is just ``True``, use system's default browser to open the
     page.
     '''
-    options.check_options('port', 'address', 'open_browser')
     configure_logger()
-    port = port if port is not None else options.config.port
-    address = address if address is not None else options.config.address
+    port = port if port is not None else config.port
+    address = address if address is not None else config.address
 
     if loop is None:
         loop = asyncio.get_event_loop()
@@ -149,7 +146,7 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
         install_asyncio()
         autoreload.start(check_time=check_time)
 
-    if options.config.open_browser:
+    if config.open_browser:
         open_browser('http://{}:{}/'.format(address, port), browser)
 
     return server

@@ -3,7 +3,7 @@
 
 from typing import Optional
 
-from wdom import options
+from wdom.options import config
 from wdom.interface import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
@@ -48,9 +48,7 @@ class Document(Node):
 
     def _set_autoreload(self, autoreload, reload_wait:int=None):
         if autoreload is None:
-            options.check_options('autoreload', 'debug')
-            self._autoreload = (options.config.autoreload or
-                                options.config.debug)
+            self._autoreload = (config.autoreload or config.debug)
         else:
             self._autoreload = autoreload
 
@@ -137,12 +135,11 @@ def get_document(include_rimo: bool = True,
                  log_console: bool = False,
                  ws_url: str = None,
                  ) -> Document:
-    options.check_options('autoreload', 'logging')
     document = Document(autoreload=autoreload, reload_wait=reload_wait)
     if app is not None:
         document.body.insertBefore(app, document.body.firstChild)
     if log_level is None:
-        log_level = options.config.logging
+        log_level = config.logging
 
     log_script = []
     if log_level is not None:

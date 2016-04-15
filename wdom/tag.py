@@ -311,6 +311,32 @@ Select = NewTagClass('Select')
 Container = Div
 Wrapper = Div
 Row = Div
+FormGroup = Div
+Col1 = Div
+Col2 = Div
+Col3 = Div
+Col4 = Div
+Col5 = Div
+Col6 = Div
+Col7 = Div
+Col8 = Div
+Col9 = Div
+Col10 = Div
+Col11 = Div
+
+# Some css updates
+DefaultButton = Button
+PrimaryButton = Button
+SuccessButton = Button
+InfoButton = Button
+WarningButton = Button
+DangerButton = Button
+LinkButton = Button
+
+# css/js/headers
+css_files = []
+js_files = []
+headers = []
 
 default_classes = (
     Input,

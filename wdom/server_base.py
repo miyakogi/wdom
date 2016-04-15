@@ -9,7 +9,7 @@ import webbrowser
 
 from tornado import autoreload
 
-from wdom import options
+from wdom.options import config
 
 
 exclude_patterns = [
@@ -46,9 +46,8 @@ def _add_watch_path(path:pathlib.Path):
 
 
 def watch_dir(path:str):
-    options.check_options('autoreload', 'debug')
     _compile_exclude_patterns()
-    if options.config.autoreload or options.config.debug:
+    if config.autoreload or config.debug:
         # Add files to watch for autoreload
         p = pathlib.Path(path)
         p.resolve()
@@ -60,8 +59,7 @@ def open_browser(url, browser=None):
         # Remove open browser to prevent making new tab on reload
         sys.argv.remove('--open-browser')
     if browser is None:
-        options.check_options('browser')
-        browser = options.config.browser
+        browser = config.browser
     if browser in webbrowser._browsers:
         webbrowser.get(browser).open(url)
     else:

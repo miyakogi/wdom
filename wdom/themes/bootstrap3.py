@@ -6,7 +6,7 @@ from wdom.tag import *
 
 
 css_files = [
-    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'
+    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
 ]
 
 js_files = [
@@ -26,9 +26,12 @@ DangerButton = NewTag('DangerButton', 'button', Button, class_='btn-danger')
 LinkButton = NewTag('LinkButton', 'button', Button, class_='btn-link')
 
 FormGroup = NewTag('FormGroup', 'div', class_='form-group')
+Input = NewTag('Input', 'input', Input, class_='form-control')
 TextInput = NewTag('TextInput', 'input', TextInput, class_='form-control')
-TextArea = NewTag('TextArea', 'textarea', TextArea, class_='form-control')
+Textarea = NewTag('Textarea', 'textarea', Textarea, class_='form-control')
 Select = NewTag('Select', 'select', Select, class_='form-control')
+
+Table = NewTag('Table', 'table', Table, class_='table')
 
 Container = NewTag('Container', 'div', class_='container')
 Wrapper = Container
