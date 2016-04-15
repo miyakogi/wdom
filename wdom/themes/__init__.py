@@ -5,15 +5,14 @@ import os
 import re
 import logging
 
-from wdom import options
+from wdom.options import config
 from wdom.log import configure_logger
 
 logger = logging.getLogger(__name__)
 
-options.check_options('theme')
 configure_logger()
 curdir = os.path.dirname(os.path.abspath(__file__))
-theme = options.config.theme
+theme = config.theme
 if theme:
     if theme.endswith('.py'):
         theme = re.sub(r'\.py[codx]?$', '', theme)
