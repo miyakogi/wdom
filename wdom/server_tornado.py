@@ -9,7 +9,7 @@ from tornado import web
 from tornado import websocket
 from tornado.httpserver import HTTPServer
 
-from wdom import options
+from wdom.options import config
 from wdom.misc import static_dir
 from wdom.log import configure_logger
 from wdom.handler import event_handler, log_handler, response_handler
@@ -47,7 +47,7 @@ class WSHandler(websocket.WebSocketHandler):
 
     @asyncio.coroutine
     def terminate(self):
-        yield from asyncio.sleep(options.config.shutdown_wait)
+        yield from asyncio.sleep(config.shutdown_wait)
         if not any(self.doc.connections):
             stop_server(self.application.server)
             self.application.server.io_loop.stop()
@@ -56,7 +56,7 @@ class WSHandler(websocket.WebSocketHandler):
         logger.info('RootWS CLOSED')
         if self in self.doc.connections:
             self.doc.connections.remove(self)
-        if options.config.auto_shutdown and not any(self.doc.connections):
+        if config.auto_shutdown and not any(self.doc.connections):
             asyncio.ensure_future(self.terminate())
 
 
@@ -125,8 +125,7 @@ class Application(web.Application):
 def get_app(document:Document, debug=None, **kwargs) -> Application:
     '''Return Application object to serve ``document``.'''
     if debug is None:
-        options.check_options('debug')
-        debug = options.config.debug
+        debug = config.debug
     app = Application(
         [(r'/', MainHandler),
          (r'/rimo_ws', WSHandler),
@@ -152,15 +151,14 @@ def start_server(app: web.Application, port=None, browser=None, address=None,
     name is not registered in ``webbrowser`` module, or, for example it is just
     ``True``, use system's default browser to open the page.
     '''
-    options.check_options('port', 'address', 'open_browser')
     configure_logger()
-    port = port if port is not None else options.config.port
-    address = address if address is not None else options.config.address
+    port = port if port is not None else config.port
+    address = address if address is not None else config.address
     logger.info('Start server on port {0:d}'.format(port))
     server = app.listen(port, address=address)
     app.server = server
 
-    if options.config.open_browser:
+    if config.open_browser:
         open_browser('http://{}:{}/'.format(address, port), browser)
 
     return server
