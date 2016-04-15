@@ -27,8 +27,9 @@ def main():
     # from wdom.examples.data_binding import sample_page
     # from wdom.examples.todo import sample_page
     from wdom.examples.theming import sample_page
-    from wdom.themes import bootstrap3
-    page = sample_page(bootstrap3)
+    # from wdom.themes import bootstrap3, mdl, skeleton, pure, semantic, kube, foundation, mui
+    from wdom import themes
+    page = sample_page(themes)
     app = get_app(document=page)
     loop = asyncio.get_event_loop()
     server = start_server(app=app, loop=loop)
