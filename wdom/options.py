@@ -45,15 +45,32 @@ parser = ArgumentParser(prog='WDOM', argument_default=None)
 config = parser.parse_args([])
 define_logging_options(parser)
 
-parser.define('--debug', default=False, action='store_const', const=True)
-parser.define('--address', default='localhost')
-parser.define('--port', default=8888, type=int)
-parser.define('--autoreload', default=False, action='store_const', const=True)
-parser.define('--theme', default=None, type=str)
+parser.define('--debug', default=False, action='store_const', const=True,
+              help='Enable debug mode. Debug mode enables `--autoreload`'
+              ' (dafualt: False).')
+parser.define('--address', default='localhost',
+              help='Address to run server (default: `localhost`).')
+parser.define('--port', default=8888, type=int,
+              help='Port to run server (defualt: 8888).'
+              ' To use arbitrary free port, use 0.')
+parser.define('--autoreload', default=False, action='store_const', const=True,
+              help='Enable autoreload when any file changed (default: False).')
+parser.define('--theme', default=None, type=str,
+              help='Choose theme name to use with wdom.themes module.'
+              'By default (None) or unavailable name, use `wdom.tag`.')
 parser.define(
-    '--auto-shutdown', default=False, action='store_const', const=True)
-parser.define('--shutdown-wait', default=1.0, type=float)
+    '--auto-shutdown', default=False, action='store_const', const=True,
+    help='Terminate server process when all connections (browser tabs) closed'
+    ' (default: False).')
+parser.define('--shutdown-wait', default=1.0, type=float,
+              help='Seconds to wait for auto-shutdown when all connections'
+              'closed (default: 1.0 [sec]).')
 parser.define(
-    '--open-browser', default=False, action='store_const', const=True)
-parser.define('--browser', default=None)
+    '--open-browser', default=False, action='store_const', const=True,
+    help='Open browser automatically (default: False).')
+parser.define('--browser', default=None, help='Browser name to open.'
+              ' Only affects when used with --open-browser option.'
+              ' Available values are keys of `webbrowser._browsers`.'
+              ' When not specified or specified invalid value, open system\'s'
+              ' default browser (default: None).')
 parse_command_line()
