@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 import os
 import time
 import asyncio
@@ -22,6 +23,8 @@ from wdom.misc import static_dir
 from wdom import options
 
 driver = webdriver.Firefox
+local_webdriver = None
+remote_webdriver = None
 
 
 class TestCase(unittest.TestCase):
@@ -33,14 +36,14 @@ class TestCase(unittest.TestCase):
 
 
 def start_webdriver():
-    if globals().get('local_webdriver') is None:
-        global local_webdriver
+    global local_webdriver
+    if local_webdriver is None:
         local_webdriver = driver()
 
 
 def close_webdriver():
-    if globals().get('local_webdriver') is not None:
-        global local_webdriver
+    global local_webdriver
+    if local_webdriver is not None:
         local_webdriver.close()
         local_webdriver = None
 
@@ -87,7 +90,7 @@ def close_remote_browser():
 
 def get_remote_browser():
     '''Get existing webdriver. If no driver is running, start new one.'''
-    remote_webdriver = globals().get('remote_webdriver')
+    global remote_webdriver
     if remote_webdriver is None:
         remote_webdriver = driver()
         return remote_webdriver
@@ -231,14 +234,11 @@ class RemoteBrowserTestCase:
     '''
     from wdom import server
     module = server
-    if os.environ.get('TRAVIS', False):
-        wait_time = 0.1
-    else:
-        wait_time = 0.02
+    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.02
 
     def setUp(self):
         self._prev_logging = options.config.logging
-        options.config.logging = 'WARN'
+        options.config.logging = 'warn'
         self.proc = ProcessController()
         self.browser = RemoteBrowserController()
         self.element = RemoteElementController()
@@ -252,10 +252,12 @@ class RemoteBrowserTestCase:
         self.browser.get(self.url)
         self.wait()
 
-    def teardown(self):
+    def tearDown(self):
         options.config.logging = self._prev_logging
         self.stop_server()
         self.wait()
+        sys.stdout.flush()
+        sys.stderr.flush()
 
     @property
     def port(self) -> int:
@@ -307,14 +309,10 @@ class WebDriverTestCase:
     '''
     from wdom import server_aio
     module = server_aio
-    if os.environ.get('TRAVIS', False):
-        wait_time = 0.1
-    else:
-        wait_time = 0.02
+    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.02
 
     def setUp(self):
         self.wd = get_webdriver()
-        self.loop = asyncio.get_event_loop()
 
         def start_server(app, port):
             self.module.start_server(app, port=port)
@@ -337,6 +335,8 @@ class WebDriverTestCase:
     def tearDown(self):
         '''Terminate server subprocess.'''
         self.server.terminate()
+        sys.stdout.flush()
+        sys.stderr.flush()
 
     def get_app(self):
         '''This method should be overridden. Return

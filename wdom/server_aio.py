@@ -131,8 +131,7 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     port = port if port is not None else config.port
     address = address if address is not None else config.address
 
-    if loop is None:
-        loop = asyncio.get_event_loop()
+    loop = loop or asyncio.get_event_loop()
     logger.info('Start server on {0}:{1:d}'.format(address, port))
     handler = app.make_handler()
     f = loop.create_server(handler, address, port)
