@@ -36,7 +36,7 @@ parser.add_argument(
 parser.add_argument(
     '--debug', default=False, action='store_const', const=True,
     help='Enable debug mode (dafualt: False).'
-    ' Debug mode enables `--autoreload`.'
+    ' Debug mode enables `--autoreload` and set the default log level `debug`.'
 )
 parser.add_argument(
     '--address', default='localhost',

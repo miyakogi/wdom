@@ -13,8 +13,10 @@ def configure_logger(level=None):
         level = level
     elif config.logging:
         level = getattr(logging, config.logging.upper())
+    elif config.debug:
+        level = logging.DEBUG
     else:
-        level = logging.WARN
+        level = logging.INFO
     logger.setLevel(level)
     ch = logging.StreamHandler()
     ch.setLevel(level)
