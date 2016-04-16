@@ -6,6 +6,10 @@ This module defines options for wdom and wraps ``tornado.options``.
 Do not use ``tornado.options`` directly.
 """
 
+import sys
+import logging
+import re
+
 from argparse import ArgumentParser
 
 __all__ = [
@@ -13,13 +17,21 @@ __all__ = [
     'config',
     'parse_command_line',
 ]
+logger = logging.getLogger(__name__)
 
 
 def parse_command_line():
     '''Parse command line options and set options in ``tornado.options``.'''
     import tornado.options
     global config
-    parser.parse_known_args(namespace=config)
+    _, unkown_args = parser.parse_known_args(namespace=config)
+    if unkown_args and not re.search(r'py\.test[-.0-9]*$', sys.argv[0]):
+        # warn when get unknown argument
+        # if run in test, skip warning since test runner adds some arguments
+        from wdom.log import configure_logger
+        configure_logger()
+        logger.warn('Unknown Arguments: {}'.format(unkown_args))
+        parser.print_help()
     for k, v in vars(config).items():
         if k.startswith('log'):
             tornado.options.options.__setattr__(k, v)

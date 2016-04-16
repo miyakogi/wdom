@@ -2,13 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import sys
+from os import path
+import tempfile
 from copy import copy
 import logging
 from unittest import TestCase
 from importlib import reload
+import subprocess
 
 import pytest
 
+from wdom.misc import root_dir
 from wdom.options import parse_command_line, config
 from wdom.log import configure_logger
 from wdom import tag
@@ -59,6 +63,25 @@ def test_debug_with_logging():
     configure_logger()
     logger = logging.getLogger('wdom')
     assert logger.getEffectiveLevel() == logging.WARN
+
+
+def test_unknown_args():
+    src = '\n'.join([
+        'import sys',
+        'sys.path.append(\'{}\')'.format(path.dirname(root_dir)),
+        'from wdom import options',
+    ])
+    with tempfile.NamedTemporaryFile('w', dir=path.abspath(path.curdir)) as f:
+        f.write(src)
+        f.flush()  # save file
+        cmd = [sys.executable, f.name, '--test-arg']
+        proc = subprocess.run(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            universal_newlines=True,
+        )
+    assert 'usage: WDOM' in proc.stdout
+    assert 'Unknown Argument' in proc.stderr
+    assert '--test-arg' in proc.stderr
 
 
 class TestThemeOption(TestCase):
