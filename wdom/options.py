@@ -30,7 +30,7 @@ parser = ArgumentParser(prog='WDOM', argument_default=None)
 config = parser.parse_args([])
 
 parser.add_argument(
-    '--logging', choices=['debug', 'info', 'wran', 'error'],
+    '--logging', choices=['debug', 'info', 'warn', 'error'],
     help='Set the log level (dafualt: `info`).',
 )
 parser.add_argument(
