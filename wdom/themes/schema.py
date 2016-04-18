@@ -32,8 +32,9 @@ Table = NewTag('Table', 'table', Table, class_='table')
 
 Container = NewTag('Container', 'div', class_='container')
 Wrapper = Container
-Row = NewTag('Row', 'div', class_='row-fuid')
+Row = NewTag('Row', 'div', class_='row-fluid')
 
+Col1 = NewTag('Col', 'div', class_='col1')
 Col1 = NewTag('Col', 'div', class_='col1')
 Col2 = NewTag('Col', 'div', class_='col2')
 Col3 = NewTag('Col', 'div', class_='col3')
@@ -45,3 +46,4 @@ Col8 = NewTag('Col', 'div', class_='col8')
 Col9 = NewTag('Col', 'div', class_='col9')
 Col10 = NewTag('Col', 'div', class_='col10')
 Col11 = NewTag('Col', 'div', class_='col11')
+Col12 = NewTag('Col', 'div', class_='col12')
