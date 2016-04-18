@@ -35,21 +35,22 @@ Select = NewTag('Select', 'select', Select, class_='select')
 
 Row = NewTag('Row', 'row', Div)
 
-class Column(Div):
+class Col(Div):
     tag = 'column'
-    cols = 1
+    cols = 0
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAttribute('cols', str(self.cols))
 
-Col1 = NewTag('Col1', 'column', Column)
-Col2 = NewTag('Col2', 'column', Column, cols=2)
-Col3 = NewTag('Col3', 'column', Column, cols=3)
-Col4 = NewTag('Col4', 'column', Column, cols=4)
-Col5 = NewTag('Col5', 'column', Column, cols=5)
-Col6 = NewTag('Col6', 'column', Column, cols=6)
-Col7 = NewTag('Col7', 'column', Column, cols=7)
-Col8 = NewTag('Col8', 'column', Column, cols=8)
-Col9 = NewTag('Col9', 'column', Column, cols=9)
-Col10 = NewTag('Col10', 'column', Column, cols=10)
-Col11 = NewTag('Col11', 'column', Column, cols=11)
+Col1 = NewTag('Col1', 'column', Col)
+Col2 = NewTag('Col2', 'column', Col, cols=2)
+Col3 = NewTag('Col3', 'column', Col, cols=3)
+Col4 = NewTag('Col4', 'column', Col, cols=4)
+Col5 = NewTag('Col5', 'column', Col, cols=5)
+Col6 = NewTag('Col6', 'column', Col, cols=6)
+Col7 = NewTag('Col7', 'column', Col, cols=7)
+Col8 = NewTag('Col8', 'column', Col, cols=8)
+Col9 = NewTag('Col9', 'column', Col, cols=9)
+Col10 = NewTag('Col10', 'column', Col, cols=10)
+Col11 = NewTag('Col11', 'column', Col, cols=11)
+Col12 = NewTag('Col12', 'column', Col, cols=12)
