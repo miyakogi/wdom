@@ -3,6 +3,7 @@ include README.rst
 include wdom/_static/js/rimo/rimo.js
 
 recursive-include wdom/tests *.py
+recursive-include wdom/_static/css *.css
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
