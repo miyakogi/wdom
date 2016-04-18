@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
+import sys
+from pathlib import Path
 import re
+
+CURFILE = Path(__file__).resolve()
+CURDIR = CURFILE.parent.resolve()
+
+if __name__ == '__main__':
+    sys.path.insert(0, str(CURDIR.parent.parent.resolve()))
 
 from wdom import themes, options, tag
 from wdom.document import Document, get_document
@@ -16,6 +25,7 @@ def _get_theme_name(theme) -> str:
     else:
         theme_name = re.search(r'.*\.(.*?)$', theme.__name__).group(1).upper()
     return theme_name
+
 
 def sample_app(theme=themes) -> tag.Tag:
     app = theme.Container()
@@ -152,3 +162,21 @@ def sample_page(theme=themes) -> Document:
     for js in theme.js_files:
         page.add_jsfile(js)
     return page
+
+
+def main():
+    import asyncio
+    from wdom.server import start_server, get_app, stop_server
+    doc = sample_page()
+    app = get_app(document=doc)
+    loop = asyncio.get_event_loop()
+    server = start_server(app=app, loop=loop)
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        stop_server(server)
+        loop.close()
+
+
+if __name__ == '__main__':
+    main()
