@@ -249,6 +249,18 @@ class Script(Tag):
             self.appendChild(RawHtml(text))
 
 
+class Iframe(Tag):
+    tag = 'iframe'
+
+    @property
+    def src(self) -> str:
+        return self.getAttribute('src')
+
+    @src.setter
+    def src(self, src:str):
+        self.setAttribute('src', src)
+
+
 Html = NewTagClass('Html')
 Body = NewTagClass('Body')
 Meta = NewTagClass('Meta')
@@ -312,6 +324,7 @@ Container = Div
 Wrapper = Div
 Row = Div
 FormGroup = Div
+Col = Div
 Col1 = Div
 Col2 = Div
 Col3 = Div
@@ -323,6 +336,7 @@ Col8 = Div
 Col9 = Div
 Col10 = Div
 Col11 = Div
+Col12 = Div
 
 # Some css updates
 DefaultButton = Button
