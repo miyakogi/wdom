@@ -86,11 +86,12 @@ class WSHandler:
 
 
 class Application(web.Application):
-    def add_static_path(self, prefix:str, path:str):
+    def add_static_path(self, prefix:str, path:str, no_watch: bool = False):
         if not prefix.startswith('/'):
             prefix = '/' + prefix
         self.router.add_static(prefix, path)
-        watch_dir(path)
+        if not no_watch:
+            watch_dir(path)
 
     def add_favicon_path(self, path:str):
         self.router.add_static('/(favicon.ico)', path)

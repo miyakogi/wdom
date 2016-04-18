@@ -225,3 +225,20 @@ class TestAutoReload(unittest.TestCase):
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
+
+    def test_autoreload_nowatch_aio(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(src_aio.replace("/testdir')", "/testdir', no_watch=True)"))
+        time.sleep(0.1)
+        args = self._base_args()
+        args.append('--autoreload')
+        self.check_css_noreload(args)
+
+    def test_autoreload_nowatch_tornado(self):
+        with open(self.tmpfilename, 'w') as f:
+            f.write(
+                src_tornado.replace("/testdir')", "/testdir', no_watch=True)"))
+        time.sleep(0.1)
+        args = self._base_args()
+        args.append('--autoreload')
+        self.check_css_noreload(args)

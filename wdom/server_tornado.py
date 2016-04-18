@@ -91,7 +91,7 @@ class Application(web.Application):
         else:
             log_method('%d %s', status, handler._request_summary())
 
-    def add_static_path(self, prefix: str, path: str):
+    def add_static_path(self, prefix: str, path: str, no_watch: bool = False):
         '''Add path to serve static files. ``prefix`` is used for url prefix to
         serve static files and ``path`` is a path to the static file directory.
         ``prefix = '/_static'`` is reserved for the server, so do not use it
@@ -106,7 +106,8 @@ class Application(web.Application):
         # Need some check
         handlers = self.handlers[0][1]
         handlers.append(spec)
-        watch_dir(path)
+        if not no_watch:
+            watch_dir(path)
 
     def add_favicon_path(self, path: str):
         '''Add path to the directory, which contains favicon file
