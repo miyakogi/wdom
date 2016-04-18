@@ -34,7 +34,7 @@ H4 = NewTag('H4', 'h4', H4, class_='title is-4')
 H5 = NewTag('H5', 'h5', H5, class_='title is-5')
 H6 = NewTag('H6', 'h6', H6, class_='title is-6')
 
-Container = NewTag('Container', 'div', class_='content')
+Container = NewTag('Container', 'div', class_='container')
 Wrapper = Container
 Row = NewTag('Row', 'div', class_='columns')
 
