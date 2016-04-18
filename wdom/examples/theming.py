@@ -127,6 +127,18 @@ def sample_app(theme=themes) -> tag.Tag:
         theme.Div(theme.A('Colored (link)')),
         theme.Div(theme.U('Underlined')),
     )
+    body.append(theme.Hr())
+
+    grid = theme.Container(parent=body)
+    left_style = 'background-color: #333; color: #eee'
+    right_style = 'background-color: #ccc'
+    for i in range(0, 13):
+        l = 'Col' + str(i or '')
+        r = 'Col' + str(12 - i or '')
+        grid.append(theme.Row(
+            getattr(theme, l)(l, style=left_style),
+            getattr(theme, r)(r, style=right_style),
+        ))
 
     return app
 
