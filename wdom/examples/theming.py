@@ -139,9 +139,10 @@ def sample_app(theme=themes) -> tag.Tag:
     )
     body.append(theme.Hr())
 
-    grid = theme.Container(parent=body)
-    left_style = 'background-color: #333; color: #eee'
-    right_style = 'background-color: #ccc'
+    grid = theme.Container(parent=body,
+                           style='border: solid 1px #bbb; background-color: #666;')
+    left_style = 'background-color: #eeeeee;'
+    right_style = 'background-color: #fafafa'
     for i in range(0, 13):
         l = 'Col' + str(i or '')
         r = 'Col' + str(12 - i or '')

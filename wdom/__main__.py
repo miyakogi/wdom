@@ -15,9 +15,10 @@ if __name__ == '__main__':
 
 def main():
     # from tornado.ioloop import IOLoop
-    from tornado.platform.asyncio import AsyncIOMainLoop
+    # from tornado.platform.asyncio import AsyncIOMainLoop
     import asyncio
-    AsyncIOMainLoop().install()
+    from wdom.misc import install_asyncio
+    install_asyncio()
 
     from wdom.server import start_server, get_app, stop_server
     # from wdom.server_aio import start_server, get_app, stop_server
