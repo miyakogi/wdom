@@ -45,6 +45,10 @@ class NodeList:
                 'Indeces must be integer, not {}'.format(type(index)))
         return self.ref[index] if 0 <= index < self.length else None
 
+    def index(self, node:Node) -> int:
+        '''Get index of the node.'''
+        return self.ref.index(node)
+
 
 class HTMLCollection(NodeList):
     def namedItem(self, name:str) -> Node:

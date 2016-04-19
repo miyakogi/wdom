@@ -47,3 +47,8 @@ class TestNodeList(TestCase):
         l = [2, 1, 0]
         for n in reversed(self.nl):
             self.assertEqual(n, l.pop(0))
+
+    def test_index(self):
+        self.assertEqual(self.nl.index(0), 0)
+        self.assertEqual(self.nl.index(1), 1)
+        self.assertEqual(self.nl.index(2), 2)

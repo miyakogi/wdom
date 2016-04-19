@@ -209,6 +209,9 @@ class TestNode(TestCase):
         self.assertEqual(self.node.index(self.c1), 0)
         self.assertEqual(self.node.index(self.c2), 1)
         self.assertEqual(self.node.index(self.c3), 2)
+        self.assertEqual(self.node.childNodes.index(self.c1), 0)
+        self.assertEqual(self.node.childNodes.index(self.c2), 1)
+        self.assertEqual(self.node.childNodes.index(self.c3), 2)
 
 
 class P(Node, ParentNode): pass
