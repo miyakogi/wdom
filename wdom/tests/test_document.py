@@ -8,9 +8,34 @@ from wdom import options
 from wdom.interface import Event
 from wdom.node import DocumentFragment, Comment, Text
 from wdom.element import Attr, Element
-from wdom.document import Document, get_document, getElementById
+from wdom.document import Document, get_document
+from wdom.document import getElementById, getElementByRimoId
+from wdom.web_node import WebElement
 from wdom.tag import Tag, HTMLElement, A
 from wdom.testing import TestCase
+
+
+
+class TestGetElement(TestCase):
+    def setUp(self):
+        Tag._elements_with_id.clear()
+        Tag._elements_with_rimo_id.clear()
+        self.doc = Document()
+
+    def test_get_element_by_id(self):
+        elm = Element(tag='a', id='a')
+        self.assertIsNone(getElementById('a'))
+        self.doc.appendChild(elm)
+        self.assertIs(getElementById('a'), elm)
+
+    def test_get_element_by_rimo_id(self):
+        elm = WebElement(tag='a', id='a', rimo_id='b')
+        self.assertIsNone(getElementById('a'))
+        self.assertIsNone(getElementByRimoId('b'))
+        self.doc.appendChild(elm)
+        self.assertIs(getElementById('a'), elm)
+        self.assertIsNone(getElementByRimoId('a'))
+        self.assertIs(getElementByRimoId('b'), elm)
 
 
 class TestMainDocument(TestCase):
