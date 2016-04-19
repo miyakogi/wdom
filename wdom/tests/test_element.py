@@ -498,10 +498,10 @@ class TestElement(TestCase):
         gc.collect()
         elm = Element('a', id='a')
         _id = id(elm)
-        self.assertIn(elm.id, Element._elements_withid)
+        self.assertIn(elm.id, Element._elements_with_id)
         del elm
         gc.collect()
-        self.assertNotIn('a', Element._elements_withid)
+        self.assertNotIn('a', Element._elements_with_id)
         for elm in Element._elements:
             assert id(elm) != _id
 
@@ -509,32 +509,32 @@ class TestElement(TestCase):
         gc.collect()
         elm = Element('a')
         _id = id(elm)
-        self.assertNotIn(elm, Element._elements_withid.values())
+        self.assertNotIn(elm, Element._elements_with_id.values())
         elm.id = 'a'
-        self.assertIn('a', Element._elements_withid)
-        self.assertIn(elm, Element._elements_withid.values())
+        self.assertIn('a', Element._elements_with_id)
+        self.assertIn(elm, Element._elements_with_id.values())
         elm.id = 'b'
-        self.assertNotIn('a', Element._elements_withid)
-        self.assertIn('b', Element._elements_withid)
-        self.assertIn(elm, Element._elements_withid.values())
+        self.assertNotIn('a', Element._elements_with_id)
+        self.assertIn('b', Element._elements_with_id)
+        self.assertIn(elm, Element._elements_with_id.values())
         elm.setAttribute('id', 'c')
-        self.assertNotIn('b', Element._elements_withid)
-        self.assertIn('c', Element._elements_withid)
-        self.assertIn(elm, Element._elements_withid.values())
+        self.assertNotIn('b', Element._elements_with_id)
+        self.assertIn('c', Element._elements_with_id)
+        self.assertIn(elm, Element._elements_with_id.values())
         del elm
         gc.collect()
-        self.assertNotIn('c', Element._elements_withid)
+        self.assertNotIn('c', Element._elements_with_id)
         for elm in Element._elements:
             assert id(elm) != _id
 
     def test_reference_del_id(self):
         gc.collect()
         elm = Element('a', id='a')
-        self.assertIn('a', Element._elements_withid)
-        self.assertIn(elm, Element._elements_withid.values())
+        self.assertIn('a', Element._elements_with_id)
+        self.assertIn(elm, Element._elements_with_id.values())
         elm.removeAttribute('id')
-        self.assertNotIn('a', Element._elements_withid)
-        self.assertNotIn(elm, Element._elements_withid.values())
+        self.assertNotIn('a', Element._elements_with_id)
+        self.assertNotIn(elm, Element._elements_with_id.values())
 
     def test_is_attr(self):
         '''``is`` is a reserved word for python, so use ``is_`` in constructor.

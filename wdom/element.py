@@ -237,7 +237,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     nodeValue = None
     _parser_default_class = None
     _elements = WeakSet()
-    _elements_withid = WeakValueDictionary()
+    _elements_with_id = WeakValueDictionary()
 
     def __init__(self, tag:str='', parent=None, _registered=True, **kwargs):
         super().__init__(parent=parent)
@@ -373,20 +373,20 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def hasAttributes(self) -> bool:
         return bool(self.attributes) or bool(self.classList)
 
-    def _set_attribute(self, attr:str, value=None):
+    def _set_attribute(self, attr:str, value:Union[str, bool]):
         if attr == 'class':
             self.classList = DOMTokenList(self, value)
         else:
             if attr == 'id':
                 if 'id' in self.attributes:
                     # remove old reference to self
-                    self._elements_withid.pop(self.id, None)
+                    self._elements_with_id.pop(self.id, None)
                 # register this elements with new id
-                self._elements_withid[value] = self
+                self._elements_with_id[value] = self
             new_attr_node = Attr(attr, value)
             self.setAttributeNode(new_attr_node)
 
-    def setAttribute(self, attr:str, value=None):
+    def setAttribute(self, attr:str, value:Union[str, bool]):
         self._set_attribute(attr, value)
 
     def setAttributeNode(self, attr:Attr):
@@ -397,7 +397,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             self.classList = DOMTokenList(self)
         else:
             if attr == 'id':
-                self._elements_withid.pop(self.id, None)
+                self._elements_with_id.pop(self.id, None)
             self.attributes.removeNamedItem(Attr(attr))
 
     def removeAttribute(self, attr:str):

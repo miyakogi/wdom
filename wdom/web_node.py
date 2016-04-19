@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import builtins
 import re
 from typing import Union
 from asyncio import coroutine
+from weakref import WeakValueDictionary
 
 from wdom.interface import Event
 from wdom.node import Node
@@ -17,6 +17,7 @@ remove_id_re = re.compile(r' rimo_id="\d+"')
 
 
 class WebElement(HTMLElement, WebIF):
+    _elements_with_rimo_id = WeakValueDictionary()
     @property
     def rimo_id(self) -> str:
         return self.getAttribute('rimo_id') or ''
@@ -27,7 +28,7 @@ class WebElement(HTMLElement, WebIF):
 
     def __init__(self, *args, parent=None, rimo_id=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.rimo_id = rimo_id or str(builtins.id(self))
+        self.rimo_id = rimo_id or str(id(self))
         self.addEventListener('mount', self._on_mount)
         if parent is not None:
             parent.appendChild(self)
@@ -48,9 +49,9 @@ class WebElement(HTMLElement, WebIF):
         if attr == 'rimo_id':
             if 'rimo_id' in self.attributes:
                 # remove old reference to self
-                self._elements_withid.pop(self.rimo_id, None)
+                self._elements_with_rimo_id.pop(self.rimo_id, None)
             # register this elements with new id
-            self._elements_withid[value] = self
+            self._elements_with_rimo_id[value] = self
         super()._set_attribute(attr, value)
 
     def _remove_web(self):

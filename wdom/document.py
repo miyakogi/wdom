@@ -8,6 +8,7 @@ from wdom.interface import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
 from wdom.element import Element, Attr, _create_element
+from wdom.web_node import WebElement
 from wdom.tag import HTMLElement
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
@@ -61,8 +62,13 @@ class Document(Node):
             _s = Script(parent=self.head)
             _s.textContent = '\n{}\n'.format('\n'.join(ar_script))
 
+    def getElementById(self, id):
+        elm = Element._elements_with_id.get(id)
+        if elm.ownerDocument is self:
+            return elm
+
     def getElementByRimoId(self, id):
-        elm = Element._elements_withid.get(id)
+        elm = WebElement._elements_with_rimo_id.get(id)
         if elm.ownerDocument is self:
             return elm
 
