@@ -251,7 +251,29 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
     return cls
 
 
-class Input(Tag):
+class ValueAttrMixin:
+    @property
+    def value(self) -> str:
+        '''Get input value of this node. This value is used as a default value
+        of this element.
+        '''
+        return self.getAttribute('value') or ''
+
+    @value.setter
+    def value(self, value: str):
+        self.setAttribute('value', value)
+
+class SrcAttrMixin(object):
+    @property
+    def src(self) -> str:
+        return self.getAttribute('src')
+
+    @src.setter
+    def src(self, src:str):
+        self.setAttribute('src', src)
+
+
+class Input(Tag, ValueAttrMixin):
     '''Base class for ``<input>`` element.
     '''
     tag = 'input'
@@ -276,17 +298,6 @@ class Input(Tag):
     def checked(self, value: bool):
         self.setAttribute('checked', value)
 
-    @property
-    def value(self) -> str:
-        '''Get input value of this node. This value is used as a default value
-        of this element.
-        '''
-        return self.getAttribute('value') or ''
-
-    @value.setter
-    def value(self, value: str):
-        self.setAttribute('value', value)
-
 
 class Textarea(Input):
     '''Base class for ``<textarea>`` element.'''
@@ -304,42 +315,15 @@ class Textarea(Input):
         self.textContent = value
 
 
-class CheckBox(Input):
-    type_ = 'checkbox'
-
-
-class TextInput(Input):
-    type_ = 'text'
-
-
-class Button(Tag):
-    tag = 'button'
-
-
-class Script(Tag):
+class Script(Tag, SrcAttrMixin):
     tag = 'script'
 
-    def __init__(self, *args, type='text/javascript', src=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setAttribute('type', type)
-        if src is not None:
-            self.setAttribute('src', src)
+    def __init__(self, *args, type='text/javascript', **kwargs):
+        super().__init__(*args, type=type, **kwargs)
 
     def _set_text_content(self, text:str):
         if text:
             self.appendChild(RawHtml(text))
-
-
-class Iframe(Tag):
-    tag = 'iframe'
-
-    @property
-    def src(self) -> str:
-        return self.getAttribute('src')
-
-    @src.setter
-    def src(self, src:str):
-        self.setAttribute('src', src)
 
 
 Html = NewTagClass('Html')
@@ -349,6 +333,7 @@ Head = NewTagClass('Head')
 Link = NewTagClass('Link')
 Title = NewTagClass('Title')
 Style = NewTagClass('Style')
+Iframe = NewTagClass('Iframe', 'iframe', (Tag, SrcAttrMixin))
 
 Div = NewTagClass('Div')
 Span = NewTagClass('Span')
@@ -396,9 +381,12 @@ Dd = NewTagClass('Dd')
 
 # Form tags
 Form = NewTagClass('Form')
+Button = NewTagClass('Button', 'button', Tag)
 Label = NewTagClass('Label')
-Option = NewTagClass('Option')
-Select = NewTagClass('Select')
+CheckBox = NewTagClass('CheckBox', 'input', Input, type_='checkbox')
+TextInput = NewTagClass('TextInput', 'input', Input, type_='text')
+Select = NewTagClass('Select', 'select', (NestedTag, ValueAttrMixin))
+Option = NewTagClass('Option', 'option', (Tag, ValueAttrMixin))
 
 # Building blocks
 Container = Div
