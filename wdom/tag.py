@@ -22,7 +22,7 @@ class TagBaseMeta(type):
         return {'inherit_class': True}
 
 
-class Tag(WebElement, metaclass=TagBaseMeta):
+class Tag(HTMLElement, metaclass=TagBaseMeta):
     '''Base class for html tags. ``HTMLElement`` requires to specify tag name
     when instanciate it, but this class and sublasses have default tag name and
     not need to specify it for each thier instances.
@@ -42,15 +42,14 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     #: custom element which extends built-in tag (like <table is="your-tag">)
     is_ = ''
 
-    def __init__(self, *args, parent=None, **kwargs):
-        attrs = kwargs.pop('attrs', None)
+    def __init__(self, *args, attrs=None, **kwargs):
         if attrs:
             kwargs.update(attrs)
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
-        super().__init__(self.tag, parent=parent, **kwargs)
-        if self.is_ and 'is' not in self.attributes:
-            self.setAttribute('is', self.is_)
+        if self.is_ and 'is' not in kwargs and 'is_' not in kwargs:
+            kwargs['is'] = self.is_
+        super().__init__(self.tag, **kwargs)
         self.append(*args)
 
     @classmethod
@@ -67,7 +66,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         l.reverse()
         return DOMTokenList(cls, l)
 
-    def __getitem__(self, attr: Union[str, int]):
+    def __getitem__(self, attr: Union[str, int]) -> Union[Node, str]:
         if isinstance(attr, int):
             return self.childNodes[attr]
         else:
@@ -79,7 +78,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def __delitem__(self, attr: str):
         self.removeAttribute(attr)
 
-    def __copy__(self) -> 'Tag':
+    def __copy__(self) -> HTMLElement:
         clone = type(self)()
         for attr in self.attributes:
             clone.setAttribute(attr, self.getAttribute(attr))
@@ -87,7 +86,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
             clone.addClass(c)
         return clone
 
-    def getAttribute(self, attr:str):
+    def getAttribute(self, attr:str) -> str:
         if attr == 'class':
             cls = self.get_class_list()
             cls._append(self.classList)
@@ -101,10 +100,10 @@ class Tag(WebElement, metaclass=TagBaseMeta):
     def addClass(self, *classes:Tuple[str]):
         self.classList.add(*classes)
 
-    def hasClass(self, class_: str):
+    def hasClass(self, class_: str) -> bool:
         return class_ in self.classList
 
-    def hasClasses(self):
+    def hasClasses(self) -> bool:
         return len(self.classList) > 0
 
     def removeClass(self, *classes:Tuple[str]):
@@ -135,7 +134,7 @@ class Tag(WebElement, metaclass=TagBaseMeta):
         return self.getAttribute('type') or self.type_
 
     @type.setter
-    def type(self, val:str) -> None:
+    def type(self, val:str):
         self.setAttribute('type', val)
 
 
