@@ -7,14 +7,16 @@ from unittest.mock import MagicMock
 from wdom import options
 from wdom.interface import Event
 from wdom.node import DocumentFragment, Comment, Text
-from wdom.element import Attr
-from wdom.document import Document, get_document
+from wdom.element import Attr, Element
+from wdom.document import Document, get_document, getElementById
 from wdom.tag import Tag, HTMLElement, A
 from wdom.testing import TestCase
 
 
 class TestMainDocument(TestCase):
     def setUp(self) -> None:
+        Tag._elements_with_id.clear()
+        Tag._elements_with_rimo_id.clear()
         self.doc = Document()
         self.doc.defaultView.customElements.reset()
 
@@ -43,6 +45,14 @@ class TestMainDocument(TestCase):
         self.assertIsNotNone(_re.match(html))
 
     def test_get_element_by_id(self):
+        self.assertIsNone(self.doc.getElementById('1'))
+        elm = Element('a', parent=self.doc.body, id='a')
+        self.assertIs(elm, self.doc.getElementById('a'))
+        elm2 = Tag()
+        self.assertIsNone(self.doc.getElementByRimoId(elm2.rimo_id))
+
+    def test_get_element_by_remo_id(self):
+        self.assertIsNone(self.doc.getElementByRimoId('1'))
         elm = Tag(parent=self.doc.body)
         self.assertIs(elm, self.doc.getElementByRimoId(elm.rimo_id))
         elm2 = Tag()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Optional
+from typing import Optional, Union
 
 from wdom.options import config
 from wdom.interface import Event
@@ -12,6 +12,22 @@ from wdom.web_node import WebElement
 from wdom.tag import HTMLElement
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
+
+
+def getElementById(id:Union[str, int]) -> Optional[Node]:
+    elm = Element._elements_with_id.get(str(id))
+    if elm is not None and elm.ownerDocument is not None:
+        return elm
+    else:
+        return None
+
+
+def getElementByRimoId(id:Union[str, int]) -> Optional[WebElement]:
+    elm = WebElement._elements_with_rimo_id.get(str(id))
+    if elm is not None and elm.ownerDocument is not None:
+        return elm
+    else:
+        return None
 
 
 class Document(Node):
@@ -62,14 +78,14 @@ class Document(Node):
             _s = Script(parent=self.head)
             _s.textContent = '\n{}\n'.format('\n'.join(ar_script))
 
-    def getElementById(self, id):
-        elm = Element._elements_with_id.get(id)
-        if elm.ownerDocument is self:
+    def getElementById(self, id:Union[str, int]) -> Optional[Node]:
+        elm = getElementById(id)
+        if elm is not None and elm.ownerDocument is self:
             return elm
 
-    def getElementByRimoId(self, id):
-        elm = WebElement._elements_with_rimo_id.get(id)
-        if elm.ownerDocument is self:
+    def getElementByRimoId(self, id:Union[str, int]) -> Optional[WebElement]:
+        elm = getElementByRimoId(id)
+        if elm is not None and elm.ownerDocument is self:
             return elm
 
     def createElement(self, tag:str):
