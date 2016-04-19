@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://codewithspark.com/'
+project_repository = 'https://github.com/twistedpixel/spark/'
 
 css_files = [
     '_static/css/spark.min.css',

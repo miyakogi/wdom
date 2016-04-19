@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://andhart.github.io/bijou/'
+project_repository = 'https://github.com/andhart/bijou'
 
 css_files = [
     '_static/css/bijou.min.css',
@@ -17,6 +19,8 @@ InfoButton = NewTag('InfoButton', 'button', Button, class_='success')
 WarningButton = NewTag('WarningButton', 'button', Button, class_='danger')
 DangerButton = NewTag('DangerButton', 'button', Button, class_='danger')
 LinkButton = NewTag('LinkButton', 'button', Button)
+
+
 
 Table = NewTag('Table', 'table', Table, class_='table')
 

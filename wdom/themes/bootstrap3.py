@@ -4,14 +4,16 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://getbootstrap.com/'
+project_repository = 'https://github.com/twbs/bootstrap'
 
 css_files = [
-    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
+    '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',
 ]
 
 js_files = [
-    'https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js',
-    'https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js',
+    '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js',
+    '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js',
 ]
 
 headers = []

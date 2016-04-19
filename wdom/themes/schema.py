@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://danmalarkey.github.io/schema/'
+project_repository = 'https://github.com/danmalarkey/schema'
 
 css_files = [
     '_static/css/schema.min.css',

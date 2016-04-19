@@ -4,6 +4,9 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'https://www.muicss.com/'
+project_repository = 'https://github.com/muicss/mui'
+
 css_files = [
     '//cdn.muicss.com/mui-0.5.1/css/mui.min.css',
 ]

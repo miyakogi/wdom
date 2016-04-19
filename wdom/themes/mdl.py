@@ -4,12 +4,15 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://www.getmdl.io/'
+project_repository = 'https://github.com/google/material-design-lite'
+
 css_files = [
-    'https://fonts.googleapis.com/icon?family=Material+Icons',
-    'https://code.getmdl.io/1.1.3/material.indigo-pink.min.css',
+    '//fonts.googleapis.com/icon?family=Material+Icons',
+    '//code.getmdl.io/1.1.3/material.indigo-pink.min.css',
 ]
 js_files = [
-    'https://code.getmdl.io/1.1.3/material.min.js',
+    '//code.getmdl.io/1.1.3/material.min.js',
 ]
 headers = []
 

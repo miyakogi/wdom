@@ -4,9 +4,11 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://getskeleton.com/'
+project_repository = 'https://github.com/dhg/Skeleton'
 
 css_files = [
-    'https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css',
+    '//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css',
 ]
 
 PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='button-primary')

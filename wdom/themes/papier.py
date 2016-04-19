@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://gugel.io/papier/'
+project_repository = 'https://github.com/alexanderGugel/papier'
 
 css_files = [
     '//cdn.rawgit.com/alexanderGugel/papier/master/dist/papier-1.0.0.min.css',

@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://blazecss.com/'
+project_repository = 'https://github.com/BlazeCSS/blaze'
 
 css_files = [
     '//cdn.jsdelivr.net/blazecss/latest/blaze.min.css',

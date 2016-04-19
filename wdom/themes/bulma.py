@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://bulma.io/'
+project_repository = 'https://github.com/jgthms/bulma/'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/bulma/0.0.20/css/bulma.min.css',
@@ -23,7 +25,15 @@ LinkButton = NewTag('LinkButton', 'button', Button, class_='is-link')
 
 Input = NewTag('Input', 'input', Input, class_='input')
 Textarea = NewTag('Textarea', 'textarea', Textarea, class_='textarea')
-Select = NewTag('Select', 'select', Select, class_='form-control')
+
+class Select(NestedTag):
+    tag = 'span'
+    class_ = 'select'
+    inner_tag_class = Select
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._inner_element.addEventListener('change', self.dispatchEvent)
+        self._inner_element.addEventListener('click', self.dispatchEvent)
 
 Table = NewTag('Table', 'table', Table, class_='table')
 
@@ -34,7 +44,7 @@ H4 = NewTag('H4', 'h4', H4, class_='title is-4')
 H5 = NewTag('H5', 'h5', H5, class_='title is-5')
 H6 = NewTag('H6', 'h6', H6, class_='title is-6')
 
-Container = NewTag('Container', 'div', class_='container')
+Container = NewTag('Container', 'div', class_='content')
 Wrapper = Container
 Row = NewTag('Row', 'div', class_='columns')
 
