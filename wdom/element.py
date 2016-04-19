@@ -240,12 +240,12 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     _elements_with_id = WeakValueDictionary()
 
     def __init__(self, tag:str='', parent=None, _registered=True, **kwargs):
-        super().__init__(parent=parent)
         self._registered = _registered
-        self._elements.add(self)
         self.tag = tag
+        self._elements.add(self)  # used to suport custom elements
         self.attributes = NamedNodeMap(self)
         self.classList = DOMTokenList(self)
+        super().__init__(parent=parent)
 
         if 'class_' in kwargs:
             kwargs['class'] = kwargs.pop('class_')

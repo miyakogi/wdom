@@ -234,6 +234,10 @@ class TestElement(TestCase):
         self.assertFalse(elm.hasChildNodes())
         self.assertFalse(elm.hasAttributes())
 
+    def test_init_parent(self):
+        elm = Element('a', parent=self.elm)
+        self.assertIs(elm.parentNode, self.elm)
+
     def test_init_attrs(self):
         elm = Element('a', src='b', href='c')
         self.assertFalse(elm.hasChildNodes())
