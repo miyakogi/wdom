@@ -373,6 +373,11 @@ class TestNonDocumentTypeChildNode(TestCase):
         self.assertIs(self.c1.previousElementSibling, self.e2)
         self.assertIs(self.c1.nextElementSibling, self.e1)
 
+    def test_element2(self):
+        self.p.appendChild(self.e1)
+        self.assertIsNone(self.e1.previousElementSibling)
+        self.assertIsNone(self.e1.nextElementSibling)
+
 
 class TestChildNode(TestCase):
     def setUp(self):

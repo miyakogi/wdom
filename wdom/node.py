@@ -302,7 +302,7 @@ class NonDocumentTypeChildNode:
         if self.parentNode is None:
             return None
         siblings = self.parentNode.childNodes
-        for i in range(siblings.index(self), len(siblings)):
+        for i in range(siblings.index(self) + 1, len(siblings)):
             n = siblings[i]
             if n.nodeType == Node.ELEMENT_NODE:
                 return n
