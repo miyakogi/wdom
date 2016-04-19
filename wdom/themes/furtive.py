@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://furtive.co/'
+project_repository = 'https://github.com/johnotander/furtive'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/furtive/2.2.3/furtive.css',

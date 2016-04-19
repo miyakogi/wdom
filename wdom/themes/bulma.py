@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://bulma.io/'
+project_repository = 'https://github.com/jgthms/bulma/'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/bulma/0.0.20/css/bulma.min.css',

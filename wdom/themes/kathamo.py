@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://kathamo.github.io/'
+project_repository = 'https://github.com/kathamo/Kathamo'
 
 css_files = [
     '_static/css/kathamo.min.css',

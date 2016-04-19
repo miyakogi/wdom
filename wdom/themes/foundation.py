@@ -4,14 +4,16 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://foundation.zurb.com/'
+project_repository = 'https://github.com/zurb/foundation-sites'
 
 css_files = [
-    'https://cdn.jsdelivr.net/foundation/6.2.1/foundation.min.css',
+    '//cdn.jsdelivr.net/foundation/6.2.1/foundation.min.css',
 ]
 
 js_files = [
-    'https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js',
-    'https://cdn.jsdelivr.net/foundation/6.2.1/foundation.min.js',
+    '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js',
+    '//cdn.jsdelivr.net/foundation/6.2.1/foundation.min.js',
 ]
 
 headers = []

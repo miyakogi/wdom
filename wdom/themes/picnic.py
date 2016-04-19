@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://picnicss.com/'
+project_repository = 'https://github.com/picnicss/picnic'
 
 css_files = [
     '//cdn.jsdelivr.net/picnicss/5.1.0/picnic.min.css',

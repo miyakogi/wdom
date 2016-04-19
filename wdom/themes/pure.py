@@ -4,9 +4,11 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://purecss.io/'
+project_repository = 'https://github.com/yahoo/pure/'
 
 css_files = [
-    'http://yui.yahooapis.com/pure/0.6.0/pure-min.css',
+    '//yui.yahooapis.com/pure/0.6.0/pure-min.css',
     '_static/css/pure-extra.css',
 ]
 

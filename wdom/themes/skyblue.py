@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://stanko.github.io/skyblue/'
+project_repository = 'https://github.com/Stanko/skyblue'
 
 css_files = [
     '_static/css/skyblue.min.css',

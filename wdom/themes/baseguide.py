@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://basegui.de/'
+project_repository = 'https://github.com/slavanga/baseguide'
 
 css_files = [
     '_static/css/baseguide.min.css',

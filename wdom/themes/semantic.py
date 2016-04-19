@@ -4,15 +4,17 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://semantic-ui.com/'
+project_repository = 'https://github.com/semantic-org/semantic-ui/'
 
 css_files = [
-    'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css',
+    '//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css',
 ]
 
 # Need jQuery
 js_files = [
-    'https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js',
+    '//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js',
+    '//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.js',
 ]
 
 headers = []

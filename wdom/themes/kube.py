@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'https://imperavi.com/kube/'
+project_repository = 'https://github.com/imperavi/kube'
 
 css_files = [
     '_static/css/kube.min.css',

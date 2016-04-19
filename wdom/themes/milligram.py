@@ -4,6 +4,8 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+project_url = 'http://milligram.github.io/'
+project_repository = 'https://github.com/milligram/milligram'
 
 css_files = [
     '//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic',
