@@ -50,7 +50,7 @@ class Node(Node):
     # DOM Level 1
     @property
     def length(self) -> int:
-        return len(self._children)
+        return len(self.childNodes)
 
     @property
     def parentNode(self) -> Node:
@@ -63,14 +63,14 @@ class Node(Node):
     @property
     def firstChild(self) -> Node:
         if self.hasChildNodes():
-            return self._children[0]
+            return self.childNodes[0]
         else:
             return None
 
     @property
     def lastChild(self) -> Node:
         if self.hasChildNodes():
-            return self._children[-1]
+            return self.childNodes[-1]
         else:
             return None
 
@@ -79,14 +79,14 @@ class Node(Node):
         parent = self.parentNode
         if parent is None:
             return None
-        return parent.childNodes.item(parent._children.index(self) - 1)
+        return parent.childNodes.item(parent.childNodes.index(self) - 1)
 
     @property
     def nextSibling(self) -> Node:
         parent = self.parentNode
         if parent is None:
             return None
-        return parent.childNodes.item(parent._children.index(self) + 1)
+        return parent.childNodes.item(parent.childNodes.index(self) + 1)
 
     # DOM Level 2
     @property
@@ -100,7 +100,7 @@ class Node(Node):
 
     # Methods
     def _append_document_fragment(self, node:Node) -> Node:
-        for c in tuple(node._children):
+        for c in tuple(node.childNodes):
             self._append_child(c)
         return node
 
@@ -126,10 +126,10 @@ class Node(Node):
         return self._append_child(node)
 
     def index(self, node):
-        if node in self._children:
-            return self._children.index(node)
+        if node in self.childNodes:
+            return self.childNodes.index(node)
         elif isinstance(node, Text):
-            for i, n in self._children:
+            for i, n in enumerate(self.childNodes):
                 # should consider multiple match?
                 if isinstance(n, Text) and n.data == node:
                     return i
@@ -137,7 +137,7 @@ class Node(Node):
 
     def _insert_document_fragment_before(self, node:Node, ref_node:Node
                                          ) -> Node:
-        for c in tuple(node._children):
+        for c in tuple(node.childNodes):
             self._insert_before(c, ref_node)
         return node
 
@@ -163,7 +163,7 @@ class Node(Node):
         return self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
-        return bool(self._children)
+        return bool(self.childNodes)
 
     def _remove_child(self, node:Node) -> Node:
         if node not in self._children:
@@ -201,7 +201,7 @@ class Node(Node):
         self._empty()
 
     def _get_text_content(self) -> str:
-        return ''.join(child.textContent for child in self._children)
+        return ''.join(child.textContent for child in self.childNodes)
 
     def _set_text_content(self, value:str):
         self._empty()
@@ -291,7 +291,7 @@ class NonDocumentTypeChildNode:
     def previousElementSibling(self) -> Node:
         if self.parentNode is None:
             return None
-        siblings = self.parentNode._children
+        siblings = self.parentNode.childNodes
         for i in range(siblings.index(self), 0, -1):
             n = siblings[i-1]
             if n.nodeType == Node.ELEMENT_NODE:
@@ -301,7 +301,7 @@ class NonDocumentTypeChildNode:
     def nextElementSibling(self) -> Node:
         if self.parentNode is None:
             return None
-        siblings = self.parentNode._children
+        siblings = self.parentNode.childNodes
         for i in range(siblings.index(self), len(siblings)):
             n = siblings[i]
             if n.nodeType == Node.ELEMENT_NODE:
@@ -487,4 +487,4 @@ class DocumentFragment(Node, ParentNode):
 
     @property
     def html(self) -> str:
-        return ''.join(child.html for child in self._children)
+        return ''.join(child.html for child in self.childNodes)
