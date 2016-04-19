@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.element import HTMLElement
-from wdom.tag import Tag, DOMTokenList, NewTagClass
+from wdom.tag import Tag, DOMTokenList, NewTagClass, NestedTag
 from wdom.window import customElements
 from wdom.testing import TestCase
 
@@ -348,6 +348,116 @@ class TestTag(TestCase):
         customElements.define(self.ExtendTag)
         self.tag.innerHTML = '<a is="new-a"></a>'
         self.assertEqual(type(self.tag.firstChild), self.ExtendTag)
+
+
+class TestNestedTag(TestCase):
+    def setUp(self):
+        class Inner(Tag):
+            tag = 'in'
+        class Outer(NestedTag):
+            tag = 'out'
+            inner_tag_class = Inner
+        self.inner_cls = Inner
+        self.outer_cls = Outer
+        self.tag = self.outer_cls()
+        self.c1 = Tag(src='c1')
+        self.c2 = Tag(src='c2')
+        self.c3 = Tag(src='c3')
+        self.c4 = Tag(src='c4')
+
+    def test_tag(self):
+        tag = self.outer_cls()
+        self.assertRegex(tag.html,
+                         r'<out rimo_id="\d+"><in rimo_id="\d+"></in></out>')
+
+    def test_creation(self):
+        c = Tag(src='c1')
+        tag = self.outer_cls(c, src='out')
+        self.assertEqual(
+            tag.html_noid,
+            '<out src="out"><in><tag src="c1"></tag></in></out>',
+        )
+
+    def test_child_node(self):
+        self.assertIsNone(self.tag.firstChild)
+        self.assertIsNone(self.tag.lastChild)
+        self.assertIsNone(self.tag.firstElementChild)
+        self.assertIsNone(self.tag.lastElementChild)
+        self.tag.appendChild(self.c1)
+        self.assertIs(self.tag.firstChild, self.c1)
+        self.assertIs(self.tag.lastChild, self.c1)
+        self.assertIs(self.tag.firstElementChild, self.c1)
+        self.assertIs(self.tag.lastElementChild, self.c1)
+        self.assertIsNone(self.c1.previousSibling)
+        self.assertIsNone(self.c1.previousElementSibling)
+        self.assertIsNone(self.c1.nextSibling)
+        self.assertIsNone(self.c1.nextElementSibling)
+
+    def test_addremove_child(self):
+        self.tag.append(self.c1, self.c2)
+        self.assertEqual(
+            self.tag.html_noid,
+            '<out><in><tag src="c1"></tag><tag src="c2"></tag></in></out>',
+        )
+        self.tag.removeChild(self.c1)
+        self.assertEqual(
+            self.tag.html_noid, '<out><in><tag src="c2"></tag></in></out>')
+        self.tag.replaceChild(self.c1, self.c2)
+        self.assertEqual(
+            self.tag.html_noid, '<out><in><tag src="c1"></tag></in></out>')
+        self.c1.replaceWith(self.c2)
+        self.assertEqual(
+            self.tag.html_noid, '<out><in><tag src="c2"></tag></in></out>')
+        self.c2.remove()
+        self.assertEqual(
+            self.tag.html_noid, '<out><in></in></out>')
+
+    def test_insert(self):
+        self.tag.append(self.c1, self.c2)
+        self.tag.insertBefore(self.c3, self.c2)
+        self.assertEqual(
+            self.tag.html_noid,
+            '<out><in><tag src="c1"></tag><tag src="c3"></tag>'
+            '<tag src="c2"></tag></in></out>',
+        )
+        self.tag.prepend(self.c4)
+        self.assertEqual(
+            self.tag.html_noid,
+            '<out><in><tag src="c4"></tag><tag src="c1"></tag>'
+            '<tag src="c3"></tag><tag src="c2"></tag></in></out>',
+        )
+        self.tag.empty()
+        self.assertEqual(self.tag.html_noid, '<out><in></in></out>')
+        self.assertFalse(self.tag.hasChildNodes())
+        self.tag.append(self.c1)
+        self.c1.before(self.c2)
+        self.assertEqual(
+            self.tag.html_noid,
+            '<out><in><tag src="c2"></tag><tag src="c1"></tag></in></out>',
+        )
+        self.c1.after(self.c3)
+        self.assertEqual(
+            self.tag.html_noid,
+            '<out><in><tag src="c2"></tag><tag src="c1"></tag>'
+            '<tag src="c3"></tag></in></out>',
+        )
+
+    def test_inner_content(self):
+        self.assertEqual(self.tag.textContent, '')
+        self.assertEqual(self.tag.innerHTML, '')  
+        self.tag.textContent = 'test'
+        self.assertEqual(self.tag.textContent, 'test')
+        self.assertEqual(self.tag.html_noid, '<out><in>test</in></out>')
+        self.tag.append(self.c1)
+        self.assertEqual(
+            self.tag.html_noid,
+            '<out><in>test<tag src="c1"></tag></in></out>',
+        )
+        self.tag.textContent = 'test2'
+        self.assertEqual(self.tag.textContent, 'test2')
+        self.assertEqual(self.tag.html_noid, '<out><in>test2</in></out>')
+        self.tag.innerHTML = '<a></a>'
+        self.assertEqual(self.tag.html_noid, '<out><in><a></a></in></out>')
 
 
 class TestClassList(TestCase):

@@ -3,6 +3,7 @@
 
 import logging
 import builtins
+import re
 from typing import Union
 from asyncio import coroutine
 
@@ -12,6 +13,7 @@ from wdom.webif import WebIF
 from wdom.element import HTMLElement
 
 logger = logging.getLogger(__name__)
+remove_id_re = re.compile(r' rimo_id="\d+"')
 
 
 class WebElement(HTMLElement, WebIF):
@@ -157,13 +159,7 @@ class WebElement(HTMLElement, WebIF):
 
     @property
     def html_noid(self) -> str:
-        html = self.start_tag.replace(' rimo_id="{}"'.format(self.rimo_id), '')
-        html += ''.join(
-            elm.html_noid if isinstance(elm, WebElement) else elm.html
-            for elm in self.childNodes
-        )
-        html += self.end_tag
-        return html
+        return remove_id_re.sub('', self.html)
 
     def click(self):
         if self.connected:

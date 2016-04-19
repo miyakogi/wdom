@@ -5,7 +5,7 @@ import logging
 from collections import Iterable
 from typing import Tuple, Union
 
-from wdom.node import RawHtml
+from wdom.node import Node, RawHtml
 from wdom.element import DOMTokenList
 from wdom.web_node import WebElement
 
@@ -136,6 +136,88 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
     @type.setter
     def type(self, val:str):
         self.setAttribute('type', val)
+
+
+class NestedTag(Tag):
+    #: Inner nested tag class
+    inner_tag_class = None
+    def __init__(self, *args, **kwargs):
+        self._inner_element = None
+        super().__init__(**kwargs)
+        if self.inner_tag_class:
+            self._inner_element = self.inner_tag_class()
+            super().appendChild(self._inner_element)
+        self.append(*args)
+
+    def appendChild(self, child) -> Node:
+        if self._inner_element is not None:
+            return self._inner_element.appendChild(child)
+        else:
+            return super().appendChild(child)
+
+    def insertBefore(self, child: Node, ref_node: Node) -> Node:
+        if self._inner_element is not None:
+            return self._inner_element.insertBefore(child, ref_node)
+        else:
+            return super().insertBefore(child, ref_node)
+
+    def removeChild(self, child:Node) -> Node:
+        if self._inner_element is not None:
+            return self._inner_element.removeChild(child)
+        else:
+            return super().removeChild(child)
+
+    def replaceChild(self, new_child: Node, old_child: Node) -> Node:
+        if self._inner_element is not None:
+            return self._inner_element.replaceChild(new_child, old_child)
+        else:
+            return super().replaceChild(new_child, old_child)
+
+    @property
+    def childNodes(self):
+        if self._inner_element is not None:
+            return self._inner_element.childNodes
+        else:
+            return super().childNodes
+
+    def empty(self):
+        if self._inner_element is not None:
+            self._inner_element.empty()
+        else:
+            super().empty()
+
+    @property
+    def textContent(self) -> str:
+        return super().textContent
+
+    @textContent.setter
+    def textContent(self, text:str):
+        if self._inner_element is not None:
+            self._inner_element.textContent = text
+        else:
+            # Need a trick to call property of super-class
+            Tag.textContent.fset(self, text)
+
+    @property
+    def html(self) -> str:
+        if self._inner_element is not None:
+            return self.start_tag + self._inner_element.html + self.end_tag
+        else:
+            return Tag.html.fget(self)
+
+    @property
+    def innerHTML(self) -> str:
+        if self._inner_element is not None:
+            return self._inner_element.innerHTML
+        else:
+            return Tag.innerHTML.fget(self)
+
+    @innerHTML.setter
+    def innerHTML(self, html:str):
+        if self._inner_element is not None:
+            self._inner_element.innerHTML = html
+        else:
+            Tag.innerHTML.fset(self, html)
 
 
 def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
