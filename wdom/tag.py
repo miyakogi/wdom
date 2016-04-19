@@ -150,38 +150,38 @@ class NestedTag(Tag):
         self.append(*args)
 
     def appendChild(self, child) -> Node:
-        if self._inner_element is not None:
+        if self._inner_element:
             return self._inner_element.appendChild(child)
         else:
             return super().appendChild(child)
 
     def insertBefore(self, child: Node, ref_node: Node) -> Node:
-        if self._inner_element is not None:
+        if self._inner_element:
             return self._inner_element.insertBefore(child, ref_node)
         else:
             return super().insertBefore(child, ref_node)
 
     def removeChild(self, child:Node) -> Node:
-        if self._inner_element is not None:
+        if self._inner_element:
             return self._inner_element.removeChild(child)
         else:
             return super().removeChild(child)
 
     def replaceChild(self, new_child: Node, old_child: Node) -> Node:
-        if self._inner_element is not None:
+        if self._inner_element:
             return self._inner_element.replaceChild(new_child, old_child)
         else:
             return super().replaceChild(new_child, old_child)
 
     @property
     def childNodes(self):
-        if self._inner_element is not None:
+        if self._inner_element:
             return self._inner_element.childNodes
         else:
             return super().childNodes
 
     def empty(self):
-        if self._inner_element is not None:
+        if self._inner_element:
             self._inner_element.empty()
         else:
             super().empty()
@@ -192,7 +192,7 @@ class NestedTag(Tag):
 
     @textContent.setter
     def textContent(self, text:str):
-        if self._inner_element is not None:
+        if self._inner_element:
             self._inner_element.textContent = text
         else:
             # Need a trick to call property of super-class
@@ -200,21 +200,21 @@ class NestedTag(Tag):
 
     @property
     def html(self) -> str:
-        if self._inner_element is not None:
+        if self._inner_element:
             return self.start_tag + self._inner_element.html + self.end_tag
         else:
             return Tag.html.fget(self)
 
     @property
     def innerHTML(self) -> str:
-        if self._inner_element is not None:
+        if self._inner_element:
             return self._inner_element.innerHTML
         else:
             return Tag.innerHTML.fget(self)
 
     @innerHTML.setter
     def innerHTML(self, html:str):
-        if self._inner_element is not None:
+        if self._inner_element:
             self._inner_element.innerHTML = html
         else:
             Tag.innerHTML.fset(self, html)

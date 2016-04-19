@@ -215,7 +215,7 @@ class Parser(HTMLParser):
         attrs = dict(attr)
         params = dict(parent=self.elm, **attrs)
         elm = _create_element(tag, attrs.get('is'), self.default_class, params)
-        if self.elm is not None:
+        if self.elm:
             self.elm.append(elm)
         if tag not in HTML_EMPTY:
             self.elm = elm
@@ -224,7 +224,7 @@ class Parser(HTMLParser):
         self.elm = self.elm.parentNode
 
     def handle_data(self, data):
-        if data and self.elm is not None:
+        if data and self.elm:
             self.elm.append(data)
 
     def handle_comment(self, comment:str):

@@ -93,6 +93,7 @@ class CSSStyleDeclaration(OrderedDict):
 
     def removeProperty(self, prop: str) -> str:
         removed_prop = self.get(prop)
+        # removed_prop may be False or '', so need to check it is None
         if removed_prop is not None:
             del self[prop]
         return removed_prop

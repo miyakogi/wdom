@@ -16,7 +16,7 @@ from wdom.window import Window
 
 def getElementById(id:Union[str, int]) -> Optional[Node]:
     elm = Element._elements_with_id.get(str(id))
-    if elm is not None and elm.ownerDocument is not None:
+    if elm and elm.ownerDocument:
         return elm
     else:
         return None
@@ -24,7 +24,7 @@ def getElementById(id:Union[str, int]) -> Optional[Node]:
 
 def getElementByRimoId(id:Union[str, int]) -> Optional[WebElement]:
     elm = WebElement._elements_with_rimo_id.get(str(id))
-    if elm is not None and elm.ownerDocument is not None:
+    if elm and elm.ownerDocument:
         return elm
     else:
         return None
@@ -80,12 +80,12 @@ class Document(Node):
 
     def getElementById(self, id:Union[str, int]) -> Optional[Node]:
         elm = getElementById(id)
-        if elm is not None and elm.ownerDocument is self:
+        if elm and elm.ownerDocument is self:
             return elm
 
     def getElementByRimoId(self, id:Union[str, int]) -> Optional[WebElement]:
         elm = getElementByRimoId(id)
-        if elm is not None and elm.ownerDocument is self:
+        if elm and elm.ownerDocument is self:
             return elm
 
     def createElement(self, tag:str):
@@ -158,7 +158,7 @@ def get_document(include_rimo: bool = True,
                  ws_url: str = None,
                  ) -> Document:
     document = Document(autoreload=autoreload, reload_wait=reload_wait)
-    if app is not None:
+    if app:
         document.body.insertBefore(app, document.body.firstChild)
     if log_level is None:
         log_level = config.logging

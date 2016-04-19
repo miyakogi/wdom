@@ -50,7 +50,7 @@ def event_handler(msg: dict, doc: Document):
 def response_handler(msg: dict, doc:Document):
     id = msg.get('id')
     elm = doc.getElementByRimoId(id)
-    if elm is not None:
+    if elm:
         elm.on_message(msg)
     else:
         logger.warn('No such element: rimo_id={}'.format(id))

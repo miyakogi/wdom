@@ -30,7 +30,7 @@ class WebElement(HTMLElement, WebIF):
         super().__init__(*args, **kwargs)
         self.rimo_id = rimo_id or str(id(self))
         self.addEventListener('mount', self._on_mount)
-        if parent is not None:
+        if parent:
             parent.appendChild(self)
 
     def __copy__(self) -> HTMLElement:

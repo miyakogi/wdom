@@ -28,8 +28,11 @@ class Node(Node):
         super().__init__()  # Need to call init in multiple inheritce
         self._children = list()
         self._parent = None
-        if parent is not None:
+        if parent:
             parent.appendChild(self)
+
+    def __bool__(self) -> bool:
+        return True
 
     def __len__(self) -> int:
         return self.length
@@ -93,7 +96,7 @@ class Node(Node):
     def ownerDocument(self) -> Node:
         if self.nodeType == Node.DOCUMENT_NODE:
             return self
-        elif self.parentNode is not None:
+        elif self.parentNode:
             return self.parentNode.ownerDocument
         else:
             return None
@@ -105,7 +108,7 @@ class Node(Node):
         return node
 
     def _append_element(self, node:Node) -> Node:
-        if node.parentNode is not None:
+        if node.parentNode:
             node.parentNode.removeChild(node)
         self._children.append(node)
         node._parent = self
@@ -142,7 +145,7 @@ class Node(Node):
         return node
 
     def _insert_element_before(self, node:Node, ref_node:Node) -> Node:
-        if node.parentNode is not None:
+        if node.parentNode:
             node.parentNode.removeChild(node)
         self._children.insert(self.index(ref_node), node)
         node._parent = self
@@ -260,7 +263,7 @@ class ParentNode:
 
     def prepend(self, *nodes:Tuple['ChildNode', str]):
         node = _to_node_list(nodes)
-        if self.firstChild is not None:
+        if self.firstChild:
             self.insertBefore(node, self.firstChild)
         else:
             self.appendChild(node)
@@ -338,7 +341,7 @@ class ChildNode:
             self.parentNode.replaceChild(node, self)
 
     def _remove(self):
-        if self.parentNode is not None:
+        if self.parentNode:
             self.parentNode.removeChild(self)
 
     def remove(self) -> None:
