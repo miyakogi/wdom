@@ -33,11 +33,15 @@ def event_handler(msg: dict, doc: Document):
         # Update user inputs
         if currentTarget.tagName == 'INPUT':
             if currentTarget.type.lower() in ('checkbox', 'radio'):
-                currentTarget.checked = e.currentTarget.get('checked')
+                currentTarget._set_attribute(
+                    'checked', e.currentTarget.get('checked'))
             else:
-                currentTarget.value = e.currentTarget.get('value')
+                currentTarget._set_attribute(
+                    'value', e.currentTarget.get('value'))
         elif currentTarget.tagName == 'TEXTAREA':
-            currentTarget.value = e.currentTarget.get('value')
+            currentTarget._set_text_content(e.currentTarget.get('value'))
+        elif currentTarget.tagName == 'SELECT':
+            currentTarget._set_attribute('value', e.currentTarget.get('value'))
     e.currentTarget = currentTarget
     e.target = doc.getElementByRimoId(e.target.get('id'))
     e.currentTarget.dispatchEvent(e)
