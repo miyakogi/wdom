@@ -6,7 +6,9 @@ from unittest import TestCase
 
 from wdom.css import CSSStyleDeclaration
 from wdom.node import Text
-from wdom.element import DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement
+from wdom.element import (
+    DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement,
+)
 from wdom.window import customElements
 
 
@@ -209,6 +211,32 @@ class TestNamedNodeMap(TestCase):
         self.map.setNamedItem(self.attr)
         self.assertIsNone(self.map.item(1))
         self.assertIs(self.map.item(0), self.attr)
+
+
+class TestElementMeta(TestCase):
+    def test_special_attr(self):
+        class NewTag(Element):
+            _special_attr_string = ['a', 'b']
+            _special_attr_boolean = ['c', 'd']
+        tag = NewTag('a')
+        self.assertEqual(tag.a, '')
+        self.assertEqual(tag.b, '')
+        self.assertFalse(tag.c)
+        self.assertFalse(tag.d)
+        self.assertEqual(tag.html, '<a></a>')
+        tag.a = 'a'
+        self.assertEqual(tag.a, 'a')
+        self.assertEqual(tag.getAttribute('a'), 'a')
+        tag.setAttribute('b', 'b')
+        self.assertEqual(tag.b, 'b')
+        self.assertEqual(tag.getAttribute('b'), 'b')
+        tag.c = True
+        tag.setAttribute('d', 'd')
+        self.assertTrue(tag.c)
+        self.assertTrue(tag.d)
+        self.assertEqual(tag.html, '<a a="a" b="b" c d></a>')
+        tag.c = False
+        self.assertEqual(tag.html, '<a a="a" b="b" d></a>')
 
 
 class TestElement(TestCase):
