@@ -228,17 +228,19 @@ class Parser(HTMLParser):
         self.elm.append(Comment(comment))
 
 
-_string_getter_doc = '''
-Get attribute {attr} as string. If {attr} is not defined, return empty string.
+_str_attr_doc = '''
+Getter: Get value of `{attr}` attribute of this element, as string.
+        If `{attr}` is not defined, return empty string.
+Setter: Set the value of `{attr}` attribute of this element.
+Deleter: Remove `{attr}` attribute from this element.
 '''
-_string_setter_doc = '''
-Set attribute {attr}.
-'''
-_boolean_getter_doc = '''
-If this element has {attr}, return True. Otherwise return False.
-'''
-_boolean_setter_doc = '''
-If True, set {attr} to this element. Otherwise remove {attr}.
+
+_bool_attr_doc = '''
+Getter: Return True if this element has `{attr}` attribute.
+        Otherwise return False.
+Setter: If True, add `{attr}` attribute to this element.
+        Otherwise remove `{attr}`.
+Deleter: Remove `{attr}` attribute from this element.
 '''
 
 
@@ -249,9 +251,10 @@ def _string_properties(attr) -> property:
     def setter(self, value:str):
         self.setAttribute(attr, str(value))
 
-    getter.__doc__ = _string_getter_doc.format(attr=attr)
-    setter.__doc__ = _string_setter_doc.format(attr=attr)
-    return property(getter, setter)
+    def deleter(self):
+        self.removeAttribute(attr)
+
+    return property(getter, setter, deleter, _str_attr_doc.format(attr=attr))
 
 
 def _boolean_properties(attr) -> property:
@@ -264,9 +267,10 @@ def _boolean_properties(attr) -> property:
         else:
             self.removeAttribute(attr)
 
-    getter.__doc__ = _boolean_getter_doc.format(attr=attr)
-    setter.__doc__ = _boolean_setter_doc.format(attr=attr)
-    return property(getter, setter)
+    def deleter(self):
+        self.removeAttribute(attr)
+
+    return property(getter, setter, deleter, _bool_attr_doc.format(attr=attr))
 
 
 class ElementMeta(type):

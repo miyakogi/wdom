@@ -215,52 +215,106 @@ class TestNamedNodeMap(TestCase):
 
 
 class TestElementMeta(TestCase):
-    def test_special_attr(self):
+    def setUp(self):
         class NewTag(Element):
             _special_attr_string = ['a', 'b']
             _special_attr_boolean = ['c', 'd']
-        tag = NewTag('a')
-        for attr in ['a', 'b', 'c', 'd']:
-            self.assertNotIn(attr, tag.attributes)
-            self.assertFalse(tag.hasAttribute(attr))
-        self.assertEqual(tag.a, '')
-        self.assertEqual(tag.b, '')
-        self.assertFalse(tag.c)
-        self.assertFalse(tag.d)
-        self.assertEqual(tag.html, '<a></a>')
-        tag.a = 'a'
-        self.assertIn('a', tag.attributes)
-        self.assertTrue(tag.hasAttribute('a'))
-        self.assertEqual(tag.a, 'a')
-        self.assertEqual(tag.getAttribute('a'), 'a')
-        tag.setAttribute('b', 'b')
-        self.assertIn('b', tag.attributes)
-        self.assertTrue(tag.hasAttribute('b'))
-        self.assertEqual(tag.b, 'b')
-        self.assertEqual(tag.getAttribute('b'), 'b')
-        tag.c = True
-        tag.setAttribute('d', 'd')
-        self.assertIn('c', tag.attributes)
-        self.assertTrue(tag.hasAttribute('c'))
-        self.assertIn('d', tag.attributes)
-        self.assertTrue(tag.hasAttribute('d'))
-        self.assertTrue(tag.c)
-        self.assertTrue(tag.d)
-        self.assertEqual(tag.html, '<a a="a" b="b" c d></a>')
-        tag.c = False
-        self.assertNotIn('c', tag.attributes)
-        self.assertFalse(tag.hasAttribute('c'))
-        self.assertEqual(tag.html, '<a a="a" b="b" d></a>')
+        self.tag = NewTag('a')
+
+    def check_noattr(self, attr):
+        self.assertNotIn(attr, self.tag.attributes)
+        self.assertFalse(self.tag.hasAttribute(attr))
+        self.assertIsNone(self.tag.getAttribute(attr))
+
+    def check_hasattr(self, attr):
+        self.assertIn(attr, self.tag.attributes)
+        self.assertTrue(self.tag.hasAttribute(attr))
+
+    def test_special_attr_str(self):
+        for attr in ['a', 'b', 'c', 'd', 'e']:
+            self.check_noattr(attr)
+        self.assertEqual(self.tag.a, '')
+        self.assertEqual(self.tag.b, '')
+        self.assertEqual(self.tag.html, '<a></a>')
+
+    def test_special_attr_str_setter(self):
+        self.tag.a = 'a'
+        self.check_hasattr('a')
+        self.assertEqual(self.tag.a, 'a')
+        self.assertEqual(self.tag.getAttribute('a'), 'a')
+        self.assertEqual(self.tag.html, '<a a="a"></a>')
+
+        self.tag.removeAttribute('a')
+        self.check_noattr('a')
+        self.assertEqual(self.tag.a, '')
+        self.assertEqual(self.tag.html, '<a></a>')
+
+    def test_special_attr_str_setattr(self):
+        self.tag.setAttribute('b', 'b')
+        self.check_hasattr('b')
+        self.assertEqual(self.tag.b, 'b')
+        self.assertEqual(self.tag.getAttribute('b'), 'b')
+        self.assertEqual(self.tag.html, '<a b="b"></a>')
+
+        del self.tag.b
+        self.check_noattr('b')
+        self.assertEqual(self.tag.b, '')
+        self.assertEqual(self.tag.html, '<a></a>')
+        # delete again, but not raise error
+        del self.tag.b
+
+    def test_special_attr_bool(self):
+        for attr in ['a', 'b', 'c', 'd', 'e']:
+            self.check_noattr(attr)
+        self.assertFalse(self.tag.a)
+        self.assertFalse(self.tag.b)
+        self.assertEqual(self.tag.html, '<a></a>')
+
+    def test_special_attr_bool_setter(self):
+        self.tag.c = True
+        self.check_hasattr('c')
+        self.assertTrue(self.tag.c)
+        self.assertEqual(self.tag.html, '<a c></a>')
+
+        self.tag.c = False
+        self.check_noattr('c')
+        self.assertFalse(self.tag.c)
+        self.assertEqual(self.tag.html, '<a></a>')
+
+    def test_special_attr_bool_setattr(self):
+        self.tag.setAttribute('d', 'd')
+        self.check_hasattr('d')
+        self.assertTrue(self.tag.d)
+        self.assertEqual(self.tag.html, '<a d></a>')
+
+        self.tag.removeAttribute('d')
+        self.check_noattr('d')
+        self.assertFalse(self.tag.d)
+        self.assertEqual(self.tag.html, '<a></a>')
+
+    def test_special_attr_bool_setattr_empty(self):
         # In this case, 'd' still exists and True (compatible with JS...)
-        tag.setAttribute('d', '')
-        self.assertIn('d', tag.attributes)
-        self.assertTrue(tag.hasAttribute('d'))
-        self.assertEqual(tag.html, '<a a="a" b="b" d></a>')
+        self.tag.setAttribute('d', '')
+        self.check_hasattr('d')
+        self.assertEqual(self.tag.html, '<a d></a>')
+
         # Now remove 'd'
-        tag.d = ''
-        self.assertNotIn('d', tag.attributes)
-        self.assertFalse(tag.hasAttribute('d'))
-        self.assertEqual(tag.html, '<a a="a" b="b"></a>')
+        self.tag.d = ''
+        self.check_noattr('d')
+        self.assertFalse(self.tag.d)
+        self.assertEqual(self.tag.html, '<a></a>')
+
+    def test_special_attr_bool_setattr_false(self):
+        # In this case, 'd' still exists and True (compatible with JS...)
+        self.tag.setAttribute('d', False)
+        self.check_hasattr('d')
+        self.assertEqual(self.tag.html, '<a d></a>')
+
+        # Now remove 'd'
+        del self.tag.d
+        self.check_noattr('d')
+        self.assertFalse(self.tag.d)
+        self.assertEqual(self.tag.html, '<a></a>')
 
 
 class TestElement(TestCase):
