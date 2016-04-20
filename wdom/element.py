@@ -111,7 +111,10 @@ class Attr:
 
     @property
     def html(self) -> str:
-        if self.name.lower() in self._boolean_attrs:
+        lname = self._name.lower()
+        if (lname in self._boolean_attrs or
+                ((self._owner is not None) and
+                 lname in self._owner._special_attr_boolean)):
             return self.name if self.value else ''
         else:
             return '{name}="{value}"'.format(name=self.name, value=self.value)
@@ -167,13 +170,17 @@ class NamedNodeMap:
         if isinstance(self._owner, WebIF):
             self._owner.js_exec('setAttribute', item.name, item.value)
         self._dict[item.name] = item
+        item._owner = self._owner
 
     def removeNamedItem(self, item:Attr) -> Attr:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
             self._owner.js_exec('removeAttribute', item.name)
-        return self._dict.pop(item.name, None)
+        removed_item = self._dict.pop(item.name, None)
+        if removed_item:
+            removed_item._owner = self._owner
+        return removed_item
 
     def item(self, index:int) -> Attr:
         if 0 <= index < len(self):
@@ -182,7 +189,8 @@ class NamedNodeMap:
             return None
 
     def toString(self) -> str:
-        return ' '.join(attr.html for attr in self._dict.values())
+        attr_list = [attr.html for attr in self._dict.values()]
+        return ' '.join(a for a in attr_list if a)
 
 
 def _create_element(tag:str, name:str=None, base:type=None, attr:dict=None):
@@ -398,13 +406,15 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         else:
             if attr == 'id':
                 self._elements_with_id.pop(self.id, None)
-            self.attributes.removeNamedItem(Attr(attr))
+            _attr = self.getAttributeNode(attr)
+            if _attr:
+                self.attributes.removeNamedItem(_attr)
 
     def removeAttribute(self, attr:str):
         self._remove_attribute(attr)
 
-    def removeAttributeNode(self, attr:Attr):
-        self.attributes.removeNamedItem(attr)
+    def removeAttributeNode(self, attr:Attr) -> Attr:
+        return self.attributes.removeNamedItem(attr)
 
     def getElementsBy(self, cond):
         '''Return list of child nodes which matches ``cond``.
