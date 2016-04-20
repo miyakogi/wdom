@@ -90,11 +90,14 @@ class TestAutoReload(unittest.TestCase):
     def wait(self, t:float=None):
         time.sleep(t or self.wait_time)
 
+    def wait_short(self, t:float=None):
+        time.sleep(t or (self.wait_time / 10))
+
     def check_reload(self, args):
         self.proc = subprocess.Popen(args, cwd=CURDIR)
         self.wait()
         self.wd.get(self.url)
-        self.wait(0.1)
+        self.wait_short()
         h1 = self.wd.find_element_by_id('h1')
         self.assertEqual(h1.text, 'FIRST')
 
@@ -107,7 +110,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_aio(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_aio)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_reload(args)
@@ -115,7 +118,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_debug_aio(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_aio)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--debug')
         self.check_reload(args)
@@ -123,14 +126,14 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_force_aio(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_aio_force_reload)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         self.check_reload(args)
 
     def test_autoreload_tornado(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_tornado)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_reload(args)
@@ -138,7 +141,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_debug_tornado(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_tornado)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--debug')
         self.check_reload(args)
@@ -146,7 +149,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_force_tornado(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_tornado_force_reload)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         self.check_reload(args)
 
@@ -154,7 +157,7 @@ class TestAutoReload(unittest.TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR)
         self.wait()
         self.wd.get(self.url)
-        self.wait(0.1)
+        self.wait_short()
         h1 = self.wd.find_element_by_id('h1')
         # value_of_css_property return colors as rgba style
         self.assertRegex(h1.value_of_css_property('color'),
@@ -169,7 +172,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_css_aio(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_aio)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_reload(args)
@@ -177,7 +180,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_css_tornado(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_tornado)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_reload(args)
@@ -186,7 +189,7 @@ class TestAutoReload(unittest.TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR)
         self.wait()
         self.wd.get(self.url)
-        self.wait(0.1)
+        self.wait_short()
         h1 = self.wd.find_element_by_id('h1')
         # value_of_css_property return colors as rgba style
         self.assertRegex(h1.value_of_css_property('color'),
@@ -201,7 +204,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_exclude_css_aio(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_exclude_css_aio)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
@@ -209,7 +212,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_exclude_css_tornado(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_exclude_css_tornado)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
@@ -217,7 +220,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_exclude_dir_aio(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_exclude_dir_aio)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
@@ -225,7 +228,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_exclude_dir_tornado(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_exclude_dir_tornado)
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
@@ -233,7 +236,7 @@ class TestAutoReload(unittest.TestCase):
     def test_autoreload_nowatch_aio(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_aio.replace("/testdir')", "/testdir', no_watch=True)"))
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
@@ -242,7 +245,7 @@ class TestAutoReload(unittest.TestCase):
         with open(self.tmpfilename, 'w') as f:
             f.write(
                 src_tornado.replace("/testdir')", "/testdir', no_watch=True)"))
-        self.wait(0.1)
+        self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
