@@ -505,6 +505,7 @@ class TestCharacterData(TestCase):
 class TestText(TestCase):
     def setUp(self):
         self.node = Node()
+        self.df = DocumentFragment()
         self.tnode = Text('text')
 
     def test_nodename(self):
@@ -513,13 +514,17 @@ class TestText(TestCase):
     def test_html_escape(self):
         self.assertEqual(self.tnode.html, 'text')
         self.tnode.textContent = '<'
+        # not escape it has no parent
+        self.assertEqual(self.tnode.html, '<')
+        self.df.appendChild(self.tnode)
+        # escape its parent is DocumentFragment or Element or...
         self.assertEqual(self.tnode.html, '&lt;')
 
-        self.assertEqual(Text('<').html, '&lt;')
-        self.assertEqual(Text('>').html, '&gt;')
-        self.assertEqual(Text('&').html, '&amp;')
-        self.assertEqual(Text('"').html, '&quot;')
-        self.assertEqual(Text('\'').html, '&#x27;')
+        self.assertEqual(Text('<', parent=self.df).html, '&lt;')
+        self.assertEqual(Text('>', parent=self.df).html, '&gt;')
+        self.assertEqual(Text('&', parent=self.df).html, '&amp;')
+        self.assertEqual(Text('"', parent=self.df).html, '&quot;')
+        self.assertEqual(Text('\'', parent=self.df).html, '&#x27;')
 
     def test_appned(self):
         self.node.appendChild(self.tnode)

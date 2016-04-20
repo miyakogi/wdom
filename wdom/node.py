@@ -24,6 +24,9 @@ class Node(Node):
     # DOM Level 4
     parentElement = None
 
+    # should escape text contents
+    _should_escape_text = False
+
     def __init__(self, parent=None):
         super().__init__()  # Need to call init in multiple inheritce
         self._children = list()
@@ -435,7 +438,10 @@ class Text(CharacterData):
 
     @property
     def html(self) -> str:
-        return html.escape(self.data)
+        if self.parentNode and self.parentNode._should_escape_text:
+            return html.escape(self.data)
+        else:
+            return self.data
 
 
 class RawHtml(Text):
@@ -459,6 +465,7 @@ class DocumentType(Node, NonDocumentTypeChildNode):
     nodeType = Node.DOCUMENT_TYPE_NODE
     nodeValue = None
     textContent = None
+    _should_escape_text = True
 
     @property
     def nodeName(self) -> str:
@@ -487,6 +494,7 @@ class DocumentFragment(Node, ParentNode):
     parentNode = None
     previousSibling = None
     nextSibling = None
+    _should_escape_text = True
 
     @property
     def html(self) -> str:

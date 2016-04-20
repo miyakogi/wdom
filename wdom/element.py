@@ -97,22 +97,15 @@ class DOMTokenList:
 
 
 class Attr:
-    _boolean_attrs = (
-        'async', 'autofocus', 'autoplay', 'checked', 'contenteditable',
-        'defer', 'disabled', 'draggable', 'dropzone', 'formnovalidate',
-        'hidden', 'ismap', 'loop', 'multiple', 'muted', 'novalidate',
-        'readonly', 'required', 'reversed', 'spellcheck', 'scoped', 'selected',
-    )
-
     def __init__(self, name:str, value=None, owner: Node = None):
-        self._name = name
+        self._name = name.lower()
         self._value = value
         self._owner = owner
 
     @property
     def html(self) -> str:
-        if self.name.lower() in self._boolean_attrs:
-            return self.name if self.value else ''
+        if self._owner and self.name in self._owner._special_attr_boolean:
+            return self.name
         else:
             return '{name}="{value}"'.format(name=self.name, value=self.value)
 
@@ -167,13 +160,17 @@ class NamedNodeMap:
         if isinstance(self._owner, WebIF):
             self._owner.js_exec('setAttribute', item.name, item.value)
         self._dict[item.name] = item
+        item._owner = self._owner
 
     def removeNamedItem(self, item:Attr) -> Attr:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
             self._owner.js_exec('removeAttribute', item.name)
-        return self._dict.pop(item.name, None)
+        removed_item = self._dict.pop(item.name, None)
+        if removed_item:
+            removed_item._owner = self._owner
+        return removed_item
 
     def item(self, index:int) -> Attr:
         if 0 <= index < len(self):
@@ -231,13 +228,67 @@ class Parser(HTMLParser):
         self.elm.append(Comment(comment))
 
 
+_string_getter_doc = '''
+Get attribute {attr} as string. If {attr} is not defined, return empty string.
+'''
+_string_setter_doc = '''
+Set attribute {attr}.
+'''
+_boolean_getter_doc = '''
+If this element has {attr}, return True. Otherwise return False.
+'''
+_boolean_setter_doc = '''
+If True, set {attr} to this element. Otherwise remove {attr}.
+'''
+
+
+def _string_properties(attr) -> property:
+    def getter(self) -> str:
+        return self.getAttribute(attr) or ''
+
+    def setter(self, value:str):
+        self.setAttribute(attr, str(value))
+
+    getter.__doc__ = _string_getter_doc.format(attr=attr)
+    setter.__doc__ = _string_setter_doc.format(attr=attr)
+    return property(getter, setter)
+
+
+def _boolean_properties(attr) -> property:
+    def getter(self:Node) -> bool:
+        return bool(self.getAttribute(attr))
+
+    def setter(self:Node, value:bool):
+        if value:
+            self.setAttribute(attr, True)
+        else:
+            self.removeAttribute(attr)
+
+    getter.__doc__ = _boolean_getter_doc.format(attr=attr)
+    setter.__doc__ = _boolean_setter_doc.format(attr=attr)
+    return property(getter, setter)
+
+
+class ElementMeta(type):
+    def __new__(cls, name, bases, namespace, **kwargs):
+        for attr in namespace.get('_special_attr_string', []):
+            namespace[attr] = _string_properties(attr)
+        for attr in namespace.get('_special_attr_boolean', []):
+            namespace[attr] = _boolean_properties(attr)
+        new_cls = super().__new__(cls, name, bases, dict(namespace))
+        return new_cls
+
+
 class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
-              ChildNode):
+              ChildNode, metaclass=ElementMeta):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
     _parser_default_class = None
     _elements = WeakSet()
     _elements_with_id = WeakValueDictionary()
+    _should_escape_text = True
+    _special_attr_string = ['id']
+    _special_attr_boolean = []
 
     def __init__(self, tag:str='', parent=None, _registered=True, **kwargs):
         self._registered = _registered
@@ -341,14 +392,6 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def localName(self) -> str:
         return self.tag.lower()
 
-    @property
-    def id(self) -> str:
-        return self.getAttribute('id') or ''
-
-    @id.setter
-    def id(self, id:str):
-        self.setAttribute('id', id)
-
     def getAttribute(self, attr:str) -> str:
         if attr == 'class':
             if self.classList:
@@ -398,13 +441,15 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         else:
             if attr == 'id':
                 self._elements_with_id.pop(self.id, None)
-            self.attributes.removeNamedItem(Attr(attr))
+            _attr = self.getAttributeNode(attr)
+            if _attr:
+                self.attributes.removeNamedItem(_attr)
 
     def removeAttribute(self, attr:str):
         self._remove_attribute(attr)
 
-    def removeAttributeNode(self, attr:Attr):
-        self.attributes.removeNamedItem(attr)
+    def removeAttributeNode(self, attr:Attr) -> Attr:
+        return self.attributes.removeNamedItem(attr)
 
     def getElementsBy(self, cond):
         '''Return list of child nodes which matches ``cond``.
@@ -432,6 +477,9 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
 
 class HTMLElement(Element):
+    _special_attr_string = ['title', 'type']
+    _special_attr_boolean = ['draggable', 'hidden']
+
     def __init__(self, *args, style:str=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._style = CSSStyleDeclaration(style, owner=self)
@@ -454,39 +502,6 @@ class HTMLElement(Element):
             return ''
         else:
             return super().end_tag
-
-    # Special propertyies for attribute
-    @property
-    def draggable(self) -> bool:
-        return bool(self.getAttribute('draggable'))
-
-    @draggable.setter
-    def draggable(self, value:bool):
-        self.setAttribute('draggable', value)
-
-    @property
-    def hidden(self) -> bool:
-        return bool(self.getAttribute('hidden'))
-
-    @hidden.setter
-    def hidden(self, value:bool):
-        self.setAttribute('hidden', value)
-
-    @property
-    def title(self) -> str:
-        return self.getAttribute('title') or ''
-
-    @title.setter
-    def title(self, value:str):
-        self.setAttribute('title', value)
-
-    @property
-    def type(self) -> str:
-        return self.getAttribute('type') or ''
-
-    @type.setter
-    def type(self, value:str):
-        self.setAttribute('type', value)
 
     @property
     def style(self) -> CSSStyleDeclaration:
@@ -528,3 +543,47 @@ class HTMLElement(Element):
             self.style = None
         else:
             super()._remove_attribute(attr)
+
+
+class HTMLAnchorElement(HTMLElement):
+    _special_attr_string = ['href', 'name', 'rel', 'src', 'target']
+
+
+class HTMLButtonElement(HTMLElement):
+    _special_attr_string = ['name', 'value']
+    _special_attr_boolean = ['disabled']
+
+
+class HTMLIFrameElement(HTMLElement):
+    _special_attr_string = ['height', 'name', 'src', 'target', 'width']
+
+
+class HTMLInputElement(HTMLElement):
+    _special_attr_string = ['height', 'name', 'src', 'value', 'width']
+    _special_attr_boolean = ['checked', 'disabled']
+
+
+class HTMLOptionElement(HTMLElement):
+    _special_attr_string = ['label', 'value']
+    _special_attr_boolean = ['defaultSelected', 'disabled', 'selected']
+
+
+class HTMLSelectElement(HTMLElement):
+    _special_attr_string = ['length', 'name', 'size', 'value']
+    _special_attr_boolean = ['disabled', 'required']
+
+
+class HTMLStyleElement(HTMLElement):
+    _special_attr_boolean = ['disabled', 'scoped']
+    _should_escape_text = False
+
+
+class HTMLScriptElement(HTMLElement):
+    _special_attr_string = ['charset', 'src']
+    _special_attr_boolean = ['async', 'defer']
+    _should_escape_text = False
+
+
+class HTMLTextAreaElement(HTMLElement):
+    _special_attr_string = ['height', 'name', 'src', 'value', 'width']
+    _special_attr_boolean = ['disabled']

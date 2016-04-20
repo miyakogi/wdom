@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import gc
-from unittest import TestCase
+from unittest import TestCase, skipIf
 
 from wdom.css import CSSStyleDeclaration
 from wdom.node import Text
-from wdom.element import DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement
+from wdom.element import (
+    DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement,
+)
 from wdom.window import customElements
 
 
@@ -176,6 +178,7 @@ class TestAttr(TestCase):
         self.src.value = 'a'
         self.assertEqual(self.src.html, 'src="a"')
 
+    @skipIf(True, 'Now Attr node need owner element to check boolean')
     def test_boolean_attr(self):
         hidden = Attr('hidden')
         hidden.value = True
@@ -209,6 +212,55 @@ class TestNamedNodeMap(TestCase):
         self.map.setNamedItem(self.attr)
         self.assertIsNone(self.map.item(1))
         self.assertIs(self.map.item(0), self.attr)
+
+
+class TestElementMeta(TestCase):
+    def test_special_attr(self):
+        class NewTag(Element):
+            _special_attr_string = ['a', 'b']
+            _special_attr_boolean = ['c', 'd']
+        tag = NewTag('a')
+        for attr in ['a', 'b', 'c', 'd']:
+            self.assertNotIn(attr, tag.attributes)
+            self.assertFalse(tag.hasAttribute(attr))
+        self.assertEqual(tag.a, '')
+        self.assertEqual(tag.b, '')
+        self.assertFalse(tag.c)
+        self.assertFalse(tag.d)
+        self.assertEqual(tag.html, '<a></a>')
+        tag.a = 'a'
+        self.assertIn('a', tag.attributes)
+        self.assertTrue(tag.hasAttribute('a'))
+        self.assertEqual(tag.a, 'a')
+        self.assertEqual(tag.getAttribute('a'), 'a')
+        tag.setAttribute('b', 'b')
+        self.assertIn('b', tag.attributes)
+        self.assertTrue(tag.hasAttribute('b'))
+        self.assertEqual(tag.b, 'b')
+        self.assertEqual(tag.getAttribute('b'), 'b')
+        tag.c = True
+        tag.setAttribute('d', 'd')
+        self.assertIn('c', tag.attributes)
+        self.assertTrue(tag.hasAttribute('c'))
+        self.assertIn('d', tag.attributes)
+        self.assertTrue(tag.hasAttribute('d'))
+        self.assertTrue(tag.c)
+        self.assertTrue(tag.d)
+        self.assertEqual(tag.html, '<a a="a" b="b" c d></a>')
+        tag.c = False
+        self.assertNotIn('c', tag.attributes)
+        self.assertFalse(tag.hasAttribute('c'))
+        self.assertEqual(tag.html, '<a a="a" b="b" d></a>')
+        # In this case, 'd' still exists and True (compatible with JS...)
+        tag.setAttribute('d', '')
+        self.assertIn('d', tag.attributes)
+        self.assertTrue(tag.hasAttribute('d'))
+        self.assertEqual(tag.html, '<a a="a" b="b" d></a>')
+        # Now remove 'd'
+        tag.d = ''
+        self.assertNotIn('d', tag.attributes)
+        self.assertFalse(tag.hasAttribute('d'))
+        self.assertEqual(tag.html, '<a a="a" b="b"></a>')
 
 
 class TestElement(TestCase):
@@ -246,14 +298,24 @@ class TestElement(TestCase):
         self.assertTrue(elm.getAttribute('href'), 'c')
 
     def test_attrs(self):
-        self.assertIsNone(self.elm.getAttribute('a'))
+        self.assertFalse(self.elm.hasAttributes())
+        self.assertFalse(self.elm.hasAttribute('src'))
+        self.assertNotIn('src', self.elm.attributes)
+        self.assertIsNone(self.elm.getAttribute('src'))
+        self.assertEqual(self.elm.html, '<tag></tag>')
         self.elm.setAttribute('src', 'a')
-        self.assertEqual(self.elm.getAttribute('src'), 'a')
         self.assertTrue(self.elm.hasAttributes())
+        self.assertTrue(self.elm.hasAttribute('src'))
+        self.assertIn('src', self.elm.attributes)
+        self.assertEqual(self.elm.getAttribute('src'), 'a')
+        self.assertEqual(self.elm.html, '<tag src="a"></tag>')
 
         self.elm.removeAttribute('src')
-        self.assertIsNone(self.elm.getAttribute('src'))
         self.assertFalse(self.elm.hasAttributes())
+        self.assertFalse(self.elm.hasAttribute('src'))
+        self.assertNotIn('src', self.elm.attributes)
+        self.assertIsNone(self.elm.getAttribute('src'))
+        self.assertEqual(self.elm.html, '<tag></tag>')
 
     def test_id(self):
         self.assertEqual(self.elm.id, '')
@@ -591,6 +653,33 @@ class TestHTMLElement(TestCase):
     def setUp(self):
         self.elm = HTMLElement('a')
 
+    def test_attrs_bool(self):
+        self.assertFalse(self.elm.hasAttribute('hidden'))
+        self.assertNotIn('hidden', self.elm.attributes)
+        self.assertIsNone(self.elm.getAttribute('hidden'))
+        self.elm.setAttribute('hidden', True)
+
+        self.assertTrue(self.elm.hasAttributes())
+        self.assertTrue(self.elm.hasAttribute('hidden'))
+        self.assertIn('hidden', self.elm.attributes)
+        self.assertEqual(self.elm.getAttribute('hidden'), True)
+        self.assertEqual(self.elm.html, '<a hidden></a>')
+
+        # This is complatible with JS, but quite confusing
+        self.elm.setAttribute('hidden', False)
+        self.assertTrue(self.elm.hasAttributes())
+        self.assertTrue(self.elm.hasAttribute('hidden'))
+        self.assertIn('hidden', self.elm.attributes)
+        # In chrome, <a hidden="false">, should we convert to string?
+        self.assertFalse(self.elm.getAttribute('hidden'))
+        self.assertEqual(self.elm.html, '<a hidden></a>')
+
+        self.elm.hidden = False
+        self.assertFalse(self.elm.hasAttribute('hidden'))
+        self.assertNotIn('hidden', self.elm.attributes)
+        self.assertIsNone(self.elm.getAttribute('hidden'))
+        self.assertEqual(self.elm.html, '<a></a>')
+
     def test_empty_tag(self):
         img = HTMLElement('img')
         self.assertEqual(img.end_tag, '')
@@ -670,3 +759,25 @@ class TestHTMLElement(TestCase):
         clone.style.color = 'black'
         self.assertEqual(clone.style.cssText, 'color: black;')
         self.assertEqual(self.elm.style.cssText, 'color: red;')
+
+    def test_attr_clone(self):
+        self.elm.draggable = True
+        self.elm.hidden = True
+        clone = self.elm.cloneNode()
+        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        self.elm.hidden = False
+        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        clone.draggable = False
+        self.assertEqual(self.elm.html, '<a draggable></a>')
+        self.assertEqual(clone.html, '<a hidden></a>')
+
+    def test_attr_clone_deep(self):
+        self.elm.draggable = True
+        self.elm.hidden = True
+        clone = self.elm.cloneNode(deep=True)
+        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        self.elm.hidden = False
+        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        clone.draggable = False
+        self.assertEqual(self.elm.html, '<a draggable></a>')
+        self.assertEqual(clone.html, '<a hidden></a>')
