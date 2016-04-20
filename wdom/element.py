@@ -97,25 +97,15 @@ class DOMTokenList:
 
 
 class Attr:
-    _boolean_attrs = (
-        'async', 'autofocus', 'autoplay', 'checked', 'contenteditable',
-        'defer', 'disabled', 'draggable', 'dropzone', 'formnovalidate',
-        'hidden', 'ismap', 'loop', 'multiple', 'muted', 'novalidate',
-        'readonly', 'required', 'reversed', 'spellcheck', 'scoped', 'selected',
-    )
-
     def __init__(self, name:str, value=None, owner: Node = None):
-        self._name = name
+        self._name = name.lower()
         self._value = value
         self._owner = owner
 
     @property
     def html(self) -> str:
-        lname = self._name.lower()
-        if (lname in self._boolean_attrs or
-                ((self._owner is not None) and
-                 lname in self._owner._special_attr_boolean)):
-            return self.name if self.value else ''
+        if self._owner and self.name in self._owner._special_attr_boolean:
+            return self.name
         else:
             return '{name}="{value}"'.format(name=self.name, value=self.value)
 
@@ -189,8 +179,7 @@ class NamedNodeMap:
             return None
 
     def toString(self) -> str:
-        attr_list = [attr.html for attr in self._dict.values()]
-        return ' '.join(a for a in attr_list if a)
+        return ' '.join(attr.html for attr in self._dict.values())
 
 
 def _create_element(tag:str, name:str=None, base:type=None, attr:dict=None):
@@ -266,11 +255,14 @@ def _string_properties(attr) -> property:
 
 
 def _boolean_properties(attr) -> property:
-    def getter(self) -> bool:
+    def getter(self:Node) -> bool:
         return bool(self.getAttribute(attr))
 
-    def setter(self, value:bool):
-        self.setAttribute(attr, bool(value))
+    def setter(self:Node, value:bool):
+        if value:
+            self.setAttribute(attr, True)
+        else:
+            self.removeAttribute(attr)
 
     getter.__doc__ = _boolean_getter_doc.format(attr=attr)
     setter.__doc__ = _boolean_setter_doc.format(attr=attr)
