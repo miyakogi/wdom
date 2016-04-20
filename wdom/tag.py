@@ -5,8 +5,12 @@ import logging
 from collections import Iterable
 from typing import Tuple, Union
 
-from wdom.node import Node, RawHtml
-from wdom.element import DOMTokenList
+from wdom.node import Node
+from wdom.element import DOMTokenList, ElementMeta
+from wdom.element import (
+    HTMLIFrameElement, HTMLInputElement, HTMLOptionElement, HTMLSelectElement,
+    HTMLScriptElement, HTMLTextAreaElement,
+)
 from wdom.web_node import WebElement
 
 logger = logging.getLogger(__name__)
@@ -16,7 +20,7 @@ class HTMLElement(WebElement):
     pass
 
 
-class TagBaseMeta(type):
+class TagBaseMeta(ElementMeta):
     '''Meta class to set default class variable of HtmlDom'''
     def __prepare__(name, bases, **kwargs) -> dict:
         return {'inherit_class': True}
@@ -251,29 +255,7 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
     return cls
 
 
-class ValueAttrMixin:
-    @property
-    def value(self) -> str:
-        '''Get input value of this node. This value is used as a default value
-        of this element.
-        '''
-        return self.getAttribute('value') or ''
-
-    @value.setter
-    def value(self, value: str):
-        self.setAttribute('value', value)
-
-class SrcAttrMixin(object):
-    @property
-    def src(self) -> str:
-        return self.getAttribute('src')
-
-    @src.setter
-    def src(self, src:str):
-        self.setAttribute('src', src)
-
-
-class Input(Tag, ValueAttrMixin):
+class Input(Tag, HTMLInputElement):
     '''Base class for ``<input>`` element.
     '''
     tag = 'input'
@@ -285,21 +267,8 @@ class Input(Tag, ValueAttrMixin):
             kwargs['type'] = self.type_
         super().__init__(*args, **kwargs)
 
-    @property
-    def checked(self) -> bool:
-        '''If checked, this property returns True. Setting True/False to this
-        property will change default value of this element.
-        This node is other than checkbox or radio, this property will be
-        ignored.
-        '''
-        return self.getAttribute('checked') or False
 
-    @checked.setter
-    def checked(self, value: bool):
-        self.setAttribute('checked', value)
-
-
-class Textarea(Input):
+class Textarea(Tag, HTMLTextAreaElement):
     '''Base class for ``<textarea>`` element.'''
     tag = 'textarea'
 
@@ -315,15 +284,11 @@ class Textarea(Input):
         self.textContent = value
 
 
-class Script(Tag, SrcAttrMixin):
+class Script(Tag, HTMLScriptElement):
     tag = 'script'
 
     def __init__(self, *args, type='text/javascript', **kwargs):
         super().__init__(*args, type=type, **kwargs)
-
-    def _set_text_content(self, text:str):
-        if text:
-            self.appendChild(RawHtml(text))
 
 
 Html = NewTagClass('Html')
@@ -333,7 +298,7 @@ Head = NewTagClass('Head')
 Link = NewTagClass('Link')
 Title = NewTagClass('Title')
 Style = NewTagClass('Style')
-Iframe = NewTagClass('Iframe', 'iframe', (Tag, SrcAttrMixin))
+Iframe = NewTagClass('Iframe', 'iframe', (Tag, HTMLIFrameElement))
 
 Div = NewTagClass('Div')
 Span = NewTagClass('Span')
@@ -385,8 +350,8 @@ Button = NewTagClass('Button', 'button', Tag)
 Label = NewTagClass('Label')
 CheckBox = NewTagClass('CheckBox', 'input', Input, type_='checkbox')
 TextInput = NewTagClass('TextInput', 'input', Input, type_='text')
-Select = NewTagClass('Select', 'select', (NestedTag, ValueAttrMixin))
-Option = NewTagClass('Option', 'option', (Tag, ValueAttrMixin))
+Select = NewTagClass('Select', 'select', (NestedTag, HTMLSelectElement))
+Option = NewTagClass('Option', 'option', (Tag, HTMLOptionElement))
 
 # Building blocks
 Container = Div

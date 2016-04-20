@@ -239,13 +239,64 @@ class Parser(HTMLParser):
         self.elm.append(Comment(comment))
 
 
+_string_getter_doc = '''
+Get attribute {attr} as string. If {attr} is not defined, return empty string.
+'''
+_string_setter_doc = '''
+Set attribute {attr}.
+'''
+_boolean_getter_doc = '''
+If this element has {attr}, return True. Otherwise return False.
+'''
+_boolean_setter_doc = '''
+If True, set {attr} to this element. Otherwise remove {attr}.
+'''
+
+
+def _string_properties(attr) -> property:
+    def getter(self) -> str:
+        return self.getAttribute(attr) or ''
+
+    def setter(self, value:str):
+        self.setAttribute(attr, str(value))
+
+    getter.__doc__ = _string_getter_doc.format(attr=attr)
+    setter.__doc__ = _string_setter_doc.format(attr=attr)
+    return property(getter, setter)
+
+
+def _boolean_properties(attr) -> property:
+    def getter(self) -> bool:
+        return bool(self.getAttribute(attr))
+
+    def setter(self, value:bool):
+        self.setAttribute(attr, bool(value))
+
+    getter.__doc__ = _boolean_getter_doc.format(attr=attr)
+    setter.__doc__ = _boolean_setter_doc.format(attr=attr)
+    return property(getter, setter)
+
+
+class ElementMeta(type):
+    def __new__(cls, name, bases, namespace, **kwargs):
+        for attr in namespace.get('_special_attr_string', []):
+            namespace[attr] = _string_properties(attr)
+        for attr in namespace.get('_special_attr_boolean', []):
+            namespace[attr] = _boolean_properties(attr)
+        new_cls = super().__new__(cls, name, bases, dict(namespace))
+        return new_cls
+
+
 class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
-              ChildNode):
+              ChildNode, metaclass=ElementMeta):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
     _parser_default_class = None
     _elements = WeakSet()
     _elements_with_id = WeakValueDictionary()
+    _should_escape_text = True
+    _special_attr_string = ['id']
+    _special_attr_boolean = []
 
     def __init__(self, tag:str='', parent=None, _registered=True, **kwargs):
         self._registered = _registered
@@ -349,14 +400,6 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def localName(self) -> str:
         return self.tag.lower()
 
-    @property
-    def id(self) -> str:
-        return self.getAttribute('id') or ''
-
-    @id.setter
-    def id(self, id:str):
-        self.setAttribute('id', id)
-
     def getAttribute(self, attr:str) -> str:
         if attr == 'class':
             if self.classList:
@@ -442,6 +485,9 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
 
 class HTMLElement(Element):
+    _special_attr_string = ['title', 'type']
+    _special_attr_boolean = ['draggable', 'hidden']
+
     def __init__(self, *args, style:str=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._style = CSSStyleDeclaration(style, owner=self)
@@ -464,39 +510,6 @@ class HTMLElement(Element):
             return ''
         else:
             return super().end_tag
-
-    # Special propertyies for attribute
-    @property
-    def draggable(self) -> bool:
-        return bool(self.getAttribute('draggable'))
-
-    @draggable.setter
-    def draggable(self, value:bool):
-        self.setAttribute('draggable', value)
-
-    @property
-    def hidden(self) -> bool:
-        return bool(self.getAttribute('hidden'))
-
-    @hidden.setter
-    def hidden(self, value:bool):
-        self.setAttribute('hidden', value)
-
-    @property
-    def title(self) -> str:
-        return self.getAttribute('title') or ''
-
-    @title.setter
-    def title(self, value:str):
-        self.setAttribute('title', value)
-
-    @property
-    def type(self) -> str:
-        return self.getAttribute('type') or ''
-
-    @type.setter
-    def type(self, value:str):
-        self.setAttribute('type', value)
 
     @property
     def style(self) -> CSSStyleDeclaration:
@@ -538,3 +551,47 @@ class HTMLElement(Element):
             self.style = None
         else:
             super()._remove_attribute(attr)
+
+
+class HTMLAnchorElement(HTMLElement):
+    _special_attr_string = ['href', 'name', 'rel', 'src', 'target']
+
+
+class HTMLButtonElement(HTMLElement):
+    _special_attr_string = ['name', 'value']
+    _special_attr_boolean = ['disabled']
+
+
+class HTMLIFrameElement(HTMLElement):
+    _special_attr_string = ['height', 'name', 'src', 'target', 'width']
+
+
+class HTMLInputElement(HTMLElement):
+    _special_attr_string = ['height', 'name', 'src', 'value', 'width']
+    _special_attr_boolean = ['checked', 'disabled']
+
+
+class HTMLOptionElement(HTMLElement):
+    _special_attr_string = ['label', 'value']
+    _special_attr_boolean = ['defaultSelected', 'disabled', 'selected']
+
+
+class HTMLSelectElement(HTMLElement):
+    _special_attr_string = ['length', 'name', 'size', 'value']
+    _special_attr_boolean = ['disabled', 'required']
+
+
+class HTMLStyleElement(HTMLElement):
+    _special_attr_boolean = ['disabled', 'scoped']
+    _should_escape_text = False
+
+
+class HTMLScriptElement(HTMLElement):
+    _special_attr_string = ['charset', 'src']
+    _special_attr_boolean = ['async', 'defer']
+    _should_escape_text = False
+
+
+class HTMLTextAreaElement(HTMLElement):
+    _special_attr_string = ['height', 'name', 'src', 'value', 'width']
+    _special_attr_boolean = ['disabled']
