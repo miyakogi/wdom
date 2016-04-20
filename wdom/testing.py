@@ -27,6 +27,7 @@ from wdom import options
 driver = webdriver.Firefox
 local_webdriver = None
 remote_webdriver = None
+browser_implict_wait = 0
 
 
 class TestCase(unittest.TestCase):
@@ -41,6 +42,8 @@ def start_webdriver():
     global local_webdriver
     if local_webdriver is None:
         local_webdriver = driver()
+        if browser_implict_wait:
+            local_webdriver.implicitly_wait(browser_implict_wait)
 
 
 def close_webdriver():
@@ -95,6 +98,8 @@ def get_remote_browser():
     global remote_webdriver
     if remote_webdriver is None:
         remote_webdriver = driver()
+        if browser_implict_wait:
+            remote_webdriver.implicitly_wait(browser_implict_wait)
         return remote_webdriver
     else:
         return remote_webdriver
