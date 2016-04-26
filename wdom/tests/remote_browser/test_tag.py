@@ -119,7 +119,9 @@ class InputTestCase(RemoteBrowserTestCase):
         self.radio2_l = Label('Radio 2', parent=self.root, **{'for': 'r2'})
         self.radio3_l = Label('Radio 3', parent=self.root, **{'for': 'r3'})
         self.document.body.prepend(self.root)
+        self.wait(1)
         super().setUp()
+        self.wait(1)
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
