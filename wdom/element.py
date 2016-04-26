@@ -669,6 +669,12 @@ class HTMLOptionElement(HTMLElement, FormControlMixin):
     _special_attr_boolean = ['defaultSelected', 'disabled', 'selected']
 
 
+class HTMLScriptElement(HTMLElement):
+    _special_attr_string = ['charset', 'src']
+    _special_attr_boolean = ['async', 'defer']
+    _should_escape_text = False
+
+
 class HTMLSelectElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['name', 'size', 'value']
     _special_attr_boolean = ['disabled', 'multiple', 'required']
@@ -704,12 +710,6 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
 
 class HTMLStyleElement(HTMLElement):
     _special_attr_boolean = ['disabled', 'scoped']
-    _should_escape_text = False
-
-
-class HTMLScriptElement(HTMLElement):
-    _special_attr_string = ['charset', 'src']
-    _special_attr_boolean = ['async', 'defer']
     _should_escape_text = False
 
 
