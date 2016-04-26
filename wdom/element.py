@@ -4,7 +4,7 @@
 from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
-from typing import Union, Tuple
+from typing import Union, Tuple, Callable
 from weakref import WeakSet, WeakValueDictionary
 
 from wdom.interface import NodeList, Event
@@ -455,7 +455,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def removeAttributeNode(self, attr:Attr) -> Attr:
         return self.attributes.removeNamedItem(attr)
 
-    def getElementsBy(self, cond):
+    def getElementsBy(self, cond:Callable[['Element'], bool]) -> NodeList:
         '''Return list of child nodes which matches ``cond``.
         ``cond`` must be a function which gets a single argument ``node``,
         and returns bool. If the node matches requested condition, ``cond``
@@ -463,11 +463,10 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         This searches all child nodes recursively.
         '''
         elements = []
-        for child in self._children:
+        for child in self.children:
             if cond(child):
                 elements.append(child)
-            if isinstance(child, Element):
-                elements.extend(child.getElementsBy(cond))
+            elements.extend(child.getElementsBy(cond))
         return NodeList(elements)
 
     def getElementsByTagName(self, tag:str):
@@ -558,13 +557,31 @@ class HTMLButtonElement(HTMLElement):
     _special_attr_boolean = ['disabled']
 
 
+class HTMLFormElement(HTMLElement):
+    _special_attr_string = ['name']
+
+
 class HTMLIFrameElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'target', 'width']
 
 
 class HTMLInputElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
-    _special_attr_boolean = ['checked', 'disabled']
+    _special_attr_boolean = ['checked', 'disabled', 'multiple', 'readonly',
+                             'required']
+    def __init__(self, *args, form=None, **kwargs):
+        self._form = None
+        super().__init__(*args, **kwargs)
+        from wdom.document import getElementById
+        if isinstance(form, (str, int)):
+            form = getElementById(form)
+        if isinstance(form, HTMLFormElement):
+            self._form = form
+        elif form is not None:
+            raise TypeError(
+                '"form" attribute must be an HTMLFormElement or id of'
+                'HTMLFormElement in the same document.'
+            )
 
     def on_event_pre(self, e:Event):
         super().on_event_pre(e)
@@ -574,6 +591,40 @@ class HTMLInputElement(HTMLElement):
                 self._set_attribute('checked', e.currentTarget.get('checked'))
             else:
                 self._set_attribute('value', e.currentTarget.get('value'))
+
+    @property
+    def defaultChecked(self) -> bool:
+        return bool(self.getAttribute('defaultChecked'))
+
+    @defaultChecked.setter
+    def defaultChecked(self, value:bool):
+        if value:
+            self.setAttribute('defaultChecked', True)
+            self.checked = True
+        else:
+            self.removeAttribute('defaultChecked')
+            self.checked = False
+
+    @property
+    def defaultValue(self) -> str:
+        return self.getAttribute('defaultValue')
+
+    @defaultValue.setter
+    def defaultValue(self, value:str):
+        self.setAttribute('defaultValue', value)
+        self.value = value
+
+    @property
+    def form(self) -> HTMLFormElement:
+        if self._form:
+            return self._form
+        else:
+            parent = self.parentNode
+            while parent:
+                if isinstance(parent, HTMLFormElement):
+                    return parent
+                else:
+                    parent = parent.parentNode
 
 
 class HTMLOptionElement(HTMLElement):
@@ -588,19 +639,6 @@ class HTMLSelectElement(HTMLElement):
         self._selected_options = []
         super().__init__(*args, **kwargs)
 
-    @property
-    def length(self) -> int:
-        return len(self.options)
-
-    @property
-    def options(self) -> NodeList:
-        return NodeList(
-            list(elm for elm in self.childNodes if elm.localName=='option'))
-
-    @property
-    def selectedOptions(self) -> NodeList:
-        return NodeList(list(opt for opt in self.options if opt.selected))
-
     def on_event_pre(self, e:Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
@@ -613,6 +651,18 @@ class HTMLSelectElement(HTMLElement):
                     opt._set_attribute('selected', True)
                 else:
                     opt._remove_attribute('selected')
+
+    @property
+    def length(self) -> int:
+        return len(self.options)
+
+    @property
+    def options(self) -> NodeList:
+        return self.getElementsByTagName('option')
+
+    @property
+    def selectedOptions(self) -> NodeList:
+        return NodeList(list(opt for opt in self.options if opt.selected))
 
 
 class HTMLStyleElement(HTMLElement):
@@ -629,6 +679,7 @@ class HTMLScriptElement(HTMLElement):
 class HTMLTextAreaElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['disabled']
+    defaultValue = HTMLElement.textContent
     def on_event_pre(self, e:Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
