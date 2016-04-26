@@ -19,7 +19,7 @@ test_cases = (
     case for case in chain(vars(test_node).values(), vars(test_tag).values())
     if isinstance(case, type) and
     issubclass(case, RemoteBrowserTestCase) and
-    not isinstance(case, TestCase)
+    not issubclass(case, TestCase)
 )
 wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
 
