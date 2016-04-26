@@ -132,6 +132,7 @@ class InputTestCase(RemoteBrowserTestCase):
 
         self.browser.get(self.url)
         self.set_element(self.input)
+        self.wait()
         self.assertEqual(self.element.get_attribute('value'), 'abc')
 
         self.element.send_keys('def')
@@ -140,12 +141,14 @@ class InputTestCase(RemoteBrowserTestCase):
 
     def test_textarea(self):
         self.set_element(self.textarea)
+        self.wait()
         self.element.send_keys('abc')
         self.wait()
         self.assertEqual(self.textarea.value, 'abc')
 
         self.browser.get(self.url)
         self.set_element(self.textarea)
+        self.wait()
         self.assertEqual(self.element.get_attribute('value'), 'abc')
 
         self.element.send_keys('def')
@@ -154,12 +157,14 @@ class InputTestCase(RemoteBrowserTestCase):
 
     def test_checkbox(self):
         self.set_element(self.checkbox)
+        self.wait()
         self.element.click()
         self.wait()
         self.assertIsTrue(self.checkbox.checked)
 
         self.browser.get(self.url)
         self.set_element(self.checkbox)
+        self.wait()
         self.assertEqual(self.element.get_attribute('checked'), 'true')
 
         self.wait()
