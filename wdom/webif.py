@@ -27,22 +27,15 @@ class WebIF:
         '''When this instance has any connection, return True.'''
         return bool(self.ownerDocument and self.ownerDocument.connections)
 
-    def on_message(self, msg: dict):
-        '''called when webscoket get message.'''
-        logger.debug('{tag}: {msg}'.format(tag=self.tag, msg=msg))
+    def on_event_pre(self, event:Event):
+        '''Hook executed before dispatching events.
+        Used for set values changed by user input, in some elements like input,
+        textarea, or select.
+        In this method, event.currentTarget is a dict sent from browser.
+        '''
+        pass
 
-        msg_type = msg.get('type')
-        if msg_type == 'event':
-            self._handle_event(msg)
-        elif msg_type == 'response':
-            self._handle_response(msg)
-
-    def _handle_event(self, msg):
-        _e = msg.get('event', {})
-        event = Event(**_e)
-        self.dispatchEvent(event=event)
-
-    def _handle_response(self, msg):
+    def on_response(self, msg):
         response = msg.get('data', False)
         if response:
             task = self._tasks.pop(msg.get('reqid'), False)

@@ -29,19 +29,7 @@ def event_handler(msg: dict, doc: Document):
         logger.warn('No such element: rimo_id={}'.format(_id))
         return
 
-    if e.type in ('input', 'change'):
-        # Update user inputs
-        if currentTarget.tagName == 'INPUT':
-            if currentTarget.type.lower() in ('checkbox', 'radio'):
-                currentTarget._set_attribute(
-                    'checked', e.currentTarget.get('checked'))
-            else:
-                currentTarget._set_attribute(
-                    'value', e.currentTarget.get('value'))
-        elif currentTarget.tagName == 'TEXTAREA':
-            currentTarget._set_text_content(e.currentTarget.get('value'))
-        elif currentTarget.tagName == 'SELECT':
-            currentTarget._set_attribute('value', e.currentTarget.get('value'))
+    currentTarget.on_event_pre(e)
     e.currentTarget = currentTarget
     e.target = doc.getElementByRimoId(e.target.get('id'))
     e.currentTarget.dispatchEvent(e)
@@ -51,6 +39,6 @@ def response_handler(msg: dict, doc:Document):
     id = msg.get('id')
     elm = doc.getElementByRimoId(id)
     if elm:
-        elm.on_message(msg)
+        elm.on_response(msg)
     else:
         logger.warn('No such element: rimo_id={}'.format(id))

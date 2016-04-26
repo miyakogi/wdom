@@ -15,6 +15,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.utils import free_port
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support.select import Select
 
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
@@ -109,6 +110,7 @@ class BrowserController:
     '''Class to run webdriver in different proceess. Inter-process
     communication is done via Pipe.
     '''
+    _select_methods = [s for s in dir(Select) if not s.startswith('_')]
     def __init__(self, conn):
         '''Set up connection and start webdriver. ``conn`` is a one end of
         ``Pipe()``, which is used the inter-process communication.
@@ -162,7 +164,12 @@ class BrowserController:
                     # Element must be set
                     self.conn.send('Error: No Element Set')
                     continue
-                method = getattr(self.element, method_name)
+                if (method_name in self._select_methods and
+                        self.element.tag_name.lower() == 'select'):
+                    s = Select(self.element)
+                    method = getattr(s, method_name)
+                else:
+                    method = getattr(self.element, method_name)
             self._execute_method(method, args)
 
 
