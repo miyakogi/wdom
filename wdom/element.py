@@ -4,7 +4,7 @@
 from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
-from typing import Union, Tuple
+from typing import Union, Tuple, Callable
 from weakref import WeakSet, WeakValueDictionary
 
 from wdom.interface import NodeList, Event
@@ -455,7 +455,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def removeAttributeNode(self, attr:Attr) -> Attr:
         return self.attributes.removeNamedItem(attr)
 
-    def getElementsBy(self, cond):
+    def getElementsBy(self, cond:Callable[['Element'], bool]) -> NodeList:
         '''Return list of child nodes which matches ``cond``.
         ``cond`` must be a function which gets a single argument ``node``,
         and returns bool. If the node matches requested condition, ``cond``
@@ -463,11 +463,10 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         This searches all child nodes recursively.
         '''
         elements = []
-        for child in self._children:
+        for child in self.children:
             if cond(child):
                 elements.append(child)
-            if isinstance(child, Element):
-                elements.extend(child.getElementsBy(cond))
+            elements.extend(child.getElementsBy(cond))
         return NodeList(elements)
 
     def getElementsByTagName(self, tag:str):
@@ -588,19 +587,6 @@ class HTMLSelectElement(HTMLElement):
         self._selected_options = []
         super().__init__(*args, **kwargs)
 
-    @property
-    def length(self) -> int:
-        return len(self.options)
-
-    @property
-    def options(self) -> NodeList:
-        return NodeList(
-            list(elm for elm in self.childNodes if elm.localName=='option'))
-
-    @property
-    def selectedOptions(self) -> NodeList:
-        return NodeList(list(opt for opt in self.options if opt.selected))
-
     def on_event_pre(self, e:Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
@@ -613,6 +599,18 @@ class HTMLSelectElement(HTMLElement):
                     opt._set_attribute('selected', True)
                 else:
                     opt._remove_attribute('selected')
+
+    @property
+    def length(self) -> int:
+        return len(self.options)
+
+    @property
+    def options(self) -> NodeList:
+        return self.getElementsByTagName('option')
+
+    @property
+    def selectedOptions(self) -> NodeList:
+        return NodeList(list(opt for opt in self.options if opt.selected))
 
 
 class HTMLStyleElement(HTMLElement):
