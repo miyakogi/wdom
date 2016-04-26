@@ -108,7 +108,7 @@ class Attr:
         if self._owner and self.name in self._owner._special_attr_boolean:
             return self.name
         else:
-            if self.name not in ('script', 'style'):
+            if isinstance(self.value, str):
                 value = html_.escape(self.value)
             else:
                 value = self.value
