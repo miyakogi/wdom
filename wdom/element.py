@@ -7,7 +7,7 @@ from html.parser import HTMLParser
 from typing import Union, Tuple
 from weakref import WeakSet, WeakValueDictionary
 
-from wdom.interface import NodeList
+from wdom.interface import NodeList, Event
 from wdom.css import CSSStyleDeclaration
 from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
 from wdom.node import DocumentFragment, Comment
@@ -566,6 +566,15 @@ class HTMLInputElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['checked', 'disabled']
 
+    def on_event_pre(self, e:Event):
+        super().on_event_pre(e)
+        if e.type in ('input', 'change'):
+            # Update user inputs
+            if self.type.lower() in ('checkbox', 'radio'):
+                self._set_attribute('checked', e.currentTarget.get('checked'))
+            else:
+                self._set_attribute('value', e.currentTarget.get('value'))
+
 
 class HTMLOptionElement(HTMLElement):
     _special_attr_string = ['label', 'value']
@@ -592,6 +601,19 @@ class HTMLSelectElement(HTMLElement):
     def selectedOptions(self) -> NodeList:
         return NodeList(list(opt for opt in self.options if opt.selected))
 
+    def on_event_pre(self, e:Event):
+        super().on_event_pre(e)
+        if e.type in ('input', 'change'):
+            self._set_attribute('value', e.currentTarget.get('value'))
+            _selected = e.currentTarget.get('selectedOptions', [])
+            self._selected_options.clear()
+            for opt in self.options:
+                if opt.rimo_id in _selected:
+                    self._selected_options.append(opt)
+                    opt._set_attribute('selected', True)
+                else:
+                    opt._remove_attribute('selected')
+
 
 class HTMLStyleElement(HTMLElement):
     _special_attr_boolean = ['disabled', 'scoped']
@@ -607,3 +629,8 @@ class HTMLScriptElement(HTMLElement):
 class HTMLTextAreaElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['disabled']
+    def on_event_pre(self, e:Event):
+        super().on_event_pre(e)
+        if e.type in ('input', 'change'):
+            # Update user inputs
+            self._set_text_content(e.currentTarget.get('value') or '')

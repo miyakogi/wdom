@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, call
 
 from syncer import sync
 
+from wdom.interface import Event
 from wdom.testing import TestCase
 from wdom.web_node import WebElement
 
@@ -170,16 +171,17 @@ class TestEventMessage(TestCase):
                 'type': 'click',
             },
         }
+        self.event = Event(**self.msg.get('event'))
 
     def test_handle_event(self):
         self.elm.js_exec.assert_called_once_with('addEventListener', 'click')
-        self.elm.on_message(self.msg)
+        self.elm.dispatchEvent(self.event)
         self.assertTrue(self.mock.called)
 
     def test_remove_event(self):
         self.elm.removeEventListener('click', self.mock)
         self.elm.js_exec.assert_called_with('removeEventListener', 'click')
-        self.elm.on_message(self.msg)
+        self.elm.dispatchEvent(self.event)
         self.mock.assert_not_called()
 
 
@@ -199,7 +201,7 @@ class TestQuery(TestCase):
         self.elm.js_exec.assert_called_once_with('test', 0)
         self.msg['reqid'] = 0
         self.msg['data'] = 1
-        self.elm._handle_response(self.msg)
+        self.elm.on_response(self.msg)
         self.assertEqual(fut.result(), 1)
 
     @sync
@@ -208,5 +210,5 @@ class TestQuery(TestCase):
         self.assertFalse(fut.done())
         self.msg['reqid'] = 0
         self.msg['data'] = {'x': 1}
-        self.elm.on_message(self.msg)
+        self.elm.on_response(self.msg)
         self.assertEqual(await fut, {'x': 1})
