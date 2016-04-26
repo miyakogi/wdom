@@ -14,6 +14,7 @@ from wdom.element import (
     HTMLIFrameElement,
     HTMLInputElement,
     HTMLLabelElement,
+    HTMLOptGroupElement,
     HTMLOptionElement,
     HTMLScriptElement,
     HTMLSelectElement,
@@ -360,6 +361,7 @@ Label = NewTagClass('Label', 'label', (Tag, HTMLLabelElement))
 CheckBox = NewTagClass('CheckBox', 'input', Input, type_='checkbox')
 TextInput = NewTagClass('TextInput', 'input', Input, type_='text')
 Select = NewTagClass('Select', 'select', (NestedTag, HTMLSelectElement))
+Optgroup = NewTagClass('OptGroup', 'optgroup', (Tag, HTMLOptGroupElement))
 Option = NewTagClass('Option', 'option', (Tag, HTMLOptionElement))
 
 # Building blocks

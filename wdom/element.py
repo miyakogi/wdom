@@ -669,6 +669,11 @@ class HTMLLabelElement(HTMLElement, FormControlMixin):
                 return getElementById(id)
 
 
+class HTMLOptGroupElement(HTMLElement, FormControlMixin):
+    _special_attr_string = ['label']
+    _special_attr_boolean = ['disabled']
+
+
 class HTMLOptionElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['label', 'value']
     _special_attr_boolean = ['defaultSelected', 'disabled', 'selected']
