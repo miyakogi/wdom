@@ -3,6 +3,7 @@
 
 from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
+import html as html_
 from html.parser import HTMLParser
 from typing import Union, Tuple, Callable
 from weakref import WeakSet, WeakValueDictionary
@@ -107,7 +108,11 @@ class Attr:
         if self._owner and self.name in self._owner._special_attr_boolean:
             return self.name
         else:
-            return '{name}="{value}"'.format(name=self.name, value=self.value)
+            if self.name not in ('script', 'style'):
+                value = html_.escape(self.value)
+            else:
+                value = self.value
+            return '{name}="{value}"'.format(name=self.name, value=value)
 
     @property
     def name(self) -> str:

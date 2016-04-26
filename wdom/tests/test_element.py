@@ -179,6 +179,10 @@ class TestAttr(TestCase):
         self.src.value = 'a'
         self.assertEqual(self.src.html, 'src="a"')
 
+    def test_escape(self):
+        self.src.value = '"a"'
+        self.assertEqual(self.src.html, 'src="&quot;a&quot;"')
+
     @skipIf(True, 'Now Attr node need owner element to check boolean')
     def test_boolean_attr(self):
         hidden = Attr('hidden')
