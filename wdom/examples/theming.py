@@ -29,15 +29,13 @@ def _get_theme_name(theme) -> str:
 
 def sample_app(theme=themes) -> tag.Tag:
     app = theme.Container()
-    content_wrapper = theme.Div()
-    content_wrapper['style'] = '''\
-        margin-top: 2em;
-        margin-bottom: 2em;
-        margin-left: 2em;
-        margin-right: 2em;
-    '''
-    app.append(content_wrapper)
-    body = content_wrapper
+    body = theme.Div(parent=app)
+    # body['style'] = '''\
+    #     margin-top: 2em;
+    #     margin-bottom: 2em;
+    #     margin-left: 2em;
+    #     margin-right: 2em;
+    # '''
     body.append(theme.Div(theme.H1(_get_theme_name(theme)),
                           style='text-align: center;'))
     body.append(theme.Hr())
@@ -57,25 +55,51 @@ def sample_app(theme=themes) -> tag.Tag:
 
     input_wrapper = theme.Form(parent=theme.FormGroup(parent=body))
     input_wrapper.append(
-        theme.Textarea(),
-        theme.Input(),
+        theme.Textarea(placeholder='<textarea></textarea>'),
+        theme.Input(placeholder='<input type="text">'),
     )
 
     dropdown_list = theme.Select(parent=body)
     dropdown_list.append(
         theme.Option('Item 1'),
-        theme.Option('Item 2'),
-        theme.Option('Item 3'),
+        theme.Optgroup(
+            theme.Option('Item 2'),
+            theme.Option('Item 3'),
+            label='- Item Group -'
+        )
+    )
+    multi_select = theme.Select(parent=body, multiple=True)
+    multi_select.append(
+        theme.Option('Option 1'),
+        theme.Optgroup(
+            theme.Option('Option 2'),
+            theme.Option('Option 3'),
+            label='- Option Group -'
+        )
     )
     body.append(theme.Hr())
 
     # List
-    list_div = theme.Div(parent=body)
-    ul1 = theme.Ul(parent=list_div)
+    list_div = theme.Row(parent=body)
+    ul_div = theme.Col6(parent=list_div)
+    ul_div.append(theme.H3('Unordered List'))
+    ul1 = theme.Ul(parent=ul_div)
     ul1.append(theme.Li('Item 1'))
     li = theme.Li('Item 2', parent=ul1)
     ul2 = theme.Ul(parent=li)
     ul2.append(
+        theme.Li('Item 2.1'),
+        theme.Li('Item 2.2'),
+        theme.Li('Item 3'),
+    )
+
+    ol_div = theme.Col6(parent=list_div)
+    ol_div.append(theme.H3('Ordered List'))
+    ol1 = theme.Ol(parent=ol_div)
+    ol1.append(theme.Li('Item 1'))
+    li = theme.Li('Item 2', parent=ol1)
+    ol2 = theme.Ol(parent=li)
+    ol2.append(
         theme.Li('Item 2.1'),
         theme.Li('Item 2.2'),
         theme.Li('Item 3'),
