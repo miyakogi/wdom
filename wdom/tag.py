@@ -8,8 +8,17 @@ from typing import Tuple, Union
 from wdom.node import Node
 from wdom.element import DOMTokenList, ElementMeta
 from wdom.element import (
-    HTMLIFrameElement, HTMLInputElement, HTMLOptionElement, HTMLSelectElement,
-    HTMLScriptElement, HTMLTextAreaElement,
+    HTMLAnchorElement,
+    HTMLButtonElement,
+    HTMLFormElement,
+    HTMLIFrameElement,
+    HTMLInputElement,
+    HTMLLabelElement,
+    HTMLOptionElement,
+    HTMLScriptElement,
+    HTMLSelectElement,
+    HTMLStyleElement,
+    HTMLTextAreaElement,
 )
 from wdom.web_node import WebElement
 
@@ -297,7 +306,7 @@ Meta = NewTagClass('Meta')
 Head = NewTagClass('Head')
 Link = NewTagClass('Link')
 Title = NewTagClass('Title')
-Style = NewTagClass('Style')
+Style = NewTagClass('Style', 'style', (Tag, HTMLStyleElement))
 Iframe = NewTagClass('Iframe', 'iframe', (Tag, HTMLIFrameElement))
 
 Div = NewTagClass('Div')
@@ -312,7 +321,7 @@ H5 = NewTagClass('H5')
 H6 = NewTagClass('H6')
 
 P = NewTagClass('P')
-A = NewTagClass('A')
+A = NewTagClass('A', 'a', (Tag, HTMLAnchorElement))
 Strong = NewTagClass('Strong')
 Em = NewTagClass('Em')
 U = NewTagClass('U')
@@ -345,9 +354,9 @@ Dt = NewTagClass('Dt')
 Dd = NewTagClass('Dd')
 
 # Form tags
-Form = NewTagClass('Form')
-Button = NewTagClass('Button', 'button', Tag)
-Label = NewTagClass('Label')
+Form = NewTagClass('Form', 'form', (Tag, HTMLFormElement))
+Button = NewTagClass('Button', 'button', (Tag, HTMLButtonElement))
+Label = NewTagClass('Label', 'label', (Tag, HTMLLabelElement))
 CheckBox = NewTagClass('CheckBox', 'input', Input, type_='checkbox')
 TextInput = NewTagClass('TextInput', 'input', Input, type_='text')
 Select = NewTagClass('Select', 'select', (NestedTag, HTMLSelectElement))

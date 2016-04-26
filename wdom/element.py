@@ -548,6 +548,35 @@ class HTMLElement(Element):
             super()._remove_attribute(attr)
 
 
+class FormControlMixin:
+    def __init__(self, *args, form=None, **kwargs):
+        self._form = None
+        super().__init__(*args, **kwargs)
+        from wdom.document import getElementById
+        if isinstance(form, (str, int)):
+            form = getElementById(form)
+        if isinstance(form, HTMLFormElement):
+            self._form = form
+        elif form is not None:
+            raise TypeError(
+                '"form" attribute must be an HTMLFormElement or id of'
+                'HTMLFormElement in the same document.'
+            )
+
+    @property
+    def form(self) -> HTMLElement:
+        if self._form:
+            return self._form
+        else:
+            parent = self.parentNode
+            while parent:
+                if isinstance(parent, HTMLFormElement):
+                    return parent
+                else:
+                    parent = parent.parentNode
+            return None
+
+
 class HTMLAnchorElement(HTMLElement):
     _special_attr_string = ['href', 'name', 'rel', 'src', 'target']
 
@@ -565,30 +594,21 @@ class HTMLIFrameElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'target', 'width']
 
 
-class HTMLInputElement(HTMLElement):
+class HTMLInputElement(FormControlMixin, HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['checked', 'disabled', 'multiple', 'readonly',
                              'required']
-    def __init__(self, *args, form=None, **kwargs):
-        self._form = None
-        super().__init__(*args, **kwargs)
-        from wdom.document import getElementById
-        if isinstance(form, (str, int)):
-            form = getElementById(form)
-        if isinstance(form, HTMLFormElement):
-            self._form = form
-        elif form is not None:
-            raise TypeError(
-                '"form" attribute must be an HTMLFormElement or id of'
-                'HTMLFormElement in the same document.'
-            )
-
     def on_event_pre(self, e:Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
             # Update user inputs
-            if self.type.lower() in ('checkbox', 'radio'):
+            if self.type.lower() == 'checkbox':
                 self._set_attribute('checked', e.currentTarget.get('checked'))
+            elif self.type.lower() == 'radio':
+                self._set_attribute('checked', e.currentTarget.get('checked'))
+                for other in self._radio_group:
+                    if other is not self:
+                        other._remove_attribute('checked')
             else:
                 self._set_attribute('value', e.currentTarget.get('value'))
 
@@ -615,24 +635,47 @@ class HTMLInputElement(HTMLElement):
         self.value = value
 
     @property
-    def form(self) -> HTMLFormElement:
-        if self._form:
-            return self._form
+    def _radio_group(self) -> NodeList:
+        if self.type.lower() == 'radio' and self.form and self.name:
+            return NodeList([elm for elm in self.form
+                             if elm.tagName == 'INPUT' and
+                             elm.type.lower() == 'radio' and
+                             elm.name == self.name ])
         else:
-            parent = self.parentNode
-            while parent:
-                if isinstance(parent, HTMLFormElement):
-                    return parent
-                else:
-                    parent = parent.parentNode
+            return NodeList([])
+
+class HTMLLabelElement(HTMLElement, FormControlMixin):
+    @property
+    def htmlFor(self) -> str:
+        return self.getAttribute('for')
+
+    @htmlFor.setter
+    def htmlFor(self, value:str):
+        self.setAttribute('for', value)
+
+    @property
+    def control(self) -> HTMLElement:
+        id = self.getAttribute('for')
+        if id:
+            if self.ownerDocument:
+                return self.ownerDocument.getElementById(id)
+            else:
+                from wdom.document import getElementById
+                return getElementById(id)
 
 
-class HTMLOptionElement(HTMLElement):
+class HTMLOptionElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['label', 'value']
     _special_attr_boolean = ['defaultSelected', 'disabled', 'selected']
 
 
-class HTMLSelectElement(HTMLElement):
+class HTMLScriptElement(HTMLElement):
+    _special_attr_string = ['charset', 'src']
+    _special_attr_boolean = ['async', 'defer']
+    _should_escape_text = False
+
+
+class HTMLSelectElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['name', 'size', 'value']
     _special_attr_boolean = ['disabled', 'multiple', 'required']
     def __init__(self, *args, **kwargs):
@@ -670,13 +713,7 @@ class HTMLStyleElement(HTMLElement):
     _should_escape_text = False
 
 
-class HTMLScriptElement(HTMLElement):
-    _special_attr_string = ['charset', 'src']
-    _special_attr_boolean = ['async', 'defer']
-    _should_escape_text = False
-
-
-class HTMLTextAreaElement(HTMLElement):
+class HTMLTextAreaElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['disabled']
     defaultValue = HTMLElement.textContent

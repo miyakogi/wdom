@@ -6,7 +6,7 @@ import unittest
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option
+from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form, Label
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
@@ -107,10 +107,17 @@ class NodeTestCase(RemoteBrowserTestCase):
 class InputTestCase(RemoteBrowserTestCase):
     def setUp(self):
         self.document = get_document(autoreload=False)
-        self.root = Div()
+        self.root = Form()
         self.input = Input(parent=self.root, type='text')
         self.textarea = Textarea(parent=self.root)
-        self.checkbox = CheckBox(parent=self.root)
+        self.checkbox = CheckBox(parent=self.root, id='check1')
+        self.check_l = Label('Check 1', parent=self.root, **{'for': 'check1'})
+        self.radio1 = Input(parent=self.root, type='radio', name='radio_test', id='r1')
+        self.radio2 = Input(parent=self.root, type='radio', name='radio_test', id='r2')
+        self.radio3 = Input(parent=self.root, type='radio', name='radio_test2', id='r3')
+        self.radio1_l = Label('Radio 1', parent=self.root, **{'for': 'r1'})
+        self.radio2_l = Label('Radio 2', parent=self.root, **{'for': 'r2'})
+        self.radio3_l = Label('Radio 3', parent=self.root, **{'for': 'r3'})
         self.document.body.prepend(self.root)
         super().setUp()
 
@@ -160,6 +167,61 @@ class InputTestCase(RemoteBrowserTestCase):
         self.wait()
         self.assertEqual(self.element.get_attribute('checked'), None)
         self.assertIsFalse(self.checkbox.checked)
+
+    def test_checkbox_label(self):
+        self.set_element(self.check_l)
+        self.wait()
+        self.element.click()
+        self.wait()
+        self.assertTrue(self.checkbox.checked)
+
+        self.element.click()
+        self.wait()
+        self.assertFalse(self.checkbox.checked)
+
+    def test_radios(self):
+        self.assertFalse(self.radio1.checked)
+        self.assertFalse(self.radio2.checked)
+        self.assertFalse(self.radio3.checked)
+
+        self.set_element(self.radio1)
+        self.wait()
+        self.element.click()
+        self.wait()
+        self.assertTrue(self.radio1.checked)
+        self.assertFalse(self.radio2.checked)
+        self.assertFalse(self.radio3.checked)
+
+        self.set_element(self.radio2)
+        self.wait()
+        self.element.click()
+        self.wait()
+        self.assertFalse(self.radio1.checked)
+        self.assertTrue(self.radio2.checked)
+        self.assertFalse(self.radio3.checked)
+
+        self.set_element(self.radio3)
+        self.wait()
+        self.element.click()
+        self.wait()
+        self.assertFalse(self.radio1.checked)
+        self.assertTrue(self.radio2.checked)
+        self.assertTrue(self.radio3.checked)
+
+    def test_radios_label(self):
+        self.set_element(self.radio1_l)
+        self.wait()
+        self.element.click()
+        self.wait()
+        self.assertTrue(self.radio1.checked)
+        self.assertFalse(self.radio2.checked)
+
+        self.set_element(self.radio2_l)
+        self.wait()
+        self.element.click()
+        self.wait()
+        self.assertFalse(self.radio1.checked)
+        self.assertTrue(self.radio2.checked)
 
 
 class SelectTestCase(RemoteBrowserTestCase):
