@@ -557,13 +557,31 @@ class HTMLButtonElement(HTMLElement):
     _special_attr_boolean = ['disabled']
 
 
+class HTMLFormElement(HTMLElement):
+    _special_attr_string = ['name']
+
+
 class HTMLIFrameElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'target', 'width']
 
 
 class HTMLInputElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
-    _special_attr_boolean = ['checked', 'disabled']
+    _special_attr_boolean = ['checked', 'disabled', 'multiple', 'readonly',
+                             'required']
+    def __init__(self, *args, form=None, **kwargs):
+        self._form = None
+        super().__init__(*args, **kwargs)
+        from wdom.document import getElementById
+        if isinstance(form, (str, int)):
+            form = getElementById(form)
+        if isinstance(form, HTMLFormElement):
+            self._form = form
+        elif form is not None:
+            raise TypeError(
+                '"form" attribute must be an HTMLFormElement or id of'
+                'HTMLFormElement in the same document.'
+            )
 
     def on_event_pre(self, e:Event):
         super().on_event_pre(e)
@@ -573,6 +591,40 @@ class HTMLInputElement(HTMLElement):
                 self._set_attribute('checked', e.currentTarget.get('checked'))
             else:
                 self._set_attribute('value', e.currentTarget.get('value'))
+
+    @property
+    def defaultChecked(self) -> bool:
+        return bool(self.getAttribute('defaultChecked'))
+
+    @defaultChecked.setter
+    def defaultChecked(self, value:bool):
+        if value:
+            self.setAttribute('defaultChecked', True)
+            self.checked = True
+        else:
+            self.removeAttribute('defaultChecked')
+            self.checked = False
+
+    @property
+    def defaultValue(self) -> str:
+        return self.getAttribute('defaultValue')
+
+    @defaultValue.setter
+    def defaultValue(self, value:str):
+        self.setAttribute('defaultValue', value)
+        self.value = value
+
+    @property
+    def form(self) -> HTMLFormElement:
+        if self._form:
+            return self._form
+        else:
+            parent = self.parentNode
+            while parent:
+                if isinstance(parent, HTMLFormElement):
+                    return parent
+                else:
+                    parent = parent.parentNode
 
 
 class HTMLOptionElement(HTMLElement):
@@ -627,6 +679,7 @@ class HTMLScriptElement(HTMLElement):
 class HTMLTextAreaElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['disabled']
+    defaultValue = HTMLElement.textContent
     def on_event_pre(self, e:Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
