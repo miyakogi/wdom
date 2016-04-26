@@ -573,8 +573,24 @@ class HTMLOptionElement(HTMLElement):
 
 
 class HTMLSelectElement(HTMLElement):
-    _special_attr_string = ['length', 'name', 'size', 'value']
-    _special_attr_boolean = ['disabled', 'required']
+    _special_attr_string = ['name', 'size', 'value']
+    _special_attr_boolean = ['disabled', 'multiple', 'required']
+    def __init__(self, *args, **kwargs):
+        self._selected_options = []
+        super().__init__(*args, **kwargs)
+
+    @property
+    def length(self) -> int:
+        return len(self.options)
+
+    @property
+    def options(self) -> NodeList:
+        return NodeList(
+            list(elm for elm in self.childNodes if elm.localName=='option'))
+
+    @property
+    def selectedOptions(self) -> NodeList:
+        return NodeList(list(opt for opt in self.options if opt.selected))
 
 
 class HTMLStyleElement(HTMLElement):

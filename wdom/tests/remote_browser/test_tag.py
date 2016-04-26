@@ -6,7 +6,7 @@ import unittest
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.tag import Tag, Textarea, Input, CheckBox, Div
+from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
@@ -162,9 +162,75 @@ class InputTestCase(RemoteBrowserTestCase):
         self.assertIsFalse(self.checkbox.checked)
 
 
+class SelectTestCase(RemoteBrowserTestCase):
+    def setUp(self):
+        self.document = get_document(autoreload=False)
+        self.root = Div()
+        self.select = Select(parent=self.root)
+        self.mselect = Select(parent=self.root, multiple=True)
+        self.opt1 = Option('option 1', parent=self.select)
+        self.opt2 = Option('option 2', parent=self.select)
+        self.opt3 = Option('option 3', parent=self.select, value='opt3')
+        self.opt1m = Option('option 1', parent=self.mselect)
+        self.opt2m = Option('option 2', parent=self.mselect)
+        self.opt3m = Option('option 3', parent=self.mselect, value='opt3m')
+        self.document.body.prepend(self.root)
+        super().setUp()
+
+    def test_select(self):
+        self.set_element(self.select)
+        self.wait()
+        self.element.select_by_index(1)
+        self.wait()
+        self.assertEqual(self.select.value, 'option 2')
+        self.assertFalse(self.opt1.selected)
+        self.assertTrue(self.opt2.selected)
+        self.assertFalse(self.opt3.selected)
+
+        self.element.select_by_visible_text('option 1')
+        self.wait()
+        self.assertEqual(self.select.value, 'option 1')
+        self.assertTrue(self.opt1.selected)
+        self.assertFalse(self.opt2.selected)
+        self.assertFalse(self.opt3.selected)
+
+        self.element.select_by_value('opt3')
+        self.wait()
+        self.assertEqual(self.select.value, 'opt3')
+        self.assertFalse(self.opt1.selected)
+        self.assertFalse(self.opt2.selected)
+        self.assertTrue(self.opt3.selected)
+
+    def test_multi_select(self):
+        self.set_element(self.mselect)
+        self.wait()
+        self.element.select_by_index(1)
+        self.wait()
+        self.assertEqual(self.mselect.value, 'option 2')
+        self.assertFalse(self.opt1m.selected)
+        self.assertTrue(self.opt2m.selected)
+        self.assertFalse(self.opt3m.selected)
+
+        self.element.select_by_index(2)
+        self.wait()
+        self.assertFalse(self.opt1m.selected)
+        self.assertTrue(self.opt2m.selected)
+        self.assertTrue(self.opt3m.selected)
+
+        self.element.deselect_all()
+        self.wait()
+        self.assertFalse(self.opt1m.selected)
+        self.assertFalse(self.opt2m.selected)
+        self.assertFalse(self.opt3m.selected)
+
+
 class TestNode(NodeTestCase, TestCase):
     module = server_aio
 
 
 class TestInput(InputTestCase, TestCase):
+    module = server_aio
+
+
+class TestSelect(SelectTestCase, TestCase):
     module = server_aio

@@ -31,17 +31,27 @@ def event_handler(msg: dict, doc: Document):
 
     if e.type in ('input', 'change'):
         # Update user inputs
-        if currentTarget.tagName == 'INPUT':
+        tag = currentTarget.localName
+        if tag == 'input':
             if currentTarget.type.lower() in ('checkbox', 'radio'):
                 currentTarget._set_attribute(
                     'checked', e.currentTarget.get('checked'))
             else:
                 currentTarget._set_attribute(
                     'value', e.currentTarget.get('value'))
-        elif currentTarget.tagName == 'TEXTAREA':
+        elif tag == 'textarea':
             currentTarget._set_text_content(e.currentTarget.get('value'))
-        elif currentTarget.tagName == 'SELECT':
+        elif tag == 'select':
             currentTarget._set_attribute('value', e.currentTarget.get('value'))
+            _selected = e.currentTarget.get('selectedOptions', [])
+            currentTarget._selected_options = []
+            for opt in currentTarget.options:
+                if opt.rimo_id in _selected:
+                    currentTarget._selected_options.append(opt)
+                    opt._set_attribute('selected', True)
+                else:
+                    opt._remove_attribute('selected')
+
     e.currentTarget = currentTarget
     e.target = doc.getElementByRimoId(e.target.get('id'))
     e.currentTarget.dispatchEvent(e)
