@@ -24,7 +24,7 @@ test_cases = (
 wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
 
 for case in test_cases:
-    name = 'Test' + case.__name__.replace('TestCase', 'AIO')
+    name = 'Test' + case.__name__.replace('TestCase', 'Tornado')
     globals()[name] = type(name, (case, TestCase), {
         'module': server_tornado,
         'wait_time': wait_time,

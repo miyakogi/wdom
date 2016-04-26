@@ -428,9 +428,9 @@ class EventTestCase(ElementTestCase):
         self.assertEqual(self.input_event_mock.call_count, 3)
 
 
-class TestWebElement(WebElementTestCase, TestCase):
+class TestWebElementAIO(WebElementTestCase, TestCase):
     module = server_aio
 
 
-class TestEvent(EventTestCase, TestCase):
+class TestEventAIO(EventTestCase, TestCase):
     module = server_aio
