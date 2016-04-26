@@ -9,7 +9,7 @@ from wdom.node import Node
 from wdom.element import DOMTokenList, ElementMeta
 from wdom.element import (
     HTMLIFrameElement, HTMLInputElement, HTMLOptionElement, HTMLSelectElement,
-    HTMLScriptElement, HTMLTextAreaElement,
+    HTMLScriptElement, HTMLTextAreaElement, HTMLFormElement, HTMLLabelElement,
 )
 from wdom.web_node import WebElement
 
@@ -345,9 +345,9 @@ Dt = NewTagClass('Dt')
 Dd = NewTagClass('Dd')
 
 # Form tags
-Form = NewTagClass('Form')
+Form = NewTagClass('Form', 'form', (Tag, HTMLFormElement))
 Button = NewTagClass('Button', 'button', Tag)
-Label = NewTagClass('Label')
+Label = NewTagClass('Label', 'label', (Tag, HTMLLabelElement))
 CheckBox = NewTagClass('CheckBox', 'input', Input, type_='checkbox')
 TextInput = NewTagClass('TextInput', 'input', Input, type_='text')
 Select = NewTagClass('Select', 'select', (NestedTag, HTMLSelectElement))
