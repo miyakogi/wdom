@@ -28,14 +28,11 @@ def _get_theme_name(theme) -> str:
 
 
 def sample_app(theme=themes) -> tag.Tag:
-    app = theme.Container()
-    body = theme.Div(parent=app)
-    # body['style'] = '''\
-    #     margin-top: 2em;
-    #     margin-bottom: 2em;
-    #     margin-left: 2em;
-    #     margin-right: 2em;
-    # '''
+    app = theme.Div()
+    app['style'] = '''\
+        margin: 2em;
+    '''
+    body = theme.Container(parent=app)
     body.append(theme.Div(theme.H1(_get_theme_name(theme)),
                           style='text-align: center;'))
     body.append(theme.Hr())
@@ -57,6 +54,13 @@ def sample_app(theme=themes) -> tag.Tag:
     input_wrapper.append(
         theme.Textarea(placeholder='<textarea></textarea>'),
         theme.Input(placeholder='<input type="text">'),
+        theme.Label(theme.CheckBox(id='checkbox1'), 'CheckBox 1'),
+        theme.CheckBox(id='checkbox2'),
+        theme.Label('CheckBox 2', **{'for':'checkbox2'}),
+        theme.RadioButton(id='radio1', name='radio_group'),
+        theme.Label('RadioButton 1', **{'for':'radio1'}),
+        theme.RadioButton(id='radio2', name='radio_group'),
+        theme.Label('RadioButton 2', **{'for':'radio2'}),
     )
 
     dropdown_list = theme.Select(parent=body)

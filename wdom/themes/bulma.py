@@ -23,7 +23,10 @@ WarningButton = NewTag('WarningButton', 'button', Button, class_='is-warning')
 DangerButton = NewTag('DangerButton', 'button', Button, class_='is-danger')
 LinkButton = NewTag('LinkButton', 'button', Button, class_='is-link')
 
-Input = NewTag('Input', 'input', Input, class_='input')
+Input = NewTag('Input', 'input', Input)
+TextInput = NewTag('Input', 'input', Input, type_='text', class_='input')
+CheckBox = NewTag('Input', 'input', Input, type_='checkbox', class_='checkbox')
+RadioButton = NewTag('Input', 'input', Input, type_='radio', class_='radio')
 Textarea = NewTag('Textarea', 'textarea', Textarea, class_='textarea')
 
 class Select(NestedTag):
