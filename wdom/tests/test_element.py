@@ -8,6 +8,7 @@ from wdom.css import CSSStyleDeclaration
 from wdom.node import Text
 from wdom.element import (
     DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement,
+    HTMLSelectElement, HTMLOptionElement,
 )
 from wdom.window import customElements
 
@@ -835,3 +836,35 @@ class TestHTMLElement(TestCase):
         clone.draggable = False
         self.assertEqual(self.elm.html, '<a draggable></a>')
         self.assertEqual(clone.html, '<a hidden></a>')
+
+
+class TestSelectElement(TestCase):
+    def setUp(self):
+        self.select = HTMLSelectElement('select')
+        self.opt1 = HTMLOptionElement('option')
+        self.opt2 = HTMLOptionElement('option')
+        self.opt3 = HTMLOptionElement('option')
+
+    def test_options(self) -> None:
+        self.assertEqual(self.select.length, 0)
+        self.assertEqual(self.select.options.length, 0)
+        self.select.append(self.opt1)
+        self.assertEqual(self.select.length, 1)
+        self.assertEqual(self.select.options.length, 1)
+        self.select.append(self.opt2, self.opt3)
+        self.assertEqual(self.select.length, 3)
+        self.assertEqual(self.select.options.length, 3)
+
+    def test_selected(self) -> None:
+        self.select.append(self.opt1, self.opt2, self.opt3)
+        for opt in self.select.options:
+            self.assertFalse(opt.selected)
+        self.assertEqual(self.select.selectedOptions.length, 0)
+        self.opt1.selected = True
+        self.assertEqual(self.select.selectedOptions.length, 1)
+        self.opt2.selected = True
+        self.assertEqual(self.select.selectedOptions.length, 2)
+        self.opt3.selected = True
+        self.assertEqual(self.select.selectedOptions.length, 3)
+        self.opt1.selected = False
+        self.assertEqual(self.select.selectedOptions.length, 2)
