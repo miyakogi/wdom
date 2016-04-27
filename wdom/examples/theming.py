@@ -17,13 +17,13 @@ from wdom.document import Document, get_document
 
 
 def _get_theme_name(theme) -> str:
-    if theme.__name__ == 'wdom.themes':
+    if hasattr(theme, 'name'):
+        theme_name = theme.name
+    elif theme.__name__ == 'wdom.themes':
         if options.config.theme:
             theme_name = options.config.theme.upper()
         else:
             theme_name = 'DEFAULT'
-    else:
-        theme_name = re.search(r'.*\.(.*?)$', theme.__name__).group(1).upper()
     return theme_name
 
 
