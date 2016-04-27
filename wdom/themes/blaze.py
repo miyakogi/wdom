@@ -4,6 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+name = 'BlazeCSS'
 project_url = 'http://blazecss.com/'
 project_repository = 'https://github.com/BlazeCSS/blaze'
 
@@ -12,13 +13,15 @@ css_files = [
 ]
 
 Button = NewTag('Button', bases=Button, class_='button')
-DefaultButton = NewTag('DefaultButton', 'button', Button, class_='button--default')
-PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='button--primary')
-SuccessButton = NewTag('SuccessButton', 'button', Button, class_='button--success')
-InfoButton = NewTag('InfoButton', 'button', Button, class_='button--primary')
-WarningButton = NewTag('WarningButton', 'button', Button, class_='button--secondary')
-DangerButton = NewTag('DangerButton', 'button', Button, class_='button--error')
-LinkButton = NewTag('LinkButton', 'button', Button)
+DefaultButton = NewTag('DefaultButton', 'button', Button, class_='button--default', is_='default-button')
+PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='button--primary', is_='primary-button')
+SecondaryButton = NewTag('SecondaryButton', 'button', Button, class_='button--secondary', is_='secondary-button')
+SuccessButton = NewTag('SuccessButton', 'button', Button, class_='button--success', is_='success-button')
+InfoButton = NewTag('InfoButton', 'button', Button, class_='button--primary', is_='info-button')
+WarningButton = NewTag('WarningButton', 'button', Button, class_='button--secondary', is_='warining-button')
+DangerButton = NewTag('DangerButton', 'button', Button, class_='button--error', is_='danger-button')
+ErrorButton = NewTag('ErrorButton', 'button', Button, class_='button--error', is_='error-button')
+LinkButton = NewTag('LinkButton', 'button', Button, is_='link-button')
 
 Input = NewTag('Input', 'input', Input, class_='field')
 TextInput = NewTag('TextInput', 'input', TextInput, class_='field')
@@ -43,14 +46,57 @@ H6 = NewTag('H6', 'div', H6, class_='heading heading--xsmall')
 
 Row = NewTag('Row', 'div', Row, class_='gird')
 Col = NewTag('Col', 'div', Col, class_='grid__cell')
-Col1 = NewTag('Col', 'div', Col, class_='grid__cell--width-8')
-Col2 = NewTag('Col', 'div', Col, class_='grid__cell--width-17')
-Col3 = NewTag('Col', 'div', Col, class_='grid__cell--width-25')
-Col4 = NewTag('Col', 'div', Col, class_='grid__cell--width-33')
-Col5 = NewTag('Col', 'div', Col, class_='grid__cell--width-42')
-Col6 = NewTag('Col', 'div', Col, class_='grid__cell--width-50')
-Col7 = NewTag('Col', 'div', Col, class_='grid__cell--width-58')
-Col8 = NewTag('Col', 'div', Col, class_='grid__cell--width-67')
-Col9 = NewTag('Col', 'div', Col, class_='grid__cell--width-75')
-Col10 = NewTag('Col', 'div', Col, class_='grid__cell--width-83')
-Col11 = NewTag('Col', 'div', Col, class_='grid__cell--width-92')
+Col1 = NewTag('Col', 'div', Col1, class_='grid__cell--width-8')
+Col2 = NewTag('Col', 'div', Col2, class_='grid__cell--width-17')
+Col3 = NewTag('Col', 'div', Col3, class_='grid__cell--width-25')
+Col4 = NewTag('Col', 'div', Col4, class_='grid__cell--width-33')
+Col5 = NewTag('Col', 'div', Col5, class_='grid__cell--width-42')
+Col6 = NewTag('Col', 'div', Col6, class_='grid__cell--width-50')
+Col7 = NewTag('Col', 'div', Col7, class_='grid__cell--width-58')
+Col8 = NewTag('Col', 'div', Col8, class_='grid__cell--width-67')
+Col9 = NewTag('Col', 'div', Col9, class_='grid__cell--width-75')
+Col10 = NewTag('Col', 'div', Col10, class_='grid__cell--width-83')
+Col11 = NewTag('Col', 'div', Col11, class_='grid__cell--width-92')
+
+extended_classes = [
+    Button,
+    DefaultButton,
+    PrimaryButton,
+    SecondaryButton,
+    SuccessButton,
+    InfoButton,
+    WarningButton,
+    DangerButton,
+    ErrorButton,
+    LinkButton,
+    Input,
+    TextInput,
+    Textarea,
+    Select,
+    Ul,
+    Ol,
+    Li,
+    Table,
+    Tr,
+    Th,
+    Td,
+    H1,
+    H2,
+    H3,
+    H4,
+    H5,
+    H6,
+    Row,
+    Col,
+    Col1,
+    Col2,
+    Col3,
+    Col4,
+    Col5,
+    Col6,
+    Col7,
+    Col8,
+    Col9,
+    Col10,
+    Col11,
+]

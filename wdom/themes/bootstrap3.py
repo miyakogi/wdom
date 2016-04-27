@@ -4,6 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+name = 'Bootstrap'
 project_url = 'http://getbootstrap.com/'
 project_repository = 'https://github.com/twbs/bootstrap'
 
@@ -22,6 +23,7 @@ Button = NewTag('Button', 'button', bases=Button, class_='btn')
 # Inherit Button class defined here, to inherit 'btn' class
 DefaultButton = NewTag('DefaultButton', 'button', Button, class_='btn-default', is_='default-button')
 PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='btn-primary', is_='primary-button')
+SecondaryButton = NewTag('SecondaryButton', 'button', Button, class_='btn-secondary', is_='secondary-button')
 SuccessButton = NewTag('SuccessButton', 'button', Button, class_='btn-success', is_='success-button')
 InfoButton = NewTag('InfoButton', 'button', Button, class_='btn-info', is_='info-button')
 WarningButton = NewTag('WarningButton', 'button', Button, class_='btn-warning', is_='warning-button')
@@ -57,10 +59,12 @@ extended_classes = [
     Button,
     DefaultButton,
     PrimaryButton,
+    SecondaryButton,
     SuccessButton,
     InfoButton,
     WarningButton,
     DangerButton,
+    ErrorButton,
     LinkButton,
     FormGroup,
     Input,

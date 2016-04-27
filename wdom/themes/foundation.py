@@ -4,6 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+name = 'Foundation'
 project_url = 'http://foundation.zurb.com/'
 project_repository = 'https://github.com/zurb/foundation-sites'
 
@@ -19,13 +20,15 @@ js_files = [
 headers = []
 
 Button = NewTag('Button', bases=Button, class_='button')
-DefaultButton = NewTag('DefaultButton', 'button', Button, class_='hollow secondary')
-PrimaryButton = NewTag('PrimaryButton', 'button', Button)
-SuccessButton = NewTag('SuccessButton', 'button', Button, class_='success')
-InfoButton = NewTag('InfoButton', 'button', Button, class_='success hollow')
-WarningButton = NewTag('WarningButton', 'button', Button, class_='warning')
-DangerButton = NewTag('DangerButton', 'button', Button, class_='alert')
-LinkButton = NewTag('LinkButton', 'button', Button, class_='hollow')
+DefaultButton = NewTag('DefaultButton', 'button', Button, class_='hollow secondary', is_='default-button')
+PrimaryButton = NewTag('PrimaryButton', 'button', Button, is_='primary-button')
+SecondaryButton = NewTag('SecondaryButton', 'button', Button, class_='secondary', is_='secondary-button')
+SuccessButton = NewTag('SuccessButton', 'button', Button, class_='success', is_='success-button')
+InfoButton = NewTag('InfoButton', 'button', Button, class_='success hollow', is_='info-button')
+WarningButton = NewTag('WarningButton', 'button', Button, class_='warning', is_='warning-button')
+DangerButton = NewTag('DangerButton', 'button', Button, class_='alert', is_='danger-button')
+ErrorButton = NewTag('ErrorButton', 'button', Button, class_='alert', is_='error-button')
+LinkButton = NewTag('LinkButton', 'button', Button, class_='hollow', is_='link-button')
 
 Row = NewTag('Row', 'div', Row, class_='row')
 Col = NewTag('Col', 'div', Col, class_='columns')
@@ -41,3 +44,30 @@ Col9 = NewTag('Col9', 'div', Col, class_='small-9 medium-9 large-9')
 Col10 = NewTag('Col10', 'div', Col, class_='small-10 medium-10 large-10')
 Col11 = NewTag('Col11', 'div', Col, class_='small-11 medium-11 large-11')
 Col12 = NewTag('Col12', 'div', Col, class_='small-12 medium-12 large-12')
+
+extended_classes = [
+    Button,
+    DefaultButton,
+    PrimaryButton,
+    SecondaryButton,
+    SuccessButton,
+    InfoButton,
+    WarningButton,
+    DangerButton,
+    ErrorButton,
+    LinkButton,
+    Row,
+    Col,
+    Col1,
+    Col2,
+    Col3,
+    Col4,
+    Col5,
+    Col6,
+    Col7,
+    Col8,
+    Col9,
+    Col10,
+    Col11,
+    Col12,
+]
