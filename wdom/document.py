@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from types import ModuleType
 from typing import Optional, Union
 
 from wdom.options import config
@@ -141,6 +142,18 @@ class Document(Node):
 
     def add_header(self, header:str):
         self.head.appendChild(RawHtml(header))
+
+    def register_theme(self, theme:ModuleType) -> None:
+        if not hasattr(theme, 'css_files'):
+            raise ValueError('theme module must include `css_files`.')
+        for css in getattr(theme, 'css_files', []):
+            self.add_cssfile(css)
+        for js in getattr(theme, 'js_files', []):
+            self.add_jsfile(js)
+        for header in getattr(theme, 'headers', []):
+            self.add_header(header)
+        for cls in getattr(theme, 'extended_classes', []):
+            self.defaultView.customElements.define(cls)
 
     def build(self) -> str:
         return ''.join(child.html for child in self.childNodes)
