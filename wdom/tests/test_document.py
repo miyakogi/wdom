@@ -261,7 +261,7 @@ class TestMainDocument(TestCase):
         elm.innerHTML = '<button is="default-button"></button>'
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.DefaultButton))
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.Button))
-        self.assertTrue(isinstance(elm.firstChild, tag.DefaultButton))
+        self.assertFalse(isinstance(elm.firstChild, tag.DefaultButton))
         self.assertTrue(isinstance(elm.firstChild, tag.Button))
 
 
