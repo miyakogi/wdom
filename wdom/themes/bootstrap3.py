@@ -20,14 +20,14 @@ headers = []
 
 Button = NewTag('Button', 'button', bases=Button, class_='btn')
 # Inherit Button class defined here, to inherit 'btn' class
-DefaultButton = NewTag('DefaultButton', 'button', (Button, DefaultButton), class_='btn-default')
-PrimaryButton = NewTag('PrimaryButton', 'button', (Button, PrimaryButton), class_='btn-primary')
-SuccessButton = NewTag('SuccessButton', 'button', (Button, SuccessButton), class_='btn-success')
-InfoButton = NewTag('InfoButton', 'button', (Button, InfoButton), class_='btn-info')
-WarningButton = NewTag('WarningButton', 'button', (Button, WarningButton), class_='btn-warning')
-DangerButton = NewTag('DangerButton', 'button', (Button, DangerButton), class_='btn-danger')
-ErrorButton = NewTag('ErrorButton', 'button', (Button, ErrorButton), class_='btn-danger')
-LinkButton = NewTag('LinkButton', 'button', (Button, LinkButton), class_='btn-link')
+DefaultButton = NewTag('DefaultButton', 'button', Button, class_='btn-default', is_='default-button')
+PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='btn-primary', is_='primary-button')
+SuccessButton = NewTag('SuccessButton', 'button', Button, class_='btn-success', is_='success-button')
+InfoButton = NewTag('InfoButton', 'button', Button, class_='btn-info', is_='info-button')
+WarningButton = NewTag('WarningButton', 'button', Button, class_='btn-warning', is_='warning-button')
+DangerButton = NewTag('DangerButton', 'button', Button, class_='btn-danger', is_='danger-button')
+ErrorButton = NewTag('ErrorButton', 'button', Button, class_='btn-danger', is_='error-button')
+LinkButton = NewTag('LinkButton', 'button', Button, class_='btn-link', is_='link-button')
 
 FormGroup = NewTag('FormGroup', 'div', FormGroup, class_='form-group')
 Input = NewTag('Input', 'input', Input, class_='form-control')

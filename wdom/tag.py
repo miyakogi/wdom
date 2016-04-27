@@ -235,7 +235,7 @@ class NestedTag(Tag):
 
 
 def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
-                 **kwargs) -> type:
+                **kwargs) -> type:
     '''Generate and return new ``Tag`` class. If ``tag`` is empty, lower case
     of ``class_name`` is used for a tag name of the new class. ``bases`` should
     be a tuple of base classes. If it is empty, use ``Tag`` class for a base
