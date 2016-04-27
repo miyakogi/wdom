@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Schema'
 project_url = 'http://danmalarkey.github.io/schema/'
 project_repository = 'https://github.com/danmalarkey/schema'
+license = 'MIT License & CC BY 3.0 (EasyDropdown)'
+license_url = 'https://github.com/danmalarkey/schema#license'
 
 css_files = [
     '_static/css/schema.min.css',

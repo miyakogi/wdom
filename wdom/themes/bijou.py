@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Bijou'
 project_url = 'http://andhart.github.io/bijou/'
 project_repository = 'https://github.com/andhart/bijou'
+license = 'MIT License'
+license_url = 'https://github.com/andhart/bijou/blob/master/LICENSE'
 
 css_files = [
     '_static/css/bijou.min.css',

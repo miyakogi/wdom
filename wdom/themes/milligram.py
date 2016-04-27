@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Milligram'
 project_url = 'http://milligram.github.io/'
 project_repository = 'https://github.com/milligram/milligram'
+license = 'MIT License'
+license_url = 'https://github.com/milligram/milligram/blob/master/license'
 
 css_files = [
     '//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic',

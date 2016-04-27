@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Picnic'
 project_url = 'http://picnicss.com/'
 project_repository = 'https://github.com/picnicss/picnic'
+license = 'MIT License'
+license_url = 'https://github.com/picnicss/picnic/blob/master/LICENSE'
 
 css_files = [
     '//cdn.jsdelivr.net/picnicss/5.1.0/picnic.min.css',

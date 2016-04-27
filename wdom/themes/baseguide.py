@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Baseguide'
 project_url = 'http://basegui.de/'
 project_repository = 'https://github.com/slavanga/baseguide'
+license = 'MIT License'
+license_url = 'https://github.com/slavanga/baseguide/blob/master/LICENSE'
 
 css_files = [
     '_static/css/baseguide.min.css',
@@ -53,6 +55,7 @@ extended_classes = [
     Button,
     DefaultButton,
     PrimaryButton,
+    SecondaryButton,
     SuccessButton,
     InfoButton,
     WarningButton,

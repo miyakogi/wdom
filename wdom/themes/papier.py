@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Papier'
 project_url = 'http://gugel.io/papier/'
 project_repository = 'https://github.com/alexanderGugel/papier'
+license = 'MIT License'
+license_url = 'https://github.com/alexanderGugel/papier/blob/master/LICENSE.md'
 
 css_files = [
     '//cdn.rawgit.com/alexanderGugel/papier/master/dist/papier-1.0.0.min.css',

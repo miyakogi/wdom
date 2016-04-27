@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Furtive'
 project_url = 'http://furtive.co/'
 project_repository = 'https://github.com/johnotander/furtive'
+license = 'MIT License'
+license_url = 'https://github.com/johnotander/furtive/blob/master/LICENSE'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/furtive/2.2.3/furtive.css',

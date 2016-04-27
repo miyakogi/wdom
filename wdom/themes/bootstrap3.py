@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Bootstrap'
 project_url = 'http://getbootstrap.com/'
 project_repository = 'https://github.com/twbs/bootstrap'
+license = 'MIT License'
+license_url = 'https://github.com/twbs/bootstrap/blob/master/LICENSE'
 
 css_files = [
     '//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css',

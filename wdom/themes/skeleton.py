@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Skeleton'
 project_url = 'http://getskeleton.com/'
 project_repository = 'https://github.com/dhg/Skeleton'
+license = 'MIT License'
+license_url = 'https://github.com/dhg/Skeleton/blob/master/LICENSE.md'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css',

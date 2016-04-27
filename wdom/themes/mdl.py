@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Material Design Lite'
 project_url = 'http://www.getmdl.io/'
 project_repository = 'https://github.com/google/material-design-lite'
+license = 'Apache License 2.0'
+license_url = 'https://github.com/google/material-design-lite/blob/master/LICENSE'
 
 css_files = [
     '//fonts.googleapis.com/icon?family=Material+Icons',
@@ -66,7 +68,7 @@ Col10 = NewTag('Col10', 'div', Col10, class_='mdl-cell--10-col')
 Col11 = NewTag('Col11', 'div', Col11, class_='mdl-cell--11-col')
 Col12 = NewTag('Col12', 'div', Col12, class_='mdl-cell--12-col')
 
-    extended_classes = [
+extended_classes = [
     Button,
     DefaultButton,
     PrimaryButton,

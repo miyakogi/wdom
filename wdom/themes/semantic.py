@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Semantic UI'
 project_url = 'http://semantic-ui.com/'
 project_repository = 'https://github.com/semantic-org/semantic-ui/'
+license = 'MIT License'
+license_url = 'https://github.com/Semantic-Org/Semantic-UI/blob/master/LICENSE.md'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css',

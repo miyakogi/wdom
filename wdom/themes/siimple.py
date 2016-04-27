@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Siimple'
 project_url = 'https://siimple.github.io/'
 project_repository = 'https://github.com/siimple/siimple/'
+license = 'MIT License'
+license_url = 'https://github.com/siimple/siimple/blob/master/LICENSE.md'
 
 css_files = [
     '_static/css/siimple.min.css',

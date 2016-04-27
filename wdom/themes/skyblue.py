@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'SkyBlue'
 project_url = 'http://stanko.github.io/skyblue/'
 project_repository = 'https://github.com/Stanko/skyblue'
+license = 'MIT License'
+license_url = 'https://github.com/Stanko/skyblue/blob/gh-pages/LICENSE.md'
 
 css_files = [
     '_static/css/skyblue.min.css',

@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'BroundworkCSS'
 project_url = 'https://groundworkcss.github.io/groundwork/'
 project_repository = 'https://github.com/groundworkcss/groundwork'
+license = 'MIT License'
+license_url = 'https://github.com/groundworkcss/groundwork/blob/master/LICENSE'
 
 css_files = [
     '_static/css/groundwork.css',

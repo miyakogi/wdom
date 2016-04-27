@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Pure'
 project_url = 'http://purecss.io/'
 project_repository = 'https://github.com/yahoo/pure/'
+license = 'BSD License'
+license_url = 'https://github.com/yahoo/pure/blob/master/LICENSE.md'
 
 css_files = [
     '//yui.yahooapis.com/pure/0.6.0/pure-min.css',

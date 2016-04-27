@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'MUI'
 project_url = 'https://www.muicss.com/'
 project_repository = 'https://github.com/muicss/mui'
+license = 'MIT License'
+license_url = 'https://github.com/muicss/mui/blob/master/LICENSE.txt'
 
 css_files = [
     '//cdn.muicss.com/mui-0.5.1/css/mui.min.css',

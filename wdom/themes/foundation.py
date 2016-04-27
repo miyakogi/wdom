@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Foundation'
 project_url = 'http://foundation.zurb.com/'
 project_repository = 'https://github.com/zurb/foundation-sites'
+license = 'MIT License'
+license_url = 'https://github.com/zurb/foundation-sites/blob/develop/LICENSE'
 
 css_files = [
     '//cdn.jsdelivr.net/foundation/6.2.1/foundation.min.css',

@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Spark'
 project_url = 'http://codewithspark.com/'
 project_repository = 'https://github.com/twistedpixel/spark/'
+license = 'MIT License'
+license_url = 'https://github.com/twistedpixel/spark/blob/master/dist/LICENSE'
 
 css_files = [
     '_static/css/spark.min.css',

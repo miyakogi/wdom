@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Bulma'
 project_url = 'http://bulma.io/'
 project_repository = 'https://github.com/jgthms/bulma/'
+license = 'MIT License'
+license_url = 'https://github.com/jgthms/bulma/blob/master/LICENSE'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/bulma/0.0.20/css/bulma.min.css',

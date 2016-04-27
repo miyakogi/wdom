@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'BlazeCSS'
 project_url = 'http://blazecss.com/'
 project_repository = 'https://github.com/BlazeCSS/blaze'
+license = 'MIT License'
+license_url = 'https://github.com/BlazeCSS/blaze/blob/master/LICENSE'
 
 css_files = [
     '//cdn.jsdelivr.net/blazecss/latest/blaze.min.css',

@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'Kube'
 project_url = 'https://imperavi.com/kube/'
 project_repository = 'https://github.com/imperavi/kube'
+license = 'MIT License'
+license_url = 'https://imperavi.com/kube/#kube-intro'
 
 css_files = [
     '_static/css/kube.min.css',

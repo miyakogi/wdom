@@ -7,6 +7,8 @@ from wdom.tag import *
 name = 'KATHAMO'
 project_url = 'http://kathamo.github.io/'
 project_repository = 'https://github.com/kathamo/Kathamo'
+license = 'MIT License'
+license_url = 'https://github.com/kathamo/Kathamo/blob/master/LICENSE'
 
 css_files = [
     '_static/css/kathamo.min.css',
