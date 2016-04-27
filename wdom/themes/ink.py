@@ -39,8 +39,8 @@ Option = NewTag('Option', 'li', Li)
 
 Table = NewTag('Table', 'table', Table, class_='ink-table')
 
-Container = NewTag('Container', 'div', Conrainer class_='ink-grid')
-Wrapper = NewTag('Wrapper', 'div', Wrapper class_='ink-grid')
+Container = NewTag('Container', 'div', Container, class_='ink-grid')
+Wrapper = NewTag('Wrapper', 'div', Wrapper, class_='ink-grid')
 Row = NewTag('Row', 'div', Row, class_='column-group')
 Col1 = NewTag('Col1', 'div', Col1, class_='all-10')
 Col2 = NewTag('Col2', 'div', Col2, class_='all-15')

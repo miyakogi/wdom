@@ -22,7 +22,7 @@ PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='button-primary
 LinkButton = NewTag('LinkButton', 'button', Button, class_='button-clear')
 Button = NewTag('Button', 'button', DefaultButton, class_='button-outline')
 
-Container = NewTag('Container', 'div', Conrainer, class_='container')
+Container = NewTag('Container', 'div', Container, class_='container')
 Wrapper = NewTag('Wrapper', 'div', Wrapper, class_='container')
 Row = NewTag('Row', 'div', Row, class_='row')
 Col = NewTag('Col', 'div', Col, class_='column')
