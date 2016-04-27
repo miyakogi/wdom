@@ -4,7 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
-name = 'Semantic UI'
+name = 'Semantic UI (Semantic)'
 project_url = 'http://semantic-ui.com/'
 project_repository = 'https://github.com/semantic-org/semantic-ui/'
 license = 'MIT License'

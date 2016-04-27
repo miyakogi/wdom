@@ -4,7 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
-name = 'Material Design Lite'
+name = 'Material Design Lite (MDL)'
 project_url = 'http://www.getmdl.io/'
 project_repository = 'https://github.com/google/material-design-lite'
 license = 'Apache License 2.0'

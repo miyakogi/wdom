@@ -4,7 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
-name = 'BlazeCSS'
+name = 'Blaze'
 project_url = 'http://blazecss.com/'
 project_repository = 'https://github.com/BlazeCSS/blaze'
 license = 'MIT License'

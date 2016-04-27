@@ -4,7 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
-name = 'Bootstrap'
+name = 'Bootstrap3'
 project_url = 'http://getbootstrap.com/'
 project_repository = 'https://github.com/twbs/bootstrap'
 license = 'MIT License'
