@@ -4,8 +4,11 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+name = 'Semantic UI (Semantic)'
 project_url = 'http://semantic-ui.com/'
 project_repository = 'https://github.com/semantic-org/semantic-ui/'
+license = 'MIT License'
+license_url = 'https://github.com/Semantic-Org/Semantic-UI/blob/master/LICENSE.md'
 
 css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.1.8/semantic.min.css',
@@ -19,16 +22,17 @@ js_files = [
 
 headers = []
 
-
 # Buttons http://semantic-ui.com/elements/button.html
 Button = NewTag('Button', bases=Button, class_='ui button')
-DefaultButton = NewTag('DefaultButton', 'button', Button)
-PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='primary')
-SuccessButton = NewTag('SuccessButton', 'button', Button, class_='teal')
-InfoButton = NewTag('InfoButton', 'button', Button, class_='green')
-WarningButton = NewTag('WarningButton', 'button', Button, class_='orange')
-DangerButton = NewTag('DangerButton', 'button', Button, class_='red')
-LinkButton = NewTag('LinkButton', 'button', Button, class_='basic')
+DefaultButton = NewTag('DefaultButton', 'button', Button, is_='default-button')
+PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='primary', is_='primary-button')
+SecondaryButton = NewTag('SecondaryButton', 'button', Button, class_='blue', is_='secondary-button')
+SuccessButton = NewTag('SuccessButton', 'button', Button, class_='teal', is_='success-button')
+InfoButton = NewTag('InfoButton', 'button', Button, class_='green', is_='info-button')
+WarningButton = NewTag('WarningButton', 'button', Button, class_='orange', is_='warning-button')
+DangerButton = NewTag('DangerButton', 'button', Button, class_='red', is_='danger-button')
+ErrorButton = NewTag('ErrorButton', 'button', Button, class_='red', is_='error-button')
+LinkButton = NewTag('LinkButton', 'button', Button, class_='basic', is_='link-button')
 
 # Form http://semantic-ui.com/collections/form.html
 Form = NewTag('Form', 'form', Form, class_='ui form')
@@ -59,19 +63,61 @@ H6 = NewTag('H6', 'h6', H6, class_='ui header')
 
 # Grid http://semantic-ui.com/collections/grid.html
 # Too complicatted...
-Container = NewTag('Container', 'div', class_='ui grid container')
-Wrapper = Container
+Container = NewTag('Container', 'div', Container, class_='ui grid container')
+Wrapper = NewTag('Wrapper', 'div', Wrapper, class_='ui grid container')
 Row = NewTag('Row', 'div', Row, class_='row')
 Col = NewTag('Col', 'div', Col, class_='column')
-Col1 = NewTag('Col1', 'div', Col, class_='column')
-Col2 = NewTag('Col2', 'div', Col, class_='two wide')
-Col3 = NewTag('Col3', 'div', Col, class_='three wide')
-Col4 = NewTag('Col4', 'div', Col, class_='four wide')
-Col5 = NewTag('Col5', 'div', Col, class_='five wide')
-Col6 = NewTag('Col6', 'div', Col, class_='six wide')
-Col7 = NewTag('Col7', 'div', Col, class_='seven wide')
-Col8 = NewTag('Col8', 'div', Col, class_='eight wide')
-Col9 = NewTag('Col9', 'div', Col, class_='nine wide')
-Col10 = NewTag('Col10', 'div', Col, class_='ten wide')
-Col11 = NewTag('Col11', 'div', Col, class_='eleven wide')
-Col12 = NewTag('Col12', 'div', Col, class_='')
+Col1 = NewTag('Col1', 'div', Col1, class_='column')
+Col2 = NewTag('Col2', 'div', Col2, class_='two wide')
+Col3 = NewTag('Col3', 'div', Col3, class_='three wide')
+Col4 = NewTag('Col4', 'div', Col4, class_='four wide')
+Col5 = NewTag('Col5', 'div', Col5, class_='five wide')
+Col6 = NewTag('Col6', 'div', Col6, class_='six wide')
+Col7 = NewTag('Col7', 'div', Col7, class_='seven wide')
+Col8 = NewTag('Col8', 'div', Col8, class_='eight wide')
+Col9 = NewTag('Col9', 'div', Col9, class_='nine wide')
+Col10 = NewTag('Col10', 'div', Col10, class_='ten wide')
+Col11 = NewTag('Col11', 'div', Col11, class_='eleven wide')
+Col12 = NewTag('Col12', 'div', Col12, class_='')
+
+extended_classes = [
+    Button,
+    DefaultButton,
+    PrimaryButton,
+    SecondaryButton,
+    SuccessButton,
+    InfoButton,
+    WarningButton,
+    DangerButton,
+    ErrorButton,
+    LinkButton,
+    Form,
+    Select,
+    Ul,
+    Li,
+    Ol,
+    Table,
+    Hr,
+    H1,
+    H2,
+    H3,
+    H4,
+    H5,
+    H6,
+    Container,
+    Wrapper,
+    Row,
+    Col,
+    Col1,
+    Col2,
+    Col3,
+    Col4,
+    Col5,
+    Col6,
+    Col7,
+    Col8,
+    Col9,
+    Col10,
+    Col11,
+    Col12,
+]

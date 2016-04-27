@@ -235,7 +235,7 @@ class NestedTag(Tag):
 
 
 def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
-                 **attrs) -> type:
+                **kwargs) -> type:
     '''Generate and return new ``Tag`` class. If ``tag`` is empty, lower case
     of ``class_name`` is used for a tag name of the new class. ``bases`` should
     be a tuple of base classes. If it is empty, use ``Tag`` class for a base
@@ -244,8 +244,8 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
 
     Example::
 
-        MyButton = NewTagClass(
-                        'MyButton', 'button', (Button,), class_='btn')
+        MyButton = NewTagClass('MyButton', 'button', (Button,),
+                               class_='btn', is_='my-button')
         my_button = MyButton('Click!')
         print(my_button.html)
 
@@ -260,8 +260,8 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
             bases = (bases, )
         else:
             TypeError('Invalid base class: {}'.format(str(bases)))
-    cls = type(class_name, bases, attrs)
-    cls.tag = tag
+    kwargs['tag'] = tag
+    cls = type(class_name, bases, kwargs)
     return cls
 
 
@@ -354,7 +354,7 @@ Dl = NewTagClass('Dl')
 Dt = NewTagClass('Dt')
 Dd = NewTagClass('Dd')
 
-# Form tags
+# Form controls
 Form = NewTagClass('Form', 'form', (Tag, HTMLFormElement))
 Button = NewTagClass('Button', 'button', (Tag, HTMLButtonElement))
 Label = NewTagClass('Label', 'label', (Tag, HTMLLabelElement))
@@ -366,32 +366,34 @@ Optgroup = NewTagClass('OptGroup', 'optgroup', (Tag, HTMLOptGroupElement))
 Option = NewTagClass('Option', 'option', (Tag, HTMLOptionElement))
 
 # Building blocks
-Container = Div
-Wrapper = Div
-Row = Div
-FormGroup = Div
-Col = Div
-Col1 = Div
-Col2 = Div
-Col3 = Div
-Col4 = Div
-Col5 = Div
-Col6 = Div
-Col7 = Div
-Col8 = Div
-Col9 = Div
-Col10 = Div
-Col11 = Div
-Col12 = Div
+Container = NewTagClass('Container', 'div', Div, is_='container')
+Wrapper = NewTagClass('Wrapper', 'div', Div, is_='wrapper')
+Row = NewTagClass('Row', 'div', Div, is_='row')
+FormGroup = NewTagClass('FormGroup', 'div', Div, is_='formgroup')
+Col = NewTagClass('Col', 'div', Div, is_='col')
+Col1 = NewTagClass('Col1', 'div', Div, is_='col1')
+Col2 = NewTagClass('Col2', 'div', Div, is_='col2')
+Col3 = NewTagClass('Col3', 'div', Div, is_='col3')
+Col4 = NewTagClass('Col4', 'div', Div, is_='col4')
+Col5 = NewTagClass('Col5', 'div', Div, is_='col5')
+Col6 = NewTagClass('Col6', 'div', Div, is_='col6')
+Col7 = NewTagClass('Col7', 'div', Div, is_='col7')
+Col8 = NewTagClass('Col8', 'div', Div, is_='col8')
+Col9 = NewTagClass('Col9', 'div', Div, is_='col9')
+Col10 = NewTagClass('Col10', 'div', Div, is_='col10')
+Col11 = NewTagClass('Col11', 'div', Div, is_='col11')
+Col12 = NewTagClass('Col12', 'div', Div, is_='col12')
 
 # Some css updates
-DefaultButton = Button
-PrimaryButton = Button
-SuccessButton = Button
-InfoButton = Button
-WarningButton = Button
-DangerButton = Button
-LinkButton = Button
+DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')
+PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')
+SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')
+SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')
+InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')
+WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')
+DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')
+ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')
+LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')
 
 # css/js/headers
 css_files = []
@@ -447,3 +449,32 @@ default_classes = (
     Option,
     Select,
 )
+
+extended_classes = [
+    Container,
+    Wrapper,
+    Row,
+    FormGroup,
+    Col,
+    Col1,
+    Col2,
+    Col3,
+    Col4,
+    Col5,
+    Col6,
+    Col7,
+    Col8,
+    Col9,
+    Col10,
+    Col11,
+    Col12,
+    DefaultButton,
+    PrimaryButton,
+    SecondaryButton,
+    SuccessButton,
+    InfoButton,
+    WarningButton,
+    DangerButton,
+    ErrorButton,
+    LinkButton,
+]

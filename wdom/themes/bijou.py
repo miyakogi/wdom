@@ -4,8 +4,11 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
+name = 'Bijou'
 project_url = 'http://andhart.github.io/bijou/'
 project_repository = 'https://github.com/andhart/bijou'
+license = 'MIT License'
+license_url = 'https://github.com/andhart/bijou/blob/master/LICENSE'
 
 css_files = [
     '_static/css/bijou.min.css',
@@ -18,9 +21,8 @@ SuccessButton = NewTag('SuccessButton', 'button', Button, class_='success')
 InfoButton = NewTag('InfoButton', 'button', Button, class_='success')
 WarningButton = NewTag('WarningButton', 'button', Button, class_='danger')
 DangerButton = NewTag('DangerButton', 'button', Button, class_='danger')
+ErrorButton = NewTag('ErrorButton', 'button', Button, class_='danger')
 LinkButton = NewTag('LinkButton', 'button', Button)
-
-
 
 Table = NewTag('Table', 'table', Table, class_='table')
 
@@ -37,4 +39,28 @@ Col8 = NewTag('Col8', 'div', Col, class_='eight')
 Col9 = NewTag('Col9', 'div', Col, class_='nine')
 Col10 = NewTag('Col10', 'div', Col, class_='ten')
 Col11 = NewTag('Col11', 'div', Col, class_='eleven')
-Col12 = NewTag('Col12', 'div', Col, class_='twelve')
+
+extended_classes = [
+    Button,
+    DefaultButton,
+    PrimaryButton,
+    SuccessButton,
+    InfoButton,
+    WarningButton,
+    DangerButton,
+    ErrorButton,
+    LinkButton,
+    Table,
+    Row,
+    Col1,
+    Col2,
+    Col3,
+    Col4,
+    Col5,
+    Col6,
+    Col7,
+    Col8,
+    Col9,
+    Col10,
+    Col11,
+]

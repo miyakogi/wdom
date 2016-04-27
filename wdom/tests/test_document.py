@@ -232,6 +232,38 @@ class TestMainDocument(TestCase):
         tag.dispatchEvent(e)
         mock.assert_called_once_with(event=e)
 
+    def test_custom_tag_theme_tag(self):
+        from wdom import tag
+        self.doc.register_theme(tag)
+        elm = Tag(parent=self.doc.body)
+        elm.innerHTML = '<div is="container"></div>'
+        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+
+    def test_custom_tag_theme_default(self):
+        from wdom import themes
+        from wdom import tag
+        self.doc.register_theme(themes)
+        elm = Tag(parent=self.doc.body)
+        elm.innerHTML = '<div is="container"></div>'
+        self.assertTrue(isinstance(elm.firstChild, themes.Container))
+        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+
+    def test_custom_tag_theme(self):
+        from wdom.themes import bootstrap3
+        from wdom import tag
+        self.doc.register_theme(bootstrap3)
+        elm = Tag(parent=self.doc.body)
+        elm.innerHTML = '<div is="container"></div>'
+        self.assertTrue(isinstance(elm.firstChild, bootstrap3.Container))
+        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+        self.assertIn('maxcdn.bootstrapcdn.com', self.doc.build())
+
+        elm.innerHTML = '<button is="default-button"></button>'
+        self.assertTrue(isinstance(elm.firstChild, bootstrap3.DefaultButton))
+        self.assertTrue(isinstance(elm.firstChild, bootstrap3.Button))
+        self.assertTrue(isinstance(elm.firstChild, tag.DefaultButton))
+        self.assertTrue(isinstance(elm.firstChild, tag.Button))
+
 
 class TestDocumentOptions(TestCase):
     def setUp(self):
@@ -279,3 +311,4 @@ class TestDocumentOptions(TestCase):
         doc = get_document(ws_url='test_ws')
         html = doc.build()
         self.assertIn('RIMO_WS_URL = \'test_ws\'', html)
+
