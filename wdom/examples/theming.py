@@ -42,10 +42,12 @@ def sample_app(theme=themes) -> tag.Tag:
         theme.Button('Button'),
         theme.DefaultButton('Default'),
         theme.PrimaryButton('Primary'),
+        theme.SecondaryButton('Secondary'),
         theme.SuccessButton('Success'),
         theme.InfoButton('Info'),
         theme.WarningButton('Warning'),
         theme.DangerButton('Danger'),
+        theme.ErrorButton('Error'),
         theme.LinkButton('Link'),
     )
     body.append(theme.Hr())

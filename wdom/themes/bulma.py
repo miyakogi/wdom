@@ -18,7 +18,7 @@ js_files = []
 headers = []
 
 Button = NewTag('Button', bases=Button, class_='button')
-DefaultButton = NewTag('DefaultButton', 'button', Button)
+DefaultButton = NewTag('DefaultButton', 'button', Button, is_='default-button')
 PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='is-primary', is_='primary-button')
 SecondaryButton = NewTag('SecondaryButton', 'button', PrimaryButton, class_='is-outlined', is_='secondary-button')
 SuccessButton = NewTag('SuccessButton', 'button', Button, class_='is-success', is_='success-button')
