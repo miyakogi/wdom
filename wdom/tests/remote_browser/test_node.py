@@ -399,6 +399,14 @@ class WebElementTestCase(ElementTestCase):
         self.assertRegex(self.element.value_of_css_property('color'),
                          r'0,\s*0,\s*255,\s*1\s*')
 
+    def test_exec_error(self):
+        with self.assertLogs('wdom.handler', 'ERROR') as log:
+            self.tag.exec('a.b')
+            # wait while
+            for i in range(3):
+                self.wait()
+        self.assertRegex(log.output[0], r'JS: ReferenceError')
+
 
 class EventTestCase(ElementTestCase):
     def get_elements(self):
