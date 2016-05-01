@@ -4,7 +4,6 @@
 
 import sys
 from pathlib import Path
-import re
 
 CURFILE = Path(__file__).resolve()
 CURDIR = CURFILE.parent.resolve()
