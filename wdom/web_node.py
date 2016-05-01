@@ -168,6 +168,9 @@ class WebElement(HTMLElement, WebIF):
         else:
             self._dispatch_event(Event('click'))
 
+    def exec(self, script):
+        self.js_exec('eval', script)
+
     # Window controll
     def scroll(self, x:int, y:int):
         self.js_exec('scroll', x, y)
