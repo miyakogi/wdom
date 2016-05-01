@@ -387,6 +387,18 @@ class WebElementTestCase(ElementTestCase):
         self.assertEqual(X['x'], 200)
         self.assertEqual(Y['y'], 200)
 
+    def test_exec(self):
+        self.tag.exec('this.style = "color: red;"')
+        self.set_element(self.tag)
+        self.wait()
+        self.assertRegex(self.element.value_of_css_property('color'),
+                         r'255,\s*0,\s* 0,\s*1\s*')
+
+        self.tag.exec('node.style = "color: blue;"')
+        self.wait()
+        self.assertRegex(self.element.value_of_css_property('color'),
+                         r'0,\s*0,\s*255,\s*1\s*')
+
 
 class EventTestCase(ElementTestCase):
     def get_elements(self):
