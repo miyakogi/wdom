@@ -68,7 +68,6 @@ class TestAutoReload(unittest.TestCase):
     def setUpClass(cls):
         cls.wd = get_webdriver()
         if os.environ.get('TRAVIS', True):
-            assert False
             cls.wd.implicitly_wait(10)
 
     @classmethod
