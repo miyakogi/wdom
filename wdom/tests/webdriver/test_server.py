@@ -68,7 +68,7 @@ class TestAutoReload(unittest.TestCase):
     def setUpClass(cls):
         cls.wd = get_webdriver()
         if os.environ.get('TRAVIS', True):
-            cls.wd.implicitly_wait(2)
+            cls.wd.implicitly_wait(10)
 
     @classmethod
     def tearDownClass(cls):
