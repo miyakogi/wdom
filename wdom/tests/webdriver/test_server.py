@@ -62,7 +62,7 @@ src_exclude_dir_tornado = src_exclude_dir_aio.replace('_aio', '_tornado')
 
 
 class TestAutoReload(unittest.TestCase):
-    wait_time = 5 if os.environ.get('TRAVIS') else 1
+    wait_time = 1
 
     @classmethod
     def setUpClass(cls):
