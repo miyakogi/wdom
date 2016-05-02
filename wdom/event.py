@@ -32,7 +32,7 @@ class EventListener:
         return wrapper
 
     def __call__(self, event:Event):
-        return self.action(event=event)
+        return self.action(event)
 
 
 class EventTarget:

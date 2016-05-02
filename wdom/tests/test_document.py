@@ -230,7 +230,7 @@ class TestMainDocument(TestCase):
         e = self.doc.createEvent('a')
         self.assertEqual(type(e), Event)
         tag.dispatchEvent(e)
-        mock.assert_called_once_with(event=e)
+        mock.assert_called_once_with(e)
 
     def test_custom_tag_theme_tag(self):
         from wdom import tag

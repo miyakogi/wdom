@@ -25,7 +25,7 @@ class TestEventListener(TestCase):
 
     def test_func(self):
         self.func_listener(self.e)
-        self.func.assert_called_once_with(event=self.e)
+        self.func.assert_called_once_with(self.e)
 
     @sync
     async def test_cofunc(self):
@@ -44,7 +44,7 @@ class TestEventTarget(TestCase):
         self.target.addEventListener('click', self.mock)
         self.assertEqual(len(self.target._listeners), 1)
         self.target.dispatchEvent(self.e)
-        self.mock.assert_called_once_with(event=self.e)
+        self.mock.assert_called_once_with(self.e)
 
     def test_event_dispatch_empty(self):
         self.target.dispatchEvent(self.e)
@@ -57,7 +57,7 @@ class TestEventTarget(TestCase):
         self.target.dispatchEvent(e1)
         self.target.dispatchEvent(e2)
         self.assertEqual(self.mock.call_count, 2)
-        self.mock.assert_has_calls([call(event=e1), call(event=e2)])
+        self.mock.assert_has_calls([call(e1), call(e2)])
 
     def test_defferent_event_dispatch(self):
         mock1 = MagicMock(_is_coroutine=False)
@@ -68,12 +68,12 @@ class TestEventTarget(TestCase):
         self.target.addEventListener('event', mock2)
         self.assertEqual(len(self.target._listeners), 2)
         self.target.dispatchEvent(e1)
-        mock1.assert_called_once_with(event=e1)
+        mock1.assert_called_once_with(e1)
         mock2.assert_not_called()
 
         self.target.dispatchEvent(e2)
-        mock1.assert_called_once_with(event=e1)
-        mock2.assert_called_once_with(event=e2)
+        mock1.assert_called_once_with(e1)
+        mock2.assert_called_once_with(e2)
 
     def test_remove_event(self):
         self.target.addEventListener('click', self.mock)
