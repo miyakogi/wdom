@@ -10,7 +10,7 @@ import sys
 import logging
 import re
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 
 __all__ = [
     'parser',
@@ -19,28 +19,8 @@ __all__ = [
 ]
 logger = logging.getLogger(__name__)
 
-
-def parse_command_line():
-    '''Parse command line options and set options in ``tornado.options``.'''
-    import tornado.options
-    global config
-    _, unkown_args = parser.parse_known_args(namespace=config)
-    if unkown_args and not re.search(r'py\.test[-.0-9]*$', sys.argv[0]):
-        # warn when get unknown argument
-        # if run in test, skip warning since test runner adds some arguments
-        from wdom.log import configure_logger
-        configure_logger()
-        logger.warn('Unknown Arguments: {}'.format(unkown_args))
-        parser.print_help()
-    for k, v in vars(config).items():
-        if k.startswith('log'):
-            tornado.options.options.__setattr__(k, v)
-    return config
-
-
+config = Namespace()
 parser = ArgumentParser(prog='WDOM', argument_default=None)
-config = parser.parse_args([])
-
 parser.add_argument(
     '--logging', choices=['debug', 'info', 'warn', 'error'],
     help='Set the log level (dafualt: `info`).',
@@ -88,4 +68,24 @@ parser.add_argument(
     ' When not specified or specified invalid value, open system\'s'
     ' default browser (default: None).',
 )
+
+
+def parse_command_line():
+    '''Parse command line options and set options in ``tornado.options``.'''
+    import tornado.options
+    from wdom.log import configure_logger
+    global config
+    _, unkown_args = parser.parse_known_args(namespace=config)
+    configure_logger()
+    if unkown_args and not re.search(r'py\.test[-.0-9]*$', sys.argv[0]):
+        # warn when get unknown argument
+        # if run in test, skip warning since test runner adds some arguments
+        logger.warn('Unknown Arguments: {}'.format(unkown_args))
+        parser.print_help()
+    for k, v in vars(config).items():
+        if k.startswith('log'):
+            tornado.options.options.__setattr__(k, v)
+    return config
+
+
 parse_command_line()
