@@ -99,7 +99,9 @@ class TestAutoReload(unittest.TestCase):
                 '--logging', 'error']
 
     def wait(self, t:float=None):
-        time.sleep(t or self.wait_time)
+        _t = t or self.wait_time
+        for i in range(10):
+            time.sleep(_t/10)
 
     def wait_short(self, t:float=None):
         time.sleep(t or (self.wait_time / 10))
