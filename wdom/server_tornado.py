@@ -11,7 +11,6 @@ from tornado.httpserver import HTTPServer
 
 from wdom.options import config
 from wdom.misc import static_dir
-from wdom.log import configure_logger
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import Document
 from wdom.server_base import open_browser, watch_dir
@@ -152,7 +151,6 @@ def start_server(app: web.Application, port=None, browser=None, address=None,
     name is not registered in ``webbrowser`` module, or, for example it is just
     ``True``, use system's default browser to open the page.
     '''
-    configure_logger()
     port = port if port is not None else config.port
     address = address if address is not None else config.address
     logger.info('Start server on port {0:d}'.format(port))
