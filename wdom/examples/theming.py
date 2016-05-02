@@ -11,7 +11,8 @@ CURDIR = CURFILE.parent.resolve()
 if __name__ == '__main__':
     sys.path.insert(0, str(CURDIR.parent.parent.resolve()))
 
-from wdom import themes, options, tag
+from wdom import options, tag
+from wdom.themes import default
 from wdom.document import Document, get_document
 
 
@@ -26,7 +27,7 @@ def _get_theme_name(theme) -> str:
     return theme_name
 
 
-def sample_app(theme=themes) -> tag.Tag:
+def sample_app(theme=default) -> tag.Tag:
     app = theme.Div()
     app['style'] = '''\
         margin: 2em;
@@ -183,7 +184,7 @@ def sample_app(theme=themes) -> tag.Tag:
     return app
 
 
-def sample_page(theme=themes) -> Document:
+def sample_page(theme=default) -> Document:
     page = get_document()
     app = sample_app(theme)
     page.body.prepend(app)

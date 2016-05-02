@@ -240,12 +240,12 @@ class TestMainDocument(TestCase):
         self.assertTrue(isinstance(elm.firstChild, tag.Container))
 
     def test_custom_tag_theme_default(self):
-        from wdom import themes
+        from wdom.themes import default
         from wdom import tag
-        self.doc.register_theme(themes)
+        self.doc.register_theme(default)
         elm = Tag(parent=self.doc.body)
         elm.innerHTML = '<div is="container"></div>'
-        self.assertTrue(isinstance(elm.firstChild, themes.Container))
+        self.assertTrue(isinstance(elm.firstChild, default.Container))
         self.assertTrue(isinstance(elm.firstChild, tag.Container))
 
     def test_custom_tag_theme(self):

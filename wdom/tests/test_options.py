@@ -16,7 +16,7 @@ from wdom.misc import root_dir
 from wdom.options import parse_command_line, config
 from wdom.log import configure_logger
 from wdom import tag
-from wdom import themes
+from wdom.themes import default as default_theme
 
 _argv = copy(sys.argv)
 _config = copy(vars(config))
@@ -93,30 +93,30 @@ class TestThemeOption(TestCase):
     def test_no_theme(self):
         parse_command_line()
         with self.assertLogs('wdom.themes', 'INFO') as log:
-            reload(themes)
+            reload(default_theme)
         self.assertEqual(len(log.output), 1)
         self.assertTrue(log.records[0].msg.startswith('No theme'))
         self.assertTrue(log.records[0].msg.endswith('Use default theme.'))
-        self.assertEqual(themes.Button, tag.Button)
+        self.assertEqual(default_theme.Button, tag.Button)
 
     def test_bs(self):
         sys.argv.extend(['--theme', 'bootstrap3'])
         parse_command_line()
         with self.assertLogs('wdom.themes', 'INFO') as log:
-            reload(themes)
+            reload(default_theme)
         self.assertEqual(len(log.output), 1)
         self.assertEqual(log.records[0].msg, 'Use theme: bootstrap3')
         from wdom.themes import bootstrap3
-        self.assertEqual(themes.Button, bootstrap3.Button)
+        self.assertEqual(default_theme.Button, bootstrap3.Button)
 
     def test_unknown_theme(self):
         sys.argv.extend(['--theme', 'unknown'])
         parse_command_line()
         with self.assertLogs('wdom.themes', 'WARN') as log:
-            reload(themes)
+            reload(default_theme)
         self.assertEqual(len(log.output), 2)
         self.assertTrue(log.records[0].msg.startswith('Unknown theme'))
         self.assertTrue(log.records[1].msg.startswith('Available themes:'))
         self.assertIn('unknown', log.records[0].msg)
         self.assertIn('skeleton', log.records[1].msg)
-        self.assertEqual(themes.Button, tag.Button)
+        self.assertEqual(default_theme.Button, tag.Button)
