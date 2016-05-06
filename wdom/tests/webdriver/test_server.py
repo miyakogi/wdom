@@ -110,7 +110,7 @@ class TestAutoReload(unittest.TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR)
         self.wait()
         self.wd.get(self.url)
-        self.wait_short()
+        self.wait()
         h1 = self.wd.find_element_by_id('h1')
         self.assertEqual(h1.text, 'FIRST')
 
@@ -170,7 +170,7 @@ class TestAutoReload(unittest.TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR)
         self.wait()
         self.wd.get(self.url)
-        self.wait_short()
+        self.wait()
         h1 = self.wd.find_element_by_id('h1')
         # value_of_css_property return colors as rgba style
         self.assertRegex(h1.value_of_css_property('color'),
@@ -202,7 +202,7 @@ class TestAutoReload(unittest.TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR)
         self.wait()
         self.wd.get(self.url)
-        self.wait_short()
+        self.wait()
         h1 = self.wd.find_element_by_id('h1')
         # value_of_css_property return colors as rgba style
         self.assertRegex(h1.value_of_css_property('color'),
