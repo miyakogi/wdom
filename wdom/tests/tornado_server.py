@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from os.path import dirname, abspath
+from os.path import dirname, abspath, join
 import asyncio
 
 root = dirname(dirname(dirname(abspath(__file__))))
@@ -16,7 +16,10 @@ from wdom.server_tornado import start_server, stop_server, get_app
 install_asyncio()
 options.parse_command_line()
 loop = asyncio.get_event_loop()
-app = get_app(get_document())
+doc = get_document()
+with open(join(doc.tempdir, 'a.html'), 'w') as f:
+    f.write(doc.tempdir)
+app = get_app(doc)
 server = start_server(app, loop=loop)
 try:
     loop.run_forever()

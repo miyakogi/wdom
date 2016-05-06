@@ -6,16 +6,15 @@ import json
 
 from tornado.testing import AsyncHTTPTestCase, gen_test
 from tornado.websocket import websocket_connect
-from tornado.ioloop import IOLoop
-from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
+from tornado.platform.asyncio import to_asyncio_future
 
+from wdom.misc import install_asyncio
 from wdom.document import Document
 from wdom.server_tornado import MainHandler, Application, get_app
 
 
 def setUpModule():
-    if not IOLoop.initialized():
-        AsyncIOMainLoop().install()
+    install_asyncio()
 
 
 class TestMainHandlerBlank(AsyncHTTPTestCase):
@@ -85,7 +84,23 @@ class TestStaticFileHandler(AsyncHTTPTestCase):
         with self.assertLogs('wdom.server_tornado', 'INFO'):
             res = self.fetch('/a/' + __file__)
         self.assertEqual(res.code, 200)
-        self.assertIn('this text', res.body.decode('utf8'))
+        self.assertIn('this text', res.body.decode('utf-8'))
+
+    def test_tempdir(self):
+        from os import path
+        self.assertTrue(path.exists(self.document.tempdir))
+        with self.assertLogs('wdom.server_tornado', 'WARN'):
+            res = self.fetch('/tmp/a.html')
+        self.assertEqual(res.code, 404)
+        self.assertIn('404', res.body.decode('utf8'))
+        self.assertIn('Not Found', res.body.decode('utf-8'))
+        tmp = path.join(self.document.tempdir, 'a.html')
+        with open(tmp, 'w') as f:
+            f.write('test')
+        with self.assertLogs('wdom.server_tornado', 'INFO'):
+            res = self.fetch('/tmp/a.html')
+        self.assertEqual(res.code, 200)
+        self.assertEqual('test', res.body.decode('utf-8'))
 
 
 class TestRootWSHandler(AsyncHTTPTestCase):

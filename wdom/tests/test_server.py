@@ -83,6 +83,23 @@ class TestAutoShutdownAIO(TestCase):
         await asyncio.sleep(0.3)
         self.assertIsNotNone(self.proc.poll())
 
+    @sync
+    async def test_tempdir_cleanup(self):
+        import aiohttp
+        await asyncio.sleep(0.1)
+        ws = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
+        with aiohttp.ClientSession() as session:
+            async with session.get('http://'+self.addr+'/tmp/a.html') as response:
+                assert response.status == 200
+                content = (await response.read()).decode('utf-8')
+        self.assertTrue(path.exists(content.strip()))
+        self.assertTrue(path.isdir(content.strip()))
+        ws.close()
+        await asyncio.sleep(0.3)
+        self.assertIsNotNone(self.proc.poll())
+        self.assertFalse(path.exists(content.strip()))
+        self.assertFalse(path.isdir(content.strip()))
+
 
 class TestOpenBrowser(TestCase):
     test_file = path.join(curdir, 'aio_server.py')
