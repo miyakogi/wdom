@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
 from unittest.mock import MagicMock, call
