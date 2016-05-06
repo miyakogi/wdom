@@ -1,6 +1,7 @@
 #!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
+from os import path
 import asyncio
 
 import aiohttp
@@ -32,15 +33,25 @@ class TestServer(TestCase):
             url = '/' + url
         loop = asyncio.get_event_loop()
         with aiohttp.ClientSession(loop=loop) as session:
-            with self.assertLogs('wdom.server_aio', 'INFO'):
-                async with session.get(self.addr + url) as response:
-                    assert response.status == 200
-                    content = await response.read()
+            async with session.get(self.addr + url) as response:
+                assert response.status == 200
+                content = await response.read()
+        return content.decode('utf-8')
+
+    async def fetch_404(self, url:str):
+        if not url.startswith('/'):
+            url = '/' + url
+        loop = asyncio.get_event_loop()
+        with aiohttp.ClientSession(loop=loop) as session:
+            async with session.get(self.addr + url) as response:
+                assert response.status == 404
+                content = await response.read()
         return content.decode('utf-8')
 
     @sync
     async def test_mainpage(self):
-        content = await self.fetch('/')
+        with self.assertLogs('wdom.server_aio', 'INFO'):
+            content = await self.fetch('/')
         self.assertRegex(
             content,
             r'<!DOCTYPE html><html rimo_id="\d+">\s*<head rimo_id="\d+">\s*'
@@ -48,3 +59,19 @@ class TestServer(TestCase):
             r'</head>\s*<body.*>.*<script.*>.*</script>.*'
             r'</body>\s*</html>'
         )
+
+    @sync
+    async def test_tempfile(self):
+        self.assertTrue(path.exists(self.doc.tempdir))
+        tmp = path.join(self.doc.tempdir, 'a.html')
+        self.assertFalse(path.exists(tmp))
+        with open(tmp, 'w') as f:
+            f.write('test')
+        self.assertTrue(path.exists(tmp))
+        content = await self.fetch('/tmp/a.html')
+        self.assertEqual(content, 'test')
+
+    @sync
+    async def test_tempfile_404(self):
+        content = await self.fetch_404('/tmp/a.html')
+        print(content)

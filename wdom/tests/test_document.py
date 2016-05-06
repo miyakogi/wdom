@@ -1,6 +1,7 @@
 #!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
+import os
 import re
 from unittest.mock import MagicMock
 
@@ -13,7 +14,6 @@ from wdom.document import getElementById, getElementByRimoId
 from wdom.web_node import WebElement
 from wdom.tag import Tag, HTMLElement, A
 from wdom.testing import TestCase
-
 
 
 class TestGetElement(TestCase):
@@ -264,6 +264,22 @@ class TestMainDocument(TestCase):
         self.assertFalse(isinstance(elm.firstChild, tag.DefaultButton))
         self.assertTrue(isinstance(elm.firstChild, tag.Button))
 
+    def test_tempdir(self):
+        self.assertIsNotNone(self.doc.tempdir)
+        self.assertTrue(os.path.exists(self.doc.tempdir))
+        self.assertTrue(os.path.isabs(self.doc.tempdir))
+        self.assertTrue(os.path.isdir(self.doc.tempdir))
+        testfile = os.path.join(self.doc.tempdir, 'test_file')
+        with open(testfile, 'w') as f:
+            f.write('test')
+        self.assertTrue(os.path.exists(testfile))
+        self.assertTrue(os.path.isfile(testfile))
+        with open(testfile) as f:
+            self.assertEqual('test', f.read().strip())
+        self.doc._cleanup()
+        self.assertFalse(os.path.exists(testfile))
+        self.assertFalse(os.path.exists(self.doc.tempdir))
+
 
 class TestDocumentOptions(TestCase):
     def setUp(self):
@@ -312,3 +328,7 @@ class TestDocumentOptions(TestCase):
         html = doc.build()
         self.assertIn('RIMO_WS_URL = \'test_ws\'', html)
 
+    def test_document_tempdir(self):
+        doc = get_document(no_tempdir=True)
+        self.assertIsNone(doc._tempdir)
+        self.assertIsNone(doc.tempdir)

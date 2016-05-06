@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import json
 import asyncio
 import logging
@@ -138,6 +139,8 @@ def get_app(document:Document, debug=None, **kwargs) -> Application:
 
     # Add application's static files directory
     app.add_static_path('_static', static_dir)
+    if document._tempdir is not None and os.path.exists(document._tempdir):
+        app.add_static_path('tmp', document._tempdir, no_watch=True)
     return app
 
 
