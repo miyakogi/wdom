@@ -1,20 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
-import logging
 import asyncio
 
 import aiohttp
 from syncer import sync
 
-from wdom.log import configure_logger
 from wdom.testing import TestCase
 from wdom.document import Document
 from wdom.server_aio import get_app, start_server, stop_server
-
-
-def setUpModule():
-    configure_logger(logging.DEBUG)
 
 
 class TestServer(TestCase):

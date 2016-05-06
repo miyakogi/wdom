@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
 import sys
 from os import path
 import time
 import subprocess
-import logging
 import asyncio
 
 from syncer import sync
@@ -15,15 +14,12 @@ from tornado import websocket
 from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 
-from wdom.log import configure_logger
 from wdom.testing import TestCase
-
 
 curdir = path.dirname(__file__)
 
 
 def setUpModule():
-    configure_logger(logging.DEBUG)
     if not IOLoop.initialized():
         AsyncIOMainLoop().install()
 

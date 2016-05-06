@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
 import sys
@@ -6,15 +6,14 @@ from os import path
 import tempfile
 from copy import copy
 import logging
-from unittest import TestCase
+import unittest
 from importlib import reload
 import subprocess
 
 import pytest
 
 from wdom.misc import root_dir
-from wdom.options import parse_command_line, config
-from wdom.log import configure_logger
+from wdom.options import parse_command_line, config, set_loglevel
 from wdom import tag
 from wdom.themes import default as default_theme
 
@@ -30,7 +29,7 @@ def teardown_function(function):
 
 def test_default_loglevel():
     parse_command_line()
-    configure_logger()
+    set_loglevel()
     logger = logging.getLogger('wdom')
     assert logger.getEffectiveLevel() == logging.INFO
 
@@ -44,7 +43,6 @@ def test_default_loglevel():
 def test_loglevel(level, expected):
     sys.argv.extend(['--logging', level])
     parse_command_line()
-    configure_logger()
     logger = logging.getLogger('wdom')
     assert logger.getEffectiveLevel() == expected
 
@@ -52,7 +50,6 @@ def test_loglevel(level, expected):
 def test_debug_without_logging():
     sys.argv.extend(['--debug'])
     parse_command_line()
-    configure_logger()
     logger = logging.getLogger('wdom')
     assert logger.getEffectiveLevel() == logging.DEBUG
 
@@ -60,7 +57,6 @@ def test_debug_without_logging():
 def test_debug_with_logging():
     sys.argv.extend(['--debug', '--logging', 'warn'])
     parse_command_line()
-    configure_logger()
     logger = logging.getLogger('wdom')
     assert logger.getEffectiveLevel() == logging.WARN
 
@@ -84,7 +80,7 @@ def test_unknown_args():
     assert '--test-arg' in proc.stderr
 
 
-class TestThemeOption(TestCase):
+class TestThemeOption(unittest.TestCase):
     def tearDown(self):
         sys.argv = copy(_argv)
         for k, v in _config.items():

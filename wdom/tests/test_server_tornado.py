@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
 import re
@@ -16,9 +16,6 @@ from wdom.server_tornado import MainHandler, Application, get_app
 def setUpModule():
     if not IOLoop.initialized():
         AsyncIOMainLoop().install()
-    import logging
-    from wdom.log import configure_logger
-    configure_logger(logging.DEBUG)
 
 
 class TestMainHandlerBlank(AsyncHTTPTestCase):
