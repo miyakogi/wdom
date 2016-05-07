@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction
 from typing import Callable
 
@@ -37,12 +38,12 @@ class EventListener:
 
 class EventTarget:
     def __init__(self, *args, **kwargs):
-        self._listeners = {}
+        self._listeners = defaultdict(list)
         super().__init__(*args, **kwargs)
 
     def _add_event_listener(self, event:str,
                             listener:Callable[[Event], None]):
-        self._listeners.setdefault(event, []).append(EventListener(listener))
+        self._listeners[event].append(EventListener(listener))
 
     def _add_event_listener_web(self, event:str, *args, **kwargs):
         if isinstance(self, WebIF):
@@ -61,7 +62,7 @@ class EventTarget:
 
     def _remove_event_listener(self, event:str,
                                listener:Callable[[Event], None]):
-        listeners = self._listeners.get(event)
+        listeners = self._listeners[event]
         if not listeners:
             return
         for l in listeners:
@@ -84,7 +85,7 @@ class EventTarget:
 
     def _dispatch_event(self, event:Event):
         _tasks = []
-        for listener in self._listeners.get(event.type, []):
+        for listener in self._listeners[event.type]:
             if listener._is_coroutine:
                 _tasks.append(listener(event))
             else:
