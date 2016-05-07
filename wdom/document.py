@@ -38,7 +38,6 @@ def getElementByRimoId(id:Union[str, int]) -> Optional[WebElement]:
 class Document(Node):
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
-    _tempdir = None
 
     @property
     def defaultView(self) -> Window:
@@ -50,19 +49,13 @@ class Document(Node):
 
     @property
     def tempdir(self) -> str:
-        return self._tempdir
-
-    def _cleanup(self):
-        if self._tempdir and os.path.exists(self._tempdir):
-            shutil.rmtree(self._tempdir)
+        return self._tempdir_name
 
     def __init__(self, doctype='html', title='W-DOM', charset='utf-8',
-                 default_class=HTMLElement, autoreload=None, reload_wait=None,
-                 no_tempdir=False):
+                 default_class=HTMLElement, autoreload=None, reload_wait=None):
+        self._tempdir = tempfile.TemporaryDirectory()
+        self._tempdir_name = self._tempdir.name
         super().__init__()
-        if not no_tempdir:
-            self._tempdir = tempfile.mkdtemp()
-            atexit.register(self._cleanup)
         self._window = Window(self)
         self._default_class = default_class
         self._reload_wait = reload_wait
@@ -186,10 +179,8 @@ def get_document(include_rimo: bool = True,
                  log_prefix: str = None,
                  log_console: bool = False,
                  ws_url: str = None,
-                 no_tempdir: bool = False,
                  ) -> Document:
-    document = Document(autoreload=autoreload, reload_wait=reload_wait,
-                        no_tempdir=no_tempdir)
+    document = Document(autoreload=autoreload, reload_wait=reload_wait)
     if app:
         document.body.insertBefore(app, document.body.firstChild)
     if log_level is None:

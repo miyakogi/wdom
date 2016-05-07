@@ -265,20 +265,24 @@ class TestMainDocument(TestCase):
         self.assertTrue(isinstance(elm.firstChild, tag.Button))
 
     def test_tempdir(self):
-        self.assertIsNotNone(self.doc.tempdir)
-        self.assertTrue(os.path.exists(self.doc.tempdir))
-        self.assertTrue(os.path.isabs(self.doc.tempdir))
-        self.assertTrue(os.path.isdir(self.doc.tempdir))
-        testfile = os.path.join(self.doc.tempdir, 'test_file')
+        doc = Document()
+        self.assertIsNotNone(doc.tempdir)
+        self.assertTrue(os.path.exists(doc.tempdir))
+        self.assertTrue(os.path.isabs(doc.tempdir))
+        self.assertTrue(os.path.isdir(doc.tempdir))
+        tempdir = doc.tempdir
+        testfile = os.path.join(tempdir, 'test_file')
         with open(testfile, 'w') as f:
             f.write('test')
         self.assertTrue(os.path.exists(testfile))
         self.assertTrue(os.path.isfile(testfile))
         with open(testfile) as f:
             self.assertEqual('test', f.read().strip())
-        self.doc._cleanup()
+        del doc
+        import gc
+        gc.collect()
         self.assertFalse(os.path.exists(testfile))
-        self.assertFalse(os.path.exists(self.doc.tempdir))
+        self.assertFalse(os.path.exists(tempdir))
 
 
 class TestDocumentOptions(TestCase):
@@ -327,8 +331,3 @@ class TestDocumentOptions(TestCase):
         doc = get_document(ws_url='test_ws')
         html = doc.build()
         self.assertIn('RIMO_WS_URL = \'test_ws\'', html)
-
-    def test_document_tempdir(self):
-        doc = get_document(no_tempdir=True)
-        self.assertIsNone(doc._tempdir)
-        self.assertIsNone(doc.tempdir)
