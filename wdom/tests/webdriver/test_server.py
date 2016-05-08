@@ -6,10 +6,9 @@ import os
 from os import path
 import time
 import subprocess
-import unittest
 from tempfile import NamedTemporaryFile
 
-from wdom.testing import get_webdriver, free_port, browser_implict_wait
+from wdom.testing import get_webdriver, free_port, browser_implict_wait, TestCase
 
 
 CURDIR = path.dirname(path.abspath(__file__))
@@ -23,13 +22,14 @@ sys.path.append('{rootdir}')
 
 from wdom.misc import install_asyncio
 from wdom.tag import H1
-from wdom.document import get_document
+from wdom.document import get_new_document, set_document
 from wdom.server_aio import get_app, start_server
 from wdom.server import exclude_patterns
 
 install_asyncio()
 loop = asyncio.get_event_loop()
-doc = get_document()
+doc = get_new_document()
+set_document(doc)
 doc.body.appendChild(H1('FIRST', id='h1'))
 doc.add_cssfile('testdir/test.css')
 app = get_app(doc)
@@ -49,14 +49,9 @@ h1 {color: #ff0000;}
 _src = src_aio.splitlines()
 src_tornado = '\n'.join(_src).replace('_aio', '_tornado')
 src_aio_force_reload = src_aio.replace(
-    'get_document()', 'get_document(autoreload=True)'
-).replace(
-    'get_document', 'get_new_document'
-)
+    'get_new_document()', 'get_new_document(autoreload=True)')
 src_tornado_force_reload = src_tornado.replace(
-    'get_document()', 'get_document(autoreload=True)'
-).replace(
-    'get_document', 'get_new_document'
+    'get_new_document()', 'get_new_document(autoreload=True)'
 )
 _src.insert(12, 'exclude_patterns.append(r\'test.css\')')
 src_exclude_css_aio = '\n'.join(_src)
@@ -67,7 +62,7 @@ src_exclude_dir_aio = '\n'.join(_src)
 src_exclude_dir_tornado = src_exclude_dir_aio.replace('_aio', '_tornado')
 
 
-class TestAutoReload(unittest.TestCase):
+class TestAutoReload(TestCase):
     wait_time = 3 if os.environ.get('TRAVIS') else 1
 
     @classmethod
@@ -82,6 +77,7 @@ class TestAutoReload(unittest.TestCase):
             cls.wd.implicitly_wait(browser_implict_wait)
 
     def setUp(self):
+        super().setUp()
         with open(css_path, 'w') as f:
             f.write(src_css)
         self.port = free_port()

@@ -8,21 +8,20 @@ import aiohttp
 from syncer import sync
 
 from wdom.testing import TestCase
-from wdom.document import Document
-from wdom.server_aio import get_app, start_server, stop_server
+from wdom.document import get_document
+from wdom.server_aio import get_app
+from wdom.server_aio import start_server, stop_server
 
 
 class TestServer(TestCase):
     def setUp(self):
+        super().setUp()
+        self.doc = get_document()
+        self.app = get_app()
         with self.assertLogs('wdom.server_aio', 'INFO'):
-            self.server = start_server(self.get_app(), port=0)
+            self.server = start_server(self.app, port=0)
         self.port = self.server.sockets[-1].getsockname()[1]
         self.addr = 'http://localhost:{}'.format(self.port)
-
-    def get_app(self):
-        self.doc = Document()
-        self.app = get_app(self.doc)
-        return self.app
 
     def tearDown(self):
         with self.assertLogs('wdom.server_aio', 'INFO'):
@@ -73,5 +72,5 @@ class TestServer(TestCase):
 
     @sync
     async def test_tempfile_404(self):
-        content = await self.fetch_404('/tmp/a.html')
-        print(content)
+        await self.fetch_404('/tmp/b.html')
+        await self.fetch_404('/tmp/a.html')

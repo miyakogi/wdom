@@ -42,11 +42,12 @@ class TestServerBase(TestCase):
     cmd = []
 
     def setUp(self):
+        super().setUp()
         self.port = free_port()
         env = os.environ.copy()
         env['PYTHONPATH'] = root
-        _, self.tmp = tempfile.mkstemp(suffix='.py')
-        with open(self.tmp, 'w') as f:
+        with tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False) as f:
+            self.tmp = f.name
             f.write(script.format(module=self.module))
         cmd = [sys.executable, self.tmp, '--port', str(self.port)] + self.cmd
         self.addr = 'localhost:{}'.format(self.port)
@@ -59,10 +60,11 @@ class TestServerBase(TestCase):
         time.sleep(0.1)
 
     def tearDown(self):
-        if self.proc.returncode is None:
-            self.proc.terminate()
         if os.path.exists(self.tmp):
             os.remove(self.tmp)
+        if self.proc.returncode is None:
+            self.proc.terminate()
+        super().tearDown()
 
 
 class TestAutoShutdownAIO(TestServerBase):

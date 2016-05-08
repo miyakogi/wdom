@@ -3,6 +3,7 @@
 
 import sys
 import os
+import gc
 import time
 import asyncio
 import socket
@@ -24,6 +25,8 @@ from tornado.platform.asyncio import AsyncIOMainLoop
 from wdom.misc import static_dir, install_asyncio
 from wdom import server_aio
 from wdom import options
+from wdom.window import customElements
+from wdom.element import Element
 
 driver = webdriver.Firefox
 local_webdriver = None
@@ -31,7 +34,24 @@ remote_webdriver = None
 browser_implict_wait = 0
 
 
+def initialize():
+    from wdom.document import get_new_document, set_document
+    from wdom.server_aio import Application, set_application
+    set_document(get_new_document())
+    set_application(Application())
+    Element._elements_with_id.clear()
+    Element._elements.clear()
+    customElements.clear()
+
+
 class TestCase(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        initialize()
+
+    def tearDown(self):
+        gc.collect()
+
     def assertIsTrue(self, bl):
         self.assertIs(bl, True)
 
@@ -250,18 +270,17 @@ class RemoteBrowserTestCase:
     module = server
     wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.02
 
-    def setUp(self):
+    def start(self):
         self._prev_logging = options.config.logging
         options.config.logging = 'warn'
         self.proc = ProcessController()
         self.browser = RemoteBrowserController()
         self.element = RemoteElementController()
         self.address = 'localhost'
-        self.app = self.get_app(self.document)
+        self.app = self.get_app()
         self.app.add_favicon_path(static_dir)
         self.start_server(self.app)
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
-        super().setUp()
         self.wait()
         self.browser.get(self.url)
         self.wait()
@@ -292,12 +311,12 @@ class RemoteBrowserTestCase:
     def stop_server(self):
         self.module.stop_server(self.server)
 
-    def get_app(self, doc=None) -> Application:
+    def get_app(self) -> Application:
         '''This method should be overridden by subclasses. Return
         ``wdom.server.Application`` (subclass of ``tornado.web.Application``)
         or ``asyncio.Server`` to be tested.
         '''
-        return self.module.get_app(doc)
+        return self.module.get_app()
 
     def wait(self, timeout=None):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
@@ -343,7 +362,7 @@ class WebDriverTestCase:
         AsyncIOMainLoop().clear_instance()
         install_asyncio()
 
-    def setUp(self):
+    def start(self):
         self.wd = get_webdriver()
 
         def start_server(app, port):

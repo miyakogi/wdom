@@ -7,7 +7,7 @@ import unittest
 from selenium.common.exceptions import NoSuchElementException
 
 from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form, Label
-from wdom.document import get_new_document, set_document
+from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
 from wdom import server_aio
@@ -19,15 +19,13 @@ def setUpModule():
 
 class NodeTestCase(RemoteBrowserTestCase):
     def setUp(self):
-        self.document = get_new_document(autoreload=False)
-        set_document(self.document)
-
+        super().setUp()
+        self.document = get_document()
         class Root(Tag):
             tag = 'root'
-
         self.root = Root()
         self.document.body.prepend(self.root)
-        super().setUp()
+        self.start()
         self.set_element(self.root)
 
     def test_connection(self):
@@ -107,8 +105,8 @@ class NodeTestCase(RemoteBrowserTestCase):
 
 class InputTestCase(RemoteBrowserTestCase):
     def setUp(self):
-        self.document = get_new_document(autoreload=False)
-        set_document(self.document)
+        super().setUp()
+        self.document = get_document(autoreload=False)
         self.root = Form()
         self.input = Input(parent=self.root, type='text')
         self.textarea = Textarea(parent=self.root)
@@ -121,7 +119,7 @@ class InputTestCase(RemoteBrowserTestCase):
         self.radio2_l = Label('Radio 2', parent=self.root, **{'for': 'r2'})
         self.radio3_l = Label('Radio 3', parent=self.root, **{'for': 'r3'})
         self.document.body.prepend(self.root)
-        super().setUp()
+        self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
@@ -243,8 +241,8 @@ class InputTestCase(RemoteBrowserTestCase):
 
 class SelectTestCase(RemoteBrowserTestCase):
     def setUp(self):
-        self.document = get_new_document(autoreload=False)
-        set_document(self.document)
+        super().setUp()
+        self.document = get_document(autoreload=False)
         self.root = Div()
         self.select = Select(parent=self.root)
         self.mselect = Select(parent=self.root, multiple=True)
@@ -255,7 +253,7 @@ class SelectTestCase(RemoteBrowserTestCase):
         self.opt2m = Option('option 2', parent=self.mselect)
         self.opt3m = Option('option 3', parent=self.mselect, value='opt3m')
         self.document.body.prepend(self.root)
-        super().setUp()
+        self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')

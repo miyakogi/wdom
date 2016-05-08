@@ -3,6 +3,7 @@
 
 import os
 import re
+import time
 from unittest.mock import MagicMock
 
 from wdom import options
@@ -18,6 +19,7 @@ from wdom.testing import TestCase
 
 class TestGetElement(TestCase):
     def setUp(self):
+        super().setUp()
         Tag._elements_with_id.clear()
         Tag._elements_with_rimo_id.clear()
         self.doc = Document()
@@ -40,6 +42,7 @@ class TestGetElement(TestCase):
 
 class TestMainDocument(TestCase):
     def setUp(self) -> None:
+        super().setUp()
         Tag._elements_with_id.clear()
         Tag._elements_with_rimo_id.clear()
         self.doc = Document()
@@ -287,6 +290,7 @@ class TestMainDocument(TestCase):
 
 class TestDocumentOptions(TestCase):
     def setUp(self):
+        super().setUp()
         options.parse_command_line()
 
     def test_set_new_document(self):

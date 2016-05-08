@@ -10,7 +10,7 @@ from wdom.tag import H1
 from wdom.document import get_new_document, set_document
 from wdom import server_aio, server_tornado
 from wdom.misc import install_asyncio
-from wdom.testing import WebDriverTestCase
+from wdom.testing import WebDriverTestCase, TestCase
 
 
 def setUpModule():
@@ -18,6 +18,10 @@ def setUpModule():
 
 
 class SimpleTestCase(WebDriverTestCase):
+    def setUp(self):
+        super().setUp()
+        self.start()
+
     def get_app(self):
         self.document = get_new_document(autoreload=False)
         set_document(self.document)
@@ -33,6 +37,10 @@ class SimpleTestCase(WebDriverTestCase):
 
 
 class DataBindingTestCase(WebDriverTestCase):
+    def setUp(self):
+        super().setUp()
+        self.start()
+
     def get_app(self):
         # set_document(get_new_document())
         from wdom.examples.data_binding import sample_page
@@ -59,6 +67,10 @@ class DataBindingTestCase(WebDriverTestCase):
 
 
 class RevTextTestCase(WebDriverTestCase):
+    def setUp(self):
+        super().setUp()
+        self.start()
+
     def get_app(self):
         # set_document(get_new_document())
         from wdom.examples.rev_text import sample_page
@@ -81,28 +93,28 @@ class RevTextTestCase(WebDriverTestCase):
         self.assertEqual(view.text, text)
 
 
-class TestSimplePageAIO(SimpleTestCase, unittest.TestCase):
+class TestSimplePageAIO(SimpleTestCase, TestCase):
     module = server_aio
 
 
-class TestDataBindingAIO(DataBindingTestCase, unittest.TestCase):
+class TestDataBindingAIO(DataBindingTestCase, TestCase):
     module = server_aio
 
 
-class TestRevTextAIO(RevTextTestCase, unittest.TestCase):
+class TestRevTextAIO(RevTextTestCase, TestCase):
     module = server_aio
 
 
-class TestSimplePageTornado(SimpleTestCase, unittest.TestCase):
+class TestSimplePageTornado(SimpleTestCase, TestCase):
     wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
     module = server_tornado
 
 
-class TestDataBindingTornado(DataBindingTestCase, unittest.TestCase):
+class TestDataBindingTornado(DataBindingTestCase, TestCase):
     wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
     module = server_tornado
 
 
-class TestRevTextTornado(RevTextTestCase, unittest.TestCase):
+class TestRevTextTornado(RevTextTestCase, TestCase):
     wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
     module = server_tornado
