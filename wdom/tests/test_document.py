@@ -9,7 +9,7 @@ from wdom import options
 from wdom.interface import Event
 from wdom.node import DocumentFragment, Comment, Text
 from wdom.element import Attr, Element
-from wdom.document import Document, get_document
+from wdom.document import Document, get_document, get_new_document, set_document
 from wdom.document import getElementById, getElementByRimoId
 from wdom.web_node import WebElement
 from wdom.tag import Tag, HTMLElement, A
@@ -289,45 +289,54 @@ class TestDocumentOptions(TestCase):
     def setUp(self):
         options.parse_command_line()
 
+    def test_set_new_document(self):
+        old_doc = get_document()
+        doc = get_new_document()
+        self.assertIsNot(doc, old_doc)
+        set_document(doc)
+        new_doc = get_document()
+        self.assertIsNot(doc, old_doc)
+        self.assertIs(doc, new_doc)
+
     def test_document_autoreload(self):
-        doc = get_document(autoreload=True)
+        doc = get_new_document(autoreload=True)
         html = doc.build()
         self.assertIn('RIMO_AUTORELOAD = true', html)
         self.assertNotIn('RIMO_RELOAD_WAIT', html)
 
     def test_document_reload_wait(self):
-        doc = get_document(autoreload=True, reload_wait=1234)
+        doc = get_new_document(autoreload=True, reload_wait=1234)
         html = doc.build()
         self.assertIn('RIMO_AUTORELOAD = true', html)
         self.assertIn('RIMO_RELOAD_WAIT = 1234', html)
 
     def test_document_no_reload_wait_no_reload(self):
-        doc = get_document(autoreload=False, reload_wait=1234)
+        doc = get_new_document(autoreload=False, reload_wait=1234)
         html = doc.build()
         self.assertNotIn('RIMO_AUTORELOAD', html)
         self.assertNotIn('RIMO_RELOAD_WAIT', html)
 
     def test_document_log_level_str(self):
-        doc = get_document(log_level='INFO')
+        doc = get_new_document(log_level='INFO')
         html = doc.build()
         self.assertIn('RIMO_LOG_LEVEL = \'INFO\'', html)
 
     def test_document_log_level_int(self):
-        doc = get_document(log_level=10)
+        doc = get_new_document(log_level=10)
         html = doc.build()
         self.assertIn('RIMO_LOG_LEVEL = 10', html)
 
     def test_document_log_prefix(self):
-        doc = get_document(log_prefix='TEST')
+        doc = get_new_document(log_prefix='TEST')
         html = doc.build()
         self.assertIn('RIMO_LOG_PREFIX = \'TEST\'', html)
 
     def test_document_log_console(self):
-        doc = get_document(log_console=True)
+        doc = get_new_document(log_console=True)
         html = doc.build()
         self.assertIn('RIMO_LOG_CONSOLE = true', html)
 
     def test_document_ws_url(self):
-        doc = get_document(ws_url='test_ws')
+        doc = get_new_document(ws_url='test_ws')
         html = doc.build()
         self.assertIn('RIMO_WS_URL = \'test_ws\'', html)

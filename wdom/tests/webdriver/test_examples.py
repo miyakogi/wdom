@@ -7,7 +7,7 @@ import unittest
 from selenium.webdriver.common.keys import Keys
 
 from wdom.tag import H1
-from wdom.document import get_document
+from wdom.document import get_new_document, set_document
 from wdom import server_aio, server_tornado
 from wdom.misc import install_asyncio
 from wdom.testing import WebDriverTestCase
@@ -19,7 +19,8 @@ def setUpModule():
 
 class SimpleTestCase(WebDriverTestCase):
     def get_app(self):
-        self.document = get_document(autoreload=False)
+        self.document = get_new_document(autoreload=False)
+        set_document(self.document)
         self.h1 = H1()
         self.h1.textContent = 'TITLE'
         self.document.body.appendChild(self.h1)
@@ -33,6 +34,7 @@ class SimpleTestCase(WebDriverTestCase):
 
 class DataBindingTestCase(WebDriverTestCase):
     def get_app(self):
+        # set_document(get_new_document())
         from wdom.examples.data_binding import sample_page
         self.document = sample_page(autoreload=False)
         self.app = self.module.get_app(self.document)
@@ -58,6 +60,7 @@ class DataBindingTestCase(WebDriverTestCase):
 
 class RevTextTestCase(WebDriverTestCase):
     def get_app(self):
+        # set_document(get_new_document())
         from wdom.examples.rev_text import sample_page
         self.document = sample_page(autoreload=False)
         self.app = self.module.get_app(self.document)

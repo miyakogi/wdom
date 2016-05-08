@@ -9,7 +9,7 @@ from unittest.mock import MagicMock
 from syncer import sync
 
 from wdom.testing import TestCase
-from wdom.document import get_document
+from wdom.document import get_new_document, set_document
 from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
@@ -23,7 +23,8 @@ def setUpModule():
 
 class ElementTestCase(RemoteBrowserTestCase):
     def setUp(self):
-        self.document = get_document(autoreload=False)
+        self.document = get_new_document(autoreload=False)
+        set_document(self.document)
         self.document.body.prepend(self.get_elements())
         super().setUp()
 

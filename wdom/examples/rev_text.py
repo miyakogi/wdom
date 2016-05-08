@@ -15,6 +15,7 @@ def sample_page(**kwargs) -> Div:
 
     text.addEventListener('click', reverse)
 
-    page = get_document(app=app, **kwargs)
+    page = get_document(**kwargs)
+    page.body.prepend(app)
 
     return page

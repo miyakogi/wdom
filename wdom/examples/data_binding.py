@@ -13,18 +13,20 @@ class Check(Input):
     type_ = 'checkbox'
 
 
+class App(Div):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text = H1(parent=self)
+        self.text.textContent = 'Hello!'
+        self.textbox = Input(parent=self)
+        self.textbox.setAttribute('type', 'text')
+        self.textbox.addEventListener('input', self.update)
+
+    def update(self, event):
+        self.text.textContent = self.textbox.getAttribute('value')
+
+
 def sample_page(**kwargs):
-    app = Div()
-    textbox = Input(parent=app)
-    text = H1(parent=app)
-    textbox.setAttribute('type', 'text')
-    text.textContent = 'Hello!'
-
-    def update(event):
-        text.textContent = textbox.getAttribute('value')
-
-    textbox.addEventListener('input', update)
-
-    page = get_document(app=app, **kwargs)
-
+    page = get_document(**kwargs)
+    page.body.prepend(App())
     return page

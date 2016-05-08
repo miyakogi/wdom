@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import tempfile
-import atexit
-import shutil
 from types import ModuleType
-from typing import Optional, Union
+from typing import Optional, Union, Callable
 
 from wdom.options import config
 from wdom.interface import Event
@@ -169,20 +166,21 @@ class Document(Node):
         return ''.join(child.html for child in self.childNodes)
 
 
-def get_document(include_rimo: bool = True,
-                 include_skeleton: bool = False,
-                 include_normalizecss: bool = False,
-                 app: Optional[Node] = None,
-                 autoreload: Optional[bool] = None,
-                 reload_wait: int = None,
-                 log_level: int = None,
-                 log_prefix: str = None,
-                 log_console: bool = False,
-                 ws_url: str = None,
-                 ) -> Document:
-    document = Document(autoreload=autoreload, reload_wait=reload_wait)
-    if app:
-        document.body.insertBefore(app, document.body.firstChild)
+def get_new_document(include_rimo: bool = True,
+                     include_skeleton: bool = False,
+                     include_normalizecss: bool = False,
+                     autoreload: Optional[bool] = None,
+                     reload_wait: int = None,
+                     log_level: int = None,
+                     log_prefix: str = None,
+                     log_console: bool = False,
+                     ws_url: str = None,
+                     document_factory: Callable[..., Document] = Document,
+                     **kwargs) -> Document:
+    document = document_factory(
+        autoreload=autoreload,
+        reload_wait=reload_wait,
+        **kwargs)
     if log_level is None:
         log_level = config.logging
 
@@ -208,3 +206,16 @@ def get_document(include_rimo: bool = True,
         document.add_jsfile_head('_static/js/rimo/rimo.js')
 
     return document
+
+
+# get_document = get_new_document
+def get_document(*args, **kwargs):
+    return rootDocument
+
+
+def set_document(new_document: Document, *args, **kwargs):
+    global rootDocument
+    rootDocument = new_document
+
+
+rootDocument = get_new_document()

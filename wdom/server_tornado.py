@@ -5,6 +5,7 @@ import os
 import json
 import asyncio
 import logging
+from typing import Optional
 
 from tornado import web
 from tornado import websocket
@@ -123,8 +124,12 @@ class Application(web.Application):
         handlers.append(spec)
 
 
-def get_app(document:Document, debug=None, **kwargs) -> Application:
+def get_app(document: Optional[Document] = None, debug: Optional[bool] = None,
+            **kwargs) -> Application:
     '''Return Application object to serve ``document``.'''
+    import wdom.document
+    if document is None:
+        document = wdom.document.get_document()
     if debug is None:
         debug = config.debug
     app = Application(
@@ -165,7 +170,8 @@ def start_server(app: web.Application, port=None, browser=None, address=None,
 
     return server
 
-def stop_server(server:HTTPServer):
+
+def stop_server(server: HTTPServer):
     '''Terminate given server.'''
     server.stop()
     logger.info('Server terminated')

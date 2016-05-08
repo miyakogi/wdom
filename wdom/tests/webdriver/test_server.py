@@ -49,9 +49,15 @@ h1 {color: #ff0000;}
 _src = src_aio.splitlines()
 src_tornado = '\n'.join(_src).replace('_aio', '_tornado')
 src_aio_force_reload = src_aio.replace(
-    'get_document()', 'get_document(autoreload=True)')
+    'get_document()', 'get_document(autoreload=True)'
+).replace(
+    'get_document', 'get_new_document'
+)
 src_tornado_force_reload = src_tornado.replace(
-    'get_document()', 'get_document(autoreload=True)')
+    'get_document()', 'get_document(autoreload=True)'
+).replace(
+    'get_document', 'get_new_document'
+)
 _src.insert(12, 'exclude_patterns.append(r\'test.css\')')
 src_exclude_css_aio = '\n'.join(_src)
 src_exclude_css_tornado = src_exclude_css_aio.replace('_aio', '_tornado')

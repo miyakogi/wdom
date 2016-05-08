@@ -7,7 +7,7 @@ import unittest
 from selenium.common.exceptions import NoSuchElementException
 
 from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form, Label
-from wdom.document import get_document
+from wdom.document import get_new_document, set_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
 from wdom import server_aio
@@ -19,7 +19,8 @@ def setUpModule():
 
 class NodeTestCase(RemoteBrowserTestCase):
     def setUp(self):
-        self.document = get_document(autoreload=False)
+        self.document = get_new_document(autoreload=False)
+        set_document(self.document)
 
         class Root(Tag):
             tag = 'root'
@@ -106,7 +107,8 @@ class NodeTestCase(RemoteBrowserTestCase):
 
 class InputTestCase(RemoteBrowserTestCase):
     def setUp(self):
-        self.document = get_document(autoreload=False)
+        self.document = get_new_document(autoreload=False)
+        set_document(self.document)
         self.root = Form()
         self.input = Input(parent=self.root, type='text')
         self.textarea = Textarea(parent=self.root)
@@ -241,7 +243,8 @@ class InputTestCase(RemoteBrowserTestCase):
 
 class SelectTestCase(RemoteBrowserTestCase):
     def setUp(self):
-        self.document = get_document(autoreload=False)
+        self.document = get_new_document(autoreload=False)
+        set_document(self.document)
         self.root = Div()
         self.select = Select(parent=self.root)
         self.mselect = Select(parent=self.root, multiple=True)
