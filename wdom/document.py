@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import tempfile
+import shutil
+from functools import partial
 from types import ModuleType
 from typing import Optional, Union, Callable
+import weakref
 
 from wdom.options import config
 from wdom.interface import Event
@@ -32,6 +36,11 @@ def getElementByRimoId(id:Union[str, int]) -> Optional[WebElement]:
         return None
 
 
+def _cleanup(path):
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+
+
 class Document(Node):
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
@@ -46,12 +55,12 @@ class Document(Node):
 
     @property
     def tempdir(self) -> str:
-        return self._tempdir_name
+        return self._tempdir
 
     def __init__(self, doctype='html', title='W-DOM', charset='utf-8',
                  default_class=HTMLElement, autoreload=None, reload_wait=None):
-        self._tempdir = tempfile.TemporaryDirectory()
-        self._tempdir_name = self._tempdir.name
+        self._tempdir = _tempdir = tempfile.mkdtemp()
+        weakref.finalize(self, partial(_cleanup, _tempdir))
         super().__init__()
         self._window = Window(self)
         self._default_class = default_class
