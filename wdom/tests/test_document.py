@@ -49,6 +49,7 @@ class TestMainDocument(TestCase):
 
     def tearDown(self):
         self.doc.defaultView.customElements.reset()
+        super().tearDown()
 
     def test_blankpage(self) -> None:
         _re = re.compile(

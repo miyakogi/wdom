@@ -89,6 +89,7 @@ class TestAutoReload(TestCase):
             os.remove(self.tmpfilename)
         with open(css_path, 'w') as f:
             f.write(src_css)
+        super().tearDown()
 
     def _base_args(self):
         return [sys.executable, self.tmpfilename, '--port', str(self.port),

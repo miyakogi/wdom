@@ -36,7 +36,7 @@ remote_webdriver = None
 browser_implict_wait = 0
 
 
-def initialize():
+def reset():
     from wdom.document import get_new_document, set_document
     from wdom.server import _aiohttp, _tornado
     set_document(get_new_document())
@@ -50,12 +50,10 @@ def initialize():
 
 
 class TestCase(unittest.TestCase):
-    def setUp(self):
-        super().setUp()
-        initialize()
-
     def tearDown(self):
+        reset()
         gc.collect()
+        super().tearDown()
 
     def assertIsTrue(self, bl):
         self.assertIs(bl, True)
@@ -80,6 +78,7 @@ class HTTPTestCase(TestCase):
     def tearDown(self):
         with self.assertLogs('wdom', 'INFO'):
             server.stop_server(self.server)
+        super().tearDown()
 
     async def get(self, url: str):
         if not url.startswith('/'):
@@ -322,10 +321,12 @@ class RemoteBrowserTestCase:
         self.proc = ProcessController()
         self.browser = RemoteBrowserController()
         self.element = RemoteElementController()
-        self.address = 'localhost'
-        self.app = self.get_app()
-        self.app.add_favicon_path(static_dir)
-        self.start_server(self.app)
+        try:
+            self.server = server.start_server(server.get_app(), port=0)
+        except OSError:
+            self.wait(0.2)
+            self.server = server.start_server(server.get_app(), port=0)
+        self.address = self.server.address
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
         self.wait()
         self.browser.get(self.url)
@@ -337,22 +338,11 @@ class RemoteBrowserTestCase:
         self.wait()
         sys.stdout.flush()
         sys.stderr.flush()
+        super().tearDown()
 
     @property
     def port(self) -> int:
-        if isinstance(self.server, HTTPServer):
-            for sock in self.server._sockets.values():
-                if sock.family == socket.AF_INET:
-                    return sock.getsockname()[1]
-        elif isinstance(self.server, asyncio.AbstractServer):
-            return self.server.sockets[-1].getsockname()[1]
-
-    def start_server(self, app, port=0):
-        try:
-            self.server = server.start_server(app, port)
-        except OSError:
-            self.wait(0.2)
-            self.server = server.start_server(app, port)
+        return self.server.port
 
     def stop_server(self):
         server.stop_server(self.server)

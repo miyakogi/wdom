@@ -10,7 +10,7 @@ from wdom.tag import H1
 from wdom.document import get_document
 from wdom import server
 from wdom.misc import install_asyncio
-from wdom.testing import WebDriverTestCase, TestCase
+from wdom.testing import WebDriverTestCase, TestCase, reset
 
 
 def setUpModule():
@@ -22,12 +22,12 @@ class SimpleTestCase(WebDriverTestCase):
 
     def setUp(self):
         super().setUp()
+        reset()  # I don't know why, but need reset for aiohttp.
         server.set_server_type(self.server_type)
         self.document = get_document()
         self.h1 = H1()
         self.h1.textContent = 'TITLE'
         self.document.body.appendChild(self.h1)
-        self.app = server.get_app(self.document)
         self.start()
 
     def test_page(self):
@@ -41,10 +41,10 @@ class DataBindingTestCase(WebDriverTestCase):
 
     def setUp(self):
         super().setUp()
+        reset()  # I don't know why, but need reset for aiohttp.
         server.set_server_type(self.server_type)
         from wdom.examples.data_binding import sample_page
         self.document = sample_page(autoreload=False)
-        self.app = server.get_app(self.document)
         self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
@@ -70,10 +70,10 @@ class RevTextTestCase(WebDriverTestCase):
 
     def setUp(self):
         super().setUp()
+        reset()  # I don't know why, but need reset for aiohttp.
         server.set_server_type(self.server_type)
         from wdom.examples.rev_text import sample_page
         self.document = sample_page(autoreload=False)
-        self.app = server.get_app(self.document)
         self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),

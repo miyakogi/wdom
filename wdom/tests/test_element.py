@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import gc
-from unittest import TestCase, skipIf
+from unittest import skipIf
 
 from wdom.css import CSSStyleDeclaration
 from wdom.node import Text
@@ -11,6 +11,7 @@ from wdom.element import (
     HTMLSelectElement, HTMLOptionElement,
 )
 from wdom.window import customElements
+from wdom.testing import TestCase
 
 
 class TestDOMTokenList(TestCase):
@@ -335,6 +336,7 @@ class TestElement(TestCase):
         del self.elm
         del self.c1
         del self.c2
+        super().tearDown()
 
     def test_constructor(self):
         elm = Element('a')

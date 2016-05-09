@@ -85,6 +85,7 @@ class TestThemeOption(unittest.TestCase):
         sys.argv = copy(_argv)
         for k, v in _config.items():
             setattr(config, k, v)
+        super().tearDown()
 
     def test_no_theme(self):
         parse_command_line()

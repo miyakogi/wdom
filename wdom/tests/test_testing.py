@@ -13,20 +13,7 @@ class TestInitialize(unittest.TestCase):
         old_doc = get_document()
         old_app_aio = _aiohttp.get_app()
         old_app_tornado = _tornado.get_app()
-        testing.initialize()
+        testing.reset()
         self.assertIsNot(old_doc, get_document())
         self.assertIsNot(old_app_aio, _aiohttp.get_app())
         self.assertIsNot(old_app_tornado, _tornado.get_app())
-
-
-class TestInitializeTestCase(testing.TestCase):
-    @classmethod
-    def setUpClass(self):
-        self.old_doc = get_document()
-        self.old_app_aio = _aiohttp.get_app()
-        self.old_app_tornado = _tornado.get_app()
-
-    def test_initialize(self):
-        self.assertIsNot(self.old_doc, get_document())
-        self.assertIsNot(self.old_app_aio, _aiohttp.get_app())
-        self.assertIsNot(self.old_app_tornado, _tornado.get_app())
