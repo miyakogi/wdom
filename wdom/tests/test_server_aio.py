@@ -18,7 +18,7 @@ class TestServer(HTTPTestCase):
 
     @sync
     async def test_mainpage(self):
-        with self.assertLogs('wdom.server_aio', 'INFO'):
+        with self.assertLogs('wdom.server._aiohttp', 'INFO'):
             response = await self.get('/')
         self.assertEqual(response.code, 200)
         self.assertRegex(

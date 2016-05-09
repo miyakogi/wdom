@@ -9,7 +9,7 @@ import syncer
 
 from wdom.misc import install_asyncio
 from wdom.document import get_document
-from wdom.server_tornado import get_app
+from wdom.server import get_app
 from wdom import server
 from wdom.testing import HTTPTestCase
 
@@ -45,7 +45,6 @@ class TestMainHandler(HTTPTestCase):
         server.set_server_type('tornado')
         self.document = get_document()
         self.document.body.prepend('testing')
-        self.app = get_app()
         self.start()
 
     @syncer.sync
@@ -61,12 +60,11 @@ class TestStaticFileHandler(HTTPTestCase):
         super().setUp()
         server.set_server_type('tornado')
         self.document = get_document()
-        self.app = get_app()
+        self.start()
 
     @syncer.sync
     async def test_static_file(self) -> None:
-        self.start()
-        with self.assertLogs('wdom.server_tornado', 'INFO'):
+        with self.assertLogs('wdom.server._tornado', 'INFO'):
             res = await self.get('/_static/js/rimo/rimo.js')
         self.assertEqual(res.code, 200)
         body = res.body.decode('utf-8')
@@ -75,18 +73,16 @@ class TestStaticFileHandler(HTTPTestCase):
 
     def test_add_static_path(self) -> None:
         from os import path
-        self.start()
-        self.app.add_static_path('a', path.abspath(path.dirname(__file__)))
-        with self.assertLogs('wdom.server_tornado', 'INFO'):
+        get_app().add_static_path('a', path.abspath(path.dirname(__file__)))
+        with self.assertLogs('wdom.server._tornado', 'INFO'):
             res = syncer.sync(self.get('/a/' + __file__))
         self.assertEqual(res.code, 200)
         self.assertIn('this text', res.body.decode('utf-8'))
 
     def test_tempdir(self):
         from os import path
-        self.start()
         self.assertTrue(path.exists(self.document.tempdir))
-        with self.assertLogs('wdom.server_tornado', 'WARN'):
+        with self.assertLogs('wdom.server._tornado', 'WARN'):
             res = syncer.sync(self.get('/tmp/a.html'))
         self.assertEqual(res.code, 404)
         self.assertIn('404', res.body.decode('utf8'))
@@ -95,7 +91,7 @@ class TestStaticFileHandler(HTTPTestCase):
         with open(tmp, 'w') as f:
             f.write('test')
         self.assertTrue(path.exists(tmp))
-        with self.assertLogs('wdom.server_tornado', 'INFO'):
+        with self.assertLogs('wdom.server._tornado', 'INFO'):
             res = syncer.sync(self.get('/tmp/a.html'))
         self.assertEqual(res.code, 200)
         self.assertEqual('test', res.body.decode('utf-8'))
@@ -105,8 +101,6 @@ class TestRootWSHandler(HTTPTestCase):
     def setUp(self) -> None:
         super().setUp()
         server.set_server_type('tornado')
-        self.document = get_document()
-        self.app = get_app(self.document)
         self.start()
         syncer.sync(self.wait())
         self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
@@ -117,7 +111,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_ws_connection(self) -> None:
-        with self.assertLogs('wdom.server_tornado', 'INFO'):
+        with self.assertLogs('wdom.server._tornado', 'INFO'):
             _ =  await self.ws_connect(self.ws_url)
             del _
             await self.wait()

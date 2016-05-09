@@ -38,11 +38,10 @@ browser_implict_wait = 0
 
 def initialize():
     from wdom.document import get_new_document, set_document
-    from wdom import server_aio
-    from wdom import server_tornado
+    from wdom.server import _aiohttp, _tornado
     set_document(get_new_document())
-    server_aio.set_application(server_aio.Application())
-    server_tornado.set_application(server_tornado.Application())
+    _aiohttp.set_application(_aiohttp.Application())
+    _tornado.set_application(_tornado.Application())
     Element._elements_with_id.clear()
     Element._elements.clear()
     customElements.clear()

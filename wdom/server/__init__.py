@@ -11,12 +11,12 @@ from tornado import autoreload
 from wdom.misc import static_dir, install_asyncio
 from wdom.options import config
 from wdom.document import get_document
-from wdom.server_base import exclude_patterns, open_browser, watch_dir
+from wdom.server.base import exclude_patterns, open_browser, watch_dir
 
 try:
-    from wdom import server_aio as module
+    from wdom.server import _aiohttp as module
 except ImportError:
-    from wdom import server_tornado as module
+    from wdom.server import _tornado as module
 
 __all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
 logger = logging.getLogger(__name__)
@@ -36,9 +36,9 @@ def get_app(*args, **kwargs):
 def set_server_type(type):
     global module
     if type == 'aiohttp':
-        module = importlib.import_module('wdom.server_aio')
+        module = importlib.import_module('wdom.server._aiohttp')
     elif type == 'tornado':
-        module = importlib.import_module('wdom.server_tornado')
+        module = importlib.import_module('wdom.server._tornado')
 
 
 main_server = None
