@@ -119,7 +119,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_logging_error(self) -> None:
-        with self.assertLogs('wdom.server.handler', 'INFO'):
+        with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='error', message='test')
             ))
@@ -127,7 +127,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_logging_warn(self) -> None:
-        with self.assertLogs('wdom.server.handler', 'INFO'):
+        with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='warn', message='test')
             ))
@@ -135,7 +135,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_logging_info(self) -> None:
-        with self.assertLogs('wdom.server.handler', 'INFO'):
+        with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='info', message='test')
             ))
@@ -143,7 +143,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_logging_debug(self) -> None:
-        with self.assertLogs('wdom.server.handler', 'DEBUG'):
+        with self.assertLogs('wdom.server', 'DEBUG'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='debug', message='test')
             ))

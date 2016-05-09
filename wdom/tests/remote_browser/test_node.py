@@ -407,7 +407,7 @@ class WebElementTestCase(ElementTestCase):
                          r'0,\s*0,\s*255,\s*1\s*')
 
     def test_exec_error(self):
-        with self.assertLogs('wdom.server.handler', 'ERROR') as log:
+        with self.assertLogs('wdom.server', 'ERROR') as log:
             self.tag.exec('a.b')
             # wait while
             for i in range(3):
