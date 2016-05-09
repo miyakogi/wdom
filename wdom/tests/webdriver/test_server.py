@@ -48,11 +48,6 @@ h1 {color: #ff0000;}
 
 _src = src_aio.splitlines()
 src_tornado = '\n'.join(_src).replace('_aio', '_tornado')
-src_aio_force_reload = src_aio.replace(
-    'get_new_document()', 'get_new_document(autoreload=True)')
-src_tornado_force_reload = src_tornado.replace(
-    'get_new_document()', 'get_new_document(autoreload=True)'
-)
 _src.insert(12, 'exclude_patterns.append(r\'test.css\')')
 src_exclude_css_aio = '\n'.join(_src)
 src_exclude_css_tornado = src_exclude_css_aio.replace('_aio', '_tornado')
@@ -138,13 +133,6 @@ class TestAutoReload(TestCase):
         args.append('--debug')
         self.check_reload(args)
 
-    def test_autoreload_force_aio(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(src_aio_force_reload)
-        self.wait_short()
-        args = self._base_args()
-        self.check_reload(args)
-
     def test_autoreload_tornado(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_tornado)
@@ -159,13 +147,6 @@ class TestAutoReload(TestCase):
         self.wait_short()
         args = self._base_args()
         args.append('--debug')
-        self.check_reload(args)
-
-    def test_autoreload_force_tornado(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(src_tornado_force_reload)
-        self.wait_short()
-        args = self._base_args()
         self.check_reload(args)
 
     def check_css_reload(self, args):

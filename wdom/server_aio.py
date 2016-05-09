@@ -145,16 +145,16 @@ def start_server(app: Optional[web.Application] = None,
     app.add_static_path('_static', static_dir)
     doc = get_document()
     if os.path.exists(doc.tempdir):
-        print('add tempdir')
         app.add_static_path('tmp', doc.tempdir, no_watch=True)
 
     loop = loop or asyncio.get_event_loop()
-    logger.info('Start server on {0}:{1:d}'.format(address, port))
     handler = app.make_handler()
     f = loop.create_server(handler, address, port)
     server = loop.run_until_complete(f)
     server.app = app
     server.handler = handler
+    server.port = server.sockets[-1].getsockname()[1]
+    logger.info('Start server on {0}:{1:d}'.format(address, server.port))
     app.on_shutdown.append(close_connections)
     app['server'] = server
     if doc._autoreload:
@@ -163,7 +163,7 @@ def start_server(app: Optional[web.Application] = None,
         autoreload.start(check_time=check_time)
 
     if config.open_browser:
-        open_browser('http://{}:{}/'.format(address, port), browser)
+        open_browser('http://{}:{}/'.format(address, server.port), browser)
 
     return server
 

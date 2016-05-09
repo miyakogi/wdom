@@ -18,15 +18,18 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
+import aiohttp
 from tornado.web import Application
 from tornado.httpserver import HTTPServer
-from tornado.platform.asyncio import AsyncIOMainLoop
+from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
+from tornado.websocket import websocket_connect
 
 from wdom.misc import static_dir, install_asyncio
 from wdom import server_aio
 from wdom import options
 from wdom.window import customElements
 from wdom.element import Element
+from wdom import server
 
 driver = webdriver.Firefox
 local_webdriver = None
@@ -36,9 +39,11 @@ browser_implict_wait = 0
 
 def initialize():
     from wdom.document import get_new_document, set_document
-    from wdom.server_aio import Application, set_application
+    from wdom import server_aio
+    from wdom import server_tornado
     set_document(get_new_document())
-    set_application(Application())
+    server_aio.set_application(server_aio.Application())
+    server_tornado.set_application(server_tornado.Application())
     Element._elements_with_id.clear()
     Element._elements.clear()
     customElements.clear()
@@ -57,6 +62,47 @@ class TestCase(unittest.TestCase):
 
     def assertIsFalse(self, bl):
         self.assertIs(bl, False)
+
+
+class Response:
+    def __init__(self, code, body):
+        self.code = code
+        self.body = body
+
+
+class HTTPTestCase(TestCase):
+    server_module = server
+
+    def start(self):
+        with self.assertLogs('wdom', 'INFO'):
+            self.server = self.server_module.start_server(port=0)
+        self.port = self.server.port
+        self.addr = 'http://localhost:{}'.format(self.port)
+
+    def tearDown(self):
+        with self.assertLogs('wdom', 'INFO'):
+            self.server_module.stop_server(self.server)
+
+    async def get(self, url:str):
+        if not url.startswith('/'):
+            url = '/' + url
+        with aiohttp.ClientSession() as session:
+            async with session.get(self.addr + url) as response:
+                content = await response.read()
+                response = Response(response.status, content)
+        return response
+
+    async def ws_connect(self, url:str):
+        for i in range(20):
+            await asyncio.sleep(0.05)
+            try:
+                ws = await to_asyncio_future(websocket_connect(url))
+                return ws
+            except Exception:
+                continue
+            else:
+                break
+        raise OSError('connection refused to {}'.format(url))
 
 
 def start_webdriver():
