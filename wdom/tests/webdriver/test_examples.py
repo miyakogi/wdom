@@ -8,9 +8,9 @@ from selenium.webdriver.common.keys import Keys
 
 from wdom.tag import H1
 from wdom.document import get_document
-from wdom import server_aio, server_tornado
+from wdom import server
 from wdom.misc import install_asyncio
-from wdom.testing import WebDriverTestCase
+from wdom.testing import WebDriverTestCase, TestCase
 
 
 def setUpModule():
@@ -18,13 +18,17 @@ def setUpModule():
 
 
 class SimpleTestCase(WebDriverTestCase):
-    def get_app(self):
-        self.document = get_document(autoreload=False)
+    server_type = 'aiohttp'
+
+    def setUp(self):
+        super().setUp()
+        server.set_server_type(self.server_type)
+        self.document = get_document()
         self.h1 = H1()
         self.h1.textContent = 'TITLE'
         self.document.body.appendChild(self.h1)
-        self.app = self.module.get_app(self.document)
-        return self.app
+        self.app = server.get_app(self.document)
+        self.start()
 
     def test_page(self):
         tag = self.wd.find_element_by_css_selector('[rimo_id="{}"]'.format(self.h1.rimo_id))
@@ -32,11 +36,14 @@ class SimpleTestCase(WebDriverTestCase):
 
 
 class DataBindingTestCase(WebDriverTestCase):
-    def get_app(self):
+    server_type = 'aiohttp'
+    def setUp(self):
+        super().setUp()
+        server.set_server_type(self.server_type)
         from wdom.examples.data_binding import sample_page
         self.document = sample_page(autoreload=False)
-        self.app = self.module.get_app(self.document)
-        return self.app
+        self.app = server.get_app(self.document)
+        self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
@@ -57,11 +64,14 @@ class DataBindingTestCase(WebDriverTestCase):
 
 
 class RevTextTestCase(WebDriverTestCase):
-    def get_app(self):
+    server_type = 'aiohttp'
+    def setUp(self):
+        super().setUp()
+        server.set_server_type(self.server_type)
         from wdom.examples.rev_text import sample_page
         self.document = sample_page(autoreload=False)
-        self.app = self.module.get_app(self.document)
-        return self.app
+        self.app = server.get_app(self.document)
+        self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
@@ -78,28 +88,28 @@ class RevTextTestCase(WebDriverTestCase):
         self.assertEqual(view.text, text)
 
 
-class TestSimplePageAIO(SimpleTestCase, unittest.TestCase):
-    module = server_aio
+class TestSimplePageAIO(SimpleTestCase, TestCase):
+    server_type = 'aiohttp'
 
 
-class TestDataBindingAIO(DataBindingTestCase, unittest.TestCase):
-    module = server_aio
+class TestDataBindingAIO(DataBindingTestCase, TestCase):
+    server_type = 'aiohttp'
 
 
-class TestRevTextAIO(RevTextTestCase, unittest.TestCase):
-    module = server_aio
+class TestRevTextAIO(RevTextTestCase, TestCase):
+    server_type = 'aiohttp'
 
 
-class TestSimplePageTornado(SimpleTestCase, unittest.TestCase):
+class TestSimplePageTornado(SimpleTestCase, TestCase):
+    server_type = 'aiohttp'
     wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
-    module = server_tornado
 
 
-class TestDataBindingTornado(DataBindingTestCase, unittest.TestCase):
+class TestDataBindingTornado(DataBindingTestCase, TestCase):
+    server_type = 'aiohttp'
     wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
-    module = server_tornado
 
 
-class TestRevTextTornado(RevTextTestCase, unittest.TestCase):
+class TestRevTextTornado(RevTextTestCase, TestCase):
+    server_type = 'aiohttp'
     wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
-    module = server_tornado

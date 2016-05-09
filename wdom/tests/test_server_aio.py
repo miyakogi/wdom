@@ -2,58 +2,27 @@
 # -*- coding: utf-8 -*-
 
 from os import path
-import asyncio
 
-import aiohttp
 from syncer import sync
 
-from wdom.testing import TestCase
-from wdom.document import Document
-from wdom.server_aio import get_app, start_server, stop_server
+from wdom.document import get_document
+from wdom.testing import HTTPTestCase
+from wdom import server
 
 
-class TestServer(TestCase):
+class TestServer(HTTPTestCase):
     def setUp(self):
-        with self.assertLogs('wdom.server_aio', 'INFO'):
-            self.server = start_server(self.get_app(), port=0)
-        self.port = self.server.sockets[-1].getsockname()[1]
-        self.addr = 'http://localhost:{}'.format(self.port)
-
-    def get_app(self):
-        self.doc = Document()
-        self.app = get_app(self.doc)
-        return self.app
-
-    def tearDown(self):
-        with self.assertLogs('wdom.server_aio', 'INFO'):
-            stop_server(self.server)
-
-    async def fetch(self, url:str):
-        if not url.startswith('/'):
-            url = '/' + url
-        loop = asyncio.get_event_loop()
-        with aiohttp.ClientSession(loop=loop) as session:
-            async with session.get(self.addr + url) as response:
-                assert response.status == 200
-                content = await response.read()
-        return content.decode('utf-8')
-
-    async def fetch_404(self, url:str):
-        if not url.startswith('/'):
-            url = '/' + url
-        loop = asyncio.get_event_loop()
-        with aiohttp.ClientSession(loop=loop) as session:
-            async with session.get(self.addr + url) as response:
-                assert response.status == 404
-                content = await response.read()
-        return content.decode('utf-8')
+        super().setUp()
+        server.set_server_type('aiohttp')
+        self.start()
 
     @sync
     async def test_mainpage(self):
-        with self.assertLogs('wdom.server_aio', 'INFO'):
-            content = await self.fetch('/')
+        with self.assertLogs('wdom.server._aiohttp', 'INFO'):
+            response = await self.get('/')
+        self.assertEqual(response.code, 200)
         self.assertRegex(
-            content,
+            response.body.decode('utf-8'),
             r'<!DOCTYPE html><html rimo_id="\d+">\s*<head rimo_id="\d+">\s*'
             r'.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
             r'</head>\s*<body.*>.*<script.*>.*</script>.*'
@@ -62,16 +31,20 @@ class TestServer(TestCase):
 
     @sync
     async def test_tempfile(self):
-        self.assertTrue(path.exists(self.doc.tempdir))
-        tmp = path.join(self.doc.tempdir, 'a.html')
+        doc = get_document()
+        self.assertTrue(path.exists(doc.tempdir))
+        tmp = path.join(doc.tempdir, 'a.html')
         self.assertFalse(path.exists(tmp))
         with open(tmp, 'w') as f:
             f.write('test')
         self.assertTrue(path.exists(tmp))
-        content = await self.fetch('/tmp/a.html')
-        self.assertEqual(content, 'test')
+        response = await self.get('/tmp/a.html')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body.decode('utf-8'), 'test')
 
     @sync
     async def test_tempfile_404(self):
-        content = await self.fetch_404('/tmp/a.html')
-        print(content)
+        response = await self.get('/tmp/b.html')
+        self.assertEqual(response.code, 404)
+        response = await self.get('/tmp/a.html')
+        self.assertEqual(response.code, 404)

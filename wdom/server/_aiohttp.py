@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import json
 import logging
 import asyncio
 import socket
+from typing import Optional
 
 from aiohttp import web, MsgType
-from tornado import autoreload
 
 from wdom.options import config
-from wdom.misc import static_dir
 from wdom.handler import event_handler, log_handler, response_handler
-from wdom.document import Document
-from wdom.server_base import open_browser, watch_dir
+from wdom.document import get_document
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +22,7 @@ class MainHandler(web.View):
     attribute.'''
     async def get(self):
         logger.info('connected')
-        return web.Response(body=self.request.app['document'].build().encode())
+        return web.Response(body=get_document().build().encode())
 
 
 async def ws_open(request):
@@ -43,8 +40,7 @@ class WSHandler:
         self.req = request
         self.ws = web.WebSocketResponse()
         await self.ws.prepare(request)
-        self.doc = self.req.app['document']
-        self.doc.connections.append(self)
+        get_document().connections.append(self)
 
         while not self.ws.closed:
             msg = await self.ws.receive()
@@ -64,63 +60,68 @@ class WSHandler:
         if _type == 'log':
             log_handler(msg.get('level'), msg.get('message'))
         elif _type == 'event':
-            event_handler(msg, self.doc)
+            event_handler(msg, get_document())
         elif _type == 'response':
-            response_handler(msg, self.doc)
+            response_handler(msg, get_document())
         else:
             raise ValueError('unkown message type: {}'.format(message))
 
     async def terminate(self):
         await asyncio.sleep(config.shutdown_wait)
-        if not any(self.doc.connections):
+        if not any(get_document().connections):
             server = self.req.app['server']
             await terminate_server(server)
             server._loop.stop()
 
     def on_close(self):
+        doc = get_document()
         logger.info('RootWS CLOSED')
-        if self in self.doc.connections:
-            self.doc.connections.remove(self)
-        if config.auto_shutdown and not any(self.doc.connections):
+        if self in doc.connections:
+            doc.connections.remove(self)
+        if config.auto_shutdown and not any(doc.connections):
             asyncio.ensure_future(self.terminate())
 
 
 class Application(web.Application):
-    def add_static_path(self, prefix:str, path:str, no_watch: bool = False):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.router.add_route('GET', '/', MainHandler)
+        self.router.add_route('*', '/rimo_ws', ws_open)
+
+    def add_static_path(self, prefix: str, path: str):
         if not prefix.startswith('/'):
             prefix = '/' + prefix
         self.router.add_static(prefix, path)
-        if not no_watch:
-            watch_dir(path)
 
-    def add_favicon_path(self, path:str):
+    def add_favicon_path(self, path: str):
         self.router.add_static('/(favicon.ico)', path)
 
 
-def get_app(document:Document, debug=None, **kwargs) -> web.Application:
+main_application = Application()
+
+
+def get_app(*args, **kwargs) -> web.Application:
     '''Make Application object to serve ``document``.'''
-    if debug is None:
-        debug = config.debug
-
-    app = Application()
-    app.router.add_route('GET', '/', MainHandler)
-    app.router.add_route('*', '/rimo_ws', ws_open)
-    app['document'] = document
-
-    # Add application's static files directory
-    app.add_static_path('_static', static_dir)
-    if os.path.exists(document.tempdir):
-        app.add_static_path('tmp', document.tempdir, no_watch=True)
-    return app
+    return main_application
 
 
-async def close_connections(app:web.Application):
-    for conn in app['document'].connections:
+def set_application(app:Application):
+    global main_application
+    main_application = app
+
+
+async def close_connections(app: web.Application):
+    for conn in get_document().connections:
         await conn.ws.close(code=999, message='server shutdown')
 
 
-def start_server(app: web.Application, port=None, browser=None, loop=None,
-                 address=None, family=socket.AF_INET, check_time=500,
+def start_server(app: Optional[web.Application] = None,
+                 port: Optional[int] = None,
+                 browser: Optional[str] = None,
+                 loop: Optional[asyncio.BaseEventLoop] = None,
+                 address: Optional[str] = None,
+                 family: Optional[socket.AddressFamily] = socket.AF_INET,
+                 check_time: Optional[int] = 500,
                  ) -> asyncio.base_events.Server:
     '''Start server with ``app`` on ``address:port``.
     If port is not specified, use command line option of ``--port``.
@@ -132,28 +133,23 @@ def start_server(app: web.Application, port=None, browser=None, loop=None,
     '''
     port = port if port is not None else config.port
     address = address if address is not None else config.address
-
+    app = app or get_app()
     loop = loop or asyncio.get_event_loop()
-    logger.info('Start server on {0}:{1:d}'.format(address, port))
+
     handler = app.make_handler()
     f = loop.create_server(handler, address, port)
     server = loop.run_until_complete(f)
     server.app = app
     server.handler = handler
+    server.port = server.sockets[-1].getsockname()[1]
+    server.address = address or 'localhost'
     app.on_shutdown.append(close_connections)
     app['server'] = server
-    if app['document']._autoreload:
-        from wdom.misc import install_asyncio
-        install_asyncio()
-        autoreload.start(check_time=check_time)
-
-    if config.open_browser:
-        open_browser('http://{}:{}/'.format(address, port), browser)
 
     return server
 
 
-async def terminate_server(server:asyncio.base_events.Server):
+async def terminate_server(server: asyncio.base_events.Server):
     logger.info('Start server shutdown')
     server.close()
     await server.wait_closed()
@@ -163,6 +159,6 @@ async def terminate_server(server:asyncio.base_events.Server):
     logger.info('Server terminated')
 
 
-def stop_server(server:asyncio.base_events.Server):
+def stop_server(server: asyncio.base_events.Server):
     '''Terminate given server.'''
     server._loop.run_until_complete(terminate_server(server))

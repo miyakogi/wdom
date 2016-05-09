@@ -6,6 +6,7 @@ import re
 import copy
 import pathlib
 import webbrowser
+from typing import Optional
 
 from tornado import autoreload
 
@@ -31,11 +32,11 @@ def _compile_exclude_patterns():
         _exclude_patterns_re.append(re.compile(pat))
 
 
-def _is_exclude(name:str):
+def _is_exclude(name: str):
     return any(pat.match(name) for pat in _exclude_patterns_re)
 
 
-def _add_watch_path(path:pathlib.Path):
+def _add_watch_path(path: pathlib.Path):
     if _is_exclude(path.name):
         return
     elif path.is_dir():
@@ -45,7 +46,7 @@ def _add_watch_path(path:pathlib.Path):
         autoreload.watch(str(path))
 
 
-def watch_dir(path:str):
+def watch_dir(path: str):
     _compile_exclude_patterns()
     if config.autoreload or config.debug:
         # Add files to watch for autoreload
@@ -54,9 +55,9 @@ def watch_dir(path:str):
         _add_watch_path(p)
 
 
-def open_browser(url, browser=None):
+def open_browser(url, browser: Optional[str] = None):
     if '--open-browser' in sys.argv:
-        # Remove open browser to prevent making new tab on reload
+        # Remove open browser to prevent making new tab on autoreload
         sys.argv.remove('--open-browser')
     if browser is None:
         browser = config.browser

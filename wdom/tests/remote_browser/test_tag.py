@@ -10,7 +10,7 @@ from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form, 
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
-from wdom import server_aio
+from wdom import server
 
 
 def setUpModule():
@@ -18,15 +18,16 @@ def setUpModule():
 
 
 class NodeTestCase(RemoteBrowserTestCase):
+    server_type = 'aiohttp'
     def setUp(self):
-        self.document = get_document(autoreload=False)
-
+        super().setUp()
+        server.set_server_type(self.server_type)
+        self.document = get_document()
         class Root(Tag):
             tag = 'root'
-
         self.root = Root()
         self.document.body.prepend(self.root)
-        super().setUp()
+        self.start()
         self.set_element(self.root)
 
     def test_connection(self):
@@ -105,7 +106,11 @@ class NodeTestCase(RemoteBrowserTestCase):
 
 
 class InputTestCase(RemoteBrowserTestCase):
+    server_type = 'aiohttp'
+
     def setUp(self):
+        super().setUp()
+        server.set_server_type(self.server_type)
         self.document = get_document(autoreload=False)
         self.root = Form()
         self.input = Input(parent=self.root, type='text')
@@ -119,7 +124,7 @@ class InputTestCase(RemoteBrowserTestCase):
         self.radio2_l = Label('Radio 2', parent=self.root, **{'for': 'r2'})
         self.radio3_l = Label('Radio 3', parent=self.root, **{'for': 'r3'})
         self.document.body.prepend(self.root)
-        super().setUp()
+        self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
@@ -240,7 +245,11 @@ class InputTestCase(RemoteBrowserTestCase):
 
 
 class SelectTestCase(RemoteBrowserTestCase):
+    server_type = 'aiohttp'
+
     def setUp(self):
+        super().setUp()
+        server.set_server_type(self.server_type)
         self.document = get_document(autoreload=False)
         self.root = Div()
         self.select = Select(parent=self.root)
@@ -252,7 +261,7 @@ class SelectTestCase(RemoteBrowserTestCase):
         self.opt2m = Option('option 2', parent=self.mselect)
         self.opt3m = Option('option 3', parent=self.mselect, value='opt3m')
         self.document.body.prepend(self.root)
-        super().setUp()
+        self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
@@ -304,12 +313,12 @@ class SelectTestCase(RemoteBrowserTestCase):
 
 
 class TestNodeAIO(NodeTestCase, TestCase):
-    module = server_aio
+    pass
 
 
 class TestInputAIO(InputTestCase, TestCase):
-    module = server_aio
+    pass
 
 
 class TestSelectAIO(SelectTestCase, TestCase):
-    module = server_aio
+    pass

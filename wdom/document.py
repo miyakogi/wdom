@@ -3,10 +3,11 @@
 
 import os
 import tempfile
-import atexit
 import shutil
+from functools import partial
 from types import ModuleType
-from typing import Optional, Union
+from typing import Optional, Union, Callable
+import weakref
 
 from wdom.options import config
 from wdom.interface import Event
@@ -35,6 +36,11 @@ def getElementByRimoId(id:Union[str, int]) -> Optional[WebElement]:
         return None
 
 
+def _cleanup(path):
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+
+
 class Document(Node):
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
@@ -49,12 +55,12 @@ class Document(Node):
 
     @property
     def tempdir(self) -> str:
-        return self._tempdir_name
+        return self._tempdir
 
     def __init__(self, doctype='html', title='W-DOM', charset='utf-8',
                  default_class=HTMLElement, autoreload=None, reload_wait=None):
-        self._tempdir = tempfile.TemporaryDirectory()
-        self._tempdir_name = self._tempdir.name
+        self._tempdir = _tempdir = tempfile.mkdtemp()
+        weakref.finalize(self, partial(_cleanup, _tempdir))
         super().__init__()
         self._window = Window(self)
         self._default_class = default_class
@@ -169,20 +175,21 @@ class Document(Node):
         return ''.join(child.html for child in self.childNodes)
 
 
-def get_document(include_rimo: bool = True,
-                 include_skeleton: bool = False,
-                 include_normalizecss: bool = False,
-                 app: Optional[Node] = None,
-                 autoreload: Optional[bool] = None,
-                 reload_wait: int = None,
-                 log_level: int = None,
-                 log_prefix: str = None,
-                 log_console: bool = False,
-                 ws_url: str = None,
-                 ) -> Document:
-    document = Document(autoreload=autoreload, reload_wait=reload_wait)
-    if app:
-        document.body.insertBefore(app, document.body.firstChild)
+def get_new_document(include_rimo: bool = True,
+                     include_skeleton: bool = False,
+                     include_normalizecss: bool = False,
+                     autoreload: Optional[bool] = None,
+                     reload_wait: int = None,
+                     log_level: int = None,
+                     log_prefix: str = None,
+                     log_console: bool = False,
+                     ws_url: str = None,
+                     document_factory: Callable[..., Document] = Document,
+                     **kwargs) -> Document:
+    document = document_factory(
+        autoreload=autoreload,
+        reload_wait=reload_wait,
+        **kwargs)
     if log_level is None:
         log_level = config.logging
 
@@ -208,3 +215,16 @@ def get_document(include_rimo: bool = True,
         document.add_jsfile_head('_static/js/rimo/rimo.js')
 
     return document
+
+
+# get_document = get_new_document
+def get_document(*args, **kwargs):
+    return rootDocument
+
+
+def set_document(new_document: Document, *args, **kwargs):
+    global rootDocument
+    rootDocument = new_document
+
+
+rootDocument = get_new_document()

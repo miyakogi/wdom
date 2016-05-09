@@ -9,25 +9,26 @@ import subprocess
 import asyncio
 import tempfile
 
-from syncer import sync
-
 from selenium.webdriver.common.utils import free_port
 from tornado import websocket
 from tornado.ioloop import IOLoop
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
+from syncer import sync
 
+from wdom import server
 from wdom.testing import TestCase
 
 curdir = path.dirname(__file__)
 root = path.dirname(path.dirname(curdir))
 script = '''
 import asyncio
-from wdom import misc, document, {module}
+from wdom import misc, document, server
 misc.install_asyncio()
+server.set_server_type('{server_type}')
 doc = document.get_document()
 with open(doc.tempdir + '/a.html', 'w') as f:
     f.write(doc.tempdir)
-{module}.start_server({module}.get_app(doc))
+server.start_server()
 asyncio.get_event_loop().run_forever()
 '''
 
@@ -37,17 +38,28 @@ def setUpModule():
         AsyncIOMainLoop().install()
 
 
+def TestServerTypeSet(TestCase):
+    def test_server_module(self):
+        from wdom import server_aio, server_tornado
+        self.assertTrue(isinstance(server.get_app(), server_aio.Application))
+        server.server_type('tornado')
+        self.assertTrue(isinstance(server.get_app(), server_tornado.Application))
+        server.server_type('aiohttp')
+        self.assertTrue(isinstance(server.get_app(), server_aio.Application))
+
+
 class TestServerBase(TestCase):
-    module = 'server'
+    server_type = 'aiohttp'
     cmd = []
 
     def setUp(self):
+        super().setUp()
         self.port = free_port()
         env = os.environ.copy()
         env['PYTHONPATH'] = root
-        _, self.tmp = tempfile.mkstemp(suffix='.py')
-        with open(self.tmp, 'w') as f:
-            f.write(script.format(module=self.module))
+        with tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False) as f:
+            self.tmp = f.name
+            f.write(script.format(server_type=self.server_type))
         cmd = [sys.executable, self.tmp, '--port', str(self.port)] + self.cmd
         self.addr = 'localhost:{}'.format(self.port)
         self.proc = subprocess.Popen(
@@ -59,14 +71,15 @@ class TestServerBase(TestCase):
         time.sleep(0.1)
 
     def tearDown(self):
-        if self.proc.returncode is None:
-            self.proc.terminate()
         if os.path.exists(self.tmp):
             os.remove(self.tmp)
+        if self.proc.returncode is None:
+            self.proc.terminate()
+        super().tearDown()
 
 
 class TestAutoShutdownAIO(TestServerBase):
-    module = 'server_aio'
+    server_type = 'aiohttp'
     cmd = ['--auto-shutdown', '--shutdown-wait', '0.2']
 
     async def ws_connect(self, url:str):
@@ -129,7 +142,7 @@ class TestAutoShutdownAIO(TestServerBase):
 
 
 class TestOpenBrowser(TestServerBase):
-    module = 'server_aio'
+    server_type = 'aiohttp'
     cmd = ['--debug', '--logging', 'info', '--open-browser', '--browser', 'firefox']
 
     def test_open_browser(self):
@@ -139,8 +152,8 @@ class TestOpenBrowser(TestServerBase):
 
 
 class TestAutoShutdownTornado(TestAutoShutdownAIO):
-    module = 'server_tornado'
+    server_type = 'tornado'
 
 
 class TestOpenBrowserTornado(TestOpenBrowser):
-    module = 'server_tornado'
+    server_type = 'tornado'
