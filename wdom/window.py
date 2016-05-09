@@ -86,6 +86,5 @@ class Window:
         return self._custom_elements
 
     def __init__(self, document:Node):
-        self.connections = []
         self._document = document
         self._custom_elements = customElements

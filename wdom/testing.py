@@ -40,6 +40,8 @@ def initialize():
     from wdom.document import get_new_document, set_document
     from wdom.server import _aiohttp, _tornado
     set_document(get_new_document())
+    _aiohttp.connections.clear()
+    _tornado.connections.clear()
     _aiohttp.set_application(_aiohttp.Application())
     _tornado.set_application(_tornado.Application())
     Element._elements_with_id.clear()

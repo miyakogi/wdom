@@ -50,26 +50,20 @@ class Document(Node):
         return self._window
 
     @property
-    def connections(self) -> list:
-        return self.defaultView.connections
-
-    @property
     def tempdir(self) -> str:
         return self._tempdir
 
     def __init__(self, doctype='html', title='W-DOM', charset='utf-8',
                  default_class=HTMLElement, autoreload=None, reload_wait=None):
         self._tempdir = _tempdir = tempfile.mkdtemp()
-        weakref.finalize(self, partial(_cleanup, _tempdir))
+        self._finalizer = weakref.finalize(self, partial(_cleanup, _tempdir))
         super().__init__()
         self._window = Window(self)
         self._default_class = default_class
         self._reload_wait = reload_wait
-        self.doctype = DocumentType(doctype)
-        self.appendChild(self.doctype)
 
+        self.doctype = DocumentType(doctype, parent=self)
         self.html = Html(parent=self)
-
         self.head = Head(parent=self.html)
         self.charset_element = Meta(parent=self.head)
         self.characterSet = charset

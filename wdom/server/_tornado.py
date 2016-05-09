@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
-import json
 import asyncio
 import logging
 import socket
@@ -14,11 +12,15 @@ from tornado.httpserver import HTTPServer
 
 from wdom.options import config
 from wdom.misc import install_asyncio
-from wdom.handler import event_handler, log_handler, response_handler
-from wdom.document import get_document
+from wdom.server.handler import on_websocket_message
 
 logger = logging.getLogger(__name__)
 install_asyncio()
+connections = []
+
+
+def is_connected():
+    return any(connections)
 
 
 class MainHandler(web.RequestHandler):
@@ -26,6 +28,7 @@ class MainHandler(web.RequestHandler):
     application. Must be used with an Application object which has ``document``
     attribute.'''
     def get(self):
+        from wdom.document import get_document
         logger.info('connected')
         self.write(get_document().build())
 
@@ -33,32 +36,26 @@ class MainHandler(web.RequestHandler):
 class WSHandler(websocket.WebSocketHandler):
     def open(self):
         logger.info('WS OPEN')
-        get_document().connections.append(self)
+        connections.append(self)
 
     def on_message(self, message):
-        # Log handling
-        msg = json.loads(message)
-        _type = msg.get('type')
-        if _type == 'log':
-            log_handler(msg.get('level'), msg.get('message'))
-        elif _type == 'event':
-            event_handler(msg, get_document())
-        elif _type == 'response':
-            response_handler(msg, get_document())
+        on_websocket_message(message)
 
     @asyncio.coroutine
     def terminate(self):
         yield from asyncio.sleep(config.shutdown_wait)
-        if not any(get_document().connections):
+        # stop server and close loop if no more connection exists
+        if not is_connected():
             stop_server(self.application.server)
             self.application.server.io_loop.stop()
 
     def on_close(self):
         logger.info('RootWS CLOSED')
-        doc = get_document()
-        if self in doc.connections:
-            doc.connections.remove(self)
-        if config.auto_shutdown and not any(doc.connections):
+        if self in connections:
+            # Remove this connection from connection-list
+            connections.remove(self)
+        # close if auto_shutdown is enabled and there is no more connection
+        if config.auto_shutdown and not is_connected():
             asyncio.ensure_future(self.terminate())
 
 

@@ -10,7 +10,6 @@ from tornado import autoreload
 
 from wdom.misc import static_dir, install_asyncio
 from wdom.options import config
-from wdom.document import get_document
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
 
 try:
@@ -21,6 +20,15 @@ except ImportError:
 __all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
 logger = logging.getLogger(__name__)
 _server = None
+
+
+def is_connected():
+    return module.is_connected()
+
+
+def send_message(msg:str):
+    for conn in module.connections:
+        conn.write_message(msg)
 
 
 def add_static_path(prefix, path, no_watch: bool = False):
@@ -51,6 +59,7 @@ def start_server(app: Optional[module.Application] = None,
                  check_time: Optional[int] = 500,
                  **kwargs):
     # Add application's static files directory
+    from wdom.document import get_document
     add_static_path('_static', static_dir)
     doc = get_document()
     if os.path.exists(doc.tempdir):

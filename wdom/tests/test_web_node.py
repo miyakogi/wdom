@@ -8,6 +8,7 @@ from syncer import sync
 from wdom.interface import Event
 from wdom.testing import TestCase
 from wdom.web_node import WebElement
+from wdom.server import set_server_type, _tornado
 
 
 class TestWebElement(TestCase):
@@ -187,9 +188,10 @@ class TestEventMessage(TestCase):
 
 class TestQuery(TestCase):
     def setUp(self):
-        self._dummy_parent = MagicMock(connected=True, connections=True)
+        super().setUp()
+        set_server_type('tornado')
+        _tornado.connections.append(MagicMock())
         self.elm = WebElement('tag')
-        self.elm._parent = self._dummy_parent
         self.elm.js_exec = MagicMock()
         self.msg = {
             'type': 'response',

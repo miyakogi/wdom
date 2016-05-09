@@ -3,7 +3,6 @@
 
 import os
 import re
-import time
 from unittest.mock import MagicMock
 
 from wdom import options

@@ -25,7 +25,8 @@ class WebIF:
     @property
     def connected(self) -> bool:
         '''When this instance has any connection, return True.'''
-        return bool(self.ownerDocument and self.ownerDocument.connections)
+        from wdom import server
+        return server.is_connected()
 
     def on_event_pre(self, event:Event):
         '''Hook executed before dispatching events.
@@ -76,6 +77,5 @@ class WebIF:
         obj['id'] = self.rimo_id
         obj['tag'] = self.tag
         msg = json.dumps(obj)
-        if self.ownerDocument:
-            for conn in self.ownerDocument.connections:
-                conn.write_message(msg)
+        from wdom import server
+        server.send_message(msg)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import json
 import logging
 import asyncio
 import socket
@@ -10,10 +9,14 @@ from typing import Optional
 from aiohttp import web, MsgType
 
 from wdom.options import config
-from wdom.handler import event_handler, log_handler, response_handler
-from wdom.document import get_document
+from wdom.server.handler import on_websocket_message
 
 logger = logging.getLogger(__name__)
+connections = []
+
+
+def is_connected():
+    return any(connections)
 
 
 class MainHandler(web.View):
@@ -21,6 +24,7 @@ class MainHandler(web.View):
     application. Must be used with an Application object which has ``document``
     attribute.'''
     async def get(self):
+        from wdom.document import get_document
         logger.info('connected')
         return web.Response(body=get_document().build().encode())
 
@@ -40,7 +44,7 @@ class WSHandler:
         self.req = request
         self.ws = web.WebSocketResponse()
         await self.ws.prepare(request)
-        get_document().connections.append(self)
+        connections.append(self)
 
         while not self.ws.closed:
             msg = await self.ws.receive()
@@ -55,30 +59,23 @@ class WSHandler:
         self.ws.send_str(message)
 
     async def on_message(self, message):
-        msg = json.loads(message)
-        _type = msg.get('type')
-        if _type == 'log':
-            log_handler(msg.get('level'), msg.get('message'))
-        elif _type == 'event':
-            event_handler(msg, get_document())
-        elif _type == 'response':
-            response_handler(msg, get_document())
-        else:
-            raise ValueError('unkown message type: {}'.format(message))
+        on_websocket_message(message)
 
     async def terminate(self):
         await asyncio.sleep(config.shutdown_wait)
-        if not any(get_document().connections):
+        # stop server and close loop if no more connection exists
+        if not is_connected():
             server = self.req.app['server']
             await terminate_server(server)
             server._loop.stop()
 
     def on_close(self):
-        doc = get_document()
         logger.info('RootWS CLOSED')
-        if self in doc.connections:
-            doc.connections.remove(self)
-        if config.auto_shutdown and not any(doc.connections):
+        if self in connections:
+            # Remove this connection from connection-list
+            connections.remove(self)
+        # close if auto_shutdown is enabled and there is no more connection
+        if config.auto_shutdown and not is_connected():
             asyncio.ensure_future(self.terminate())
 
 
@@ -111,7 +108,7 @@ def set_application(app:Application):
 
 
 async def close_connections(app: web.Application):
-    for conn in get_document().connections:
+    for conn in connections:
         await conn.ws.close(code=999, message='server shutdown')
 
 
