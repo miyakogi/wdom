@@ -38,14 +38,18 @@ def setUpModule():
         AsyncIOMainLoop().install()
 
 
-def TestServerTypeSet(TestCase):
+class TestServerTypeSet(TestCase):
     def test_server_module(self):
-        from wdom import server_aio, server_tornado
-        self.assertTrue(isinstance(server.get_app(), server_aio.Application))
-        server.server_type('tornado')
-        self.assertTrue(isinstance(server.get_app(), server_tornado.Application))
-        server.server_type('aiohttp')
-        self.assertTrue(isinstance(server.get_app(), server_aio.Application))
+        from wdom.server import _aiohttp, _tornado
+        self.assertTrue(isinstance(server.get_app(), _aiohttp.Application))
+        server.set_server_type('tornado')
+        self.assertTrue(isinstance(server.get_app(), _tornado.Application))
+        server.set_server_type('aiohttp')
+        self.assertTrue(isinstance(server.get_app(), _aiohttp.Application))
+
+    def test_invalid_server_type(self):
+        with self.assertRaises(ValueError):
+            server.set_server_type('a')
 
 
 class TestServerBase(TestCase):

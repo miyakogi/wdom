@@ -20,6 +20,7 @@ except ImportError:
 
 __all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
 logger = logging.getLogger(__name__)
+_server = None
 
 
 def add_static_path(prefix, path, no_watch: bool = False):
@@ -39,9 +40,9 @@ def set_server_type(type):
         module = importlib.import_module('wdom.server._aiohttp')
     elif type == 'tornado':
         module = importlib.import_module('wdom.server._tornado')
-
-
-main_server = None
+    else:
+        raise ValueError('{0} is not supported now. Available server types are:'
+                         ' aiohttp, tornado'.format(type))
 
 
 def start_server(app: Optional[module.Application] = None,
@@ -57,17 +58,16 @@ def start_server(app: Optional[module.Application] = None,
     if doc._autoreload:
         install_asyncio()
         autoreload.start(check_time=check_time)
-    global main_server
-    main_server = module.start_server(**kwargs)
+    global _server
+    _server = module.start_server(**kwargs)
     logger.info('Start server on {0}:{1:d}'.format(
-        main_server.address, main_server.port))
+        _server.address, _server.port))
 
     if config.open_browser:
-        open_browser(
-            'http://{}:{}/'.format(main_server.address, main_server.port),
-            browser or config.browser)
-    return main_server
+        open_browser('http://{}:{}/'.format(_server.address, _server.port),
+                     browser or config.browser)
+    return _server
 
 
 def stop_server(server=None):
-    module.stop_server(server or main_server)
+    module.stop_server(server or _server)
