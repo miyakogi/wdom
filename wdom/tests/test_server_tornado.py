@@ -31,11 +31,12 @@ class TestMainHandlerBlank(HTTPTestCase):
         with self.assertLogs('wdom', 'INFO'):
             res = await self.get('/')
         self.assertEqual(res.code, 200)
-        _re = re.compile('<!DOCTYPE html>\s*<html rimo_id="\d+">\s*<head rimo_id="\d+">'
-                         '.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
-                         '</head>\s*<body.*>.*<script.*>.*</script>.*'
-                         '</body>\s*</html>'
-                         , re.S)
+        _re = re.compile(
+            '<!DOCTYPE html>\s*<html rimo_id="\d+">\s*<head rimo_id="\d+">'
+            '.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
+            '</head>\s*<body.*>.*<script.*>.*</script>.*'
+            '</body>\s*</html>',
+            re.S)
         self.assertIsNotNone(_re.match(res.body.decode('utf-8')))
 
 
@@ -112,13 +113,13 @@ class TestRootWSHandler(HTTPTestCase):
     @syncer.sync
     async def test_ws_connection(self) -> None:
         with self.assertLogs('wdom.server._tornado', 'INFO'):
-            _ =  await self.ws_connect(self.ws_url)
+            _ = await self.ws_connect(self.ws_url)
             del _
             await self.wait()
 
     @syncer.sync
     async def test_logging_error(self) -> None:
-        with self.assertLogs('wdom.handler', 'INFO'):
+        with self.assertLogs('wdom.server.handler', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='error', message='test')
             ))
@@ -126,7 +127,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_logging_warn(self) -> None:
-        with self.assertLogs('wdom.handler', 'INFO'):
+        with self.assertLogs('wdom.server.handler', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='warn', message='test')
             ))
@@ -134,7 +135,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_logging_info(self) -> None:
-        with self.assertLogs('wdom.handler', 'INFO'):
+        with self.assertLogs('wdom.server.handler', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='info', message='test')
             ))
@@ -142,7 +143,7 @@ class TestRootWSHandler(HTTPTestCase):
 
     @syncer.sync
     async def test_logging_debug(self) -> None:
-        with self.assertLogs('wdom.handler', 'DEBUG'):
+        with self.assertLogs('wdom.server.handler', 'DEBUG'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='debug', message='test')
             ))

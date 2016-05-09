@@ -1,4 +1,4 @@
-#!/usr/bin/env py.test
+#ndle!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
 import os
@@ -23,6 +23,7 @@ def setUpModule():
 
 class ElementTestCase(RemoteBrowserTestCase):
     server_type = 'aiohttp'
+
     def setUp(self):
         super().setUp()
         server.set_server_type(self.server_type)
@@ -36,6 +37,7 @@ class ElementTestCase(RemoteBrowserTestCase):
 
 class WebElementTestCase(ElementTestCase):
     server_type = 'aiohttp'
+
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -173,7 +175,8 @@ class WebElementTestCase(ElementTestCase):
         self.tag.insertBefore(df, self.c3)
         for i in range(10):
             self.wait()
-        self.assertEqual(self.element.text, 'child2child4text2child3textchild1')
+        self.assertEqual(self.element.text,
+                         'child2child4text2child3textchild1')
 
     def test_replace_child(self):
         self.set_element(self.tag)
@@ -404,7 +407,7 @@ class WebElementTestCase(ElementTestCase):
                          r'0,\s*0,\s*255,\s*1\s*')
 
     def test_exec_error(self):
-        with self.assertLogs('wdom.handler', 'ERROR') as log:
+        with self.assertLogs('wdom.server.handler', 'ERROR') as log:
             self.tag.exec('a.b')
             # wait while
             for i in range(3):
@@ -414,6 +417,7 @@ class WebElementTestCase(ElementTestCase):
 
 class EventTestCase(ElementTestCase):
     server_type = 'aiohttp'
+
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
