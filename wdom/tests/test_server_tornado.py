@@ -10,7 +10,7 @@ import syncer
 from wdom.misc import install_asyncio
 from wdom.document import get_document
 from wdom.server_tornado import get_app
-from wdom import server_tornado
+from wdom import server
 from wdom.testing import HTTPTestCase
 
 
@@ -19,9 +19,9 @@ def setUpModule():
 
 
 class TestMainHandlerBlank(HTTPTestCase):
-    server_module = server_tornado
     def setUp(self) -> None:
         super().setUp()
+        server.set_server_type('tornado')
         self.document = get_document()
         self.app = get_app()
         self.start()
@@ -40,9 +40,9 @@ class TestMainHandlerBlank(HTTPTestCase):
 
 
 class TestMainHandler(HTTPTestCase):
-    server_module = server_tornado
     def setUp(self) -> None:
         super().setUp()
+        server.set_server_type('tornado')
         self.document = get_document()
         self.document.body.prepend('testing')
         self.app = get_app()
@@ -57,10 +57,9 @@ class TestMainHandler(HTTPTestCase):
 
 
 class TestStaticFileHandler(HTTPTestCase):
-    server_module = server_tornado
-
     def setUp(self) -> None:
         super().setUp()
+        server.set_server_type('tornado')
         self.document = get_document()
         self.app = get_app()
 
@@ -103,9 +102,9 @@ class TestStaticFileHandler(HTTPTestCase):
 
 
 class TestRootWSHandler(HTTPTestCase):
-    server_module = server_tornado
     def setUp(self) -> None:
         super().setUp()
+        server.set_server_type('tornado')
         self.document = get_document()
         self.app = get_app(self.document)
         self.start()

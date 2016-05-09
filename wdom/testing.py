@@ -25,7 +25,6 @@ from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 from tornado.websocket import websocket_connect
 
 from wdom.misc import static_dir, install_asyncio
-from wdom import server_aio
 from wdom import options
 from wdom.window import customElements
 from wdom.element import Element
@@ -71,17 +70,15 @@ class Response:
 
 
 class HTTPTestCase(TestCase):
-    server_module = server
-
     def start(self):
         with self.assertLogs('wdom', 'INFO'):
-            self.server = self.server_module.start_server(port=0)
+            self.server = server.start_server(port=0)
         self.port = self.server.port
         self.addr = 'http://localhost:{}'.format(self.port)
 
     def tearDown(self):
         with self.assertLogs('wdom', 'INFO'):
-            self.server_module.stop_server(self.server)
+            server.stop_server(self.server)
 
     async def get(self, url:str):
         if not url.startswith('/'):
@@ -312,8 +309,6 @@ class RemoteBrowserTestCase:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    from wdom import server
-    module = server
     wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.02
 
     def start(self):
@@ -349,20 +344,20 @@ class RemoteBrowserTestCase:
 
     def start_server(self, app, port=0):
         try:
-            self.server = self.module.start_server(app, port)
+            self.server = server.start_server(app, port)
         except OSError:
             self.wait(0.2)
-            self.server = self.module.start_server(app, port)
+            self.server = server.start_server(app, port)
 
     def stop_server(self):
-        self.module.stop_server(self.server)
+        server.stop_server(self.server)
 
     def get_app(self) -> Application:
         '''This method should be overridden by subclasses. Return
         ``wdom.server.Application`` (subclass of ``tornado.web.Application``)
         or ``asyncio.Server`` to be tested.
         '''
-        return self.module.get_app()
+        return server.get_app()
 
     def wait(self, timeout=None):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
@@ -386,7 +381,6 @@ class WebDriverTestCase:
     ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
     tested.
     '''
-    module = server_aio
     wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.02
 
     @classmethod
@@ -411,18 +405,17 @@ class WebDriverTestCase:
     def start(self):
         self.wd = get_webdriver()
 
-        def start_server(app, port):
-            self.module.start_server(app, port=port)
+        def start_server(port):
+            server.start_server(port=port)
             asyncio.get_event_loop().run_forever()
 
         self.address = 'localhost'
         self.port = free_port()
-        self.app = self.get_app()
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
 
         self.server = Process(
             target=start_server,
-            args=(self.app, self.port)
+            args=(self.port, )
         )
         self.server.start()
         self.wait(0.1)

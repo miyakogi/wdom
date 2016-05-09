@@ -10,7 +10,7 @@ from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form, 
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
-from wdom import server_aio
+from wdom import server
 
 
 def setUpModule():
@@ -18,8 +18,10 @@ def setUpModule():
 
 
 class NodeTestCase(RemoteBrowserTestCase):
+    server_type = 'aiohttp'
     def setUp(self):
         super().setUp()
+        server.set_server_type(self.server_type)
         self.document = get_document()
         class Root(Tag):
             tag = 'root'
@@ -104,8 +106,11 @@ class NodeTestCase(RemoteBrowserTestCase):
 
 
 class InputTestCase(RemoteBrowserTestCase):
+    server_type = 'aiohttp'
+
     def setUp(self):
         super().setUp()
+        server.set_server_type(self.server_type)
         self.document = get_document(autoreload=False)
         self.root = Form()
         self.input = Input(parent=self.root, type='text')
@@ -240,8 +245,11 @@ class InputTestCase(RemoteBrowserTestCase):
 
 
 class SelectTestCase(RemoteBrowserTestCase):
+    server_type = 'aiohttp'
+
     def setUp(self):
         super().setUp()
+        server.set_server_type(self.server_type)
         self.document = get_document(autoreload=False)
         self.root = Div()
         self.select = Select(parent=self.root)
@@ -305,12 +313,12 @@ class SelectTestCase(RemoteBrowserTestCase):
 
 
 class TestNodeAIO(NodeTestCase, TestCase):
-    module = server_aio
+    pass
 
 
 class TestInputAIO(InputTestCase, TestCase):
-    module = server_aio
+    pass
 
 
 class TestSelectAIO(SelectTestCase, TestCase):
-    module = server_aio
+    pass

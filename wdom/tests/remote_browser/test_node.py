@@ -13,8 +13,8 @@ from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
-from wdom.testing import RemoteBrowserTestCase, NoSuchElementException, initialize
-from wdom import server_aio
+from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
+from wdom import server
 
 
 def setUpModule():
@@ -22,8 +22,10 @@ def setUpModule():
 
 
 class ElementTestCase(RemoteBrowserTestCase):
+    server_type = 'aiohttp'
     def setUp(self):
         super().setUp()
+        server.set_server_type(self.server_type)
         self.document = get_document()
         self.document.body.prepend(self.get_elements())
         self.start()
@@ -33,6 +35,7 @@ class ElementTestCase(RemoteBrowserTestCase):
 
 
 class WebElementTestCase(ElementTestCase):
+    server_type = 'aiohttp'
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -410,6 +413,7 @@ class WebElementTestCase(ElementTestCase):
 
 
 class EventTestCase(ElementTestCase):
+    server_type = 'aiohttp'
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -450,8 +454,8 @@ class EventTestCase(ElementTestCase):
 
 
 class TestWebElementAIO(WebElementTestCase, TestCase):
-    module = server_aio
+    server_type = 'aiohttp'
 
 
 class TestEventAIO(EventTestCase, TestCase):
-    module = server_aio
+    server_type = 'aiohttp'

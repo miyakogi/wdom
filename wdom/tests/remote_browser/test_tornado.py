@@ -4,8 +4,6 @@
 import os
 from itertools import chain
 
-
-from wdom import server_tornado
 from wdom.misc import install_asyncio
 from wdom.testing import TestCase, RemoteBrowserTestCase
 from wdom.tests.remote_browser import test_node, test_tag
@@ -26,6 +24,6 @@ wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
 for case in test_cases:
     name = 'Test' + case.__name__.replace('TestCase', 'Tornado')
     globals()[name] = type(name, (case, TestCase), {
-        'module': server_tornado,
+        'server_type': 'tornado',
         'wait_time': wait_time,
     })

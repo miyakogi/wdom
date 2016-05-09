@@ -7,11 +7,13 @@ from syncer import sync
 
 from wdom.document import get_document
 from wdom.testing import HTTPTestCase
+from wdom import server
 
 
 class TestServer(HTTPTestCase):
     def setUp(self):
         super().setUp()
+        server.set_server_type('aiohttp')
         self.start()
 
     @sync

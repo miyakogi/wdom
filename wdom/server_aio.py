@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import json
 import logging
 import asyncio
@@ -9,13 +8,10 @@ import socket
 from typing import Optional
 
 from aiohttp import web, MsgType
-from tornado import autoreload
 
 from wdom.options import config
-from wdom.misc import static_dir
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import get_document
-from wdom.server_base import open_browser, watch_dir
 
 logger = logging.getLogger(__name__)
 
@@ -92,12 +88,10 @@ class Application(web.Application):
         self.router.add_route('GET', '/', MainHandler)
         self.router.add_route('*', '/rimo_ws', ws_open)
 
-    def add_static_path(self, prefix: str, path: str, no_watch: bool = False):
+    def add_static_path(self, prefix: str, path: str):
         if not prefix.startswith('/'):
             prefix = '/' + prefix
         self.router.add_static(prefix, path)
-        if not no_watch:
-            watch_dir(path)
 
     def add_favicon_path(self, path: str):
         self.router.add_static('/(favicon.ico)', path)
@@ -114,6 +108,7 @@ def get_app(*args, **kwargs) -> web.Application:
 def set_application(app:Application):
     global main_application
     main_application = app
+
 
 async def close_connections(app: web.Application):
     for conn in get_document().connections:
@@ -138,32 +133,18 @@ def start_server(app: Optional[web.Application] = None,
     '''
     port = port if port is not None else config.port
     address = address if address is not None else config.address
-
-    # Add application's static files directory
-    if app is None:
-        app = get_app()
-    app.add_static_path('_static', static_dir)
-    doc = get_document()
-    if os.path.exists(doc.tempdir):
-        app.add_static_path('tmp', doc.tempdir, no_watch=True)
-
+    app = app or get_app()
     loop = loop or asyncio.get_event_loop()
+
     handler = app.make_handler()
     f = loop.create_server(handler, address, port)
     server = loop.run_until_complete(f)
     server.app = app
     server.handler = handler
     server.port = server.sockets[-1].getsockname()[1]
-    logger.info('Start server on {0}:{1:d}'.format(address, server.port))
+    server.address = address or 'localhost'
     app.on_shutdown.append(close_connections)
     app['server'] = server
-    if doc._autoreload:
-        from wdom.misc import install_asyncio
-        install_asyncio()
-        autoreload.start(check_time=check_time)
-
-    if config.open_browser:
-        open_browser('http://{}:{}/'.format(address, server.port), browser)
 
     return server
 

@@ -22,19 +22,17 @@ sys.path.append('{rootdir}')
 
 from wdom.misc import install_asyncio
 from wdom.tag import H1
-from wdom.document import get_new_document, set_document
-from wdom.server_aio import get_app, start_server
-from wdom.server import exclude_patterns
+from wdom.document import get_document
+from wdom import server
 
 install_asyncio()
+server.set_server_type('aiohttp')
 loop = asyncio.get_event_loop()
-doc = get_new_document()
-set_document(doc)
+doc = get_document()
 doc.body.appendChild(H1('FIRST', id='h1'))
 doc.add_cssfile('testdir/test.css')
-app = get_app(doc)
-app.add_static_path('testdir', '{curdir}/testdir')
-server = start_server(app, loop=loop, check_time=10)
+server.add_static_path('testdir', '{curdir}/testdir')
+server.start_server(loop=loop, check_time=10)
 loop.run_forever()
 '''.format(rootdir=ROOTDIR, curdir=CURDIR)
 
@@ -47,14 +45,14 @@ h1 {color: #ff0000;}
 '''
 
 _src = src_aio.splitlines()
-src_tornado = '\n'.join(_src).replace('_aio', '_tornado')
-_src.insert(12, 'exclude_patterns.append(r\'test.css\')')
+src_tornado = '\n'.join(_src).replace('aiohttp', 'tornado')
+_src.insert(12, 'server.exclude_patterns.append(r\'test.css\')')
 src_exclude_css_aio = '\n'.join(_src)
-src_exclude_css_tornado = src_exclude_css_aio.replace('_aio', '_tornado')
+src_exclude_css_tornado = src_exclude_css_aio.replace('aiohttp', 'tornado')
 _src = src_aio.splitlines()
-_src.insert(12, 'exclude_patterns.append(r\'testdi*\')')
+_src.insert(12, 'server.exclude_patterns.append(r\'testdi*\')')
 src_exclude_dir_aio = '\n'.join(_src)
-src_exclude_dir_tornado = src_exclude_dir_aio.replace('_aio', '_tornado')
+src_exclude_dir_tornado = src_exclude_dir_aio.replace('aiohttp', 'tornado')
 
 
 class TestAutoReload(TestCase):

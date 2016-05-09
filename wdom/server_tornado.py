@@ -6,18 +6,19 @@ import json
 import asyncio
 import logging
 import socket
+from typing import Optional
 
 from tornado import web
 from tornado import websocket
 from tornado.httpserver import HTTPServer
 
 from wdom.options import config
-from wdom.misc import static_dir, install_asyncio
+from wdom.misc import install_asyncio
 from wdom.handler import event_handler, log_handler, response_handler
 from wdom.document import get_document
-from wdom.server_base import open_browser, watch_dir
 
 logger = logging.getLogger(__name__)
+install_asyncio()
 
 
 class MainHandler(web.RequestHandler):
@@ -69,12 +70,11 @@ class Application(web.Application):
     '''
 
     def __init__(self, *args, **kwargs):
-        install_asyncio()
         super().__init__(
             [(r'/', MainHandler), (r'/rimo_ws', WSHandler)],
             *args,
             debug=config.debug,
-            autoreload=config.autoreload or config.debug,
+            autoreload=False,
             static_hash_cashe=False,
             compiled_template_cashe=False,
             **kwargs
@@ -98,7 +98,7 @@ class Application(web.Application):
         else:
             log_method('%d %s', status, handler._request_summary())
 
-    def add_static_path(self, prefix: str, path: str, no_watch: bool = False):
+    def add_static_path(self, prefix: str, path: str):
         '''Add path to serve static files. ``prefix`` is used for url prefix to
         serve static files and ``path`` is a path to the static file directory.
         ``prefix = '/_static'`` is reserved for the server, so do not use it
@@ -113,9 +113,6 @@ class Application(web.Application):
         # Need some check
         handlers = self.handlers[0][1]
         handlers.append(spec)
-        print(spec)
-        if not no_watch:
-            watch_dir(path)
 
     def add_favicon_path(self, path: str):
         '''Add path to the directory, which contains favicon file
@@ -146,6 +143,7 @@ def set_application(app:Application):
 
 def start_server(app: web.Application = None, port: int = None,
                  browser: str = None, address:str = None,
+                 check_time: Optional[int] = 500,
                  **kwargs) -> HTTPServer:
     '''Start server with ``app`` on ``localhost:port``.
     If port is not specified, use command line option of ``--port``.
@@ -159,23 +157,13 @@ def start_server(app: web.Application = None, port: int = None,
     port = port if port is not None else config.port
     address = address if address is not None else config.address
 
-    # Add application's static files directory
-    app.add_static_path('_static', static_dir)
-    document = get_document()
-    if os.path.exists(document.tempdir):
-        app.add_static_path('tmp', document.tempdir, no_watch=True)
-
     server = app.listen(port, address=address)
     app.server = server
+    server.address = address
     for sock in server._sockets.values():
         if sock.family == socket.AF_INET:
             server.port = sock.getsockname()[1]
             break
-    logger.info('Start server on port {0:d}'.format(server.port))
-
-    if config.open_browser:
-        open_browser('http://{}:{}/'.format(address, server.port), browser)
-
     return server
 
 
