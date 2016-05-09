@@ -28,7 +28,7 @@ class WebIF:
         from wdom import server
         return server.is_connected()
 
-    def on_event_pre(self, event:Event):
+    def on_event_pre(self, event: Event):
         '''Hook executed before dispatching events.
         Used for set values changed by user input, in some elements like input,
         textarea, or select.
@@ -43,7 +43,7 @@ class WebIF:
             if task and not task.cancelled() and not task.done():
                 task.set_result(msg.get('data'))
 
-    def js_exec(self, method:str, *args) -> Optional[Future]:
+    def js_exec(self, method: str, *args) -> Optional[Future]:
         '''Execute ``method`` in the related node on browser, via web socket
         connection. Other keyword arguments are passed to ``params`` attribute.
         If this node is not in any document tree (namely, this node does not

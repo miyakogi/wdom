@@ -100,7 +100,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
             clone.addClass(c)
         return clone
 
-    def getAttribute(self, attr:str) -> str:
+    def getAttribute(self, attr: str) -> str:
         if attr == 'class':
             cls = self.get_class_list()
             cls._append(self.classList)
@@ -111,7 +111,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         else:
             return super().getAttribute(attr)
 
-    def addClass(self, *classes:Tuple[str]):
+    def addClass(self, *classes: Tuple[str]):
         self.classList.add(*classes)
 
     def hasClass(self, class_: str) -> bool:
@@ -120,7 +120,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
     def hasClasses(self) -> bool:
         return len(self.classList) > 0
 
-    def removeClass(self, *classes:Tuple[str]):
+    def removeClass(self, *classes: Tuple[str]):
         _remove_cl = []
         for class_ in classes:
             if class_ not in self.classList:
@@ -148,13 +148,14 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         return self.getAttribute('type') or self.type_
 
     @type.setter
-    def type(self, val:str):
+    def type(self, val: str):
         self.setAttribute('type', val)
 
 
 class NestedTag(Tag):
     #: Inner nested tag class
     inner_tag_class = None
+
     def __init__(self, *args, **kwargs):
         self._inner_element = None
         super().__init__(**kwargs)
@@ -175,7 +176,7 @@ class NestedTag(Tag):
         else:
             return super().insertBefore(child, ref_node)
 
-    def removeChild(self, child:Node) -> Node:
+    def removeChild(self, child: Node) -> Node:
         if self._inner_element:
             return self._inner_element.removeChild(child)
         else:
@@ -205,7 +206,7 @@ class NestedTag(Tag):
         return super().textContent
 
     @textContent.setter
-    def textContent(self, text:str):
+    def textContent(self, text: str):
         if self._inner_element:
             self._inner_element.textContent = text
         else:
@@ -227,7 +228,7 @@ class NestedTag(Tag):
             return Tag.innerHTML.fget(self)
 
     @innerHTML.setter
-    def innerHTML(self, html:str):
+    def innerHTML(self, html: str):
         if self._inner_element:
             self._inner_element.innerHTML = html
         else:
@@ -385,15 +386,15 @@ Col11 = NewTagClass('Col11', 'div', Div, is_='col11')
 Col12 = NewTagClass('Col12', 'div', Div, is_='col12')
 
 # Some css updates
-DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')
-PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')
-SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')
-SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')
-InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')
-WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')
-DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')
-ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')
-LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')
+DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')  # noqa
+PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')  # noqa
+SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')  # noqa
+SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')  # noqa
+InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')  # noqa
+WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')  # noqa
+DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')  # noqa
+ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')  # noqa
+LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')  # noqa
 
 # css/js/headers
 css_files = []

@@ -16,7 +16,7 @@ class CustomElementsRegistry(dict):
         if elm.is_ and 'is' not in elm.attributes:
             elm.setAttribute('is', elm.is_)
 
-    def _upgrade_by_tag(self, name:str, constructor:type):
+    def _upgrade_by_tag(self, name: str, constructor: type):
         for elm in Element._elements:
             if not elm._registered and elm.tag == name:
                 elm.__class__ = constructor
@@ -24,7 +24,7 @@ class CustomElementsRegistry(dict):
                 if isinstance(elm, Tag):
                     self._upgrage_to_tag_class(elm)
 
-    def _upgrade_by_is(self, name:str, constructor:type, extends:str):
+    def _upgrade_by_is(self, name: str, constructor: type, extends: str):
         for elm in Element._elements:
             if (not elm._registered and elm.tag == extends and
                     elm.getAttribute('is') == name):
@@ -33,7 +33,7 @@ class CustomElementsRegistry(dict):
                 if isinstance(elm, Tag):
                     self._upgrage_to_tag_class(elm)
 
-    def _define(self, name:str, constructor:type, options:dict=None):
+    def _define(self, name: str, constructor: type, options: dict = None):
         extends = options.get('extends').lower() if options else None
         self[(name, extends)] = constructor
         if extends:
@@ -41,10 +41,10 @@ class CustomElementsRegistry(dict):
         else:
             self._upgrade_by_tag(name, constructor)
 
-    def _define_orig(self, name:str, constructor:type, options:dict=None):
+    def _define_orig(self, name: str, constructor: type, options: dict = None):
         self._define(name.lower(), constructor, options)
 
-    def _define_class(self, constructor:type):
+    def _define_class(self, constructor: type):
         is_ = getattr(constructor, 'is_', getattr(constructor, 'is', None))
         if is_:
             name = is_.lower()
@@ -85,6 +85,6 @@ class Window:
     def customElements(self) -> CustomElementsRegistry:
         return self._custom_elements
 
-    def __init__(self, document:Node):
+    def __init__(self, document: Node):
         self._document = document
         self._custom_elements = customElements

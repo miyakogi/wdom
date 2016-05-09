@@ -4,6 +4,7 @@
 import pytest
 from wdom.themes import theme_list
 
+
 @pytest.mark.parametrize('theme', theme_list)
 def test_import_all(theme):
     exec('from wdom.themes import {}'.format(theme))

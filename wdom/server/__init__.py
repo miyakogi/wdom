@@ -26,7 +26,7 @@ def is_connected():
     return module.is_connected()
 
 
-def send_message(msg:str):
+def send_message(msg: str):
     for conn in module.connections:
         conn.write_message(msg)
 
@@ -49,8 +49,10 @@ def set_server_type(type):
     elif type == 'tornado':
         module = importlib.import_module('wdom.server._tornado')
     else:
-        raise ValueError('{0} is not supported now. Available server types are:'
-                         ' aiohttp, tornado'.format(type))
+        raise ValueError(
+            '{0} is not supported now. Available server types are:'
+            ' aiohttp, tornado'.format(type)
+        )
 
 
 def start_server(app: Optional[module.Application] = None,

@@ -102,7 +102,7 @@ def get_app(*args, **kwargs) -> web.Application:
     return main_application
 
 
-def set_application(app:Application):
+def set_application(app: Application):
     global main_application
     main_application = app
 

@@ -105,19 +105,19 @@ class Node(Node):
             return None
 
     # Methods
-    def _append_document_fragment(self, node:Node) -> Node:
+    def _append_document_fragment(self, node: Node) -> Node:
         for c in tuple(node.childNodes):
             self._append_child(c)
         return node
 
-    def _append_element(self, node:Node) -> Node:
+    def _append_element(self, node: Node) -> Node:
         if node.parentNode:
             node.parentNode.removeChild(node)
         self._children.append(node)
         node._parent = self
         return node
 
-    def _append_child(self, node:Node) -> Node:
+    def _append_child(self, node: Node) -> Node:
         if not isinstance(node, Node):
             raise TypeError(
                 'appndChild() only accepts a Node instance, but get {}. '
@@ -128,7 +128,7 @@ class Node(Node):
         else:
             return self._append_element(node)
 
-    def appendChild(self, node:Node) -> Node:
+    def appendChild(self, node: Node) -> Node:
         return self._append_child(node)
 
     def index(self, node):
@@ -141,20 +141,20 @@ class Node(Node):
                     return i
         raise ValueError('node is not in this node')
 
-    def _insert_document_fragment_before(self, node:Node, ref_node:Node
+    def _insert_document_fragment_before(self, node: Node, ref_node: Node
                                          ) -> Node:
         for c in tuple(node.childNodes):
             self._insert_before(c, ref_node)
         return node
 
-    def _insert_element_before(self, node:Node, ref_node:Node) -> Node:
+    def _insert_element_before(self, node: Node, ref_node: Node) -> Node:
         if node.parentNode:
             node.parentNode.removeChild(node)
         self._children.insert(self.index(ref_node), node)
         node._parent = self
         return node
 
-    def _insert_before(self, node:Node, ref_node:Node) -> Node:
+    def _insert_before(self, node: Node, ref_node: Node) -> Node:
         if not isinstance(node, Node):
             raise TypeError(
                 'insertBefore() only accepts a Node instance, but get {}.'
@@ -165,20 +165,20 @@ class Node(Node):
         else:
             return self._insert_element_before(node, ref_node)
 
-    def insertBefore(self, node:Node, ref_node:Node) -> Node:
+    def insertBefore(self, node: Node, ref_node: Node) -> Node:
         return self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
         return bool(self.childNodes)
 
-    def _remove_child(self, node:Node) -> Node:
+    def _remove_child(self, node: Node) -> Node:
         if node not in self._children:
             raise ValueError('node to be removed is not a child of this node.')
         self._children.remove(node)
         node._parent = None
         return node
 
-    def removeChild(self, node:Node) -> Node:
+    def removeChild(self, node: Node) -> Node:
         return self._remove_child(node)
 
     def _replace_child(self, new_child: Node, old_child: Node) -> Node:
@@ -191,7 +191,7 @@ class Node(Node):
     def hasAttributes(self) -> bool:
         return bool(self.attributes)
 
-    def cloneNode(self, deep:bool=False) -> Node:
+    def cloneNode(self, deep: bool=False) -> Node:
         if deep:
             return self.__deepcopy__()
         else:
@@ -209,7 +209,7 @@ class Node(Node):
     def _get_text_content(self) -> str:
         return ''.join(child.textContent for child in self.childNodes)
 
-    def _set_text_content(self, value:str):
+    def _set_text_content(self, value: str):
         self._empty()
         if value:
             self._append_child(Text(value))
@@ -219,11 +219,11 @@ class Node(Node):
         return self._get_text_content()
 
     @textContent.setter
-    def textContent(self, value:str):
+    def textContent(self, value: str):
         self._set_text_content(value)
 
 
-def _ensure_node(node:Union[str, 'ChildNode']) -> 'ChildNode':
+def _ensure_node(node: Union[str, 'ChildNode']) -> 'ChildNode':
     if isinstance(node, str):
         return Text(node)
     elif isinstance(node, Node):
@@ -232,7 +232,7 @@ def _ensure_node(node:Union[str, 'ChildNode']) -> 'ChildNode':
         raise TypeError('Invalid type to append: {}'.format(node))
 
 
-def _to_node_list(nodes:Tuple[str, 'ChildNode']) -> Node:
+def _to_node_list(nodes: Tuple[str, 'ChildNode']) -> Node:
     if len(nodes) == 1:
         return _ensure_node(nodes[0])
     else:
@@ -264,14 +264,14 @@ class ParentNode:
             if child.nodeType == Node.ELEMENT_NODE:
                 return child
 
-    def prepend(self, *nodes:Tuple['ChildNode', str]):
+    def prepend(self, *nodes: Tuple['ChildNode', str]):
         node = _to_node_list(nodes)
         if self.firstChild:
             self.insertBefore(node, self.firstChild)
         else:
             self.appendChild(node)
 
-    def append(self, *nodes:Tuple['ChildNode', str]):
+    def append(self, *nodes: Tuple['ChildNode', str]):
         node = _to_node_list(nodes)
         self.appendChild(node)
 
@@ -318,14 +318,14 @@ class ChildNode:
     '''[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData
     (Text, RawHTML, Comment).
     '''
-    def before(self, *nodes:Tuple['ChildNode', str]) -> None:
+    def before(self, *nodes: Tuple['ChildNode', str]) -> None:
         '''Insert nodes before this node. If nodes contains ``str``, it will be
         converted to Text node.'''
         if self.parentNode:
             node = _to_node_list(nodes)
             self.parentNode.insertBefore(node, self)
 
-    def after(self, *nodes:Tuple['ChildNode', str]) -> None:
+    def after(self, *nodes: Tuple['ChildNode', str]) -> None:
         '''Append nodes after this node. If nodes contains ``str``, it will be
         converted to Text node.'''
         if self.parentNode:
@@ -336,7 +336,7 @@ class ChildNode:
             else:
                 self.parentNode.insertBefore(node, _next_node)
 
-    def replaceWith(self, *nodes:Tuple['ChildNode', str]) -> None:
+    def replaceWith(self, *nodes: Tuple['ChildNode', str]) -> None:
         '''Replace this node with nodes. If nodes contains ``str``, it will be
         converted to Text node.'''
         if self.parentNode:
@@ -358,7 +358,7 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
     lastChild = None
     specified = False
 
-    def __init__(self, text:str='', parent=None):
+    def __init__(self, text: str='', parent=None):
         super().__init__(parent=parent)
         self.data = text
 
@@ -373,7 +373,7 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
     def _get_text_content(self) -> str:
         return self.data
 
-    def _set_text_content(self, value:str):
+    def _set_text_content(self, value: str):
         self.data = value
 
     def __len__(self) -> int:
@@ -383,29 +383,29 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
     def length(self) -> int:
         return len(self)
 
-    def _append_data(self, string:str):
+    def _append_data(self, string: str):
         self.data += string
 
-    def appendData(self, string:str):
+    def appendData(self, string: str):
         self._append_data(string)
 
-    def _insert_data(self, offset:int, string:str):
+    def _insert_data(self, offset: int, string: str):
         self.data = ''.join((self.data[:offset], string, self.data[offset:]))
 
-    def insertData(self, offset:int, string:str):
+    def insertData(self, offset: int, string: str):
         self._insert_data(offset, string)
 
-    def _delete_data(self, offset:int, count:int):
+    def _delete_data(self, offset: int, count: int):
         self.data = ''.join((self.data[:offset], self.data[offset+count:]))
 
-    def deleteData(self, offset:int, count:int):
+    def deleteData(self, offset: int, count: int):
         self._delete_data(offset, count)
 
-    def _replace_data(self, offset:int, count:int, string:str):
+    def _replace_data(self, offset: int, count: int, string: str):
         self.data = ''.join((
             self.data[:offset], string, self.data[offset+count:]))
 
-    def replaceData(self, offset:int, count:int, string:str):
+    def replaceData(self, offset: int, count: int, string: str):
         self._replace_data(offset, count, string)
 
     @property
@@ -480,7 +480,7 @@ class DocumentType(Node, NonDocumentTypeChildNode):
         return self._type
 
     @name.setter
-    def name(self, name:str):
+    def name(self, name: str):
         self._type = name
 
     @property

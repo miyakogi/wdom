@@ -8,7 +8,8 @@ import time
 import subprocess
 from tempfile import NamedTemporaryFile
 
-from wdom.testing import get_webdriver, free_port, browser_implict_wait, TestCase
+from wdom.testing import get_webdriver, free_port, browser_implict_wait
+from wdom.testing import TestCase
 
 
 CURDIR = path.dirname(path.abspath(__file__))
@@ -93,12 +94,12 @@ class TestAutoReload(TestCase):
         return [sys.executable, self.tmpfilename, '--port', str(self.port),
                 '--logging', 'error']
 
-    def wait(self, t:float=None):
+    def wait(self, t: float = None):
         _t = t or self.wait_time
         for i in range(10):
             time.sleep(_t/10)
 
-    def wait_short(self, t:float=None):
+    def wait_short(self, t: float = None):
         time.sleep(t or (self.wait_time / 10))
 
     def check_reload(self, args):

@@ -18,12 +18,13 @@ remove_id_re = re.compile(r' rimo_id="\d+"')
 
 class WebElement(HTMLElement, WebIF):
     _elements_with_rimo_id = WeakValueDictionary()
+
     @property
     def rimo_id(self) -> str:
         return self.getAttribute('rimo_id') or ''
 
     @rimo_id.setter
-    def rimo_id(self, id:Union[str, int]):
+    def rimo_id(self, id: Union[str, int]):
         self.setAttribute('rimo_id', id)
 
     def __init__(self, *args, parent=None, rimo_id=None, **kwargs):
@@ -45,7 +46,7 @@ class WebElement(HTMLElement, WebIF):
         for event in self._listeners:
             self._add_event_listener_web(event=event)
 
-    def _set_attribute(self, attr:str, value:str):
+    def _set_attribute(self, attr: str, value: str):
         if attr == 'rimo_id':
             if 'rimo_id' in self.attributes:
                 # remove old reference to self
@@ -138,7 +139,7 @@ class WebElement(HTMLElement, WebIF):
         '''
         return self._get_text_content()
 
-    def _set_text_content_web(self, text:str):
+    def _set_text_content_web(self, text: str):
         self.js_exec('textContent', self.textContent)
 
     @textContent.setter
@@ -146,7 +147,7 @@ class WebElement(HTMLElement, WebIF):
         self._set_text_content(text)
         self._set_text_content_web(text)
 
-    def _set_inner_html_web(self, html:str):
+    def _set_inner_html_web(self, html: str):
         self.js_exec('innerHTML', html)
 
     @property
@@ -154,7 +155,7 @@ class WebElement(HTMLElement, WebIF):
         return self._get_inner_html()
 
     @innerHTML.setter
-    def innerHTML(self, html:str):
+    def innerHTML(self, html: str):
         self._set_inner_html_web(html)
         self._set_inner_html(html)
 
@@ -172,13 +173,13 @@ class WebElement(HTMLElement, WebIF):
         self.js_exec('eval', script)
 
     # Window controll
-    def scroll(self, x:int, y:int):
+    def scroll(self, x: int, y: int):
         self.js_exec('scroll', x, y)
 
-    def scrollTo(self, x:int, y:int):
+    def scrollTo(self, x: int, y: int):
         self.js_exec('scrollTo', x, y)
 
-    def scrollBy(self, x:int, y:int):
+    def scrollBy(self, x: int, y: int):
         self.js_exec('scrollBy', x, y)
 
     def scrollX(self):

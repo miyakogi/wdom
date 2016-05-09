@@ -9,7 +9,7 @@ from wdom import options
 from wdom.interface import Event
 from wdom.node import DocumentFragment, Comment, Text
 from wdom.element import Attr, Element
-from wdom.document import Document, get_document, get_new_document, set_document
+from wdom.document import Document, get_document, get_new_document, set_document  # noqa
 from wdom.document import getElementById, getElementByRimoId
 from wdom.web_node import WebElement
 from wdom.tag import Tag, HTMLElement, A
@@ -65,8 +65,8 @@ class TestMainDocument(TestCase):
             '\s*<script( type="text/javascript"| rimo_id="\d+"){2}>'
             '.*?</script>'
             '\s*</body>'
-            '\s*</html>'
-            , re.S
+            '\s*</html>',
+            re.S
         )
         html = self.doc.build()
         self.assertIsNotNone(_re.match(html))
@@ -187,7 +187,8 @@ class TestMainDocument(TestCase):
         self.assertRegex(elm.html, '<aa></aa>')
 
     def test_create_custom_element(self):
-        class A(HTMLElement): pass
+        class A(HTMLElement):
+            pass
         self.doc.defaultView.customElements.define('a', A)
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), A)

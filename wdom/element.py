@@ -25,14 +25,14 @@ class DOMTokenList:
     def __len__(self) -> int:
         return len(self._list)
 
-    def __contains__(self, item:str) -> bool:
+    def __contains__(self, item: str) -> bool:
         return item in self._list
 
     def __iter__(self) -> str:
         for token in self._list:
             yield token
 
-    def _validate_token(self, token:str):
+    def _validate_token(self, token: str):
         if not isinstance(token, str):
             raise TypeError(
                 'Token must be str, but {} passed.'.format(type(token)))
@@ -56,7 +56,7 @@ class DOMTokenList:
     def length(self) -> int:
         return len(self)
 
-    def add(self, *tokens:Tuple[str]):
+    def add(self, *tokens: Tuple[str]):
         _new_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -66,7 +66,7 @@ class DOMTokenList:
         if isinstance(self._owner, WebIF) and _new_tokens:
             self._owner.js_exec('addClass', _new_tokens)
 
-    def remove(self, *tokens:Tuple[str]):
+    def remove(self, *tokens: Tuple[str]):
         _removed_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -76,20 +76,20 @@ class DOMTokenList:
         if isinstance(self._owner, WebIF) and _removed_tokens:
             self._owner.js_exec('removeClass', _removed_tokens)
 
-    def toggle(self, token:str):
+    def toggle(self, token: str):
         self._validate_token(token)
         if token in self:
             self.remove(token)
         else:
             self.add(token)
 
-    def item(self, index:int) -> str:
+    def item(self, index: int) -> str:
         if 0 <= index < len(self):
             return self._list[index]
         else:
             return None
 
-    def contains(self, token:str) -> bool:
+    def contains(self, token: str) -> bool:
         self._validate_token(token)
         return token in self
 
@@ -98,7 +98,7 @@ class DOMTokenList:
 
 
 class Attr:
-    def __init__(self, name:str, value=None, owner: Node = None):
+    def __init__(self, name: str, value=None, owner: Node = None):
         self._name = name.lower()
         self._value = value
         self._owner = owner
@@ -139,7 +139,7 @@ class NamedNodeMap:
     def __len__(self) -> int:
         return len(self._dict)
 
-    def __contains__(self, item:str) -> bool:
+    def __contains__(self, item: str) -> bool:
         return item in self._dict
 
     def __getitem__(self, index: Union[int, str]) -> Attr:
@@ -156,7 +156,7 @@ class NamedNodeMap:
     def length(self) -> int:
         return len(self)
 
-    def getNamedItem(self, name:str) -> Attr:
+    def getNamedItem(self, name: str) -> Attr:
         return self._dict.get(name, None)
 
     def setNamedItem(self, item: Attr):
@@ -167,7 +167,7 @@ class NamedNodeMap:
         self._dict[item.name] = item
         item._owner = self._owner
 
-    def removeNamedItem(self, item:Attr) -> Attr:
+    def removeNamedItem(self, item: Attr) -> Attr:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
@@ -177,7 +177,7 @@ class NamedNodeMap:
             removed_item._owner = self._owner
         return removed_item
 
-    def item(self, index:int) -> Attr:
+    def item(self, index: int) -> Attr:
         if 0 <= index < len(self):
             return self._dict[tuple(self._dict.keys())[index]]
         else:
@@ -187,7 +187,8 @@ class NamedNodeMap:
         return ' '.join(attr.html for attr in self._dict.values())
 
 
-def _create_element(tag:str, name:str=None, base:type=None, attr:dict=None):
+def _create_element(tag: str, name: str = None, base: type = None,
+                    attr: dict = None):
     from wdom.tag import Tag
     from wdom.window import customElements
     if attr is None:
@@ -229,7 +230,7 @@ class Parser(HTMLParser):
         if data and self.elm:
             self.elm.append(data)
 
-    def handle_comment(self, comment:str):
+    def handle_comment(self, comment: str):
         self.elm.append(Comment(comment))
 
 
@@ -253,7 +254,7 @@ def _string_properties(attr) -> property:
     def getter(self) -> str:
         return self.getAttribute(attr) or ''
 
-    def setter(self, value:str):
+    def setter(self, value: str):
         self.setAttribute(attr, str(value))
 
     def deleter(self):
@@ -263,10 +264,10 @@ def _string_properties(attr) -> property:
 
 
 def _boolean_properties(attr) -> property:
-    def getter(self:Node) -> bool:
+    def getter(self: Node) -> bool:
         return bool(self.getAttribute(attr))
 
-    def setter(self:Node, value:bool):
+    def setter(self: Node, value: bool):
         if value:
             self.setAttribute(attr, True)
         else:
@@ -299,7 +300,8 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     _special_attr_string = ['id']
     _special_attr_boolean = []
 
-    def __init__(self, tag:str='', parent=None, _registered=True, **kwargs):
+    def __init__(self, tag: str='', parent: Node = None,
+                 _registered: bool = True, **kwargs):
         self._registered = _registered
         self.tag = tag
         self._elements.add(self)  # used to suport custom elements
@@ -336,7 +338,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             tag = ' '.join((tag, attrs))
         return tag + '>'
 
-    def _parse_html(self, html:str) -> DocumentFragment:
+    def _parse_html(self, html: str) -> DocumentFragment:
         parser = Parser(default_class=self._parser_default_class)
         parser.feed(html)
         return parser.root
@@ -344,7 +346,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def _get_inner_html(self) -> str:
         return ''.join(child.html for child in self._children)
 
-    def _set_inner_html(self, html:str):
+    def _set_inner_html(self, html: str):
         self._empty()
         self._append_child(self._parse_html(html))
 
@@ -353,7 +355,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         return self._get_inner_html()
 
     @innerHTML.setter
-    def innerHTML(self, html:str):
+    def innerHTML(self, html: str):
         self._set_inner_html(html)
 
     @property
@@ -364,7 +366,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def html(self) -> str:
         return self.start_tag + self.innerHTML + self.end_tag
 
-    def insertAdjacentHTML(self, position:str, html:str):
+    def insertAdjacentHTML(self, position: str, html: str):
         '''Parse ``html`` to DOM and insert to ``position``. ``position`` is a
         case-insensive string, and must be one of "beforeBegin", "afterBegin",
         "beforeEnd", or "afterEnd".
@@ -401,7 +403,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def localName(self) -> str:
         return self.tag.lower()
 
-    def getAttribute(self, attr:str) -> str:
+    def getAttribute(self, attr: str) -> str:
         if attr == 'class':
             if self.classList:
                 return self.classList.toString()
@@ -413,10 +415,10 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         else:
             return attr_node.value
 
-    def getAttributeNode(self, attr:str) -> Attr:
+    def getAttributeNode(self, attr: str) -> Attr:
         return self.attributes.getNamedItem(attr)
 
-    def hasAttribute(self, attr:str) -> bool:
+    def hasAttribute(self, attr: str) -> bool:
         if attr == 'class':
             return bool(self.classList)
         else:
@@ -425,7 +427,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def hasAttributes(self) -> bool:
         return bool(self.attributes) or bool(self.classList)
 
-    def _set_attribute(self, attr:str, value:Union[str, bool]):
+    def _set_attribute(self, attr: str, value: Union[str, bool]):
         if attr == 'class':
             self.classList = DOMTokenList(self, value)
         else:
@@ -438,13 +440,13 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             new_attr_node = Attr(attr, value)
             self.setAttributeNode(new_attr_node)
 
-    def setAttribute(self, attr:str, value:Union[str, bool]):
+    def setAttribute(self, attr: str, value: Union[str, bool]):
         self._set_attribute(attr, value)
 
-    def setAttributeNode(self, attr:Attr):
+    def setAttributeNode(self, attr: Attr):
         self.attributes.setNamedItem(attr)
 
-    def _remove_attribute(self, attr:str):
+    def _remove_attribute(self, attr: str):
         if attr == 'class':
             self.classList = DOMTokenList(self)
         else:
@@ -454,13 +456,13 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             if _attr:
                 self.attributes.removeNamedItem(_attr)
 
-    def removeAttribute(self, attr:str):
+    def removeAttribute(self, attr: str):
         self._remove_attribute(attr)
 
-    def removeAttributeNode(self, attr:Attr) -> Attr:
+    def removeAttributeNode(self, attr: Attr) -> Attr:
         return self.attributes.removeNamedItem(attr)
 
-    def getElementsBy(self, cond:Callable[['Element'], bool]) -> NodeList:
+    def getElementsBy(self, cond: Callable[['Element'], bool]) -> NodeList:
         '''Return list of child nodes which matches ``cond``.
         ``cond`` must be a function which gets a single argument ``node``,
         and returns bool. If the node matches requested condition, ``cond``
@@ -474,21 +476,20 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             elements.extend(child.getElementsBy(cond))
         return NodeList(elements)
 
-    def getElementsByTagName(self, tag:str):
+    def getElementsByTagName(self, tag: str):
         _tag = tag.upper()
-        cond = lambda node: getattr(node, 'tagName') == _tag
-        return self.getElementsBy(cond)
+        return self.getElementsBy(lambda n: getattr(n, 'tagName') == _tag)
 
-    def getElementsByClassName(self, class_name:str):
-        cond = lambda node: class_name in getattr(node, 'classList')
-        return self.getElementsBy(cond)
+    def getElementsByClassName(self, class_name: str):
+        return self.getElementsBy(
+            lambda node: class_name in getattr(node, 'classList'))
 
 
 class HTMLElement(Element):
     _special_attr_string = ['title', 'type']
     _special_attr_boolean = ['draggable', 'hidden']
 
-    def __init__(self, *args, style:str=None, **kwargs):
+    def __init__(self, *args, style: str=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._style = CSSStyleDeclaration(style, owner=self)
 
@@ -516,7 +517,7 @@ class HTMLElement(Element):
         return self._style
 
     @style.setter
-    def style(self, style:str):
+    def style(self, style: str):
         if isinstance(style, str):
             self._style._parse_str(style)
         elif style is None:
@@ -529,7 +530,7 @@ class HTMLElement(Element):
         else:
             raise TypeError('Invalid type for style: {}'.format(type(style)))
 
-    def getAttribute(self, attr:str) -> str:
+    def getAttribute(self, attr: str) -> str:
         if attr == 'style':
             # if style is neither None nor empty, return None
             # otherwise, return style.cssText
@@ -540,13 +541,13 @@ class HTMLElement(Element):
         else:
             return super().getAttribute(attr)
 
-    def _set_attribute(self, attr:str, value:str):
+    def _set_attribute(self, attr: str, value: str):
         if attr == 'style':
             self.style = value
         else:
             super()._set_attribute(attr, value)
 
-    def _remove_attribute(self, attr:str):
+    def _remove_attribute(self, attr: str):
         if attr == 'style':
             self.style = None
         else:
@@ -603,7 +604,8 @@ class HTMLInputElement(FormControlMixin, HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['checked', 'disabled', 'multiple', 'readonly',
                              'required']
-    def on_event_pre(self, e:Event):
+
+    def on_event_pre(self, e: Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
             # Update user inputs
@@ -622,7 +624,7 @@ class HTMLInputElement(FormControlMixin, HTMLElement):
         return bool(self.getAttribute('defaultChecked'))
 
     @defaultChecked.setter
-    def defaultChecked(self, value:bool):
+    def defaultChecked(self, value: bool):
         if value:
             self.setAttribute('defaultChecked', True)
             self.checked = True
@@ -635,7 +637,7 @@ class HTMLInputElement(FormControlMixin, HTMLElement):
         return self.getAttribute('defaultValue')
 
     @defaultValue.setter
-    def defaultValue(self, value:str):
+    def defaultValue(self, value: str):
         self.setAttribute('defaultValue', value)
         self.value = value
 
@@ -645,9 +647,10 @@ class HTMLInputElement(FormControlMixin, HTMLElement):
             return NodeList([elm for elm in self.form
                              if elm.tagName == 'INPUT' and
                              elm.type.lower() == 'radio' and
-                             elm.name == self.name ])
+                             elm.name == self.name])
         else:
             return NodeList([])
+
 
 class HTMLLabelElement(HTMLElement, FormControlMixin):
     @property
@@ -655,7 +658,7 @@ class HTMLLabelElement(HTMLElement, FormControlMixin):
         return self.getAttribute('for')
 
     @htmlFor.setter
-    def htmlFor(self, value:str):
+    def htmlFor(self, value: str):
         self.setAttribute('for', value)
 
     @property
@@ -688,11 +691,12 @@ class HTMLScriptElement(HTMLElement):
 class HTMLSelectElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['name', 'size', 'value']
     _special_attr_boolean = ['disabled', 'multiple', 'required']
+
     def __init__(self, *args, **kwargs):
         self._selected_options = []
         super().__init__(*args, **kwargs)
 
-    def on_event_pre(self, e:Event):
+    def on_event_pre(self, e: Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
             self._set_attribute('value', e.currentTarget.get('value'))
@@ -727,7 +731,8 @@ class HTMLTextAreaElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['disabled']
     defaultValue = HTMLElement.textContent
-    def on_event_pre(self, e:Event):
+
+    def on_event_pre(self, e: Event):
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
             # Update user inputs

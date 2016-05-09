@@ -36,6 +36,7 @@ imports = [
     ('wdom.examples', 'theming'),
 ]
 
+
 @pytest.mark.parametrize('f,i', imports)
 def test_import(f, i):
     cmd = 'from {0} import {1}\nlist(vars({1}).items())'

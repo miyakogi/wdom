@@ -6,7 +6,8 @@ import unittest
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form, Label
+from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form
+from wdom.tag import Label
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
@@ -19,10 +20,12 @@ def setUpModule():
 
 class NodeTestCase(RemoteBrowserTestCase):
     server_type = 'aiohttp'
+
     def setUp(self):
         super().setUp()
         server.set_server_type(self.server_type)
         self.document = get_document()
+
         class Root(Tag):
             tag = 'root'
         self.root = Root()
@@ -117,9 +120,9 @@ class InputTestCase(RemoteBrowserTestCase):
         self.textarea = Textarea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root, id='check1')
         self.check_l = Label('Check 1', parent=self.root, **{'for': 'check1'})
-        self.radio1 = Input(parent=self.root, type='radio', name='radio_test', id='r1')
-        self.radio2 = Input(parent=self.root, type='radio', name='radio_test', id='r2')
-        self.radio3 = Input(parent=self.root, type='radio', name='radio_test2', id='r3')
+        self.radio1 = Input(parent=self.root, type='radio', name='radio_test', id='r1')  # noqa
+        self.radio2 = Input(parent=self.root, type='radio', name='radio_test', id='r2')  # noqa
+        self.radio3 = Input(parent=self.root, type='radio', name='radio_test2', id='r3')  # noqa
         self.radio1_l = Label('Radio 1', parent=self.root, **{'for': 'r1'})
         self.radio2_l = Label('Radio 2', parent=self.root, **{'for': 'r2'})
         self.radio3_l = Label('Radio 3', parent=self.root, **{'for': 'r3'})

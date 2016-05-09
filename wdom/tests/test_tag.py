@@ -354,6 +354,7 @@ class TestNestedTag(TestCase):
     def setUp(self):
         class Inner(Tag):
             tag = 'in'
+
         class Outer(NestedTag):
             tag = 'out'
             inner_tag_class = Inner
@@ -444,7 +445,7 @@ class TestNestedTag(TestCase):
 
     def test_inner_content(self):
         self.assertEqual(self.tag.textContent, '')
-        self.assertEqual(self.tag.innerHTML, '')  
+        self.assertEqual(self.tag.innerHTML, '')
         self.tag.textContent = 'test'
         self.assertEqual(self.tag.textContent, 'test')
         self.assertEqual(self.tag.html_noid, '<out><in>test</in></out>')
@@ -507,7 +508,7 @@ class TestTagBase(TestCase):
         self.assertRegex(self.tag.html, '<tag rimo_id="\d+"></tag>')
 
     def test_class_in_init(self) -> None:
-        tag = Tag(class_ = 'a')
+        tag = Tag(class_='a')
         self.assertIsTrue(tag.hasClass('a'))
         self.assertIsTrue(tag.hasClasses())
         self.assertRegex(tag.html, '<tag rimo_id="\d+" class="a"></tag>')

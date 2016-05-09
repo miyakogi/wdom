@@ -133,7 +133,7 @@ class TestCSSStyleDeclaration(TestCase):
         self.assertEqual(self.css.getPropertyValue('css-float'), '')
 
 
-@pytest.mark.parametrize('style,parsed',[
+@pytest.mark.parametrize('style,parsed', [
     ('color:red;', 'color: red;'),
     ('color:red', 'color: red;'),
     ('color  :red  ;', 'color: red;'),
@@ -200,7 +200,7 @@ class TestCSSRuleList(TestCase):
             self.list.cssText, 'h1 {color: red;}\nh2 {background: black;}')
 
 
-@pytest.mark.parametrize('style,parsed',[
+@pytest.mark.parametrize('style,parsed', [
     ('h1 {color:red;}', 'h1 {color: red;}'),
     ('h1,h2 {color:red;}', 'h1,h2 {color: red;}'),
     ('  h1  {  color  :  red  ;  }', 'h1 {color: red;}'),

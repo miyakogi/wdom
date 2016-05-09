@@ -81,7 +81,7 @@ class HTTPTestCase(TestCase):
         with self.assertLogs('wdom', 'INFO'):
             server.stop_server(self.server)
 
-    async def get(self, url:str):
+    async def get(self, url: str):
         if not url.startswith('/'):
             url = '/' + url
         with aiohttp.ClientSession() as session:
@@ -90,7 +90,7 @@ class HTTPTestCase(TestCase):
                 response = Response(response.status, content)
         return response
 
-    async def ws_connect(self, url:str):
+    async def ws_connect(self, url: str):
         for i in range(20):
             await asyncio.sleep(0.05)
             try:
@@ -137,6 +137,7 @@ def start_remote_browser():
     _clear()
     global browser_manager, conn, wd_conn
     conn, wd_conn = Pipe()
+
     def start_browser():
         global wd_conn
         bc = BrowserController(wd_conn)
@@ -175,6 +176,7 @@ class BrowserController:
     communication is done via Pipe.
     '''
     _select_methods = [s for s in dir(Select) if not s.startswith('_')]
+
     def __init__(self, conn):
         '''Set up connection and start webdriver. ``conn`` is a one end of
         ``Pipe()``, which is used the inter-process communication.
@@ -266,8 +268,10 @@ def _get_properties(cls):
 class Controller:
     target = None
     properties = set()
-    def __getattr__(self, attr:str):
+
+    def __getattr__(self, attr: str):
         global conn
+
         def wrapper(*args):
             conn.send({'target': self.target, 'method': attr, 'args': args})
             res = wait_for()

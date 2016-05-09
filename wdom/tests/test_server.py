@@ -61,7 +61,8 @@ class TestServerBase(TestCase):
         self.port = free_port()
         env = os.environ.copy()
         env['PYTHONPATH'] = root
-        with tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False) as f:
+        _ = tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False)
+        with _ as f:
             self.tmp = f.name
             f.write(script.format(server_type=self.server_type))
         cmd = [sys.executable, self.tmp, '--port', str(self.port)] + self.cmd
@@ -86,7 +87,7 @@ class TestAutoShutdownAIO(TestServerBase):
     server_type = 'aiohttp'
     cmd = ['--auto-shutdown', '--shutdown-wait', '0.2']
 
-    async def ws_connect(self, url:str):
+    async def ws_connect(self, url: str):
         for i in range(20):
             await asyncio.sleep(0.05)
             try:
@@ -133,9 +134,9 @@ class TestAutoShutdownAIO(TestServerBase):
         await asyncio.sleep(0.1)
         ws = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
         with aiohttp.ClientSession() as session:
-            async with session.get('http://'+self.addr+'/tmp/a.html') as response:
-                assert response.status == 200
-                content = (await response.read()).decode('utf-8')
+            async with session.get('http://'+self.addr+'/tmp/a.html') as res:
+                assert res.status == 200
+                content = (await res.read()).decode('utf-8')
         self.assertTrue(path.exists(content.strip()))
         self.assertTrue(path.isdir(content.strip()))
         ws.close()
@@ -147,7 +148,8 @@ class TestAutoShutdownAIO(TestServerBase):
 
 class TestOpenBrowser(TestServerBase):
     server_type = 'aiohttp'
-    cmd = ['--debug', '--logging', 'info', '--open-browser', '--browser', 'firefox']
+    cmd = ['--debug', '--logging', 'info', '--open-browser',
+           '--browser', 'firefox']
 
     def test_open_browser(self):
         time.sleep(0.5)

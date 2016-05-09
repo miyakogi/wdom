@@ -9,6 +9,7 @@ from wdom import testing
 
 orig_wait = testing.browser_implict_wait
 
+
 @pytest.fixture(scope='session', autouse=True)
 def browser(request):
     testing.browser_implict_wait = 1 if os.environ.get('TRAVIS') else 0.1

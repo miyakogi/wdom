@@ -20,7 +20,7 @@ from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
 
 
-def getElementById(id:Union[str, int]) -> Optional[Node]:
+def getElementById(id: Union[str, int]) -> Optional[Node]:
     elm = Element._elements_with_id.get(str(id))
     if elm and elm.ownerDocument:
         return elm
@@ -28,7 +28,7 @@ def getElementById(id:Union[str, int]) -> Optional[Node]:
         return None
 
 
-def getElementByRimoId(id:Union[str, int]) -> Optional[WebElement]:
+def getElementByRimoId(id: Union[str, int]) -> Optional[WebElement]:
     elm = WebElement._elements_with_rimo_id.get(str(id))
     if elm and elm.ownerDocument:
         return elm
@@ -74,7 +74,7 @@ class Document(Node):
         self.script = Script(parent=self.body)
         self._set_autoreload(autoreload, reload_wait)
 
-    def _set_autoreload(self, autoreload, reload_wait:int=None):
+    def _set_autoreload(self, autoreload, reload_wait: int = None):
         if autoreload is None:
             self._autoreload = (config.autoreload or config.debug)
         else:
@@ -89,32 +89,32 @@ class Document(Node):
             _s = Script(parent=self.head)
             _s.textContent = '\n{}\n'.format('\n'.join(ar_script))
 
-    def getElementById(self, id:Union[str, int]) -> Optional[Node]:
+    def getElementById(self, id: Union[str, int]) -> Optional[Node]:
         elm = getElementById(id)
         if elm and elm.ownerDocument is self:
             return elm
 
-    def getElementByRimoId(self, id:Union[str, int]) -> Optional[WebElement]:
+    def getElementByRimoId(self, id: Union[str, int]) -> Optional[WebElement]:
         elm = getElementByRimoId(id)
         if elm and elm.ownerDocument is self:
             return elm
 
-    def createElement(self, tag:str):
+    def createElement(self, tag: str):
         return _create_element(tag, base=self._default_class)
 
     def createDocumentFragment(self):
         return DocumentFragment()
 
-    def createTextNode(self, text:str):
+    def createTextNode(self, text: str):
         return Text(text)
 
-    def createComment(self, text:str):
+    def createComment(self, text: str):
         return Comment(text)
 
-    def createEvent(self, event:str):
+    def createEvent(self, event: str):
         return Event(event)
 
-    def createAttribute(self, name:str):
+    def createAttribute(self, name: str):
         return Attr(name)
 
     @property
@@ -122,7 +122,7 @@ class Document(Node):
         return self.title_element.textContent
 
     @title.setter
-    def title(self, value:str):
+    def title(self, value: str):
         self.title_element.textContent = value
 
     @property
@@ -130,7 +130,7 @@ class Document(Node):
         return self.charset_element.getAttribute('charset')
 
     @characterSet.setter
-    def characterSet(self, value:str):
+    def characterSet(self, value: str):
         self.charset_element.setAttribute('charset', value)
 
     @property
@@ -138,22 +138,22 @@ class Document(Node):
         return self.characterSet
 
     @charset.setter
-    def charset(self, value:str):
+    def charset(self, value: str):
         self.characterSet = value
 
-    def add_jsfile(self, src:str):
+    def add_jsfile(self, src: str):
         self.body.appendChild(Script(src=src))
 
-    def add_jsfile_head(self, src:str):
+    def add_jsfile_head(self, src: str):
         self.head.appendChild(Script(src=src))
 
-    def add_cssfile(self, src:str):
+    def add_cssfile(self, src: str):
         self.head.appendChild(Link(rel='stylesheet', href=src))
 
-    def add_header(self, header:str):
+    def add_header(self, header: str):
         self.head.appendChild(RawHtml(header))
 
-    def register_theme(self, theme:ModuleType) -> None:
+    def register_theme(self, theme: ModuleType) -> None:
         if not hasattr(theme, 'css_files'):
             raise ValueError('theme module must include `css_files`.')
         for css in getattr(theme, 'css_files', []):

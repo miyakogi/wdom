@@ -31,12 +31,14 @@ class SimpleTestCase(WebDriverTestCase):
         self.start()
 
     def test_page(self):
-        tag = self.wd.find_element_by_css_selector('[rimo_id="{}"]'.format(self.h1.rimo_id))
+        tag = self.wd.find_element_by_css_selector(
+            '[rimo_id="{}"]'.format(self.h1.rimo_id))
         assert tag.text == 'TITLE'
 
 
 class DataBindingTestCase(WebDriverTestCase):
     server_type = 'aiohttp'
+
     def setUp(self):
         super().setUp()
         server.set_server_type(self.server_type)
@@ -65,6 +67,7 @@ class DataBindingTestCase(WebDriverTestCase):
 
 class RevTextTestCase(WebDriverTestCase):
     server_type = 'aiohttp'
+
     def setUp(self):
         super().setUp()
         server.set_server_type(self.server_type)

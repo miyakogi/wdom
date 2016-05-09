@@ -34,7 +34,7 @@ class TestNodeList(TestCase):
         self.assertEqual(self.nl.item(-1), None)
         self.assertEqual(self.nl.item(5), None)
         with self.assertRaises(TypeError):
-            self.nl.item(slice(1,2))
+            self.nl.item(slice(1, 2))
 
     def test_contains(self):
         self.assertTrue(1 in self.nl)

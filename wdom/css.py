@@ -43,7 +43,7 @@ class CSSStyleDeclaration(OrderedDict):
                 self._owner.js_exec('removeAttribute', 'style')
 
     def _parse_str(self, style: str) -> None:
-        if self: self.clear()
+        self.clear()
         orig_style = style
         style_str = _style_cleanup_re.sub(r'\1', style.strip())
         if len(style_str) == 0:

@@ -214,9 +214,16 @@ class TestNode(TestCase):
         self.assertEqual(self.node.childNodes.index(self.c3), 2)
 
 
-class P(Node, ParentNode): pass
-class NDTC(Node, NonDocumentTypeChildNode): pass
-class C(Node, ChildNode): pass
+class P(Node, ParentNode):
+    pass
+
+
+class NDTC(Node, NonDocumentTypeChildNode):
+    pass
+
+
+class C(Node, ChildNode):
+    pass
 
 
 def is_equal_nodes(p, nodes2):

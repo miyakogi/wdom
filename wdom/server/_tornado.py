@@ -133,13 +133,13 @@ def get_app(*args, **kwargs) -> Application:
     return main_application
 
 
-def set_application(app:Application):
+def set_application(app: Application):
     global main_application
     main_application = app
 
 
 def start_server(app: web.Application = None, port: int = None,
-                 browser: str = None, address:str = None,
+                 browser: str = None, address: str = None,
                  check_time: Optional[int] = 500,
                  **kwargs) -> HTTPServer:
     '''Start server with ``app`` on ``localhost:port``.
