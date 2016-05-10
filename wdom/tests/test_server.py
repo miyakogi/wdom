@@ -10,11 +10,9 @@ import asyncio
 import tempfile
 
 from selenium.webdriver.common.utils import free_port
-from tornado import websocket
-from tornado.ioloop import IOLoop
-from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 from syncer import sync
 
+from wdom.misc import install_asyncio
 from wdom import server
 from wdom.testing import TestCase, HTTPTestCase
 
@@ -34,14 +32,12 @@ asyncio.get_event_loop().run_forever()
 
 
 def setUpModule():
-    if not IOLoop.initialized():
-        AsyncIOMainLoop().install()
+    install_asyncio()
 
 
 class TestServerTypeSet(TestCase):
     def test_server_module(self):
         from wdom.server import _aiohttp, _tornado
-        self.assertTrue(isinstance(server.get_app(), _aiohttp.Application))
         server.set_server_type('tornado')
         self.assertTrue(isinstance(server.get_app(), _tornado.Application))
         server.set_server_type('aiohttp')

@@ -8,8 +8,17 @@ import time
 import subprocess
 from tempfile import NamedTemporaryFile
 
+from wdom.misc import install_asyncio
 from wdom.testing import get_webdriver, free_port, browser_implict_wait
-from wdom.testing import TestCase
+from wdom.testing import TestCase, close_webdriver
+
+
+def setUpModule():
+    install_asyncio()
+
+
+def tearDownModule():
+    close_webdriver()
 
 
 CURDIR = path.dirname(path.abspath(__file__))
