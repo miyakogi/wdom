@@ -13,10 +13,10 @@ before_script:
   - sleep 3
 install:
   - pip install tornado aiohttp syncer
-  - pip install pytest pytest-cov selenium
+  - pip install selenium coverage
   - pip install codecov coveralls
 script:
-  - py.test --cov wdom
+  - coverage run --source wdom run_test.py
 after_success:
   - codecov -b $TRAVIS_BRANCH
   - coveralls
