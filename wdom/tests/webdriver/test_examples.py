@@ -11,10 +11,15 @@ from wdom.document import get_document
 from wdom import server
 from wdom.misc import install_asyncio
 from wdom.testing import WebDriverTestCase, TestCase, reset
+from wdom.testing import start_webdriver, close_webdriver
 
 
 def setUpModule():
     install_asyncio()
+
+
+def tearDownModule():
+    close_webdriver()
 
 
 class SimpleTestCase(WebDriverTestCase):

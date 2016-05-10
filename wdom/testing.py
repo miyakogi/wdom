@@ -3,8 +3,8 @@
 
 import sys
 import os
-import gc
 import time
+import logging
 import asyncio
 import unittest
 from multiprocessing import Process, Pipe
@@ -31,6 +31,7 @@ driver = webdriver.Firefox
 local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
+logger = logging.getLogger(__name__)
 
 
 def reset():
@@ -48,6 +49,11 @@ def reset():
     Element._elements_with_id.clear()
     Element._elements.clear()
     customElements.clear()
+
+
+def suppress_logging():
+    options.root_logger.removeHandler(options._log_handler)
+    options.root_logger.addHandler(logging.NullHandler())
 
 
 class TestCase(unittest.TestCase):
@@ -82,6 +88,7 @@ class TestCase(unittest.TestCase):
 
 
 class HTTPTestCase(TestCase):
+    '''For http/ws connection test.'''
     _server_started = False
 
     def start(self):
@@ -99,7 +106,7 @@ class HTTPTestCase(TestCase):
             self._server_started = False
         super().tearDown()
 
-    async def fetch(self, url:str, encoding: str = 'utf-8') -> HTTPResponse:
+    async def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
         '''Fetch url. Response body is decoded by ``encoding`` and set
         ``text`` property of the response. If failed to decode, ``text``
         property will set to ``None``.
@@ -112,12 +119,12 @@ class HTTPTestCase(TestCase):
             response.text = None
         return response
 
-    async def ws_connect(self, url: str, _retry=0, _max_retry=20, _wait=0.01
+    async def ws_connect(self, url: str, _retry=0, _max_retry=20, _wait=0.05
                          ) -> WebSocketClientConnection:
         '''Make WebSocket connection to the url.'''
         try:
             ws = await to_asyncio_future(websocket_connect(url))
-        except ConnectionRefusedError as e:
+        except ConnectionRefusedError:
             if _retry <= _max_retry:
                 await asyncio.sleep(_wait)
                 ws = await self.ws_connect(url, _retry+1, _max_retry, _wait)
@@ -128,6 +135,7 @@ class HTTPTestCase(TestCase):
 
 
 def start_webdriver():
+    '''Start WebDriver and set implicit_wait if it is not started.'''
     global local_webdriver
     if local_webdriver is None:
         local_webdriver = driver()
@@ -136,6 +144,7 @@ def start_webdriver():
 
 
 def close_webdriver():
+    '''Close WebDriver.'''
     global local_webdriver
     if local_webdriver is not None:
         local_webdriver.close()
@@ -143,6 +152,8 @@ def close_webdriver():
 
 
 def get_webdriver():
+    '''Return WebDriver of current process. If it is not started, start and
+    return it.'''
     if globals().get('local_webdriver') is None:
         start_webdriver()
     return local_webdriver
@@ -157,8 +168,7 @@ def _clear():
 
 
 def start_remote_browser():
-    '''Start broser process.'''
-    _clear()
+    '''Start WebDriver on remote process.'''
     global browser_manager, conn, wd_conn
     conn, wd_conn = Pipe()
 
@@ -176,7 +186,7 @@ def close_remote_browser():
     global conn, browser_manager
     conn.send({'target': 'process', 'method': 'quit'})
     time.sleep(0.3)
-    print('\nRemote Browser closed')
+    logger.info('\nRemote Browser closed')
     conn.close()
     if browser_manager is not None:
         browser_manager.terminate()
@@ -184,7 +194,7 @@ def close_remote_browser():
 
 
 def get_remote_browser():
-    '''Get existing webdriver. If no driver is running, start new one.'''
+    '''Start new WebDriver for remote process.'''
     global remote_webdriver
     if remote_webdriver is None:
         remote_webdriver = driver()

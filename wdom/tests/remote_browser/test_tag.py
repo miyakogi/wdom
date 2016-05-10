@@ -11,11 +11,17 @@ from wdom.tag import Label
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
+from wdom.testing import start_remote_browser, close_remote_browser
 from wdom import server
 
 
 def setUpModule():
     install_asyncio()
+    start_remote_browser()
+
+
+def tearDownModule():
+    close_remote_browser()
 
 
 class NodeTestCase(RemoteBrowserTestCase):

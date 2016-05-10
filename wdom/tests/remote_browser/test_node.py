@@ -1,4 +1,4 @@
-#ndle!/usr/bin/env py.test
+#!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
 import os
@@ -14,11 +14,17 @@ from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
 from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
+from wdom.testing import start_remote_browser, close_remote_browser
 from wdom import server
 
 
 def setUpModule():
     install_asyncio()
+    start_remote_browser()
+
+
+def tearDownModule():
+    close_remote_browser()
 
 
 class ElementTestCase(RemoteBrowserTestCase):

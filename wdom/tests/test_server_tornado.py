@@ -11,11 +11,12 @@ from wdom.misc import install_asyncio
 from wdom.document import get_document
 from wdom.server import get_app
 from wdom import server
-from wdom.testing import HTTPTestCase
+from wdom.testing import HTTPTestCase, suppress_logging
 
 
 def setUpModule():
     install_asyncio()
+    suppress_logging()
 
 
 class TestMainHandlerBlank(HTTPTestCase):
