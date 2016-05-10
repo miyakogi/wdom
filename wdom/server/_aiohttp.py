@@ -82,8 +82,12 @@ class WSHandler:
 class Application(web.Application):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.router.add_route('GET', '/', MainHandler)
-        self.router.add_route('*', '/rimo_ws', ws_open)
+        # self.router.add_route('GET', '/', MainHandler)
+        root_resource = self.router.add_resource('/', name='root')
+        root_resource.add_route('GET', MainHandler)
+        # self.router.add_route('*', '/rimo_ws', ws_open)
+        root_ws_resource = self.router.add_resource('/rimo_ws', name='root_ws')
+        root_ws_resource.add_route('*', ws_open)
 
     def add_static_path(self, prefix: str, path: str):
         if not prefix.startswith('/'):
