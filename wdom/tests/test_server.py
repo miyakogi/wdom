@@ -16,7 +16,7 @@ from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 from syncer import sync
 
 from wdom import server
-from wdom.testing import TestCase
+from wdom.testing import TestCase, HTTPTestCase
 
 curdir = path.dirname(__file__)
 root = path.dirname(path.dirname(curdir))
@@ -52,7 +52,7 @@ class TestServerTypeSet(TestCase):
             server.set_server_type('a')
 
 
-class TestServerBase(TestCase):
+class TestServerBase(HTTPTestCase):
     server_type = 'aiohttp'
     cmd = []
 
@@ -66,7 +66,8 @@ class TestServerBase(TestCase):
             self.tmp = f.name
             f.write(script.format(server_type=self.server_type))
         cmd = [sys.executable, self.tmp, '--port', str(self.port)] + self.cmd
-        self.addr = 'localhost:{}'.format(self.port)
+        self.url = 'http://localhost:{}'.format(self.port)
+        self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
         self.proc = subprocess.Popen(
             cmd, cwd=curdir, env=env,
             stdout=subprocess.PIPE,
@@ -87,22 +88,10 @@ class TestAutoShutdownAIO(TestServerBase):
     server_type = 'aiohttp'
     cmd = ['--auto-shutdown', '--shutdown-wait', '0.2']
 
-    async def ws_connect(self, url: str):
-        for i in range(20):
-            await asyncio.sleep(0.05)
-            try:
-                ws = await to_asyncio_future(websocket.websocket_connect(url))
-                return ws
-            except Exception:
-                continue
-            else:
-                break
-        raise OSError('connection refused to {}'.format(url))
-
     @sync
     async def test_autoshutdown(self):
         await asyncio.sleep(0.1)
-        ws = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
+        ws = await self.ws_connect(self.ws_url)
         ws.close()
         await asyncio.sleep(0.3)
         self.assertIsNotNone(self.proc.poll())
@@ -110,17 +99,17 @@ class TestAutoShutdownAIO(TestServerBase):
     @sync
     async def test_reload(self):
         await asyncio.sleep(0.1)
-        ws = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
+        ws = await self.ws_connect(self.ws_url)
         ws.close()
-        ws = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
+        ws = await self.ws_connect(self.ws_url)
         await asyncio.sleep(0.3)
         self.assertIsNone(self.proc.poll())
 
     @sync
     async def test_multi_connection(self):
         await asyncio.sleep(0.1)
-        ws1 = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
-        ws2 = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
+        ws1 = await self.ws_connect(self.ws_url)
+        ws2 = await self.ws_connect(self.ws_url)
         ws1.close()
         await asyncio.sleep(0.3)
         self.assertIsNone(self.proc.poll())
@@ -130,13 +119,10 @@ class TestAutoShutdownAIO(TestServerBase):
 
     @sync
     async def test_tempdir_cleanup(self):
-        import aiohttp
         await asyncio.sleep(0.1)
-        ws = await self.ws_connect('ws://'+self.addr+'/rimo_ws')
-        with aiohttp.ClientSession() as session:
-            async with session.get('http://'+self.addr+'/tmp/a.html') as res:
-                assert res.status == 200
-                content = (await res.read()).decode('utf-8')
+        ws = await self.ws_connect(self.ws_url)
+        resp = await self.fetch(self.url + '/tmp/a.html')
+        content = resp.body
         self.assertTrue(path.exists(content.strip()))
         self.assertTrue(path.isdir(content.strip()))
         ws.close()

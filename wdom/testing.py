@@ -6,7 +6,6 @@ import os
 import gc
 import time
 import asyncio
-import socket
 import unittest
 from multiprocessing import Process, Pipe
 from types import FunctionType, MethodType
@@ -18,13 +17,11 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
-import aiohttp
-from tornado.web import Application
-from tornado.httpserver import HTTPServer
+from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
-from tornado.websocket import websocket_connect
+from tornado.websocket import websocket_connect, WebSocketClientConnection
 
-from wdom.misc import static_dir, install_asyncio
+from wdom.misc import install_asyncio
 from wdom import options
 from wdom.window import customElements
 from wdom.element import Element
@@ -37,6 +34,10 @@ browser_implict_wait = 0
 
 
 def reset():
+    '''Reset wdom objects. This function clear all connections, elements, and
+    resistered custom elements. This function also makes new
+    document/application and set them.
+    '''
     from wdom.document import get_new_document, set_document
     from wdom.server import _aiohttp, _tornado
     set_document(get_new_document())
@@ -50,9 +51,27 @@ def reset():
 
 
 class TestCase(unittest.TestCase):
+    '''Base class for testing wdom modules. This class is a sub class of the
+    ``unittest.TestCase``. After all test methods, reset wdom's global objects
+    like document, application, and elements. If you use ``tearDown`` method,
+    do not forget to call ``super().tearDown()``.
+
+    If you want to reuse document/application object in your test class, please
+    set them in each setup phase as follow::
+
+        @classmethod
+        def setUpClass(cls):
+            cls.your_doc = get_document()
+            cls.your_app = get_app()
+
+        def setUp(self):
+            from wdom.document import set_document
+            from wdom.server import set_application
+            set_document(self.your_doc)
+            set_application(self.your_app)
+    '''
     def tearDown(self):
         reset()
-        gc.collect()
         super().tearDown()
 
     def assertIsTrue(self, bl):
@@ -62,44 +81,50 @@ class TestCase(unittest.TestCase):
         self.assertIs(bl, False)
 
 
-class Response:
-    def __init__(self, code, body):
-        self.code = code
-        self.body = body
-
-
 class HTTPTestCase(TestCase):
+    _server_started = False
+
     def start(self):
         with self.assertLogs('wdom', 'INFO'):
             self.server = server.start_server(port=0)
         self.port = self.server.port
-        self.addr = 'http://localhost:{}'.format(self.port)
+        self.url = 'http://localhost:{}'.format(self.port)
+        self.ws_url = 'ws://localhost:{}'.format(self.port)
+        self._server_started = True
 
     def tearDown(self):
-        with self.assertLogs('wdom', 'INFO'):
-            server.stop_server(self.server)
+        if self._server_started:
+            with self.assertLogs('wdom', 'INFO'):
+                server.stop_server(self.server)
+            self._server_started = False
         super().tearDown()
 
-    async def get(self, url: str):
-        if not url.startswith('/'):
-            url = '/' + url
-        with aiohttp.ClientSession() as session:
-            async with session.get(self.addr + url) as response:
-                content = await response.read()
-                response = Response(response.status, content)
+    async def fetch(self, url:str, encoding: str = 'utf-8') -> HTTPResponse:
+        '''Fetch url. Response body is decoded by ``encoding`` and set
+        ``text`` property of the response. If failed to decode, ``text``
+        property will set to ``None``.
+        '''
+        response = await to_asyncio_future(
+            AsyncHTTPClient().fetch(url, raise_error=False))
+        try:
+            response.text = response.body.decode(encoding)
+        except UnicodeDecodeError:
+            response.text = None
         return response
 
-    async def ws_connect(self, url: str):
-        for i in range(20):
-            await asyncio.sleep(0.05)
-            try:
-                ws = await to_asyncio_future(websocket_connect(url))
-                return ws
-            except Exception:
-                continue
+    async def ws_connect(self, url: str, _retry=0, _max_retry=20, _wait=0.01
+                         ) -> WebSocketClientConnection:
+        '''Make WebSocket connection to the url.'''
+        try:
+            ws = await to_asyncio_future(websocket_connect(url))
+        except ConnectionRefusedError as e:
+            if _retry <= _max_retry:
+                await asyncio.sleep(_wait)
+                ws = await self.ws_connect(url, _retry+1, _max_retry, _wait)
             else:
-                break
-        raise OSError('connection refused to {}'.format(url))
+                raise ConnectionRefusedError(
+                    'WebSocket connection refused: {}'.format(url))
+        return ws
 
 
 def start_webdriver():
@@ -322,10 +347,10 @@ class RemoteBrowserTestCase:
         self.browser = RemoteBrowserController()
         self.element = RemoteElementController()
         try:
-            self.server = server.start_server(server.get_app(), port=0)
+            self.server = server.start_server(port=0)
         except OSError:
             self.wait(0.2)
-            self.server = server.start_server(server.get_app(), port=0)
+            self.server = server.start_server(port=0)
         self.address = self.server.address
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
         self.wait()
@@ -346,13 +371,6 @@ class RemoteBrowserTestCase:
 
     def stop_server(self):
         server.stop_server(self.server)
-
-    def get_app(self) -> Application:
-        '''This method should be overridden by subclasses. Return
-        ``wdom.server.Application`` (subclass of ``tornado.web.Application``)
-        or ``asyncio.Server`` to be tested.
-        '''
-        return server.get_app()
 
     def wait(self, timeout=None):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
@@ -401,6 +419,8 @@ class WebDriverTestCase:
         self.wd = get_webdriver()
 
         def start_server(port):
+            import asyncio
+            from wdom import server
             server.start_server(port=port)
             asyncio.get_event_loop().run_forever()
 
