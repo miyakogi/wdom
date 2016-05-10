@@ -126,7 +126,7 @@ def parse_command_line():
     if unkown_args and not re.search(r'py\.test[-.0-9]*$', sys.argv[0]):
         # warn when get unknown argument
         # if run in test, skip warning since test runner adds some arguments
-        logger.warn('Unknown Arguments: {}'.format(unkown_args))
+        logger.warning('Unknown Arguments: {}'.format(unkown_args))
         parser.print_help()
     for k, v in vars(config).items():
         if k.startswith('log'):

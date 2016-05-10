@@ -15,10 +15,10 @@ if theme:
         logger.info('Use theme: {}'.format(theme))
         exec('from wdom.themes.{} import *'.format(theme))
     else:
-        logger.warn(
+        logger.warning(
             'Unknown theme "{}" was specified. Use default.'.format(theme))
         # Remove duplicated module name (*.py and *.pyc may exists)
-        logger.warn(
+        logger.warning(
             'Available themes: {}'.format(', '.join(theme_list)))
         from wdom.tag import *
 else:

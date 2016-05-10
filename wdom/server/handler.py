@@ -14,7 +14,7 @@ def log_handler(level: str, message: str):
     if level == 'error':
         logger.error(message)
     elif level == 'warn':
-        logger.warn(message)
+        logger.warning(message)
     elif level == 'info':
         logger.info(message)
     elif level == 'debug':
@@ -27,7 +27,7 @@ def event_handler(msg: dict):
     _id = e.currentTarget.get('id')
     currentTarget = getElementByRimoId(_id)
     if currentTarget is None:
-        logger.warn('No such element: rimo_id={}'.format(_id))
+        logger.warning('No such element: rimo_id={}'.format(_id))
         return
 
     currentTarget.on_event_pre(e)
@@ -43,7 +43,7 @@ def response_handler(msg: dict):
     if elm:
         elm.on_response(msg)
     else:
-        logger.warn('No such element: rimo_id={}'.format(id))
+        logger.warning('No such element: rimo_id={}'.format(id))
 
 
 def on_websocket_message(message):
