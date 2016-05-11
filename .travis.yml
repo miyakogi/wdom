@@ -15,10 +15,10 @@ before_script:
 install:
   - pip install tornado aiohttp
   - pip install selenium nose-parametrized syncer
-  - [[ $TRAVIS_PYTHON_VERSION == 3.4* ]] && pip install mypy-lang
-  - [[ $TRAVIS_PYTHON_VERSION == 3.5* ]] && pip install codecov coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install coverage codecov coveralls; fi
 script:
-  - [[ $TRAVIS_PYTHON_VERSION == 3.4* ]] && python run_test.py
-  - [[ $TRAVIS_PYTHON_VERSION == 3.5* ]] && coverage run --source wdom run_test.py
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then python run_test.py; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then coverage run --source wdom run_test.py; fi
 after_success:
-  - [[ $TRAVIS_PYTHON_VERSION == 3.5* ]] && codecov -b $TRAVIS_BRANCH && coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
