@@ -74,13 +74,15 @@ class TestOptions(TestCase):
             f.write(src)
             f.flush()  # save file
             cmd = [sys.executable, f.name, '--test-arg']
-            proc = subprocess.run(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            proc = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 universal_newlines=True,
             )
-        assert 'usage: WDOM' in proc.stdout
-        assert 'Unknown Argument' in proc.stderr
-        assert '--test-arg' in proc.stderr
+            proc.wait()
+        result = proc.stdout.read()
+        self.assertIn('usage: WDOM', result)
+        self.assertIn('Unknown Argument', result)
+        self.assertIn('--test-arg', result)
 
 
 class TestThemeOption(unittest.TestCase):

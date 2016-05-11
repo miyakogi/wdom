@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
+import unittest
+
 from nose_parameterized import parameterized
 
 from wdom.css import _normalize_css_property
@@ -144,8 +147,25 @@ class TestCSSParseDecl(TestCase):
         ('  color  : red ;  z-index  : 1  ', 'color: red; z-index: 1;'),
         ('color: red;  \n z-index: 1;', 'color: red; z-index: 1;'),
     ])
-    def test_parse_style(self, input, css):
+    @unittest.skipIf(sys.version_info < (3, 5), 'py34 can\'t keep order')
+    def test_parse_style_order(self, input, css):
         self.assertEqual(parse_style_decl(input).cssText, css)
+
+    @parameterized.expand([
+        ('color:red;', 'color: red;'),
+        ('color:red', 'color: red;'),
+        ('color  :red  ;', 'color: red;'),
+        ('margin: 1 3 4 5;', 'margin: 1 3 4 5;'),
+        (' margin :1 3 4 5   ;  ', 'margin: 1 3 4 5;'),
+        ('z-index: 1;', 'z-index: 1;'),
+        ('color: red; z-index: 1;', 'color: red;', 'z-index: 1;'),
+        ('  color  : red ;  z-index  : 1  ', 'color: red;', 'z-index: 1;'),
+        ('color: red;  \n z-index: 1;', 'color: red;', 'z-index: 1;'),
+    ])
+    def test_parse_style_unordered(self, input, *csses):
+        parsed_css = parse_style_decl(input).cssText
+        for css in csses:
+            self.assertIn(css, parsed_css)
 
 
 class TestCSSStyleRule(TestCase):
@@ -196,8 +216,13 @@ class TestCSSRuleList(TestCase):
         self.list.append(self.rule)
         rule2 = CSSStyleRule('h2', CSSStyleDeclaration('background: black;'))
         self.list.append(rule2)
-        self.assertEqual(
-            self.list.cssText, 'h1 {color: red;}\nh2 {background: black;}')
+        css = self.list.cssText
+        if sys.version_info < (3, 5):
+            # python 3.4 can't keep order
+            self.assertIn('h1 {color: red;}', css)
+            self.assertIn('h2 {background: black;}', css)
+        else:
+            self.assertIn('h1 {color: red;}\nh2 {background: black;}', css)
 
 
 class TestParseRules(TestCase):
@@ -211,5 +236,6 @@ class TestParseRules(TestCase):
         ('h1 {\n  color: red;\n  background: white;}\n h2 {font-size: 4px;}',
          'h1 {color: red; background: white;}\nh2 {font-size: 4px;}'),
     ])
+    @unittest.skipIf(sys.version_info < (3, 5), 'python3.4 can\'t keep order')
     def test_parse_style_rules(self, input, rule):
-        self.assertEqual(parse_style_rules(input).cssText, rule)
+        self.assertEqual(rule, parse_style_rules(input).cssText)

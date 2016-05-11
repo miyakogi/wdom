@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 import gc
 from unittest import skipIf
 
@@ -792,6 +793,7 @@ class TestHTMLElement(TestCase):
         self.assertEqual(elm.getAttribute('style'), 'color: red;')
         self.assertEqual(elm.html, '<a style="color: red;"></a>')
 
+    @skipIf(sys.version_info < (3, 5), 'py34 does not keep style order')
     def test_style_setter(self):
         self.elm.style = 'color: red;'
         self.assertEqual(self.elm.style.cssText, 'color: red;')
@@ -800,8 +802,9 @@ class TestHTMLElement(TestCase):
 
         self.elm.style.color = 'black'
         self.elm.style.background = 'red'
+        # py34 does not keep style order
         self.assertEqual(self.elm.style.cssText,
-                         'color: black; background: red;')
+                        'color: black; background: red;')
 
     def test_style_remove(self):
         self.elm.style = 'color: red;'

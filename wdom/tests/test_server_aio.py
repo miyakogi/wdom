@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from os import path
+import asyncio
 
 from syncer import sync
 
@@ -20,9 +21,10 @@ class TestServer(HTTPTestCase):
         self.start()
 
     @sync
-    async def test_mainpage(self):
+    @asyncio.coroutine
+    def test_mainpage(self):
         with self.assertLogs('wdom.server._aiohttp', 'INFO'):
-            response = await self.fetch(self.url)
+            response = yield from self.fetch(self.url)
         self.assertEqual(response.code, 200)
         self.assertRegex(
             response.text,
@@ -33,7 +35,8 @@ class TestServer(HTTPTestCase):
         )
 
     @sync
-    async def test_tempfile(self):
+    @asyncio.coroutine
+    def test_tempfile(self):
         doc = get_document()
         self.assertTrue(path.exists(doc.tempdir))
         tmp = path.join(doc.tempdir, 'a.html')
@@ -41,13 +44,14 @@ class TestServer(HTTPTestCase):
         with open(tmp, 'w') as f:
             f.write('test')
         self.assertTrue(path.exists(tmp))
-        response = await self.fetch(self.url + '/tmp/a.html')
+        response = yield from self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.text, 'test')
 
     @sync
-    async def test_tempfile_404(self):
-        response = await self.fetch(self.url + '/tmp/b.html')
+    @asyncio.coroutine
+    def test_tempfile_404(self):
+        response = yield from self.fetch(self.url + '/tmp/b.html')
         self.assertEqual(response.code, 404)
-        response = await self.fetch(self.url + '/tmp/a.html')
+        response = yield from self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(response.code, 404)

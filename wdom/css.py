@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 import re
 from collections import OrderedDict
 import logging
@@ -14,6 +15,11 @@ _css_norm_re = re.compile(r'([a-z])([A-Z])')
 _style_cleanup_re = re.compile(r'\s*([:;])\s*', re.S)
 _style_rule_re = re.compile(r'\s*(.*?)\s*{(.*?)}\s*', re.S)
 
+if sys.version_info >= (3, 5):
+    _dict = OrderedDict
+else:
+    _dict = dict
+
 
 def _lower_dash(m):
     return m.group(1) + '-' + m.group(2).lower()
@@ -26,7 +32,7 @@ def _normalize_css_property(prop):
         return _css_norm_re.sub(_lower_dash, prop)
 
 
-class CSSStyleDeclaration(OrderedDict):
+class CSSStyleDeclaration(_dict):
     def __init__(self, style: str = None, parent: Optional['CSSRule'] = None,
                  owner: Optional['Node'] = None):
         self.parentRule = parent
@@ -155,7 +161,7 @@ class CSSStyleRule(object):
 
 class CSSRuleList(list):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, kwargs)
+        super().__init__(*args, **kwargs)
 
     @property
     def length(self) -> int:

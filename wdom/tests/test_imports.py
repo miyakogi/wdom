@@ -41,24 +41,26 @@ class TestImportModules(TestCase):
     ])
     def test_import(self, from_, import_):
         cmd = 'from {0} import {1}\nlist(vars({1}).items())'
-        proc = subprocess.run(
+        proc = subprocess.Popen(
             ['python', '-c', cmd.format(from_, import_)],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=root,
         )
+        proc.wait()
         if proc.returncode != 0:
-            print(proc.stdout)
+            print(proc.stdout.read())
         self.assertEqual(proc.returncode, 0)
 
     def test_wdom_import(self):
         cmd = 'import wdom\nlist(vars(wdom).items())'
-        proc = subprocess.run(
+        proc = subprocess.Popen(
             ['python', '-c', cmd],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=root,
         )
+        proc.wait()
         if proc.returncode != 0:
-            print(proc.stdout)
-        assert proc.returncode == 0
+            print(proc.stdout.read())
+        self.assertEqual(proc.returncode, 0)
