@@ -1,5 +1,6 @@
 language: python
 python:
+  - "3.4.4"
   - "3.5.1"
 
 addons:
@@ -12,11 +13,12 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
 install:
-  - pip install tornado aiohttp syncer
-  - pip install selenium nose_parameterized coverage
-  - pip install codecov coveralls
+  - pip install tornado aiohttp
+  - pip install selenium nose-parameterized syncer
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install coverage codecov coveralls; fi
 script:
-  - coverage run --source wdom run_test.py
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then python run_test.py; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then coverage run --source wdom run_test.py; fi
 after_success:
-  - codecov -b $TRAVIS_BRANCH
-  - coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi

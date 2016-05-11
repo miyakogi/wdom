@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 from unittest.mock import MagicMock, call
 
 from syncer import sync
@@ -207,10 +208,12 @@ class TestQuery(TestCase):
         self.assertEqual(fut.result(), 1)
 
     @sync
-    async def test_scroll(self):
+    @asyncio.coroutine
+    def test_scroll(self):
         fut = self.elm.scrollX()
         self.assertFalse(fut.done())
         self.msg['reqid'] = 0
         self.msg['data'] = {'x': 1}
         self.elm.on_response(self.msg)
-        self.assertEqual(await fut, {'x': 1})
+        x = yield from fut
+        self.assertEqual(x, {'x': 1})

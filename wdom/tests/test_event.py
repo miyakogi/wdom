@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 from unittest.mock import MagicMock, call
 
 from syncer import sync
@@ -13,10 +14,14 @@ class TestEventListener(TestCase):
     def setUp(self):
         self._cofunc_call_count = 0
         self._cofunc_calls = []
-        async def a(event):
+
+        @asyncio.coroutine
+        def a(event):
             nonlocal self
             self._cofunc_call_count += 1
             self._cofunc_calls.append(event)
+            yield from asyncio.sleep(0)
+
         self.e = Event('event')
         self.func = MagicMock(_is_coroutine=False)
         self.cofunc = a
@@ -28,8 +33,9 @@ class TestEventListener(TestCase):
         self.func.assert_called_once_with(self.e)
 
     @sync
-    async def test_cofunc(self):
-        await self.cofunc_listener(self.e)
+    @asyncio.coroutine
+    def test_cofunc(self):
+        yield from self.cofunc_listener(self.e)
         self.assertEqual(self._cofunc_call_count, 1)
         self.assertEqual(self._cofunc_calls[0], self.e)
 

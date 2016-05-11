@@ -28,9 +28,10 @@ class TestMainHandlerBlank(HTTPTestCase):
         self.start()
 
     @sync
-    async def test_blank_mainpage(self) -> None:
+    @asyncio.coroutine
+    def test_blank_mainpage(self) -> None:
         with self.assertLogs('wdom', 'INFO'):
-            res = await self.fetch(self.url)
+            res = yield from self.fetch(self.url)
         self.assertEqual(res.code, 200)
         _re = re.compile(
             '<!DOCTYPE html>\s*<html rimo_id="\d+">\s*<head rimo_id="\d+">'
@@ -50,9 +51,10 @@ class TestMainHandler(HTTPTestCase):
         self.start()
 
     @sync
-    async def test_blank_mainpage(self) -> None:
+    @asyncio.coroutine
+    def test_blank_mainpage(self) -> None:
         with self.assertLogs('wdom', 'INFO'):
-            res = await self.fetch(self.url)
+            res = yield from self.fetch(self.url)
         self.assertEqual(res.code, 200)
         self.assertIn('testing', res.text)
 
@@ -65,28 +67,31 @@ class TestStaticFileHandler(HTTPTestCase):
         self.start()
 
     @sync
-    async def test_static_file(self) -> None:
+    @asyncio.coroutine
+    def test_static_file(self) -> None:
         with self.assertLogs('wdom.server._tornado', 'INFO'):
-            res = await self.fetch(self.url + '/_static/js/rimo/rimo.js')
+            res = yield from self.fetch(self.url + '/_static/js/rimo/rimo.js')
         self.assertEqual(res.code, 200)
         self.assertIn('rimo', res.text)
         self.assertIn('rimo.log', res.text)
 
     @sync
-    async def test_add_static_path(self) -> None:
+    @asyncio.coroutine
+    def test_add_static_path(self) -> None:
         from os import path
         get_app().add_static_path('a', path.abspath(path.dirname(__file__)))
         with self.assertLogs('wdom.server._tornado', 'INFO'):
-            res = await self.fetch(self.url + '/a/' + __file__)
+            res = yield from self.fetch(self.url + '/a/' + __file__)
         self.assertEqual(res.code, 200)
         self.assertIn('this text', res.text)
 
     @sync
-    async def test_tempdir(self):
+    @asyncio.coroutine
+    def test_tempdir(self):
         from os import path
         self.assertTrue(path.exists(self.document.tempdir))
         with self.assertLogs('wdom.server._tornado', 'WARN'):
-            res = await self.fetch(self.url + '/tmp/a.html')
+            res = yield from self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(res.code, 404)
         self.assertIn('404', res.text)
         self.assertIn('Not Found', res.text)
@@ -95,7 +100,7 @@ class TestStaticFileHandler(HTTPTestCase):
             f.write('test')
         self.assertTrue(path.exists(tmp))
         with self.assertLogs('wdom.server._tornado', 'INFO'):
-            res = await self.fetch(self.url + '/tmp/a.html')
+            res = yield from self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(res.code, 200)
         self.assertEqual('test', res.text)
 
@@ -109,44 +114,50 @@ class TestRootWSHandler(HTTPTestCase):
         self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
         self.ws = sync(self.ws_connect(self.ws_url))
 
-    async def wait(self, timeout=0.01):
-        await asyncio.sleep(timeout)
+    @asyncio.coroutine
+    def wait(self, timeout=0.01):
+        yield from asyncio.sleep(timeout)
 
     @sync
-    async def test_ws_connection(self) -> None:
+    @asyncio.coroutine
+    def test_ws_connection(self) -> None:
         with self.assertLogs('wdom.server._tornado', 'INFO'):
-            _ = await self.ws_connect(self.ws_url)
+            _ = yield from self.ws_connect(self.ws_url)
             del _
-            await self.wait()
+            yield from self.wait()
 
     @sync
-    async def test_logging_error(self) -> None:
+    @asyncio.coroutine
+    def test_logging_error(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='error', message='test')
             ))
-            await self.wait()
+            yield from self.wait()
 
     @sync
-    async def test_logging_warn(self) -> None:
+    @asyncio.coroutine
+    def test_logging_warn(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='warn', message='test')
             ))
-            await self.wait()
+            yield from self.wait()
 
     @sync
-    async def test_logging_info(self) -> None:
+    @asyncio.coroutine
+    def test_logging_info(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='info', message='test')
             ))
-            await self.wait()
+            yield from self.wait()
 
     @sync
-    async def test_logging_debug(self) -> None:
+    @asyncio.coroutine
+    def test_logging_debug(self) -> None:
         with self.assertLogs('wdom.server', 'DEBUG'):
             self.ws.write_message(json.dumps(
                 dict(type='log', level='debug', message='test')
             ))
-            await self.wait()
+            yield from self.wait()

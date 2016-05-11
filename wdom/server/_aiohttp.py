@@ -19,20 +19,20 @@ def is_connected():
     return any(connections)
 
 
-class MainHandler(web.View):
+def main_handler(self):
     '''This is a main handler, which renders ``document`` object of the
     application. Must be used with an Application object which has ``document``
     attribute.'''
-    async def get(self):
-        from wdom.document import get_document
-        logger.info('connected')
-        return web.Response(body=get_document().build().encode())
+    from wdom.document import get_document
+    logger.info('connected')
+    return web.Response(body=get_document().build().encode())
 
 
-async def ws_open(request):
+@asyncio.coroutine
+def ws_open(request):
     '''Open websocket for aiohttp.'''
     handler = WSHandler()
-    await handler.open(request)
+    yield from handler.open(request)
     return handler.ws
 
 
@@ -40,33 +40,36 @@ class WSHandler:
     '''Wrapper class for aiohttp websockets. APIs are similar to
     ``tornaod.websocket.WebSocketHandler``.
     '''
-    async def open(self, request):
+    @asyncio.coroutine
+    def open(self, request):
         self.req = request
         self.ws = web.WebSocketResponse()
-        await self.ws.prepare(request)
+        yield from self.ws.prepare(request)
         connections.append(self)
 
         while not self.ws.closed:
-            msg = await self.ws.receive()
+            msg = yield from self.ws.receive()
             if msg.tp == MsgType.text:
-                await self.on_message(msg.data)
+                yield from self.on_message(msg.data)
             elif msg.tp in (MsgType.close, MsgType.closed, MsgType.error):
-                await self.ws.close()
+                yield from self.ws.close()
         self.on_close()
         return self.ws
 
     def write_message(self, message):
         self.ws.send_str(message)
 
-    async def on_message(self, message):
+    @asyncio.coroutine
+    def on_message(self, message):
         on_websocket_message(message)
 
-    async def terminate(self):
-        await asyncio.sleep(config.shutdown_wait)
+    @asyncio.coroutine
+    def terminate(self):
+        yield from asyncio.sleep(config.shutdown_wait)
         # stop server and close loop if no more connection exists
         if not is_connected():
             server = self.req.app['server']
-            await terminate_server(server)
+            yield from terminate_server(server)
             server._loop.stop()
 
     def on_close(self):
@@ -84,7 +87,7 @@ class Application(web.Application):
         super().__init__(*args, **kwargs)
         # self.router.add_route('GET', '/', MainHandler)
         root_resource = self.router.add_resource('/', name='root')
-        root_resource.add_route('GET', MainHandler)
+        root_resource.add_route('GET', main_handler)
         # self.router.add_route('*', '/rimo_ws', ws_open)
         root_ws_resource = self.router.add_resource('/rimo_ws', name='root_ws')
         root_ws_resource.add_route('*', ws_open)
@@ -111,9 +114,10 @@ def set_application(app: Application):
     main_application = app
 
 
-async def close_connections(app: web.Application):
+@asyncio.coroutine
+def close_connections(app: web.Application):
     for conn in connections:
-        await conn.ws.close(code=999, message='server shutdown')
+        yield from conn.ws.close(code=999, message='server shutdown')
 
 
 def start_server(app: Optional[web.Application] = None,
@@ -150,13 +154,14 @@ def start_server(app: Optional[web.Application] = None,
     return server
 
 
-async def terminate_server(server: asyncio.base_events.Server):
+@asyncio.coroutine
+def terminate_server(server: asyncio.base_events.Server):
     logger.info('Start server shutdown')
     server.close()
-    await server.wait_closed()
-    await server.app.shutdown()
-    await server.handler.finish_connections(1.0)
-    await server.app.cleanup()
+    yield from server.wait_closed()
+    yield from server.app.shutdown()
+    yield from server.handler.finish_connections(1.0)
+    yield from server.app.cleanup()
     logger.info('Server terminated')
 
 
