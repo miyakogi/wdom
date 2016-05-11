@@ -13,7 +13,7 @@ before_script:
   - sleep 3
 install:
   - pip install tornado aiohttp syncer
-  - pip install selenium coverage
+  - pip install selenium nose_parameterized coverage
   - pip install codecov coveralls
 script:
   - coverage run --source wdom run_test.py

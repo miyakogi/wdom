@@ -1,6 +1,8 @@
 #!/usr/bin/env py.test
 # -*- coding: utf-8 -*-
 
+from nose_parameterized import parameterized
+
 from wdom.css import _normalize_css_property
 from wdom.css import CSSStyleDeclaration, parse_style_decl
 from wdom.css import CSSStyleRule, parse_style_rules
@@ -9,18 +11,16 @@ from wdom.testing import TestCase
 
 
 class TestCSSProperties(TestCase):
-    def test_normalize(self):
-        cases = [
-            ('color', 'color'),
-            ('fontColor', 'font-color'),
-            ('borderWidth', 'border-width'),
-            ('borderBottomColor', 'border-bottom-color'),
-            ('zIndex', 'z-index'),
-            ('cssFloat', 'float'),
-        ]
-        for js, css in cases:
-            with self.subTest(js=js, css=css):
-                self.assertEqual(_normalize_css_property(js), css)
+    @parameterized.expand([
+        ('color', 'color'),
+        ('fontColor', 'font-color'),
+        ('borderWidth', 'border-width'),
+        ('borderBottomColor', 'border-bottom-color'),
+        ('zIndex', 'z-index'),
+        ('cssFloat', 'float'),
+    ])
+    def test_normalize(self, js, css):
+        self.assertEqual(_normalize_css_property(js), css)
 
 
 class TestCSSStyleDeclaration(TestCase):
@@ -133,21 +133,19 @@ class TestCSSStyleDeclaration(TestCase):
 
 
 class TestCSSParseDecl(TestCase):
-    def test_parse_style(self):
-        cases = [
-            ('color:red;', 'color: red;'),
-            ('color:red', 'color: red;'),
-            ('color  :red  ;', 'color: red;'),
-            ('margin: 1 3 4 5;', 'margin: 1 3 4 5;'),
-            (' margin :1 3 4 5   ;  ', 'margin: 1 3 4 5;'),
-            ('z-index: 1;', 'z-index: 1;'),
-            ('color: red; z-index: 1;', 'color: red; z-index: 1;'),
-            ('  color  : red ;  z-index  : 1  ', 'color: red; z-index: 1;'),
-            ('color: red;  \n z-index: 1;', 'color: red; z-index: 1;'),
-        ]
-        for input, css in cases:
-            with self.subTest(input=input, css=css):
-                self.assertEqual(parse_style_decl(input).cssText, css)
+    @parameterized.expand([
+        ('color:red;', 'color: red;'),
+        ('color:red', 'color: red;'),
+        ('color  :red  ;', 'color: red;'),
+        ('margin: 1 3 4 5;', 'margin: 1 3 4 5;'),
+        (' margin :1 3 4 5   ;  ', 'margin: 1 3 4 5;'),
+        ('z-index: 1;', 'z-index: 1;'),
+        ('color: red; z-index: 1;', 'color: red; z-index: 1;'),
+        ('  color  : red ;  z-index  : 1  ', 'color: red; z-index: 1;'),
+        ('color: red;  \n z-index: 1;', 'color: red; z-index: 1;'),
+    ])
+    def test_parse_style(self, input, css):
+        self.assertEqual(parse_style_decl(input).cssText, css)
 
 
 class TestCSSStyleRule(TestCase):
@@ -203,17 +201,15 @@ class TestCSSRuleList(TestCase):
 
 
 class TestParseRules(TestCase):
-    def test_parse_style_rules(self):
-        cases = [
-            ('h1 {color:red;}', 'h1 {color: red;}'),
-            ('h1,h2 {color:red;}', 'h1,h2 {color: red;}'),
-            ('  h1  {  color  :  red  ;  }', 'h1 {color: red;}'),
-            ('h1{color:red}', 'h1 {color: red;}'),
-            ('h1 {color: red;}\n   h2 {font-size: 4px;}',
-             'h1 {color: red;}\nh2 {font-size: 4px;}'),
-            ('h1 {\n   color: red;\n    background: white;}\n   h2 {font-size: 4px;}',  # noqa
-             'h1 {color: red; background: white;}\nh2 {font-size: 4px;}'),
-        ]
-        for input, rule in cases:
-            with self.subTest(input=input, rule=rule):
-                self.assertEqual(parse_style_rules(input).cssText, rule)
+    @parameterized.expand([
+        ('h1 {color:red;}', 'h1 {color: red;}'),
+        ('h1,h2 {color:red;}', 'h1,h2 {color: red;}'),
+        ('  h1  {  color  :  red  ;  }', 'h1 {color: red;}'),
+        ('h1{color:red}', 'h1 {color: red;}'),
+        ('h1 {color: red;}\n   h2 {font-size: 4px;}',
+         'h1 {color: red;}\nh2 {font-size: 4px;}'),
+        ('h1 {\n  color: red;\n  background: white;}\n h2 {font-size: 4px;}',
+         'h1 {color: red; background: white;}\nh2 {font-size: 4px;}'),
+    ])
+    def test_parse_style_rules(self, input, rule):
+        self.assertEqual(parse_style_rules(input).cssText, rule)

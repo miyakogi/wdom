@@ -1,4 +1,4 @@
-#!/usr/bin/env py.test
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import sys
@@ -9,6 +9,8 @@ import logging
 import unittest
 from importlib import reload
 import subprocess
+
+from nose_parameterized import parameterized
 
 from wdom.misc import root_dir
 from wdom.options import parse_command_line, config, set_loglevel
@@ -37,20 +39,18 @@ class TestOptions(TestCase):
         logger = logging.getLogger('wdom')
         self.assertEqual(logger.getEffectiveLevel(), logging.INFO)
 
-    def test_loglevel(self):
-        cases = [
-            ('debug', logging.DEBUG),
-            ('info', logging.INFO),
-            ('warn', logging.WARN),
-            ('error', logging.ERROR),
-        ]
-        for l, v in cases:
-            with self.subTest(level_name=l, actual_level=v):
-                sys.argv.extend(['--logging', l])
-                parse_command_line()
-                logger = logging.getLogger('wdom')
-                self.assertEqual(logger.getEffectiveLevel(), v)
-                reset_options()
+    @parameterized.expand([
+        ('debug', logging.DEBUG),
+        ('info', logging.INFO),
+        ('warn', logging.WARN),
+        ('error', logging.ERROR),
+    ])
+    def test_loglevel(self, level_name, level):
+        sys.argv.extend(['--logging', level_name])
+        parse_command_line()
+        logger = logging.getLogger('wdom')
+        self.assertEqual(logger.getEffectiveLevel(), level)
+        reset_options()
 
     def test_debug_without_logging(self):
         sys.argv.extend(['--debug'])
@@ -118,3 +118,7 @@ class TestThemeOption(unittest.TestCase):
         self.assertIn('unknown', log.records[0].msg)
         self.assertIn('skeleton', log.records[1].msg)
         self.assertEqual(default_theme.Button, tag.Button)
+
+
+if __name__ == '__main__':
+    unittest.main()
