@@ -106,12 +106,13 @@ class HTTPTestCase(TestCase):
             self._server_started = False
         super().tearDown()
 
-    async def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
+    @asyncio.coroutine
+    def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
         '''Fetch url. Response body is decoded by ``encoding`` and set
         ``text`` property of the response. If failed to decode, ``text``
         property will set to ``None``.
         '''
-        response = await to_asyncio_future(
+        response = yield from to_asyncio_future(
             AsyncHTTPClient().fetch(url, raise_error=False))
         try:
             response.text = response.body.decode(encoding)
@@ -119,15 +120,16 @@ class HTTPTestCase(TestCase):
             response.text = None
         return response
 
-    async def ws_connect(self, url: str, _retry=0, _max_retry=20, _wait=0.05
-                         ) -> WebSocketClientConnection:
+    @asyncio.coroutine
+    def ws_connect(self, url: str, _retry=0, _max=20, _wait=0.05
+                   ) -> WebSocketClientConnection:
         '''Make WebSocket connection to the url.'''
         try:
-            ws = await to_asyncio_future(websocket_connect(url))
+            ws = yield from to_asyncio_future(websocket_connect(url))
         except ConnectionRefusedError:
-            if _retry <= _max_retry:
-                await asyncio.sleep(_wait)
-                ws = await self.ws_connect(url, _retry+1, _max_retry, _wait)
+            if _retry <= _max:
+                yield from asyncio.sleep(_wait)
+                ws = yield from self.ws_connect(url, _retry+1, _max, _wait)
             else:
                 raise ConnectionRefusedError(
                     'WebSocket connection refused: {}'.format(url))
