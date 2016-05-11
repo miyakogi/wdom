@@ -18,7 +18,7 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install coverage codecov coveralls; fi
 script:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then python run_test.py; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then coverage run --source wdom run_test.py; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then python run_tests.py; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then coverage run --source wdom run_tests.py; fi
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
