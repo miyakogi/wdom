@@ -4,7 +4,7 @@
 from wdom.tag import NewTagClass as NewTag
 from wdom.tag import *
 
-name = 'Broundwork'
+name = 'Groundwork'
 project_url = 'https://groundworkcss.github.io/groundwork/'
 project_repository = 'https://github.com/groundworkcss/groundwork'
 license = 'MIT License'
