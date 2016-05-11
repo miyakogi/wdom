@@ -13,10 +13,12 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
 install:
-  - pip install tox
-  - pip install codecov coveralls
+  - pip install tornado aiohttp
+  - pip install selenium nose-parametrized syncer
+  - [[ $TRAVIS_PYTHON_VERSION == 3.4* ]] && pip install mypy-lang
+  - [[ $TRAVIS_PYTHON_VERSION == 3.5* ]] && pip install codecov coveralls; fi
 script:
-  - tox
+  - [[ $TRAVIS_PYTHON_VERSION == 3.4* ]] && python run_test.py
+  - [[ $TRAVIS_PYTHON_VERSION == 3.5* ]] && coverage run --source wdom run_test.py
 after_success:
-  - codecov -b $TRAVIS_BRANCH
-  - coveralls
+  - [[ $TRAVIS_PYTHON_VERSION == 3.5* ]] && codecov -b $TRAVIS_BRANCH && coveralls
