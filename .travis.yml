@@ -14,7 +14,7 @@ before_script:
   - sleep 3
 install:
   - pip install tornado aiohttp
-  - pip install selenium nose-parametrized syncer
+  - pip install selenium nose-parameterized syncer
   - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install coverage codecov coveralls; fi
 script:
