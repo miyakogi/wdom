@@ -454,6 +454,7 @@ class WebDriverTestCase:
         self.server.terminate()
         sys.stdout.flush()
         sys.stderr.flush()
+        super().tearDown()
 
     def get_app(self):
         '''This method should be overridden. Return

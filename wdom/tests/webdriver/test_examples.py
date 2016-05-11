@@ -1,4 +1,4 @@
-#!/usr/bin/env py.test
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -11,7 +11,7 @@ from wdom.document import get_document
 from wdom import server
 from wdom.misc import install_asyncio
 from wdom.testing import WebDriverTestCase, TestCase, reset
-from wdom.testing import start_webdriver, close_webdriver
+from wdom.testing import close_webdriver
 
 
 def setUpModule():
