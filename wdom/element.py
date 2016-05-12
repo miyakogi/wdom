@@ -235,18 +235,19 @@ class Parser(HTMLParser):
 
 
 _str_attr_doc = '''
-Getter: Get value of `{attr}` attribute of this element, as string.
-        If `{attr}` is not defined, return empty string.
-Setter: Set the value of `{attr}` attribute of this element.
-Deleter: Remove `{attr}` attribute from this element.
+Getter: Get value of ``{attr}`` attribute of this element, as string. If
+`{attr}` is not defined, return empty string.
+Setter: Set the value of
+``{attr}`` attribute of this element.
+Deleter: Remove ``{attr}`` attribute from this element.
 '''
 
 _bool_attr_doc = '''
-Getter: Return True if this element has `{attr}` attribute.
-        Otherwise return False.
-Setter: If True, add `{attr}` attribute to this element.
-        Otherwise remove `{attr}`.
-Deleter: Remove `{attr}` attribute from this element.
+Getter: Return True if this element has ``{attr}`` attribute. Otherwise return
+False.
+Setter: If True, add ``{attr}`` attribute to this element. Otherwise remove
+``{attr}``.
+Deleter: Remove ``{attr}`` attribute from this element.
 '''
 
 
