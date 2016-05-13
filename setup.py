@@ -36,7 +36,7 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
     ],
-    test_suite='tests',
+    test_suite='wdom.tests',
 
     install_requires=install_requires,
 )
