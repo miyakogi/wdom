@@ -14,7 +14,7 @@ before_script:
   - sleep 3
 install:
   - pip install tox
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install coverage codecov coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install codecov coveralls; fi
 script:
   - tox
 after_success:
