@@ -6,33 +6,30 @@
 WDOM
 ====
 
-WDOM is a python library to control DOM on browser, as if it is a GUI elements.
-This library includes web-server (tornado/aiohttp), but not intended to be
-used as a web framework, please use for **Desktop** GUI Applications!
+WDOM is a library to control DOM on browser, as if it is a GUI element. This
+library includes web-server (tornado/aiohttp), but is not intended to be used as
+a web framework, please use for **Desktop** GUI Applications!
 
 Features
 --------
 
-* Implemented in pure python
+* Pure python implementation
+* Theming with CSS frameworks
+* `DOM specification`_ based API
 
-    * Easy install, easy distribution
-
-* CSS frameworks are available for theming your app
-* Interfaces are based on `DOM specification`_, so you don't need to learn about
-  special classes/methods
-
-    * Implemented DOM features are listed in `Features
-      <https://github.com/miyakogi/wdom/wiki/Features>`_
+  * Not need to learn new special classes/methods
+  * Implemented DOM features are listed in `Wiki page <https://github.com/miyakogi/wdom/wiki/Features>`_
 
 * Testable with browsers and `Selenium`_ WebDriver
-* MIT licence
+* Licensed under MIT licence
 
 Requirements
 ------------
 
-Python 3.5.1+ and any modern-browser are required.
-Also supports Electron and PyQt's webkit browser.
-IE is not supported, but most of features will work with IE11.
+Python 3.5.1+ and any modern-browsers are required.
+Also supports Electron and PyQt's webkit browsers.
+IE is not supported, but most of features will work with IE11 (but not
+recomended).
 
 Installation
 ------------
@@ -58,7 +55,6 @@ Contents
     :titlesonly:
 
     guide/index
-    install
     dom
     server
     test

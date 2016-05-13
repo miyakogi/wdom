@@ -1,7 +1,7 @@
 DOM Reference
 =============
 
-``wdom.dom.Tag`` class provides dom implementation which is syncronized on
+``wdom.dom.Tag`` class provides dom implementation which is synchronized on
 python and browser.
 
 

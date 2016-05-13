@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-from wdom.misc import install_asyncio  # only when using tornado
-from wdom.server import get_app, start_server, stop_server
+from wdom.server import start_server, stop_server
 from wdom.document import get_document
 from wdom.tag import Button, Div
 
@@ -20,8 +19,6 @@ class DefaultButton(MyButton):
 
 
 if __name__ == '__main__':
-    install_asyncio()  # only when using tornado
-
     document = get_document()
     # Register MyElement
     document.defaultView.customElements.define('my-button', MyButton, {'extends': 'button'})
@@ -40,10 +37,8 @@ if __name__ == '__main__':
     print(isinstance(div.firstChild, MyButton))  # True
     print(isinstance(div.lastChild, DefaultButton))  # True
 
-    app = get_app(document)
-    loop = asyncio.get_event_loop()
-    server = start_server(app, port=8888, loop=loop)
+    start_server()
     try:
-        loop.run_forever()
+        asyncio.get_event_loop().run_forever()
     except KeyboardInterrupt:
-        stop_server(server)
+        stop_server()

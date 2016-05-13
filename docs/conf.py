@@ -128,24 +128,16 @@ html_theme = 'alabaster'
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-font = ', '.join(['"goudy old style"', '"minion pro"', '"bell mt"', 'Georgia',
-                  '"Hiragino Mincho Pro"', 'serif',
-                  ])
-head_font = ', '.join(['Garamond', 'Georgia', 'serif'])
-code_font = ', '.join(['Consolas','Menlo', '"Deja Vu Sans Mono"',
-                       '"Bitstream Vera Sans Mono"', 'monospace',
-                       ])
 
 html_theme_options = {
-    'description': 'DOM manipulation library for python',
-    'description': 'All you need is DOM',
+    'description': 'Browser-based GUI library',
     'github_user': 'miyakogi',
     'github_repo': 'wdom',
     'travis_button': 'miyakogi/wdom',
     'codecov_button': 'miyakogi/wdom',
-    'font_family': ', '.join(['Georgia', font]),
-    'head_font_family': ', '.join(['"PT Serif"', head_font]),
-    'code_font_family': ', '.join(['"PT Mono"', code_font]),
+    'font_family': '',
+    'head_font_family': '',
+    # 'code_font_family': '',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
