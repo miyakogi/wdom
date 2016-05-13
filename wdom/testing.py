@@ -125,8 +125,9 @@ class HTTPTestCase(TestCase):
         return response
 
     @asyncio.coroutine
-    def ws_connect(self, url: str, _retry=0, _max=20, _wait=0.05
-                   ) -> WebSocketClientConnection:
+    def ws_connect(self, url: str, _retry=0,
+                   _max=100 if os.environ.get('TRAVIS') else 20,
+                   _wait=0.05) -> WebSocketClientConnection:
         '''Make WebSocket connection to the url.'''
         try:
             ws = yield from to_asyncio_future(websocket_connect(url))
@@ -354,7 +355,7 @@ class RemoteBrowserTestCase:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
 
     def start(self):
         self._prev_logging = options.config.logging
@@ -410,7 +411,7 @@ class WebDriverTestCase:
     ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
     tested.
     '''
-    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
 
     @classmethod
     def setUpClass(cls):
