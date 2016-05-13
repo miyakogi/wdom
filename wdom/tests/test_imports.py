@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 from os import path
 import subprocess
 
@@ -49,7 +50,7 @@ class TestImportModules(TestCase):
     def test_import(self, from_, import_):
         cmd = 'from {0} import {1}\nlist(vars({1}).items())'
         proc = subprocess.Popen(
-            ['python', '-c', cmd.format(from_, import_)],
+            [sys.executable, '-c', cmd.format(from_, import_)],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=root,
@@ -62,7 +63,7 @@ class TestImportModules(TestCase):
     def test_wdom_import(self):
         cmd = 'import wdom\nlist(vars(wdom).items())'
         proc = subprocess.Popen(
-            ['python', '-c', cmd],
+            [sys.executable, '-c', cmd],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             cwd=root,
