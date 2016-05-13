@@ -16,6 +16,6 @@ install:
   - pip install tox
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install codecov coveralls; fi
 script:
-  - tox
+  - tox -c tox_travis.ini
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
