@@ -127,7 +127,8 @@ class HTTPTestCase(TestCase):
     @asyncio.coroutine
     def ws_connect(self, url: str, _retry=0,
                    _max=100 if os.environ.get('TRAVIS') else 20,
-                   _wait=0.05) -> WebSocketClientConnection:
+                   _wait=0.2 if os.environ.get('TRAVIS') else 0.05
+                   ) -> WebSocketClientConnection:
         '''Make WebSocket connection to the url.'''
         try:
             ws = yield from to_asyncio_future(websocket_connect(url))
