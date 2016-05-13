@@ -1,2 +1,2 @@
 clean:
-	rm -rf build dist **/__pycache__ **/*.pyc
+	rm -rf build dist wdom.egg-info **/__pycache__ **/*.pyc
