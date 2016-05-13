@@ -84,3 +84,38 @@ class RevTextTestCase(WebDriverTestCase, TestCase):
         view.click()
         self.wait()
         self.assertEqual(view.text, text)
+
+
+class TimerTestCase(WebDriverTestCase, TestCase):
+    wait_time = 0.2
+
+    def setUp(self):
+        super().setUp()
+        reset()  # I don't know why, but need reset for aiohttp.
+        from wdom.examples.timer import sample_page
+        self.document = sample_page(autoreload=False)
+        self.start()
+
+    @unittest.skipIf(os.environ.get('TRAVIS', False),
+                     reason='This test not pass only on travis')
+    def test_timer(self):
+        view = self.wd.find_element_by_tag_name('h1')
+        start_btn = self.wd.find_element_by_id('start_btn')
+        stop_btn = self.wd.find_element_by_id('stop_btn')
+        reset_btn = self.wd.find_element_by_id('reset_btn')
+        self.wait()
+
+        def test_timer():
+            self.assertEqual(view.text, '180.00')
+            start_btn.click()
+            self.wait()
+            self.assertTrue(float(view.text) < 179.90)
+            stop_btn.click()
+            t = view.text
+            self.wait()
+            self.assertEqual(view.text, t)
+
+        test_timer()
+        reset_btn.click()
+        self.wait()
+        test_timer()
