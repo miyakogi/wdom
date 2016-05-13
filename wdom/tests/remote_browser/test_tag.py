@@ -12,7 +12,6 @@ from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
 from wdom.testing import start_remote_browser, close_remote_browser
-from wdom import server
 
 
 def setUpModule():
@@ -24,12 +23,9 @@ def tearDownModule():
     close_remote_browser()
 
 
-class NodeTestCase(RemoteBrowserTestCase):
-    server_type = 'aiohttp'
-
+class NodeTestCase(RemoteBrowserTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        server.set_server_type(self.server_type)
         self.document = get_document()
 
         class Root(Tag):
@@ -114,12 +110,9 @@ class NodeTestCase(RemoteBrowserTestCase):
         self.assertIsTrue(self.element.is_displayed())
 
 
-class InputTestCase(RemoteBrowserTestCase):
-    server_type = 'aiohttp'
-
+class InputTestCase(RemoteBrowserTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        server.set_server_type(self.server_type)
         self.document = get_document(autoreload=False)
         self.root = Form()
         self.input = Input(parent=self.root, type='text')
@@ -253,12 +246,9 @@ class InputTestCase(RemoteBrowserTestCase):
         self.assertTrue(self.radio2.checked)
 
 
-class SelectTestCase(RemoteBrowserTestCase):
-    server_type = 'aiohttp'
-
+class SelectTestCase(RemoteBrowserTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        server.set_server_type(self.server_type)
         self.document = get_document(autoreload=False)
         self.root = Div()
         self.select = Select(parent=self.root)
@@ -319,15 +309,3 @@ class SelectTestCase(RemoteBrowserTestCase):
         self.assertFalse(self.opt1m.selected)
         self.assertFalse(self.opt2m.selected)
         self.assertFalse(self.opt3m.selected)
-
-
-class TestNodeAIO(NodeTestCase, TestCase):
-    pass
-
-
-class TestInputAIO(InputTestCase, TestCase):
-    pass
-
-
-class TestSelectAIO(SelectTestCase, TestCase):
-    pass

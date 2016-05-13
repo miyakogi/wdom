@@ -15,7 +15,6 @@ from wdom.node import DocumentFragment, Text
 from wdom.web_node import WebElement
 from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
 from wdom.testing import start_remote_browser, close_remote_browser
-from wdom import server
 
 
 def setUpModule():
@@ -27,12 +26,9 @@ def tearDownModule():
     close_remote_browser()
 
 
-class ElementTestCase(RemoteBrowserTestCase):
-    server_type = 'aiohttp'
-
+class ElementTestCase(RemoteBrowserTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        server.set_server_type(self.server_type)
         self.document = get_document()
         self.document.body.prepend(self.get_elements())
         self.start()
@@ -41,9 +37,7 @@ class ElementTestCase(RemoteBrowserTestCase):
         raise NotImplementedError
 
 
-class WebElementTestCase(ElementTestCase):
-    server_type = 'aiohttp'
-
+class WebElementTestCase(ElementTestCase, TestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -423,9 +417,7 @@ class WebElementTestCase(ElementTestCase):
         self.assertRegex(log.output[0], r'JS: ReferenceError')
 
 
-class EventTestCase(ElementTestCase):
-    server_type = 'aiohttp'
-
+class EventTestCase(ElementTestCase, TestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -463,11 +455,3 @@ class EventTestCase(ElementTestCase):
         self.element.send_keys('abc')
         self.wait()
         self.assertEqual(self.input_event_mock.call_count, 3)
-
-
-class TestWebElementAIO(WebElementTestCase, TestCase):
-    server_type = 'aiohttp'
-
-
-class TestEventAIO(EventTestCase, TestCase):
-    server_type = 'aiohttp'

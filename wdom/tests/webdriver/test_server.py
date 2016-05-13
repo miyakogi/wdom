@@ -24,7 +24,7 @@ def tearDownModule():
 CURDIR = path.dirname(path.abspath(__file__))
 ROOTDIR = path.dirname(path.dirname(path.dirname(CURDIR)))
 
-src_aio = '''
+src_base = '''
 import sys
 import asyncio
 
@@ -36,7 +36,6 @@ from wdom.document import get_document
 from wdom import server
 
 install_asyncio()
-server.set_server_type('aiohttp')
 loop = asyncio.get_event_loop()
 doc = get_document()
 doc.body.appendChild(H1('FIRST', id='h1'))
@@ -54,15 +53,12 @@ src_css_post = '''
 h1 {color: #ff0000;}
 '''
 
-_src = src_aio.splitlines()
-src_tornado = '\n'.join(_src).replace('aiohttp', 'tornado')
+_src = src_base.splitlines()
 _src.insert(12, 'server.exclude_patterns.append(r\'test.css\')')
-src_exclude_css_aio = '\n'.join(_src)
-src_exclude_css_tornado = src_exclude_css_aio.replace('aiohttp', 'tornado')
-_src = src_aio.splitlines()
+src_exclude_css = '\n'.join(_src)
+_src = src_base.splitlines()
 _src.insert(12, 'server.exclude_patterns.append(r\'testdi*\')')
-src_exclude_dir_aio = '\n'.join(_src)
-src_exclude_dir_tornado = src_exclude_dir_aio.replace('aiohttp', 'tornado')
+src_exclude_dir = '\n'.join(_src)
 
 
 class TestAutoReload(TestCase):
@@ -121,14 +117,14 @@ class TestAutoReload(TestCase):
         self.assertEqual(h1.text, 'FIRST')
 
         with open(self.tmpfilename, 'w') as f:
-            f.write(src_aio.replace('FIRST', 'SECOND'))
+            f.write(src_base.replace('FIRST', 'SECOND'))
         self.wait()
         h1 = self.wd.find_element_by_id('h1')
         self.assertEqual(h1.text, 'SECOND')
 
     def test_autoreload_aio(self):
         with open(self.tmpfilename, 'w') as f:
-            f.write(src_aio)
+            f.write(src_base)
         self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
@@ -136,23 +132,7 @@ class TestAutoReload(TestCase):
 
     def test_autoreload_debug_aio(self):
         with open(self.tmpfilename, 'w') as f:
-            f.write(src_aio)
-        self.wait_short()
-        args = self._base_args()
-        args.append('--debug')
-        self.check_reload(args)
-
-    def test_autoreload_tornado(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(src_tornado)
-        self.wait_short()
-        args = self._base_args()
-        args.append('--autoreload')
-        self.check_reload(args)
-
-    def test_autoreload_debug_tornado(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(src_tornado)
+            f.write(src_base)
         self.wait_short()
         args = self._base_args()
         args.append('--debug')
@@ -174,17 +154,9 @@ class TestAutoReload(TestCase):
         self.assertRegex(h1.value_of_css_property('color'),
                          r'255,\s*0,\s* 0,\s*1\s*')
 
-    def test_autoreload_css_aio(self):
+    def test_autoreload_css(self):
         with open(self.tmpfilename, 'w') as f:
-            f.write(src_aio)
-        self.wait_short()
-        args = self._base_args()
-        args.append('--autoreload')
-        self.check_css_reload(args)
-
-    def test_autoreload_css_tornado(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(src_tornado)
+            f.write(src_base)
         self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
@@ -206,33 +178,17 @@ class TestAutoReload(TestCase):
         self.assertRegex(h1.value_of_css_property('color'),
                          r'0,\s*0,\s* 0,\s*1\s*')
 
-    def test_autoreload_exclude_css_aio(self):
+    def test_autoreload_exclude_css(self):
         with open(self.tmpfilename, 'w') as f:
-            f.write(src_exclude_css_aio)
+            f.write(src_exclude_css)
         self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
         self.check_css_noreload(args)
 
-    def test_autoreload_exclude_css_tornado(self):
+    def test_autoreload_exclude_dir(self):
         with open(self.tmpfilename, 'w') as f:
-            f.write(src_exclude_css_tornado)
-        self.wait_short()
-        args = self._base_args()
-        args.append('--autoreload')
-        self.check_css_noreload(args)
-
-    def test_autoreload_exclude_dir_aio(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(src_exclude_dir_aio)
-        self.wait_short()
-        args = self._base_args()
-        args.append('--autoreload')
-        self.check_css_noreload(args)
-
-    def test_autoreload_exclude_dir_tornado(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(src_exclude_dir_tornado)
+            f.write(src_exclude_dir)
         self.wait_short()
         args = self._base_args()
         args.append('--autoreload')
@@ -240,16 +196,7 @@ class TestAutoReload(TestCase):
 
     def test_autoreload_nowatch_aio(self):
         with open(self.tmpfilename, 'w') as f:
-            f.write(src_aio.replace("/testdir')", "/testdir', no_watch=True)"))
-        self.wait_short()
-        args = self._base_args()
-        args.append('--autoreload')
-        self.check_css_noreload(args)
-
-    def test_autoreload_nowatch_tornado(self):
-        with open(self.tmpfilename, 'w') as f:
-            f.write(
-                src_tornado.replace("/testdir')", "/testdir', no_watch=True)"))
+            f.write(src_base.replace("/testdir'", "/testdir', no_watch=True"))
         self.wait_short()
         args = self._base_args()
         args.append('--autoreload')

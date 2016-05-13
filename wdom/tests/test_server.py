@@ -4,6 +4,8 @@
 import sys
 import os
 from os import path
+import re
+import json
 import time
 import subprocess
 import asyncio
@@ -13,6 +15,7 @@ from selenium.webdriver.common.utils import free_port
 from syncer import sync
 
 from wdom.misc import install_asyncio
+from wdom.document import get_document
 from wdom import server
 from wdom.testing import TestCase, HTTPTestCase
 
@@ -20,9 +23,7 @@ curdir = path.dirname(__file__)
 root = path.dirname(path.dirname(curdir))
 script = '''
 import asyncio
-from wdom import misc, document, server
-misc.install_asyncio()
-server.set_server_type('{server_type}')
+from wdom import document, server
 doc = document.get_document()
 with open(doc.tempdir + '/a.html', 'w') as f:
     f.write(doc.tempdir)
@@ -33,15 +34,21 @@ asyncio.get_event_loop().run_forever()
 
 def setUpModule():
     install_asyncio()
+    server.set_server_type('tornado')
 
 
 class TestServerTypeSet(TestCase):
     def test_server_module(self):
-        from wdom.server import _aiohttp, _tornado
+        from wdom.server import _tornado
         server.set_server_type('tornado')
         self.assertTrue(isinstance(server.get_app(), _tornado.Application))
-        server.set_server_type('aiohttp')
-        self.assertTrue(isinstance(server.get_app(), _aiohttp.Application))
+        try:
+            from wdom.server import _aiohttp
+            server.set_server_type('aiohttp')
+            self.assertTrue(isinstance(server.get_app(), _aiohttp.Application))
+        except ImportError:
+            pass
+        server.set_server_type('tornado')
 
     def test_invalid_server_type(self):
         with self.assertRaises(ValueError):
@@ -49,7 +56,6 @@ class TestServerTypeSet(TestCase):
 
 
 class TestServerBase(HTTPTestCase):
-    server_type = 'aiohttp'
     cmd = []
 
     def setUp(self):
@@ -60,7 +66,7 @@ class TestServerBase(HTTPTestCase):
         _ = tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False)
         with _ as f:
             self.tmp = f.name
-            f.write(script.format(server_type=self.server_type))
+            f.write(script)
         cmd = [sys.executable, self.tmp, '--port', str(self.port)] + self.cmd
         self.url = 'http://localhost:{}'.format(self.port)
         self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
@@ -80,8 +86,7 @@ class TestServerBase(HTTPTestCase):
         super().tearDown()
 
 
-class TestAutoShutdownAIO(TestServerBase):
-    server_type = 'aiohttp'
+class TestAutoShutdown(TestServerBase):
     cmd = ['--auto-shutdown', '--shutdown-wait', '0.2']
 
     @sync
@@ -133,9 +138,7 @@ class TestAutoShutdownAIO(TestServerBase):
 
 
 class TestOpenBrowser(TestServerBase):
-    server_type = 'aiohttp'
-    cmd = ['--debug', '--logging', 'info', '--open-browser',
-           '--browser', 'firefox']
+    cmd = ['--debug', '--open-browser', '--browser', 'firefox']
 
     def test_open_browser(self):
         time.sleep(0.5)
@@ -143,9 +146,162 @@ class TestOpenBrowser(TestServerBase):
         self.assertIn('connected', self.proc.stdout.readline())
 
 
-class TestAutoShutdownTornado(TestAutoShutdownAIO):
-    server_type = 'tornado'
+class TestMainHandlerBlank(HTTPTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.document = get_document()
+        self.start()
+
+    @sync
+    @asyncio.coroutine
+    def test_blank_mainpage(self) -> None:
+        with self.assertLogs('wdom', 'INFO'):
+            res = yield from self.fetch(self.url)
+        self.assertEqual(res.code, 200)
+        _re = re.compile(
+            '<!DOCTYPE html>\s*<html rimo_id="\d+">\s*<head rimo_id="\d+">'
+            '.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
+            '</head>\s*<body.*>.*<script.*>.*</script>.*'
+            '</body>\s*</html>',
+            re.S)
+        self.assertIsNotNone(_re.match(res.text))
 
 
-class TestOpenBrowserTornado(TestOpenBrowser):
-    server_type = 'tornado'
+class TestMainHandler(HTTPTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.document = get_document()
+        self.document.body.prepend('testing')
+        self.start()
+
+    @sync
+    @asyncio.coroutine
+    def test_blank_mainpage(self) -> None:
+        with self.assertLogs('wdom', 'INFO'):
+            res = yield from self.fetch(self.url)
+        self.assertEqual(res.code, 200)
+        self.assertIn('testing', res.text)
+
+
+class TestStaticFileHandler(HTTPTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.document = get_document()
+        self.start()
+
+    @sync
+    @asyncio.coroutine
+    def test_static_file(self) -> None:
+        with self.assertLogs('wdom.server._tornado', 'INFO'):
+            res = yield from self.fetch(self.url + '/_static/js/rimo/rimo.js')
+        self.assertEqual(res.code, 200)
+        self.assertIn('rimo', res.text)
+        self.assertIn('rimo.log', res.text)
+
+    @sync
+    @asyncio.coroutine
+    def test_add_static_path(self) -> None:
+        from os import path
+        server.add_static_path('a', path.abspath(path.dirname(__file__)))
+        with self.assertLogs('wdom.server', 'INFO'):
+            res = yield from self.fetch(self.url + '/a/' + __file__)
+        self.assertEqual(res.code, 200)
+        self.assertIn('this text', res.text)
+
+    @sync
+    @asyncio.coroutine
+    def test_tempdir(self):
+        from os import path
+        self.assertTrue(path.exists(self.document.tempdir))
+        with self.assertLogs('wdom.server', 'WARN'):
+            res = yield from self.fetch(self.url + '/tmp/a.html')
+        self.assertEqual(res.code, 404)
+        self.assertIn('404', res.text)
+        self.assertIn('Not Found', res.text)
+        tmp = path.join(self.document.tempdir, 'a.html')
+        with open(tmp, 'w') as f:
+            f.write('test')
+        self.assertTrue(path.exists(tmp))
+        with self.assertLogs('wdom.server', 'INFO'):
+            res = yield from self.fetch(self.url + '/tmp/a.html')
+        self.assertEqual(res.code, 200)
+        self.assertEqual('test', res.text)
+
+    @sync
+    @asyncio.coroutine
+    def test_tempfile(self):
+        doc = get_document()
+        self.assertTrue(path.exists(doc.tempdir))
+        tmp = path.join(doc.tempdir, 'a.html')
+        self.assertFalse(path.exists(tmp))
+        with open(tmp, 'w') as f:
+            f.write('test')
+        self.assertTrue(path.exists(tmp))
+        response = yield from self.fetch(self.url + '/tmp/a.html')
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.text, 'test')
+
+    @sync
+    @asyncio.coroutine
+    def test_tempfile_404(self):
+        response = yield from self.fetch(self.url + '/tmp/b.html')
+        self.assertEqual(response.code, 404)
+        response = yield from self.fetch(self.url + '/tmp/a.html')
+        self.assertEqual(response.code, 404)
+
+
+class TestRootWSHandler(HTTPTestCase):
+    def setUp(self) -> None:
+        super().setUp()
+        self.start()
+        sync(self.wait())
+        self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
+        self.ws = sync(self.ws_connect(self.ws_url))
+
+    @asyncio.coroutine
+    def wait(self, timeout=0.01):
+        yield from asyncio.sleep(timeout)
+
+    @sync
+    @asyncio.coroutine
+    def test_ws_connection(self) -> None:
+        with self.assertLogs('wdom.server', 'INFO'):
+            _ = yield from self.ws_connect(self.ws_url)
+            del _
+            yield from self.wait()
+
+    @sync
+    @asyncio.coroutine
+    def test_logging_error(self) -> None:
+        with self.assertLogs('wdom.server', 'INFO'):
+            self.ws.write_message(json.dumps(
+                dict(type='log', level='error', message='test')
+            ))
+            yield from self.wait()
+
+    @sync
+    @asyncio.coroutine
+    def test_logging_warn(self) -> None:
+        with self.assertLogs('wdom.server', 'INFO'):
+            self.ws.write_message(json.dumps(
+                dict(type='log', level='warn', message='test')
+            ))
+            yield from self.wait()
+
+    @sync
+    @asyncio.coroutine
+    def test_logging_info(self) -> None:
+        with self.assertLogs('wdom.server', 'INFO'):
+            self.ws.write_message(json.dumps(
+                dict(type='log', level='info', message='test')
+            ))
+            yield from self.wait()
+
+    @sync
+    @asyncio.coroutine
+    def test_logging_debug(self) -> None:
+        with self.assertLogs('wdom.server', 'DEBUG'):
+            self.ws.write_message(json.dumps(
+                dict(type='log', level='debug', message='test')
+            ))
+            yield from self.wait()

@@ -354,7 +354,7 @@ class RemoteBrowserTestCase:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.02
+    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.05
 
     def start(self):
         self._prev_logging = options.config.logging
@@ -410,7 +410,7 @@ class WebDriverTestCase:
     ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
     tested.
     '''
-    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.02
+    wait_time = 0.1 if os.environ.get('TRAVIS', False) else 0.05
 
     @classmethod
     def setUpClass(cls):

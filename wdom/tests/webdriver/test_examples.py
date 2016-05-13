@@ -8,7 +8,6 @@ from selenium.webdriver.common.keys import Keys
 
 from wdom.tag import H1
 from wdom.document import get_document
-from wdom import server
 from wdom.misc import install_asyncio
 from wdom.testing import WebDriverTestCase, TestCase, reset
 from wdom.testing import close_webdriver
@@ -22,13 +21,10 @@ def tearDownModule():
     close_webdriver()
 
 
-class SimpleTestCase(WebDriverTestCase):
-    server_type = 'aiohttp'
-
+class SimpleTestCase(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
-        server.set_server_type(self.server_type)
         self.document = get_document()
         self.h1 = H1()
         self.h1.textContent = 'TITLE'
@@ -41,13 +37,10 @@ class SimpleTestCase(WebDriverTestCase):
         assert tag.text == 'TITLE'
 
 
-class DataBindingTestCase(WebDriverTestCase):
-    server_type = 'aiohttp'
-
+class DataBindingTestCase(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
-        server.set_server_type(self.server_type)
         from wdom.examples.data_binding import sample_page
         self.document = sample_page(autoreload=False)
         self.start()
@@ -70,13 +63,10 @@ class DataBindingTestCase(WebDriverTestCase):
         self.assertEqual(view.text, 'new')
 
 
-class RevTextTestCase(WebDriverTestCase):
-    server_type = 'aiohttp'
-
+class RevTextTestCase(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
-        server.set_server_type(self.server_type)
         from wdom.examples.rev_text import sample_page
         self.document = sample_page(autoreload=False)
         self.start()
@@ -94,30 +84,3 @@ class RevTextTestCase(WebDriverTestCase):
         view.click()
         self.wait()
         self.assertEqual(view.text, text)
-
-
-class TestSimplePageAIO(SimpleTestCase, TestCase):
-    server_type = 'aiohttp'
-
-
-class TestDataBindingAIO(DataBindingTestCase, TestCase):
-    server_type = 'aiohttp'
-
-
-class TestRevTextAIO(RevTextTestCase, TestCase):
-    server_type = 'aiohttp'
-
-
-class TestSimplePageTornado(SimpleTestCase, TestCase):
-    server_type = 'aiohttp'
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
-
-
-class TestDataBindingTornado(DataBindingTestCase, TestCase):
-    server_type = 'aiohttp'
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
-
-
-class TestRevTextTornado(RevTextTestCase, TestCase):
-    server_type = 'aiohttp'
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
