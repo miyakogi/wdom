@@ -168,19 +168,19 @@ class InputTestCase(RemoteBrowserTestCase, TestCase):
                      reason='This test not pass only on travis')
     def test_checkbox(self):
         self.set_element(self.checkbox)
-        self.wait()
+        self.wait(4)
         self.element.click()
-        self.wait()
+        self.wait(4)
         self.assertIsTrue(self.checkbox.checked)
 
         self.browser.get(self.url)
         self.set_element(self.checkbox)
-        self.wait()
+        self.wait(4)
         self.assertEqual(self.element.get_attribute('checked'), 'true')
 
-        self.wait()
+        self.wait(4)
         self.element.click()
-        self.wait()
+        self.wait(4)
         self.assertEqual(self.element.get_attribute('checked'), None)
         self.assertIsFalse(self.checkbox.checked)
 

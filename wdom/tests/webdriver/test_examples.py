@@ -77,7 +77,7 @@ class RevTextTestCase(WebDriverTestCase, TestCase):
         view = self.wd.find_element_by_tag_name('h1')
         text = 'Click!'
         self.assertEqual(view.text, text)
-        self.wait(0.3)
+        self.wait(6)
         view.click()
         self.wait()
         self.assertEqual(view.text, text[::-1])

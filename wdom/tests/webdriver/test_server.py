@@ -122,7 +122,7 @@ class TestAutoReload(TestCase):
         h1 = self.wd.find_element_by_id('h1')
         self.assertEqual(h1.text, 'SECOND')
 
-    def test_autoreload_aio(self):
+    def test_autoreload(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_base)
         self.wait_short()
@@ -130,7 +130,7 @@ class TestAutoReload(TestCase):
         args.append('--autoreload')
         self.check_reload(args)
 
-    def test_autoreload_debug_aio(self):
+    def test_autoreload_debug(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_base)
         self.wait_short()
@@ -194,7 +194,7 @@ class TestAutoReload(TestCase):
         args.append('--autoreload')
         self.check_css_noreload(args)
 
-    def test_autoreload_nowatch_aio(self):
+    def test_autoreload_nowatch(self):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_base.replace("/testdir'", "/testdir', no_watch=True"))
         self.wait_short()

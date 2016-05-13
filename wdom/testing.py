@@ -356,7 +356,7 @@ class RemoteBrowserTestCase:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.5 if os.environ.get('TRAVIS', False) else 0.05
 
     def start(self):
         self._prev_logging = options.config.logging
@@ -367,18 +367,18 @@ class RemoteBrowserTestCase:
         try:
             self.server = server.start_server(port=0)
         except OSError:
-            self.wait(0.2)
+            self.wait(20)
             self.server = server.start_server(port=0)
         self.address = self.server.address
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
-        self.wait()
+        self.wait(4)
         self.browser.get(self.url)
-        self.wait()
+        self.wait(4)
 
     def tearDown(self):
         options.config.logging = self._prev_logging
         self.stop_server()
-        self.wait()
+        self.wait(4)
         sys.stdout.flush()
         sys.stderr.flush()
         super().tearDown()
@@ -390,13 +390,14 @@ class RemoteBrowserTestCase:
     def stop_server(self):
         server.stop_server(self.server)
 
-    def wait(self, timeout=None):
+    def wait(self, times=1):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
         single event loop. This method does not block the thread, so the server
         in test still can send response before timeout.
         '''
-        asyncio.get_event_loop().run_until_complete(
-            asyncio.sleep(timeout or self.wait_time))
+        for i in range(times):
+            asyncio.get_event_loop().run_until_complete(
+                asyncio.sleep(self.wait_time))
 
     def set_element(self, node):
         '''Wrapper method of ``set_element_by_id``. Set the ``node`` as a
@@ -412,7 +413,7 @@ class WebDriverTestCase:
     ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
     tested.
     '''
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.5 if os.environ.get('TRAVIS', False) else 0.05
 
     @classmethod
     def setUpClass(cls):
@@ -451,9 +452,9 @@ class WebDriverTestCase:
             args=(self.port, )
         )
         self.server.start()
-        self.wait(0.1)
+        self.wait(10)
         self.wd.get(self.url)
-        self.wait(0.05)
+        self.wait()
 
     def tearDown(self):
         '''Terminate server subprocess.'''
@@ -469,10 +470,11 @@ class WebDriverTestCase:
         '''
         NotImplementedError
 
-    def wait(self, timeout=None):
+    def wait(self, times=1):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
         single event loop.'''
-        time.sleep(timeout or self.wait_time)
+        for i in range(times):
+            time.sleep(self.wait_time)
 
     def send_keys(self, element, keys: str):
         '''Send ``keys`` to ``element`` one-by-one. Safer than using
