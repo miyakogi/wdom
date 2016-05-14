@@ -14,7 +14,7 @@ before_script:
   - sleep 3
 install:
   - pip install tox
-  - pip install selenium nose_parameterized syncer coverage
+  - pip install selenium nose_parameterized syncer coverage tornado
   - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install codecov coveralls; fi
 script:
