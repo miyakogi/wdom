@@ -1,7 +1,17 @@
 WDOM
 ====
 
-|Build Status dev| |codecov.io dev|
+.. image:: https://img.shields.io/pypi/v/wdom.svg
+   :target: https://pypi.python.org/pypi/wdom
+
+.. image:: https://img.shields.io/pypi/pyversions/wdom.svg
+   :target: https://pypi.python.org/pypi/wdom
+
+.. image:: https://travis-ci.org/miyakogi/wdom.svg?branch=dev
+   :target: https://travis-ci.org/miyakogi/wdom
+
+.. image:: https://codecov.io/github/miyakogi/wdom/coverage.svg?branch=dev
+   :target: https://codecov.io/github/miyakogi/wdom?branch=dev
 
 WDOM is a python GUI library for browser-based desktop applications. WDOM
 controls HTML elements (DOM) on browser from python, as if it is a GUI element.
@@ -68,13 +78,13 @@ Simple example::
     import asyncio
     from wdom.document import get_document
     from wdom.server import start_server, stop_server
-
+ 
     if __name__ == '__main__':
         document = get_document()
         h1 = document.createElement('h1')
         h1.textContent = 'Hello, WDOM'
         document.body.appendChild(h1)
-
+ 
         start_server()
         try:
             asyncio.get_event_loop().run_forever()
@@ -82,7 +92,7 @@ Simple example::
             stop_server()
 
 Execute this code and access ``http://localhost:8888`` by browser.
-``Hello, WDOM`` will shown on the browser.
+``"Hello, WDOM"`` will shown on the browser.
 To stop process, press ``CTRL+C``.
 
 As you can see, methods of WDOM (``document.createElement`` and
@@ -95,13 +105,13 @@ tag classes to easily generate elements::
     from wdom.tag import H1
     from wdom.document import get_document
     from wdom.server import start_server, stop_server
-
+ 
     if __name__ == '__main__':
         document = get_document()
         h1 = H1()
         h1.textContent = 'Hello, WDOM'
         document.body.append(h1)
-
+ 
         start_server()
         try:
             asyncio.get_event_loop().run_forever()
@@ -114,7 +124,7 @@ Of course, WDOM can handle events::
     from wdom.tag import H1
     from wdom.server import start_server, stop_server
     from wdom.document import get_document
-
+ 
     if __name__ == '__main__':
         document = get_document()
         h1 = H1('Hello, WDOM', parent=document.body)
@@ -127,7 +137,7 @@ Of course, WDOM can handle events::
         except KeyboardInterrupt:
             stop_server()
 
-When string ``Hello, WDOM`` is clicked, it will be flipped.
+When string ``"Hello, WDOM"`` is clicked, it will be flipped.
 
 More documents are in preparation, but you can see them in **docs** directory of
 this repository.
@@ -141,9 +151,7 @@ If you find any bug, or have any comments, please don't hesitate to report to
 `issues on GitHub <https://github.com/miyakogi/wdom/issues>`_.
 All your comments are welcome!
 
-.. |Build Status dev| image:: https://travis-ci.org/miyakogi/wdom.svg?branch=dev
-   :target: https://travis-ci.org/miyakogi/wdom
-.. |codecov.io dev| image:: https://codecov.io/github/miyakogi/wdom/coverage.svg?branch=dev
-   :target: https://codecov.io/github/miyakogi/wdom?branch=dev
+.. _DOM specification: https://dom.spec.whatwg.org/
+.. _Selenium: http://selenium-python.readthedocs.org/
 .. _tornado: http://www.tornadoweb.org/en/stable/
 .. _aiohttp: http://aiohttp.readthedocs.org/en/stable/
