@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def log_handler(level: str, message: str):
+    """Handle logs from client (browser)."""
     message = 'JS: ' + str(message)
     if level == 'error':
         logger.error(message)
@@ -22,6 +23,7 @@ def log_handler(level: str, message: str):
 
 
 def event_handler(msg: dict):
+    """Handle events emitted on browser."""
     from wdom.document import getElementByRimoId
     e = Event(**msg.get('event'))
     _id = e.currentTarget.get('id')
@@ -37,6 +39,7 @@ def event_handler(msg: dict):
 
 
 def response_handler(msg: dict):
+    """Handle response sent by browser."""
     from wdom.document import getElementByRimoId
     id = msg.get('id')
     elm = getElementByRimoId(id)
@@ -47,6 +50,7 @@ def response_handler(msg: dict):
 
 
 def on_websocket_message(message):
+    """Handle messages from browser."""
     msg = json.loads(message)
     _type = msg.get('type')
     if _type == 'log':

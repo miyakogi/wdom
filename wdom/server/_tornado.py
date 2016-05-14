@@ -20,29 +20,33 @@ connections = []
 
 
 def is_connected():
+    """Check if tornado web server has a client connection."""
     return any(connections)
 
 
 class MainHandler(web.RequestHandler):
-    '''This is a main handler, which renders ``document`` object of the
-    application. Must be used with an Application object which has ``document``
-    attribute.'''
+    """Main handler to serve document of the application."""
     def get(self):
+        """Return whole html representation of the root document."""
         from wdom.document import get_document
         logger.info('connected')
         self.write(get_document().build())
 
 
 class WSHandler(websocket.WebSocketHandler):
+    """Handler class of web socket connection."""
     def open(self):
+        """Called when connection open."""
         logger.info('WS OPEN')
         connections.append(self)
 
     def on_message(self, message):
+        """Called when get message from client."""
         on_websocket_message(message)
 
     @asyncio.coroutine
     def terminate(self):
+        """Terminate server if no more connection exists."""
         yield from asyncio.sleep(config.shutdown_wait)
         # stop server and close loop if no more connection exists
         if not is_connected():
@@ -50,6 +54,7 @@ class WSHandler(websocket.WebSocketHandler):
             self.application.server.io_loop.stop()
 
     def on_close(self):
+        """Called when connection closed."""
         logger.info('RootWS CLOSED')
         if self in connections:
             # Remove this connection from connection-list
@@ -60,11 +65,11 @@ class WSHandler(websocket.WebSocketHandler):
 
 
 class Application(web.Application):
-    '''A collection of settings required for a web server, including handlers,
-    logging, and document object. This class is based on
-    tornado.web.Application, but including some utility methods to make it
-    easy to set up app.
-    '''
+    """Application for a tornado web server.
+
+    This class is based on tornado.web.Application, but including some utility
+    methods to make it easy to set up app.
+    """
 
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -78,6 +83,7 @@ class Application(web.Application):
         )
 
     def log_request(self, handler):
+        """Handle access log."""
         if 'log_function' in self.settings:
             self.settings['log_function'](handler)
             return
@@ -96,11 +102,12 @@ class Application(web.Application):
             log_method('%d %s', status, handler._request_summary())
 
     def add_static_path(self, prefix: str, path: str):
-        '''Add path to serve static files. ``prefix`` is used for url prefix to
-        serve static files and ``path`` is a path to the static file directory.
-        ``prefix = '/_static'`` is reserved for the server, so do not use it
-        for your app.
-        '''
+        """Add path to serve static files.
+
+        ``prefix`` is used for url prefix to serve static files and ``path`` is
+        a path to the static file directory. ``prefix = '/_static'`` is
+        reserved for the server, so do not use it for your app.
+        """
         pattern = prefix
         if not pattern.startswith('/'):
             pattern = '/' + pattern
@@ -112,9 +119,11 @@ class Application(web.Application):
         handlers.append(spec)
 
     def add_favicon_path(self, path: str):
-        '''Add path to the directory, which contains favicon file
+        """Add path to serve favicon file.
+
+        ``path`` should be a directory, which contains favicon file
         (``favicon.ico``) for your app.
-        '''
+        """
         spec = web.URLSpec(
             '/(favicon.ico)',
             web.StaticFileHandler,
@@ -129,11 +138,12 @@ main_application = Application()
 
 
 def get_app(*args, **kwargs) -> Application:
-    '''Return Application object to serve ``document``.'''
+    """Return Application object to serve ``document``."""
     return main_application
 
 
 def set_application(app: Application):
+    """Set application as a root application for the server."""
     global main_application
     main_application = app
 
@@ -142,14 +152,15 @@ def start_server(app: web.Application = None, port: int = None,
                  browser: str = None, address: str = None,
                  check_time: Optional[int] = 500,
                  **kwargs) -> HTTPServer:
-    '''Start server with ``app`` on ``localhost:port``.
+    """Start server with ``app`` on ``localhost:port``.
+
     If port is not specified, use command line option of ``--port``.
 
     If ``browser`` is not specified, do not open the page. When ``browser`` is
     specified, open the page with the specified browser. The specified browser
     name is not registered in ``webbrowser`` module, or, for example it is just
     ``True``, use system's default browser to open the page.
-    '''
+    """
     app = app or get_app()
     port = port if port is not None else config.port
     address = address if address is not None else config.address
@@ -165,6 +176,6 @@ def start_server(app: web.Application = None, port: int = None,
 
 
 def stop_server(server: HTTPServer):
-    '''Terminate given server.'''
+    """Terminate given server."""
     server.stop()
     logger.info('Server terminated')

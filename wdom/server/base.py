@@ -47,6 +47,7 @@ def _add_watch_path(path: pathlib.Path):
 
 
 def watch_dir(path: str):
+    """Add ``path`` to watch for autoreload."""
     _compile_exclude_patterns()
     if config.autoreload or config.debug:
         # Add files to watch for autoreload
@@ -56,6 +57,7 @@ def watch_dir(path: str):
 
 
 def open_browser(url, browser: Optional[str] = None):
+    """Open web browser."""
     if '--open-browser' in sys.argv:
         # Remove open browser to prevent making new tab on autoreload
         sys.argv.remove('--open-browser')

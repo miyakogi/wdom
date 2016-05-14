@@ -11,6 +11,7 @@ from tornado import autoreload
 from wdom.misc import static_dir, install_asyncio
 from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
+
 logger = logging.getLogger(__name__)
 
 try:
@@ -33,15 +34,23 @@ _server = None
 
 
 def is_connected():
+    """Check if the current server has a client connection."""
     return module.is_connected()
 
 
 def send_message(msg: str):
+    """Send message to all client connections."""
     for conn in module.connections:
         conn.write_message(msg)
 
 
 def add_static_path(prefix, path, no_watch: bool = False):
+    """Add directory to serve static files.
+
+    First argument ``prefix`` is a URL prefix for the ``path``. ``path`` must
+    be a directory. If ``no_watch`` is True, any change of the files in the
+    path do not trigger restart if ``--autoreload`` is enabled.
+    """
     app = get_app()
     app.add_static_path(prefix, path)
     if not no_watch:
@@ -49,10 +58,16 @@ def add_static_path(prefix, path, no_watch: bool = False):
 
 
 def get_app(*args, **kwargs):
+    """Get root Application object."""
     return module.get_app()
 
 
 def set_server_type(type):
+    """Set server type to document and handle websocket connection.
+
+    By default, if aiohttp is available wdom uses aiohttp for server. Otherwise
+    use tornado.
+    """
     global module
     if type == 'aiohttp':
         module = importlib.import_module('wdom.server._aiohttp')
@@ -70,6 +85,7 @@ def start_server(app: Optional[module.Application] = None,
                  address: Optional[str] = None,
                  check_time: Optional[int] = 500,
                  **kwargs):
+    """Start web server."""
     # Add application's static files directory
     from wdom.document import get_document
     add_static_path('_static', static_dir)
@@ -91,4 +107,5 @@ def start_server(app: Optional[module.Application] = None,
 
 
 def stop_server(server=None):
+    """Terminate web server."""
     module.stop_server(server or _server)
