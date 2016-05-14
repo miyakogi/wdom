@@ -17,7 +17,7 @@ test_requites = ['nose_parameterized', 'selenium', 'syncer']
 
 setup(
     name='wdom',
-    version='0.1.0',
+    version='0.1.1',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
