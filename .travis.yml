@@ -21,8 +21,6 @@ script:
   - tox -c tox_travis.ini
   - coverage erase
   - make clean
-  - echo ${TRAVIS_BUILD_DIR}
-  - echo $(pwd)
   - PYTHONPATH=${TRAVIS_BUILD_DIR} python -m coverage run --source wdom -m wdom.tests.run_tests
   - pip install aiohttp
   - PYTHONPATH=${TRAVIS_BUILD_DIR} python -m coverage run -a --source wdom -m wdom.tests.run_tests
