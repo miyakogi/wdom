@@ -34,10 +34,10 @@ class SimpleTestCase(WebDriverTestCase, TestCase):
     def test_page(self):
         tag = self.wd.find_element_by_css_selector(
             '[rimo_id="{}"]'.format(self.h1.rimo_id))
-        assert tag.text == 'TITLE'
+        self.assertEqual(tag.text, 'TITLE')
 
 
-class DataBindingTestCase(WebDriverTestCase, TestCase):
+class TestDataBinding(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
@@ -63,7 +63,7 @@ class DataBindingTestCase(WebDriverTestCase, TestCase):
         self.assertEqual(view.text, 'new')
 
 
-class RevTextTestCase(WebDriverTestCase, TestCase):
+class TestRevText(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
@@ -86,7 +86,7 @@ class RevTextTestCase(WebDriverTestCase, TestCase):
         self.assertEqual(view.text, text)
 
 
-class TimerTestCase(WebDriverTestCase, TestCase):
+class TestTimer(WebDriverTestCase, TestCase):
     wait_time = 0.2
 
     def setUp(self):

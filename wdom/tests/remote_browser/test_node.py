@@ -26,7 +26,7 @@ def tearDownModule():
     close_remote_browser()
 
 
-class ElementTestCase(RemoteBrowserTestCase, TestCase):
+class ElementTestCase(RemoteBrowserTestCase):
     def setUp(self):
         super().setUp()
         self.document = get_document()
@@ -37,7 +37,7 @@ class ElementTestCase(RemoteBrowserTestCase, TestCase):
         raise NotImplementedError
 
 
-class WebElementTestCase(ElementTestCase, TestCase):
+class TestWebElement(ElementTestCase, TestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)
@@ -405,7 +405,7 @@ class WebElementTestCase(ElementTestCase, TestCase):
         self.assertRegex(log.output[0], r'JS: ReferenceError')
 
 
-class EventTestCase(ElementTestCase, TestCase):
+class TestEvent(ElementTestCase, TestCase):
     def get_elements(self):
         self.root = WebElement('div')
         self.tag = WebElement('span', parent=self.root)

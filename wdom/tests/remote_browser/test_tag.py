@@ -23,7 +23,7 @@ def tearDownModule():
     close_remote_browser()
 
 
-class NodeTestCase(RemoteBrowserTestCase, TestCase):
+class TestTag(RemoteBrowserTestCase, TestCase):
     def setUp(self):
         super().setUp()
         self.document = get_document()
@@ -110,7 +110,7 @@ class NodeTestCase(RemoteBrowserTestCase, TestCase):
         self.assertIsTrue(self.element.is_displayed())
 
 
-class InputTestCase(RemoteBrowserTestCase, TestCase):
+class TestInput(RemoteBrowserTestCase, TestCase):
     def setUp(self):
         super().setUp()
         self.document = get_document(autoreload=False)
@@ -168,19 +168,19 @@ class InputTestCase(RemoteBrowserTestCase, TestCase):
                      reason='This test not pass only on travis')
     def test_checkbox(self):
         self.set_element(self.checkbox)
-        self.wait(4)
+        self.wait()
         self.element.click()
-        self.wait(4)
+        self.wait()
         self.assertIsTrue(self.checkbox.checked)
 
         self.browser.get(self.url)
         self.set_element(self.checkbox)
-        self.wait(4)
+        self.wait()
         self.assertEqual(self.element.get_attribute('checked'), 'true')
 
-        self.wait(4)
+        self.wait()
         self.element.click()
-        self.wait(4)
+        self.wait()
         self.assertEqual(self.element.get_attribute('checked'), None)
         self.assertIsFalse(self.checkbox.checked)
 
@@ -246,7 +246,7 @@ class InputTestCase(RemoteBrowserTestCase, TestCase):
         self.assertTrue(self.radio2.checked)
 
 
-class SelectTestCase(RemoteBrowserTestCase, TestCase):
+class TestSelect(RemoteBrowserTestCase, TestCase):
     def setUp(self):
         super().setUp()
         self.document = get_document(autoreload=False)
