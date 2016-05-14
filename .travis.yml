@@ -17,6 +17,7 @@ install:
   - pip install selenium nose_parameterized syncer coverage
   - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install codecov coveralls; fi
+  - pip install .
 script:
   - tox -c tox_travis.ini
   - coverage erase
