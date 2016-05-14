@@ -1,0 +1,54 @@
+/* body { */
+/*   font-size: 16px; */
+/* } */
+/*  */
+/* h1.logo { */
+/*   font-family: 'PT Serif', serif; */
+/* } */
+/*  */
+h1.logo a {
+  text-decoration: none;
+  border-bottom: none;
+}
+/*  */
+/* p.blurb { */
+/*   font-family: 'Great Vibes', serif; */
+/* } */
+
+div.body p, div.body dd, div.body li {
+    line-height: 1.6rem;
+}
+
+div.document {
+  font-family: Nuito;
+}
+
+/* code.descname { */
+/*   font-size: 1rem; */
+/* } */
+/*  */
+/* div.sphinxsidebar { */
+/*   margin: 0; */
+/*   padding: 0; */
+/* } */
+/*  */
+/* div.sphinxsidebarwrapper li { */
+/*   padding-left: 0.2rem; */
+/*   line-height: 1.5; */
+/*   list-style: none; */
+/* } */
+/*  */
+/* div.sphinxsidebar ul ul{ */
+/*   padding-left: 0.2rem; */
+/* } */
+
+/* dl.class em { */
+/* } */
+/*  */
+/* dt { */
+/*   background-color: #ecf0f3; */
+/*   display: inline-block; */
+/*   padding-top: 2px; */
+/*   padding-bottom: 2px; */
+/*   border-top: solid 2px #ccd0d3; */
+/* } */

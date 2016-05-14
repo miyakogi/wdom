@@ -5,35 +5,28 @@
 Data binding example
 '''
 
-from wdom.dom import Node, Input, TextArea
-from wdom.view import get_document
+from wdom.tag import H1, Div, Input
+from wdom.document import get_document
 
-
-class App(Node):
-    tag = 'wdom-app'
-
-
-class H1(Node):
-    tag = 'h1'
 
 class Check(Input):
     type_ = 'checkbox'
 
-def sample_page() -> Node:
-    app = App()
-    textbox = Input(parent=app)
-    check1 = Check(parent=app)
-    check2 = Check(parent=app)
-    textarea = TextArea(parent=app)
-    text = H1(parent=app)
-    textbox.setAttribute('type', 'text')
-    text.text = 'Hello!'
 
-    def update(data):
-        text.textContent = textbox.getAttribute('value')
+class App(Div):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text = H1(parent=self)
+        self.text.textContent = 'Hello!'
+        self.textbox = Input(parent=self)
+        self.textbox.setAttribute('type', 'text')
+        self.textbox.addEventListener('input', self.update)
 
-    # textbox.addEventListener('input', update)
+    def update(self, event):
+        self.text.textContent = self.textbox.getAttribute('value')
 
-    page = get_document(app=app)
 
+def sample_page(**kwargs):
+    page = get_document(**kwargs)
+    page.body.prepend(App())
     return page

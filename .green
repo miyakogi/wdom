@@ -1,0 +1,2 @@
+verbose=1
+initializer=wdom.testing.suppress_logging

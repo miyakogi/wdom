@@ -3,16 +3,18 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to WDOM's documentation!
-==================================
+.. include:: ../README.rst
+
+Contents
+--------
 
 .. toctree::
-   :titlesonly:
+    :titlesonly:
 
-   install
-   dom
-   server
-   test
+    guide/index
+    dom
+    server
+    test
 
 
 Indices and tables
@@ -21,3 +23,8 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+.. _DOM specification: https://dom.spec.whatwg.org/
+.. _Selenium: http://selenium-python.readthedocs.org/
+.. _tornado: http://www.tornadoweb.org/en/stable/
+.. _aiohttp: http://aiohttp.readthedocs.org/en/stable/

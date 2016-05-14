@@ -1,7 +1,9 @@
+wiki
 build
 tmp
 .cache
 .coverage
+.tox
 coverage.xml
 pytest.xml
 
@@ -10,7 +12,7 @@ __pycache__/
 *.py[cod]
 
 # Sphinx build dir
-docs/_build/*
+_build/
 
 # node files
 node_modules

@@ -1,28 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.dom import Node
-from wdom.view import get_document
+from wdom.tag import H1, Div
+from wdom.document import get_document
 
 
-class App(Node):
-    tag = 'sci-app'
-
-
-class H1(Node):
-    tag = 'h1'
-
-
-def sample_page() -> Node:
-    app = App()
+def sample_page(**kwargs) -> Div:
+    app = Div()
     text = H1(parent=app)
-    text.text = 'Click!'
+    text.textContent = 'Click!'
 
-    def reverse(data):
+    def reverse(event):
         text.textContent = text.textContent[::-1]
 
     text.addEventListener('click', reverse)
 
-    page = get_document(app=app)
+    page = get_document(**kwargs)
+    page.body.prepend(app)
 
     return page

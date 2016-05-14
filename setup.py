@@ -1,26 +1,50 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from cx_Freeze import setup, Executable
-from wdom.misc import include_dirs
+from os import path
 
-__version__ = '0.0.1'
-__author__ = 'miyakogi'
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
-build_exe_options = {
-    'include_files': include_dirs,
-}
+readme_file = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
+with open(readme_file) as readme_file:
+    readme = readme_file.read()
 
+install_requires = ['tornado']
+test_requites = ['pytest', 'pytest-cov', 'aiohttp', 'syncer']
 
-def main() -> None:
-    setup(
-        name = 'click',
-        version = __version__,
-        description = 'sample',
-        executables = [Executable('sample.py')],
-        options = {'build_exe': build_exe_options}
-    )
+setup(
+    name='wdom',
+    version='0.1.0',
+    description='A library to manipulate DOM on browsers',
+    long_description=readme,
+    author='Hiroyuki Takagi',
+    author_email='miyako.dev@gmail.com',
+    url='https://github.com/miyakogi/wdom_py',
+    packages=[
+        'wdom',
+        'wdom.examples',
+        'wdom.server',
+        'wdom.themes',
+        'wdom.tests',
+        'wdom.tests.remote_browser',
+        'wdom.tests.webdriver',
+    ],
+    include_package_data=True,
+    license="MIT",
+    zip_safe=False,
+    keywords='dom browser',
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: MIT License',
+        'Natural Language :: English',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.5',
+    ],
+    test_suite='wdom.tests',
 
-
-if __name__ == '__main__':
-    main()
+    install_requires=install_requires,
+)

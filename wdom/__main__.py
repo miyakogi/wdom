@@ -6,51 +6,41 @@ import logging
 from pathlib import Path
 
 logger = logging.getLogger('wdom')
-_CURFILE = Path(__file__).resolve()
-_CURDIR = _CURFILE.parent.resolve()
+CURFILE = Path(__file__).resolve()
+CURDIR = CURFILE.parent.resolve()
 
 if __name__ == '__main__':
-    sys.path.insert(0, str(_CURDIR.parent.resolve()))
+    sys.path.insert(0, str(CURDIR.parent.resolve()))
 
 
 def main():
-    from wdom.options import parse_command_line
-    parse_command_line()
-
-    # ADD js/css/template files for autoreload
-    from tornado import autoreload
-    for file_ in (_CURDIR.glob('_static/js/*.js')):
-        autoreload.watch(str(file_))
-    for file_ in (_CURDIR.glob('_static/css/*.css')):
-        autoreload.watch(str(file_))
-    for file_ in (_CURDIR.glob('_templates/*.html')):
-        autoreload.watch(str(file_))
-
     # from tornado.ioloop import IOLoop
-    from tornado.platform.asyncio import AsyncIOMainLoop
+    # from tornado.platform.asyncio import AsyncIOMainLoop
     import asyncio
-    AsyncIOMainLoop().install()
+    from wdom.misc import install_asyncio
+    install_asyncio()
 
-    from wdom.server import start_server, get_app
-    from wdom.examples.bootstrap3 import sample_page
+    from wdom.server import start_server, get_app, stop_server
+    # from wdom.server_aio import start_server, get_app, stop_server
+    # from wdom.server_tornado import start_server, get_app, stop_server
+    # from wdom.examples.markdown_simple import sample_page
     # from wdom.examples.rev_text import sample_page
     # from wdom.examples.data_binding import sample_page
     # from wdom.examples.todo import sample_page
-    from wdom.log import configure_logger
-    configure_logger()
-    page = sample_page()
+    from wdom.examples.theming import sample_page
+    # from wdom.themes import bootstrap3, mdl, skeleton, pure, semantic, kube, foundation, mui
+    from wdom.themes import default
+    page = sample_page(default)
     app = get_app(document=page)
-    server = start_server(app=app)
     loop = asyncio.get_event_loop()
+    server = start_server(app=app, loop=loop)
+
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        server.stop()
+        stop_server(server)
         loop.close()
-        logger.info('Server terminated')
-    # IOLoop.current().start()
 
 
 if __name__ == '__main__':
     main()
-

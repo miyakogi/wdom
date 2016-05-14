@@ -1,0 +1,12 @@
+include LICENSE
+include README.rst
+include wdom/_static/js/rimo/rimo.js
+include wdom/tests/webdriver/testdir/test.css
+
+recursive-include wdom/tests *.py
+recursive-include wdom/_static/css *.css
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
+
+recursive-include docs *.rst conf.py Makefile make.bat *.css *.js *.html
+recursive-exclude docs/_build *

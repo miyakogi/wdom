@@ -1,11 +1,11 @@
 language: python
 python:
-  - "3.5"
+  - "3.4.4"
+  - "3.5.1"
 
 addons:
   apt:
     packages:
-      - wget
       - xvfb
 
 before_script:
@@ -13,11 +13,17 @@ before_script:
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3
 install:
-  - pip install tornado pystache
-  - pip install pytest pytest-cov selenium
-  - pip install codecov coveralls
+  - pip install tox
+  - pip install selenium nose_parameterized syncer coverage tornado
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install codecov coveralls; fi
 script:
-  - py.test --cov wdom
+  - tox -c tox_travis.ini
+  - coverage erase
+  - make clean
+  - PYTHONPATH=${TRAVIS_BUILD_DIR} python -m coverage run --source wdom -m wdom.tests.run_tests
+  - pip install aiohttp
+  - PYTHONPATH=${TRAVIS_BUILD_DIR} python -m coverage run -a --source wdom -m wdom.tests.run_tests
+  - coverage report
 after_success:
-  - codecov
-  - coveralls
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
