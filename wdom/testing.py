@@ -94,7 +94,8 @@ class TestCase(unittest.TestCase):
 class HTTPTestCase(TestCase):
     '''For http/ws connection test.'''
     _server_started = False
-    wait_time = 0.5 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    _ws_connections = []
 
     def start(self):
         with self.assertLogs('wdom', 'INFO'):
@@ -109,6 +110,10 @@ class HTTPTestCase(TestCase):
             with self.assertLogs('wdom', 'INFO'):
                 server.stop_server(self.server)
             self._server_started = False
+        while self._ws_connections:
+            ws = self._ws_connections.pop()
+            ws.close()
+            ws.close()
         super().tearDown()
 
     @asyncio.coroutine
@@ -140,6 +145,7 @@ class HTTPTestCase(TestCase):
             else:
                 raise ConnectionRefusedError(
                     'WebSocket connection refused: {}'.format(url))
+        self._ws_connections.append(ws)
         return ws
 
     @asyncio.coroutine
@@ -361,7 +367,7 @@ class RemoteBrowserTestCase:
     ``wdom.server.Application`` or ``tornado.web.Application``), which you want
     to test.
     '''
-    wait_time = 0.5 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
 
     def start(self):
         self._prev_logging = options.config.logging
@@ -418,7 +424,7 @@ class WebDriverTestCase:
     ``pygmariot.server.Application`` or ``tornado.web.Application`` to be
     tested.
     '''
-    wait_time = 0.5 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
 
     @classmethod
     def setUpClass(cls):

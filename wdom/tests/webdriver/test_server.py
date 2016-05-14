@@ -22,13 +22,10 @@ def tearDownModule():
 
 
 CURDIR = path.dirname(path.abspath(__file__))
-ROOTDIR = path.dirname(path.dirname(path.dirname(CURDIR)))
 
 src_base = '''
 import sys
 import asyncio
-
-sys.path.append('{rootdir}')
 
 from wdom.misc import install_asyncio
 from wdom.tag import H1
@@ -43,7 +40,7 @@ doc.add_cssfile('testdir/test.css')
 server.add_static_path('testdir', '{curdir}/testdir')
 server.start_server(loop=loop, check_time=10)
 loop.run_forever()
-'''.format(rootdir=ROOTDIR, curdir=CURDIR)
+'''.format(curdir=CURDIR)
 
 css_path = path.join(CURDIR, 'testdir/test.css')
 src_css = '''
@@ -109,7 +106,7 @@ class TestAutoReload(TestCase):
         time.sleep(t or (self.wait_time / 10))
 
     def check_reload(self, args):
-        self.proc = subprocess.Popen(args, cwd=CURDIR)
+        self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
         self.wait()
         self.wd.get(self.url)
         self.wait()
@@ -139,7 +136,7 @@ class TestAutoReload(TestCase):
         self.check_reload(args)
 
     def check_css_reload(self, args):
-        self.proc = subprocess.Popen(args, cwd=CURDIR)
+        self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
         self.wait()
         self.wd.get(self.url)
         self.wait()
@@ -163,7 +160,7 @@ class TestAutoReload(TestCase):
         self.check_css_reload(args)
 
     def check_css_noreload(self, args):
-        self.proc = subprocess.Popen(args, cwd=CURDIR)
+        self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
         self.wait()
         self.wd.get(self.url)
         self.wait()
