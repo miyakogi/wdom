@@ -3,10 +3,11 @@
 
 import json
 import logging
-from asyncio import coroutine, Future, ensure_future
+from asyncio import Future
 from typing import Optional
 from xml.dom import Node
 
+from wdom import server
 from wdom.interface import Event
 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,6 @@ class WebIF:
     @property
     def connected(self) -> bool:
         '''When this instance has any connection, return True.'''
-        from wdom import server
         return server.is_connected()
 
     def on_event_pre(self, event: Event):
@@ -43,7 +43,7 @@ class WebIF:
             if task and not task.cancelled() and not task.done():
                 task.set_result(msg.get('data'))
 
-    def js_exec(self, method: str, *args) -> Optional[Future]:
+    def js_exec(self, method: str, *args):
         '''Execute ``method`` in the related node on browser, via web socket
         connection. Other keyword arguments are passed to ``params`` attribute.
         If this node is not in any document tree (namely, this node does not
@@ -74,5 +74,4 @@ class WebIF:
         obj['id'] = self.rimo_id
         obj['tag'] = self.tag
         msg = json.dumps(obj)
-        from wdom import server
         server.send_message(msg)
