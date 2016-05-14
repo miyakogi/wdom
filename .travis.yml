@@ -21,9 +21,9 @@ script:
   - tox -c tox_travis.ini
   - coverage erase
   - make clean
-  - python -m coverage run --source wdom wdom/tests/run_tests.py
+  - python -m coverage run --source wdom wdom.tests.run_tests
   - pip install aiohttp
-  - python -m coverage run -a --source wdom wdom/tests/run_tests.py
+  - python -m coverage run -a --source wdom wdom.tests.run_tests
   - coverage report
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
