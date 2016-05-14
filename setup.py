@@ -13,16 +13,16 @@ with open(readme_file) as readme_file:
     readme = readme_file.read()
 
 install_requires = ['tornado']
-test_requites = ['pytest', 'pytest-cov', 'aiohttp', 'syncer']
+test_requites = ['nose_parameterized', 'selenium', 'syncer']
 
 setup(
     name='wdom',
     version='0.1.0',
-    description='A library to manipulate DOM on browsers',
+    description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
     author_email='miyako.dev@gmail.com',
-    url='https://github.com/miyakogi/wdom_py',
+    url='https://github.com/miyakogi/wdom',
     packages=[
         'wdom',
         'wdom.examples',
@@ -42,6 +42,8 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
     ],
     test_suite='wdom.tests',
