@@ -13,6 +13,7 @@ make = shell(['make', 'html'])
 clean_make = shell(['make', 'clean', '&&', 'make', 'html'])
 
 # Wtach documets
+server.watch('../*.rst', make)
 server.watch('*.rst', make)
 server.watch('./*/*.rst', make)
 server.watch('./*/*/*.rst', make)
