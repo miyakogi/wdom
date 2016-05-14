@@ -76,62 +76,63 @@ class TestServerBase(HTTPTestCase):
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
-        time.sleep(0.1)
+        sync(self.wait(2))
 
     def tearDown(self):
         if os.path.exists(self.tmp):
             os.remove(self.tmp)
         if self.proc.returncode is None:
             self.proc.terminate()
+        sync(self.wait(4))
         super().tearDown()
 
 
 class TestAutoShutdown(TestServerBase):
-    cmd = ['--auto-shutdown', '--shutdown-wait', '0.2']
+    cmd = ['--auto-shutdown', '--shutdown-wait', '0.1']
 
     @sync
     @asyncio.coroutine
     def test_autoshutdown(self):
-        yield from asyncio.sleep(0.1)
+        yield from self.wait()
         ws = yield from self.ws_connect(self.ws_url)
         ws.close()
-        yield from asyncio.sleep(0.3)
+        yield from self.wait(10)
         self.assertIsNotNone(self.proc.poll())
 
     @sync
     @asyncio.coroutine
     def test_reload(self):
-        yield from asyncio.sleep(0.1)
+        yield from self.wait()
         ws = yield from self.ws_connect(self.ws_url)
         ws.close()
         ws = yield from self.ws_connect(self.ws_url)
-        yield from asyncio.sleep(0.3)
+        yield from self.wait(10)
         self.assertIsNone(self.proc.poll())
 
     @sync
     @asyncio.coroutine
     def test_multi_connection(self):
-        yield from asyncio.sleep(0.1)
+        yield from self.wait()
         ws1 = yield from self.ws_connect(self.ws_url)
         ws2 = yield from self.ws_connect(self.ws_url)
         ws1.close()
-        yield from asyncio.sleep(0.3)
+        yield from self.wait(10)
         self.assertIsNone(self.proc.poll())
         ws2.close()
-        yield from asyncio.sleep(0.3)
+        yield from self.wait(10)
         self.assertIsNotNone(self.proc.poll())
 
     @sync
     @asyncio.coroutine
     def test_tempdir_cleanup(self):
-        yield from asyncio.sleep(0.1)
+        yield from self.wait()
         ws = yield from self.ws_connect(self.ws_url)
         resp = yield from self.fetch(self.url + '/tmp/a.html')
         content = resp.body
         self.assertTrue(path.exists(content.strip()))
         self.assertTrue(path.isdir(content.strip()))
         ws.close()
-        yield from asyncio.sleep(0.3)
+        yield from self.wait(10)
         self.assertIsNotNone(self.proc.poll())
         self.assertFalse(path.exists(content.strip()))
         self.assertFalse(path.isdir(content.strip()))
@@ -257,10 +258,6 @@ class TestRootWSHandler(HTTPTestCase):
         sync(self.wait())
         self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
         self.ws = sync(self.ws_connect(self.ws_url))
-
-    @asyncio.coroutine
-    def wait(self, timeout=0.01):
-        yield from asyncio.sleep(timeout)
 
     @sync
     @asyncio.coroutine

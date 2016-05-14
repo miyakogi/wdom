@@ -94,6 +94,7 @@ class TestCase(unittest.TestCase):
 class HTTPTestCase(TestCase):
     '''For http/ws connection test.'''
     _server_started = False
+    wait_time = 0.5 if os.environ.get('TRAVIS', False) else 0.05
 
     def start(self):
         with self.assertLogs('wdom', 'INFO'):
@@ -140,6 +141,10 @@ class HTTPTestCase(TestCase):
                 raise ConnectionRefusedError(
                     'WebSocket connection refused: {}'.format(url))
         return ws
+
+    @asyncio.coroutine
+    def wait(self, times=1):
+        yield from asyncio.sleep(self.wait_time * times)
 
 
 def start_webdriver():
@@ -371,14 +376,14 @@ class RemoteBrowserTestCase:
             self.server = server.start_server(port=0)
         self.address = self.server.address
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
-        self.wait(4)
+        self.wait()
         self.browser.get(self.url)
-        self.wait(4)
+        self.wait()
 
     def tearDown(self):
         options.config.logging = self._prev_logging
         self.stop_server()
-        self.wait(4)
+        self.wait()
         sys.stdout.flush()
         sys.stderr.flush()
         super().tearDown()
