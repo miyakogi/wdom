@@ -50,9 +50,7 @@ class WebIF:
         have parent node), the ``method`` is not executed.
         '''
         if self.connected:
-            return ensure_future(
-                self.ws_send(dict(method=method, params=args))
-            )
+            self.ws_send(dict(method=method, params=args))
 
     def js_query(self, query) -> Future:
         if self.connected:
@@ -66,7 +64,6 @@ class WebIF:
             fut.set_result(None)
             return fut
 
-    @coroutine
     def ws_send(self, obj):
         '''Send message to the related nodes on browser, with ``tagname`` and
         ``id`` which specifies relation between python's object and element

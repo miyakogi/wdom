@@ -388,18 +388,15 @@ class RemoteBrowserTestCase:
 
     def tearDown(self):
         options.config.logging = self._prev_logging
-        self.stop_server()
-        self.wait()
+        server.stop_server()
         sys.stdout.flush()
         sys.stderr.flush()
+        self.wait(5)
         super().tearDown()
 
     @property
     def port(self) -> int:
         return self.server.port
-
-    def stop_server(self):
-        server.stop_server(self.server)
 
     def wait(self, times=1):
         '''Wait until ``timeout``. The default timeout is zero, so wait a
@@ -472,6 +469,7 @@ class WebDriverTestCase:
         self.server.terminate()
         sys.stdout.flush()
         sys.stderr.flush()
+        self.wait(5)
         super().tearDown()
 
     def get_app(self):
