@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from os import path
 import unittest
 from wdom.testing import suppress_logging
 
-if __name__ == '__main__':
+
+def main():
     suppress_logging()
-    tests = unittest.defaultTestLoader.discover('wdom/tests')
+    target_dir = path.dirname(__file__)
+    tests = unittest.defaultTestLoader.discover(target_dir)
     runner = unittest.TextTestRunner()
     runner.run(tests)
+
+
+if __name__ == '__main__':
+    main()

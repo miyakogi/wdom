@@ -14,8 +14,15 @@ before_script:
   - sleep 3
 install:
   - pip install tox
+  - pip install selenium nose_parameterized syncer coverage
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy-lang; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install codecov coveralls; fi
 script:
   - tox -c tox_travis.ini
+  - coverage erase
+  - coverage run --source wdom wdom/tests/run_tests.py
+  - pip install aiohttp
+  - coverage run -a --source wdom wdom/tests/run_tests.py
+  - coverage report
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
