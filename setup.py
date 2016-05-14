@@ -17,7 +17,7 @@ test_requites = ['pytest', 'pytest-cov', 'aiohttp', 'syncer']
 
 setup(
     name='wdom',
-    version='0.0.1',
+    version='0.1.0',
     description='A library to manipulate DOM on browsers',
     long_description=readme,
     author='Hiroyuki Takagi',
