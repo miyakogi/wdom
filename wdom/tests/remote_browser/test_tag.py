@@ -44,40 +44,40 @@ class TestTag(RemoteBrowserTestCase, TestCase):
     def test_node_text(self):
         self.assertEqual(self.element.text, '')
         self.root.textContent = 'ROOT'
-        self.wait()
+        self.wait_until(lambda: self.element.text == 'ROOT')
         self.assertEqual(self.element.text, 'ROOT')
 
     def test_node_attr(self):
         self.assertIsNone(self.element.get_attribute('src'))
         self.root.setAttribute('src', 'a')
-        self.wait()
+        self.wait_until(lambda: self.element.get_attribute('src') == 'a')
         self.assertEqual(self.element.get_attribute('src'), 'a')
         self.root.removeAttribute('src')
-        self.wait()
+        self.wait_until(lambda: self.element.get_attribute('src') is None)
         self.assertIsNone(self.element.get_attribute('src'))
 
     def test_node_class(self):
         self.root.addClass('a')
-        self.wait()
+        self.wait_until(lambda: self.element.get_attribute('class') == 'a')
         self.assertEqual(self.element.get_attribute('class'), 'a')
         self.root.removeClass('a')
-        self.wait()
+        self.wait_until(lambda: self.element.get_attribute('class') == '')
         self.assertEqual(self.element.get_attribute('class'), '')
 
     def test_addremove_child(self):
         child = Tag()
         self.root.appendChild(child)
-        self.wait()
-        self.assertIsTrue(self.set_element(child))
+        self.set_element(child)
+        self.wait_until(lambda: self.element.text == '')
         self.assertEqual(self.element.text, '')
         child.textContent = 'Child'
-        self.wait()
+        self.wait_until(lambda: self.element.text == 'Child')
         self.assertEqual(self.element.text, 'Child')
 
         self.root.removeChild(child)
-        self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child)
+            self.wait(0.1)
+            self.set_element(child, self.wait_time * 10)
 
     def test_replace_child(self):
         child1 = Tag()
@@ -85,28 +85,29 @@ class TestTag(RemoteBrowserTestCase, TestCase):
         child2 = Tag()
         child2.textContent = 'child2'
         self.root.appendChild(child1)
-        self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child2)
-        self.assertIsTrue(self.set_element(child1))
+            self.set_element(child2, self.wait_time * 10)
+        self.set_element(child1)
+        self.wait_until(lambda: self.element.text == 'child1')
         self.assertEqual(self.element.text, 'child1')
 
         self.root.replaceChild(child2, child1)
-        self.wait()
         with self.assertRaises(NoSuchElementException):
-            self.set_element(child1)
-        self.assertIsTrue(self.set_element(child2))
+            self.wait(0.1)
+            self.set_element(child1, self.wait_time * 10)
+        self.set_element(child2)
+        self.wait_until(lambda: self.element.text == 'child2')
         self.assertEqual(self.element.text, 'child2')
 
     def test_showhide(self):
         self.root.textContent = 'root'
-        self.wait()
+        self.wait_until(lambda: self.element.is_displayed())
         self.assertIsTrue(self.element.is_displayed())
         self.root.hide()
-        self.wait()
+        self.wait_until(lambda: not self.element.is_displayed())
         self.assertIsFalse(self.element.is_displayed())
         self.root.show()
-        self.wait()
+        self.wait_until(lambda: self.element.is_displayed())
         self.assertIsTrue(self.element.is_displayed())
 
 
@@ -132,69 +133,68 @@ class TestInput(RemoteBrowserTestCase, TestCase):
                      reason='This test not pass only on travis')
     def test_textinput(self):
         self.set_element(self.input)
-        self.wait()
         self.element.send_keys('abc')
-        self.wait()
+        self.wait_until(lambda: self.input.value == 'abc')
         self.assertEqual(self.input.value, 'abc')
 
         self.browser.get(self.url)
         self.set_element(self.input)
-        self.wait()
+        self.wait_until(lambda: self.element.get_attribute('value') == 'abc')
         self.assertEqual(self.element.get_attribute('value'), 'abc')
 
         self.element.send_keys('def')
-        self.wait()
+        self.wait_until(
+            lambda: self.element.get_attribute('value') == 'abcdef')
         self.assertEqual(self.input.value, 'abcdef')
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
     def test_textarea(self):
         self.set_element(self.textarea)
-        self.wait()
         self.element.send_keys('abc')
-        self.wait()
+        self.wait_until(lambda: self.textarea.value == 'abc')
         self.assertEqual(self.textarea.value, 'abc')
 
         self.browser.get(self.url)
         self.set_element(self.textarea)
-        self.wait()
+        self.wait_until(lambda: self.element.get_attribute('value') == 'abc')
         self.assertEqual(self.element.get_attribute('value'), 'abc')
 
         self.element.send_keys('def')
-        self.wait()
+        self.wait_until(
+            lambda: self.element.get_attribute('value') == 'abcdef')
         self.assertEqual(self.textarea.value, 'abcdef')
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
     def test_checkbox(self):
         self.set_element(self.checkbox)
-        self.wait()
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: self.checkbox.checked)
         self.assertIsTrue(self.checkbox.checked)
 
         self.browser.get(self.url)
         self.set_element(self.checkbox)
-        self.wait()
+        self.wait_until(
+            lambda: self.element.get_attribute('checked') == 'true')
         self.assertEqual(self.element.get_attribute('checked'), 'true')
 
-        self.wait()
         self.element.click()
-        self.wait()
-        self.assertEqual(self.element.get_attribute('checked'), None)
+        self.wait_until(
+            lambda: self.element.get_attribute('checked') is None)
+        self.assertIsNone(self.element.get_attribute('checked'))
         self.assertIsFalse(self.checkbox.checked)
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
     def test_checkbox_label(self):
         self.set_element(self.check_l)
-        self.wait()
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: self.checkbox.checked)
         self.assertTrue(self.checkbox.checked)
 
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: not self.checkbox.checked)
         self.assertFalse(self.checkbox.checked)
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
@@ -205,25 +205,22 @@ class TestInput(RemoteBrowserTestCase, TestCase):
         self.assertFalse(self.radio3.checked)
 
         self.set_element(self.radio1)
-        self.wait()
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: self.radio1.checked)
         self.assertTrue(self.radio1.checked)
         self.assertFalse(self.radio2.checked)
         self.assertFalse(self.radio3.checked)
 
         self.set_element(self.radio2)
-        self.wait()
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: self.radio2.checked)
         self.assertFalse(self.radio1.checked)
         self.assertTrue(self.radio2.checked)
         self.assertFalse(self.radio3.checked)
 
         self.set_element(self.radio3)
-        self.wait()
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: self.radio3.checked)
         self.assertFalse(self.radio1.checked)
         self.assertTrue(self.radio2.checked)
         self.assertTrue(self.radio3.checked)
@@ -232,16 +229,14 @@ class TestInput(RemoteBrowserTestCase, TestCase):
                      reason='This test not pass only on travis')
     def test_radios_label(self):
         self.set_element(self.radio1_l)
-        self.wait()
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: self.radio1.checked)
         self.assertTrue(self.radio1.checked)
         self.assertFalse(self.radio2.checked)
 
         self.set_element(self.radio2_l)
-        self.wait()
         self.element.click()
-        self.wait()
+        self.wait_until(lambda: self.radio2.checked)
         self.assertFalse(self.radio1.checked)
         self.assertTrue(self.radio2.checked)
 
@@ -266,23 +261,22 @@ class TestSelect(RemoteBrowserTestCase, TestCase):
                      reason='This test not pass only on travis')
     def test_select(self):
         self.set_element(self.select)
-        self.wait()
         self.element.select_by_index(1)
-        self.wait()
+        self.wait_until(lambda: self.opt2.selected)
         self.assertEqual(self.select.value, 'option 2')
         self.assertFalse(self.opt1.selected)
         self.assertTrue(self.opt2.selected)
         self.assertFalse(self.opt3.selected)
 
         self.element.select_by_visible_text('option 1')
-        self.wait()
+        self.wait_until(lambda: self.opt1.selected)
         self.assertEqual(self.select.value, 'option 1')
         self.assertTrue(self.opt1.selected)
         self.assertFalse(self.opt2.selected)
         self.assertFalse(self.opt3.selected)
 
         self.element.select_by_value('opt3')
-        self.wait()
+        self.wait_until(lambda: self.opt3.selected)
         self.assertEqual(self.select.value, 'opt3')
         self.assertFalse(self.opt1.selected)
         self.assertFalse(self.opt2.selected)
@@ -290,22 +284,21 @@ class TestSelect(RemoteBrowserTestCase, TestCase):
 
     def test_multi_select(self):
         self.set_element(self.mselect)
-        self.wait()
         self.element.select_by_index(1)
-        self.wait()
+        self.wait_until(lambda: self.opt2m.selected)
         self.assertEqual(self.mselect.value, 'option 2')
         self.assertFalse(self.opt1m.selected)
         self.assertTrue(self.opt2m.selected)
         self.assertFalse(self.opt3m.selected)
 
         self.element.select_by_index(2)
-        self.wait()
+        self.wait_until(lambda: self.opt3m.selected)
         self.assertFalse(self.opt1m.selected)
         self.assertTrue(self.opt2m.selected)
         self.assertTrue(self.opt3m.selected)
 
         self.element.deselect_all()
-        self.wait()
+        self.wait_until(lambda: not self.opt3m.selected)
         self.assertFalse(self.opt1m.selected)
         self.assertFalse(self.opt2m.selected)
         self.assertFalse(self.opt3m.selected)

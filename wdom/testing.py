@@ -393,6 +393,10 @@ class RemoteElementController(Controller):
     properties = _get_properties(WebElement)
 
 
+class TimeoutError(Exception):
+    """The operation is not completed by timeout."""
+
+
 class RemoteBrowserTestCase:
     """This class is **Experimental**.
 
@@ -404,7 +408,9 @@ class RemoteBrowserTestCase:
     """
 
     #: seconds to wait for by ``wait`` method.
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.01
+    #: secondes for deault timeout for ``wait_until`` method
+    timeout = 1.0
 
     def start(self):
         """Start remote browser process."""
@@ -416,20 +422,18 @@ class RemoteBrowserTestCase:
         try:
             self.server = server.start_server(port=0)
         except OSError:
-            self.wait(20)
+            self.wait(0.2)
             self.server = server.start_server(port=0)
         self.address = self.server.address
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
-        self.wait()
         self.browser.get(self.url)
-        self.wait()
+        self.wait_until(lambda: server.is_connected())
 
     def tearDown(self):
         options.config.logging = self._prev_logging
         server.stop_server()
         sys.stdout.flush()
         sys.stderr.flush()
-        self.wait(5)
         super().tearDown()
 
     @property
@@ -437,19 +441,44 @@ class RemoteBrowserTestCase:
         """Get port of the server."""
         return self.server.port
 
-    def wait(self, times=1):
-        """Wait for ``wait_time``.
+    def wait(self, timeout=None):
+        """Wait until ``timeout`` seconds.
 
-        This method does not block the thread, so the server in test still can
-        send response before timeout.
+        Default timeout is ``RemoteBrowserTestCase.wait_time``."""
+        timeout = timeout or self.wait_time
+        asyncio.get_event_loop().run_until_complete(
+            asyncio.sleep(self.wait_time))
+
+    def wait_until(self, func, timeout=None):
+        """Wait until ``func`` returns True or until expires timeout.
+
+        ``func`` is called with no argument. Unit of ``timeout`` is second, and
+        its default value is RemoteBrowserTestCase.timeout class variable
+        (default: 1.0).
         """
-        for i in range(times):
-            asyncio.get_event_loop().run_until_complete(
-                asyncio.sleep(self.wait_time))
+        st = time.perf_counter()
+        timeout = timeout or self.timeout
+        while (time.perf_counter() - st) < timeout:
+            if func():
+                return
+            self.wait()
+        raise TimeoutError('{} did not return True until timeout'.format(func))
 
-    def set_element(self, node):
+    def _set_element(self, node):
+        try:
+            res = self.proc.set_element_by_id(node.rimo_id)
+            return res
+        except NoSuchElementException:
+            return False
+
+    def set_element(self, node, timeout=None):
         """Set the ``node`` as a target node of the remote browser process."""
-        return self.proc.set_element_by_id(node.rimo_id)
+        try:
+            self.wait_until(lambda: self._set_element(node), timeout)
+            return True
+        except TimeoutError:
+            pass
+        raise NoSuchElementException('element not found: {}'.format(node))
 
 
 class WebDriverTestCase:
