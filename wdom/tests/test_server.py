@@ -152,6 +152,15 @@ class TestOpenBrowser(TestServerBase):
         self.assertIn('connected', self.proc.stdout.readline())
 
 
+class TestOpenBrowserFreePort(TestServerBase):
+    cmd = ['--port', '0', '--open-browser', '--browser', 'firefox']
+
+    def test_open_browser_free_port(self):
+        time.sleep(0.5)
+        self.assertIn('Start server on', self.proc.stdout.readline())
+        self.assertIn('connected', self.proc.stdout.readline())
+
+
 class TestMainHandlerBlank(HTTPTestCase):
     def setUp(self) -> None:
         super().setUp()
