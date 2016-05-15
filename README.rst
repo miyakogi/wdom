@@ -78,13 +78,13 @@ Simple example::
     import asyncio
     from wdom.document import get_document
     from wdom.server import start_server, stop_server
- 
+
     if __name__ == '__main__':
         document = get_document()
         h1 = document.createElement('h1')
         h1.textContent = 'Hello, WDOM'
         document.body.appendChild(h1)
- 
+
         start_server()
         try:
             asyncio.get_event_loop().run_forever()
@@ -105,13 +105,13 @@ tag classes to easily generate elements::
     from wdom.tag import H1
     from wdom.document import get_document
     from wdom.server import start_server, stop_server
- 
+
     if __name__ == '__main__':
         document = get_document()
         h1 = H1()
         h1.textContent = 'Hello, WDOM'
         document.body.append(h1)
- 
+
         start_server()
         try:
             asyncio.get_event_loop().run_forever()
@@ -124,7 +124,7 @@ Of course, WDOM can handle events::
     from wdom.tag import H1
     from wdom.server import start_server, stop_server
     from wdom.document import get_document
- 
+
     if __name__ == '__main__':
         document = get_document()
         h1 = H1('Hello, WDOM', parent=document.body)
