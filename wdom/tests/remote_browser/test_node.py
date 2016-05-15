@@ -457,14 +457,11 @@ class TestEvent(ElementTestCase, TestCase):
                      reason='This test not pass only on travis')
     def test_click(self):
         # need to wait some times
-        for i in range(10):
-            self.wait()
+        self.wait(times=10)
         self.set_element(self.btn)
-        for i in range(10):
-            self.wait()
+        self.wait(times=10)
         self.element.click()
-        for i in range(10):
-            self.wait()
+        self.wait(times=10)
         self.wait_until(lambda: self.click_event_mock.call_count == 1)
         self.assertEqual(self.click_event_mock.call_count, 1)
 

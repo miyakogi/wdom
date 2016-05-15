@@ -78,18 +78,14 @@ class TestRevText(WebDriverTestCase, TestCase):
         text = 'Click!'
         self.assertEqual(view.text, text)
         # need long wait time
-        for i in range(20):
-            self.wait()
+        self.wait(times=20)
         view.click()
-        for i in range(20):
-            self.wait()
+        self.wait(times=20)
         self.wait_until(lambda: view.text == text[::-1])
         self.assertEqual(view.text, text[::-1])
-        for i in range(20):
-            self.wait()
+        self.wait(times=20)
         view.click()
-        for i in range(20):
-            self.wait()
+        self.wait(times=20)
         self.wait_until(lambda: view.text == text)
         self.assertEqual(view.text, text)
 
@@ -109,19 +105,19 @@ class TestTimer(WebDriverTestCase, TestCase):
         start_btn = self.wd.find_element_by_id('start_btn')
         stop_btn = self.wd.find_element_by_id('stop_btn')
         reset_btn = self.wd.find_element_by_id('reset_btn')
-        self.wait(0.2)
+        self.wait(times=20)
 
         def test_timer():
             self.assertEqual(view.text, '180.00')
             start_btn.click()
-            self.wait(0.2)
+            self.wait(times=20)
             self.assertTrue(float(view.text) < 179.90)
             stop_btn.click()
             t = view.text
-            self.wait(0.2)
+            self.wait(times=20)
             self.assertEqual(view.text, t)
 
         test_timer()
         reset_btn.click()
-        self.wait(0.2)
+        self.wait(times=20)
         test_timer()

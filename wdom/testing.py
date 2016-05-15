@@ -440,14 +440,14 @@ class RemoteBrowserTestCase:
         """Get port of the server."""
         return self.server.port
 
-    def wait(self, timeout=None):
+    def wait(self, timeout: float = None, times: int = 1):
         """Wait for ``timeout`` seconds.
 
         Default timeout is ``RemoteBrowserTestCase.wait_time``.
         """
-        timeout = timeout or self.wait_time
-        asyncio.get_event_loop().run_until_complete(
-            asyncio.sleep(self.wait_time))
+        loop = asyncio.get_event_loop()
+        for i in range(times):
+            loop.run_until_complete(asyncio.sleep(timeout or self.timeout))
 
     def wait_until(self, func, timeout=None):
         """Wait until ``func`` returns True or exceeds timeout.
@@ -535,7 +535,7 @@ class WebDriverTestCase:
             args=(self.port, )
         )
         self.server.start()
-        self.wait(self.wait_time * 10)
+        self.wait(times=10)
         self.wd.get(self.url)
 
     def tearDown(self):
@@ -543,12 +543,14 @@ class WebDriverTestCase:
         self.server.terminate()
         sys.stdout.flush()
         sys.stderr.flush()
-        self.wait(self.wait_time * 10)
+        self.wait(times=10)
         super().tearDown()
 
-    def wait(self, timeout=None):
+    def wait(self, timeout: float = None, times: int = 1):
         """Wait for ``timeout`` or ``self.wait_time``."""
-        time.sleep(timeout or self.wait_time)
+        loop = asyncio.get_event_loop()
+        for i in range(times):
+            loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
     def wait_until(self, func, timeout=None):
         """Wait until ``func`` returns True or exceeds timeout.
