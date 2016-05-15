@@ -13,6 +13,7 @@ from wdom.server.handler import on_websocket_message
 
 logger = logging.getLogger(__name__)
 connections = []
+_access_log_format = '%s %r (%a) %D us'
 
 
 def is_connected():
@@ -20,7 +21,7 @@ def is_connected():
     return any(connections)
 
 
-def main_handler(self):
+def main_handler(request):
     """Main handler to serve root ``document`` object of the application."""
     from wdom.document import get_document
     logger.info('connected')
@@ -31,6 +32,7 @@ def main_handler(self):
 def ws_open(request):
     """Open websocket connection of aiohttp."""
     handler = WSHandler()
+    logger.info('WS OPEN')
     yield from handler.open(request)
     return handler.ws
 
@@ -153,7 +155,8 @@ def start_server(app: Optional[web.Application] = None,
     app = app or get_app()
     loop = loop or asyncio.get_event_loop()
 
-    handler = app.make_handler()
+    handler = app.make_handler(logger=logger, access_log=logger,
+                               access_log_format=_access_log_format)
     f = loop.create_server(handler, address, port)
     server = loop.run_until_complete(f)
     server.app = app

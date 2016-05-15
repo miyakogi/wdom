@@ -39,7 +39,6 @@ except:
 
 def setUpModule():
     install_asyncio()
-    server.set_server_type('tornado')
 
 
 class TestServerTypeSet(TestCase):
@@ -53,7 +52,7 @@ class TestServerTypeSet(TestCase):
             self.assertTrue(isinstance(server.get_app(), _aiohttp.Application))
         except ImportError:
             pass
-        server.set_server_type('tornado')
+        # here server type is the same as original one
 
     def test_invalid_server_type(self):
         with self.assertRaises(ValueError):
@@ -228,7 +227,7 @@ class TestStaticFileHandler(HTTPTestCase):
     def test_tempdir(self):
         from os import path
         self.assertTrue(path.exists(self.document.tempdir))
-        with self.assertLogs('wdom.server', 'WARN'):
+        with self.assertLogs('wdom.server', 'INFO'):
             res = yield from self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(res.code, 404)
         self.assertIn('404', res.text)
