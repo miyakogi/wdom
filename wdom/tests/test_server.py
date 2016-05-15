@@ -81,14 +81,14 @@ class TestServerBase(HTTPTestCase):
             stderr=subprocess.STDOUT,
             universal_newlines=True,
         )
-        sync(self.wait(2))
+        sync(self.wait(times=10))
 
     def tearDown(self):
         if os.path.exists(self.tmp):
             os.remove(self.tmp)
         if self.proc.returncode is None:
             self.proc.terminate()
-        sync(self.wait(4))
+        sync(self.wait(times=10))
         super().tearDown()
 
 
@@ -101,7 +101,7 @@ class TestAutoShutdown(TestServerBase):
         yield from self.wait()
         ws = yield from self.ws_connect(self.ws_url)
         ws.close()
-        yield from self.wait(10)
+        yield from self.wait(timeout=0.1, times=5)
         self.assertIsNotNone(self.proc.poll())
 
     @sync
@@ -111,7 +111,7 @@ class TestAutoShutdown(TestServerBase):
         ws = yield from self.ws_connect(self.ws_url)
         ws.close()
         ws = yield from self.ws_connect(self.ws_url)
-        yield from self.wait(10)
+        yield from self.wait(timeout=0.1, times=5)
         self.assertIsNone(self.proc.poll())
 
     @sync
@@ -121,10 +121,10 @@ class TestAutoShutdown(TestServerBase):
         ws1 = yield from self.ws_connect(self.ws_url)
         ws2 = yield from self.ws_connect(self.ws_url)
         ws1.close()
-        yield from self.wait(10)
+        yield from self.wait(timeout=0.1, times=5)
         self.assertIsNone(self.proc.poll())
         ws2.close()
-        yield from self.wait(10)
+        yield from self.wait(timeout=0.1, times=5)
         self.assertIsNotNone(self.proc.poll())
 
     @sync
@@ -137,7 +137,7 @@ class TestAutoShutdown(TestServerBase):
         self.assertTrue(path.exists(content.strip()))
         self.assertTrue(path.isdir(content.strip()))
         ws.close()
-        yield from self.wait(10)
+        yield from self.wait(timeout=0.1, times=5)
         self.assertIsNotNone(self.proc.poll())
         self.assertFalse(path.exists(content.strip()))
         self.assertFalse(path.isdir(content.strip()))
@@ -207,7 +207,7 @@ class TestStaticFileHandler(HTTPTestCase):
     @sync
     @asyncio.coroutine
     def test_static_file(self) -> None:
-        with self.assertLogs('wdom.server._tornado', 'INFO'):
+        with self.assertLogs('wdom.server', 'INFO'):
             res = yield from self.fetch(self.url + '/_static/js/rimo/rimo.js')
         self.assertEqual(res.code, 200)
         self.assertIn('rimo', res.text)

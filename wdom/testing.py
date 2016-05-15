@@ -105,8 +105,9 @@ class TestCase(unittest.TestCase):
 class HTTPTestCase(TestCase):
     """For http/ws connection test."""
 
+    wait_time = 0.01
+    timeout = 1.0
     _server_started = False
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
     _ws_connections = []
 
     def start(self):
@@ -148,34 +149,37 @@ class HTTPTestCase(TestCase):
         return response
 
     @asyncio.coroutine
-    def ws_connect(self, url: str, _retry=0,
-                   _max=100 if os.environ.get('TRAVIS') else 20,
-                   _wait=0.2 if os.environ.get('TRAVIS') else 0.05
+    def ws_connect(self, url: str, timeout: float = None
                    ) -> WebSocketClientConnection:
         """Make WebSocket connection to the url.
 
         Retries up to _max (default: 20) times. Client connections made by this
         method are closed after each test method.
         """
-        try:
-            ws = yield from to_asyncio_future(websocket_connect(url))
-        except ConnectionRefusedError:
-            if _retry <= _max:
-                yield from asyncio.sleep(_wait)
-                ws = yield from self.ws_connect(url, _retry+1, _max, _wait)
+        st = time.perf_counter()
+        timeout = timeout or self.timeout
+        while (time.perf_counter() - st) < timeout:
+            try:
+                ws = yield from to_asyncio_future(websocket_connect(url))
+            except ConnectionRefusedError:
+                yield from self.wait()
+                continue
             else:
-                raise ConnectionRefusedError(
-                    'WebSocket connection refused: {}'.format(url))
-        self._ws_connections.append(ws)
-        return ws
+                self._ws_connections.append(ws)
+                return ws
+        raise ConnectionRefusedError(
+            'WebSocket connection refused: {}'.format(url))
 
     @asyncio.coroutine
-    def wait(self, times=1):
-        """Coroutine to wait for ``wait_time``.
+    def wait(self, timeout: float = None, times: int = 1):
+        """Coroutine to wait for ``timeout``.
 
-        If ``times`` are specified, wait for ``wait_time * times``.
+        ``timeout`` is second to wait, and its default value is
+        ``self.wait_time``. If ``times`` are specified, wait for
+        ``timeout * times``.
         """
-        yield from asyncio.sleep(self.wait_time * times)
+        for i in range(times):
+            yield from asyncio.sleep(timeout or self.wait_time)
 
 
 def start_webdriver():
