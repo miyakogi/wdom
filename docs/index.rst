@@ -15,6 +15,7 @@ Contents
     dom
     server
     test
+    changes
 
 
 Indices and tables
