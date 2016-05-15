@@ -442,7 +442,7 @@ class RemoteBrowserTestCase:
         return self.server.port
 
     def wait(self, timeout=None):
-        """Wait until ``timeout`` seconds.
+        """Wait for ``timeout`` seconds.
 
         Default timeout is ``RemoteBrowserTestCase.wait_time``."""
         timeout = timeout or self.wait_time
@@ -450,7 +450,7 @@ class RemoteBrowserTestCase:
             asyncio.sleep(self.wait_time))
 
     def wait_until(self, func, timeout=None):
-        """Wait until ``func`` returns True or until expires timeout.
+        """Wait until ``func`` returns True or exceeds timeout.
 
         ``func`` is called with no argument. Unit of ``timeout`` is second, and
         its default value is RemoteBrowserTestCase.timeout class variable
@@ -494,6 +494,8 @@ class WebDriverTestCase:
     """
     #: seconds to wait for by ``wait`` method.
     wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    #: secondes for deault timeout for ``wait_until`` method
+    timeout = 1.0
 
     @classmethod
     def setUpClass(cls):
@@ -533,22 +535,35 @@ class WebDriverTestCase:
             args=(self.port, )
         )
         self.server.start()
-        self.wait(10)
+        self.wait(self.wait_time * 10)
         self.wd.get(self.url)
-        self.wait()
 
     def tearDown(self):
         """Terminate server subprocess."""
         self.server.terminate()
         sys.stdout.flush()
         sys.stderr.flush()
-        self.wait(5)
+        self.wait(self.wait_time * 10)
         super().tearDown()
 
-    def wait(self, times=1):
-        """Wait for ``wait_time``."""
-        for i in range(times):
-            time.sleep(self.wait_time)
+    def wait(self, timeout=None):
+        """Wait for ``timeout`` or ``self.wait_time``."""
+        time.sleep(timeout or self.wait_time)
+
+    def wait_until(self, func, timeout=None):
+        """Wait until ``func`` returns True or exceeds timeout.
+
+        ``func`` is called with no argument. Unit of ``timeout`` is second, and
+        its default value is RemoteBrowserTestCase.timeout class variable
+        (default: 1.0).
+        """
+        st = time.perf_counter()
+        timeout = timeout or self.timeout
+        while (time.perf_counter() - st) < timeout:
+            if func():
+                return
+            self.wait()
+        raise TimeoutError('{} did not return True until timeout'.format(func))
 
     def send_keys(self, element, keys: str):
         """Send ``keys`` to ``element`` one-by-one.
