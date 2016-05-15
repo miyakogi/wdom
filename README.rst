@@ -73,7 +73,9 @@ automatically.
 Example
 -------
 
-Simple example::
+Simple example:
+
+.. code-block:: python
 
     import asyncio
     from wdom.document import get_document
@@ -99,7 +101,9 @@ As you can see, methods of WDOM (``document.createElement`` and
 ``document.body.appendChild``) are very similar to browser JavaScript.
 
 WDOM provides some new DOM APIs (e.g. ``append`` for appending child) and some
-tag classes to easily generate elements::
+tag classes to easily generate elements:
+
+.. code-block:: python
 
     import asyncio
     from wdom.tag import H1
@@ -118,7 +122,9 @@ tag classes to easily generate elements::
         except KeyboardInterrupt:
             stop_server()
 
-Of course, WDOM can handle events::
+Of course, WDOM can handle events:
+
+.. code-block:: python
 
     import asyncio
     from wdom.tag import H1
