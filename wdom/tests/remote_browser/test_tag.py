@@ -24,6 +24,9 @@ def tearDownModule():
 
 
 class TestTag(RemoteBrowserTestCase, TestCase):
+    if os.environ.get('TRAVIS', False):
+        wait_time = 0.1
+
     def setUp(self):
         super().setUp()
         self.document = get_document()
@@ -112,6 +115,9 @@ class TestTag(RemoteBrowserTestCase, TestCase):
 
 
 class TestInput(RemoteBrowserTestCase, TestCase):
+    if os.environ.get('TRAVIS', False):
+        wait_time = 0.1
+
     def setUp(self):
         super().setUp()
         self.document = get_document(autoreload=False)
@@ -242,6 +248,9 @@ class TestInput(RemoteBrowserTestCase, TestCase):
 
 
 class TestSelect(RemoteBrowserTestCase, TestCase):
+    if os.environ.get('TRAVIS', False):
+        wait_time = 0.1
+
     def setUp(self):
         super().setUp()
         self.document = get_document(autoreload=False)

@@ -406,9 +406,8 @@ class RemoteBrowserTestCase:
 
     After seting up your document, call ``start`` method in setup sequence.
     """
-
     #: seconds to wait for by ``wait`` method.
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.01
+    wait_time = 0.01
     #: secondes for deault timeout for ``wait_until`` method
     timeout = 1.0
 
@@ -444,7 +443,8 @@ class RemoteBrowserTestCase:
     def wait(self, timeout=None):
         """Wait for ``timeout`` seconds.
 
-        Default timeout is ``RemoteBrowserTestCase.wait_time``."""
+        Default timeout is ``RemoteBrowserTestCase.wait_time``.
+        """
         timeout = timeout or self.wait_time
         asyncio.get_event_loop().run_until_complete(
             asyncio.sleep(self.wait_time))
@@ -493,7 +493,7 @@ class WebDriverTestCase:
     instead.
     """
     #: seconds to wait for by ``wait`` method.
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.01
     #: secondes for deault timeout for ``wait_until`` method
     timeout = 1.0
 

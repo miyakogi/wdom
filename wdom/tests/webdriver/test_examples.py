@@ -77,17 +77,18 @@ class TestRevText(WebDriverTestCase, TestCase):
         view = self.wd.find_element_by_tag_name('h1')
         text = 'Click!'
         self.assertEqual(view.text, text)
-        for i in range(5):
+        # need long wait time
+        for i in range(20):
             self.wait()
         view.click()
-        for i in range(5):
+        for i in range(20):
             self.wait()
         self.wait_until(lambda: view.text == text[::-1])
         self.assertEqual(view.text, text[::-1])
-        for i in range(5):
+        for i in range(20):
             self.wait()
         view.click()
-        for i in range(5):
+        for i in range(20):
             self.wait()
         self.wait_until(lambda: view.text == text)
         self.assertEqual(view.text, text)

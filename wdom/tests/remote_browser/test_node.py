@@ -28,6 +28,9 @@ def tearDownModule():
 
 
 class ElementTestCase(RemoteBrowserTestCase):
+    if os.environ.get('TRAVIS', False):
+        wait_time = 0.1
+
     def setUp(self):
         super().setUp()
         self.document = get_document()
