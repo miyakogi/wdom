@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os
 import time
 import logging
 import asyncio
@@ -511,6 +510,7 @@ class WebDriverTestCase:
         AsyncIOMainLoop().clear_current()
         AsyncIOMainLoop().clear_instance()
         install_asyncio()
+        reset()
 
     @classmethod
     def tearDownClass(cls):
@@ -519,6 +519,7 @@ class WebDriverTestCase:
         AsyncIOMainLoop().clear_current()
         AsyncIOMainLoop().clear_instance()
         install_asyncio()
+        reset()
 
     def start(self):
         """Start server and web driver."""
