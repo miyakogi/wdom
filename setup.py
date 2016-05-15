@@ -17,7 +17,7 @@ test_requites = ['nose_parameterized', 'selenium', 'syncer']
 
 setup(
     name='wdom',
-    version='0.1.1',
+    version='0.1.2',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
@@ -29,8 +29,8 @@ setup(
         'wdom.server',
         'wdom.themes',
         'wdom.tests',
+        'wdom.tests.local_browser',
         'wdom.tests.remote_browser',
-        'wdom.tests.webdriver',
     ],
     include_package_data=True,
     license="MIT",

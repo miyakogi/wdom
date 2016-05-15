@@ -73,18 +73,20 @@ automatically.
 Example
 -------
 
-Simple example::
+Simple example:
+
+.. code-block:: python
 
     import asyncio
     from wdom.document import get_document
     from wdom.server import start_server, stop_server
- 
+
     if __name__ == '__main__':
         document = get_document()
         h1 = document.createElement('h1')
         h1.textContent = 'Hello, WDOM'
         document.body.appendChild(h1)
- 
+
         start_server()
         try:
             asyncio.get_event_loop().run_forever()
@@ -99,32 +101,36 @@ As you can see, methods of WDOM (``document.createElement`` and
 ``document.body.appendChild``) are very similar to browser JavaScript.
 
 WDOM provides some new DOM APIs (e.g. ``append`` for appending child) and some
-tag classes to easily generate elements::
+tag classes to easily generate elements:
+
+.. code-block:: python
 
     import asyncio
     from wdom.tag import H1
     from wdom.document import get_document
     from wdom.server import start_server, stop_server
- 
+
     if __name__ == '__main__':
         document = get_document()
         h1 = H1()
         h1.textContent = 'Hello, WDOM'
         document.body.append(h1)
- 
+
         start_server()
         try:
             asyncio.get_event_loop().run_forever()
         except KeyboardInterrupt:
             stop_server()
 
-Of course, WDOM can handle events::
+Of course, WDOM can handle events:
+
+.. code-block:: python
 
     import asyncio
     from wdom.tag import H1
     from wdom.server import start_server, stop_server
     from wdom.document import get_document
- 
+
     if __name__ == '__main__':
         document = get_document()
         h1 = H1('Hello, WDOM', parent=document.body)

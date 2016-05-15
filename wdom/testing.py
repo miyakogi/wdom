@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import os
 import time
 import logging
 import asyncio
@@ -105,8 +104,9 @@ class TestCase(unittest.TestCase):
 class HTTPTestCase(TestCase):
     """For http/ws connection test."""
 
+    wait_time = 0.01
+    timeout = 1.0
     _server_started = False
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
     _ws_connections = []
 
     def start(self):
@@ -148,34 +148,37 @@ class HTTPTestCase(TestCase):
         return response
 
     @asyncio.coroutine
-    def ws_connect(self, url: str, _retry=0,
-                   _max=100 if os.environ.get('TRAVIS') else 20,
-                   _wait=0.2 if os.environ.get('TRAVIS') else 0.05
+    def ws_connect(self, url: str, timeout: float = None
                    ) -> WebSocketClientConnection:
         """Make WebSocket connection to the url.
 
         Retries up to _max (default: 20) times. Client connections made by this
         method are closed after each test method.
         """
-        try:
-            ws = yield from to_asyncio_future(websocket_connect(url))
-        except ConnectionRefusedError:
-            if _retry <= _max:
-                yield from asyncio.sleep(_wait)
-                ws = yield from self.ws_connect(url, _retry+1, _max, _wait)
+        st = time.perf_counter()
+        timeout = timeout or self.timeout
+        while (time.perf_counter() - st) < timeout:
+            try:
+                ws = yield from to_asyncio_future(websocket_connect(url))
+            except ConnectionRefusedError:
+                yield from self.wait()
+                continue
             else:
-                raise ConnectionRefusedError(
-                    'WebSocket connection refused: {}'.format(url))
-        self._ws_connections.append(ws)
-        return ws
+                self._ws_connections.append(ws)
+                return ws
+        raise ConnectionRefusedError(
+            'WebSocket connection refused: {}'.format(url))
 
     @asyncio.coroutine
-    def wait(self, times=1):
-        """Coroutine to wait for ``wait_time``.
+    def wait(self, timeout: float = None, times: int = 1):
+        """Coroutine to wait for ``timeout``.
 
-        If ``times`` are specified, wait for ``wait_time * times``.
+        ``timeout`` is second to wait, and its default value is
+        ``self.wait_time``. If ``times`` are specified, wait for
+        ``timeout * times``.
         """
-        yield from asyncio.sleep(self.wait_time * times)
+        for i in range(times):
+            yield from asyncio.sleep(timeout or self.wait_time)
 
 
 def start_webdriver():
@@ -393,6 +396,10 @@ class RemoteElementController(Controller):
     properties = _get_properties(WebElement)
 
 
+class TimeoutError(Exception):
+    """The operation is not completed by timeout."""
+
+
 class RemoteBrowserTestCase:
     """This class is **Experimental**.
 
@@ -402,9 +409,10 @@ class RemoteBrowserTestCase:
 
     After seting up your document, call ``start`` method in setup sequence.
     """
-
     #: seconds to wait for by ``wait`` method.
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.01
+    #: secondes for deault timeout for ``wait_until`` method
+    timeout = 1.0
 
     def start(self):
         """Start remote browser process."""
@@ -416,20 +424,18 @@ class RemoteBrowserTestCase:
         try:
             self.server = server.start_server(port=0)
         except OSError:
-            self.wait(20)
+            self.wait(0.2)
             self.server = server.start_server(port=0)
         self.address = self.server.address
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
-        self.wait()
         self.browser.get(self.url)
-        self.wait()
+        self.wait_until(lambda: server.is_connected())
 
     def tearDown(self):
         options.config.logging = self._prev_logging
         server.stop_server()
         sys.stdout.flush()
         sys.stderr.flush()
-        self.wait(5)
         super().tearDown()
 
     @property
@@ -437,19 +443,45 @@ class RemoteBrowserTestCase:
         """Get port of the server."""
         return self.server.port
 
-    def wait(self, times=1):
-        """Wait for ``wait_time``.
+    def wait(self, timeout: float = None, times: int = 1):
+        """Wait for ``timeout`` seconds.
 
-        This method does not block the thread, so the server in test still can
-        send response before timeout.
+        Default timeout is ``RemoteBrowserTestCase.wait_time``.
         """
+        loop = asyncio.get_event_loop()
         for i in range(times):
-            asyncio.get_event_loop().run_until_complete(
-                asyncio.sleep(self.wait_time))
+            loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
-    def set_element(self, node):
+    def wait_until(self, func, timeout=None):
+        """Wait until ``func`` returns True or exceeds timeout.
+
+        ``func`` is called with no argument. Unit of ``timeout`` is second, and
+        its default value is RemoteBrowserTestCase.timeout class variable
+        (default: 1.0).
+        """
+        st = time.perf_counter()
+        timeout = timeout or self.timeout
+        while (time.perf_counter() - st) < timeout:
+            if func():
+                return
+            self.wait()
+        raise TimeoutError('{} did not return True until timeout'.format(func))
+
+    def _set_element(self, node):
+        try:
+            res = self.proc.set_element_by_id(node.rimo_id)
+            return res
+        except NoSuchElementException:
+            return False
+
+    def set_element(self, node, timeout=None):
         """Set the ``node`` as a target node of the remote browser process."""
-        return self.proc.set_element_by_id(node.rimo_id)
+        try:
+            self.wait_until(lambda: self._set_element(node), timeout)
+            return True
+        except TimeoutError:
+            pass
+        raise NoSuchElementException('element not found: {}'.format(node))
 
 
 class WebDriverTestCase:
@@ -464,7 +496,9 @@ class WebDriverTestCase:
     instead.
     """
     #: seconds to wait for by ``wait`` method.
-    wait_time = 0.2 if os.environ.get('TRAVIS', False) else 0.05
+    wait_time = 0.01
+    #: secondes for deault timeout for ``wait_until`` method
+    timeout = 1.0
 
     @classmethod
     def setUpClass(cls):
@@ -476,6 +510,7 @@ class WebDriverTestCase:
         AsyncIOMainLoop().clear_current()
         AsyncIOMainLoop().clear_instance()
         install_asyncio()
+        reset()
 
     @classmethod
     def tearDownClass(cls):
@@ -484,6 +519,7 @@ class WebDriverTestCase:
         AsyncIOMainLoop().clear_current()
         AsyncIOMainLoop().clear_instance()
         install_asyncio()
+        reset()
 
     def start(self):
         """Start server and web driver."""
@@ -504,22 +540,37 @@ class WebDriverTestCase:
             args=(self.port, )
         )
         self.server.start()
-        self.wait(10)
+        self.wait(times=10)
         self.wd.get(self.url)
-        self.wait()
 
     def tearDown(self):
         """Terminate server subprocess."""
         self.server.terminate()
         sys.stdout.flush()
         sys.stderr.flush()
-        self.wait(5)
+        self.wait(times=10)
         super().tearDown()
 
-    def wait(self, times=1):
-        """Wait for ``wait_time``."""
+    def wait(self, timeout: float = None, times: int = 1):
+        """Wait for ``timeout`` or ``self.wait_time``."""
+        loop = asyncio.get_event_loop()
         for i in range(times):
-            time.sleep(self.wait_time)
+            loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
+
+    def wait_until(self, func, timeout=None):
+        """Wait until ``func`` returns True or exceeds timeout.
+
+        ``func`` is called with no argument. Unit of ``timeout`` is second, and
+        its default value is RemoteBrowserTestCase.timeout class variable
+        (default: 1.0).
+        """
+        st = time.perf_counter()
+        timeout = timeout or self.timeout
+        while (time.perf_counter() - st) < timeout:
+            if func():
+                return
+            self.wait()
+        raise TimeoutError('{} did not return True until timeout'.format(func))
 
     def send_keys(self, element, keys: str):
         """Send ``keys`` to ``element`` one-by-one.
