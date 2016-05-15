@@ -447,7 +447,7 @@ class RemoteBrowserTestCase:
         """
         loop = asyncio.get_event_loop()
         for i in range(times):
-            loop.run_until_complete(asyncio.sleep(timeout or self.timeout))
+            loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
     def wait_until(self, func, timeout=None):
         """Wait until ``func`` returns True or exceeds timeout.
