@@ -13,6 +13,8 @@ WDOM
 .. image:: https://codecov.io/github/miyakogi/wdom/coverage.svg?branch=dev
    :target: https://codecov.io/github/miyakogi/wdom?branch=dev
 
+--------------------------------------------------------------------------------
+
 WDOM is a python GUI library for browser-based desktop applications. WDOM
 controls HTML elements (DOM) on browser from python, as if it is a GUI element.
 APIs are same as browser DOM, but of course, you can write logic codes in

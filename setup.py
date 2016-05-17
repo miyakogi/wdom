@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 from os import path
 
 try:
@@ -15,9 +16,13 @@ with open(readme_file) as readme_file:
 install_requires = ['tornado']
 test_requites = ['nose_parameterized', 'selenium', 'syncer']
 
+if sys.version_info < (3, 5):
+    install_requires.append('mypy-lang')
+
+
 setup(
     name='wdom',
-    version='0.1.2',
+    version='0.1.3',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
