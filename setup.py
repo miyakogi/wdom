@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 from os import path
 
 try:
@@ -14,6 +15,10 @@ with open(readme_file) as readme_file:
 
 install_requires = ['tornado']
 test_requites = ['nose_parameterized', 'selenium', 'syncer']
+
+if sys.version_info < (3, 5):
+    install_requires.append('mypy-lang')
+
 
 setup(
     name='wdom',
