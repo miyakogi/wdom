@@ -1,54 +1,58 @@
-/* body { */
-/*   font-size: 16px; */
-/* } */
-/*  */
-/* h1.logo { */
-/*   font-family: 'PT Serif', serif; */
-/* } */
-/*  */
 h1.logo a {
+  font-family: "Raleway";
+  font-weight: normal;
   text-decoration: none;
   border-bottom: none;
 }
-/*  */
-/* p.blurb { */
-/*   font-family: 'Great Vibes', serif; */
-/* } */
 
-div.body p, div.body dd, div.body li {
-    line-height: 1.6rem;
-}
-
-div.document {
-  font-family: Nuito;
+h1.logo {
 }
 
 /* code.descname { */
 /*   font-size: 1rem; */
 /* } */
 /*  */
-/* div.sphinxsidebar { */
-/*   margin: 0; */
-/*   padding: 0; */
-/* } */
-/*  */
-/* div.sphinxsidebarwrapper li { */
-/*   padding-left: 0.2rem; */
-/*   line-height: 1.5; */
-/*   list-style: none; */
-/* } */
-/*  */
-/* div.sphinxsidebar ul ul{ */
-/*   padding-left: 0.2rem; */
-/* } */
+a.headerlink {
+  color: rgba(0, 0, 0, 0.1);
+}
 
-/* dl.class em { */
-/* } */
-/*  */
-/* dt { */
-/*   background-color: #ecf0f3; */
-/*   display: inline-block; */
-/*   padding-top: 2px; */
-/*   padding-bottom: 2px; */
-/*   border-top: solid 2px #ccd0d3; */
-/* } */
+div.sphinxsidebarwrapper p.blurb {
+  font-family: "Raleway";
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: Lato, Arimo, "Noto Sans";
+  color: #555;
+  /* font-weight: 400; */
+}
+
+div.sphinxsidebar li.toctree-l1 {
+  font-family: Lato, "Noto Sans";
+}
+
+body {
+  font-family: Helvetica, Lora, "Charis SIL", "Noto Serif", "Source Serif Pro", Andada, Alike;
+  font-size: 16px;
+}
+
+ul ul {
+  padding-left: 1.5rem;
+}
+
+code {
+  vertical-align: baseline;
+}
+
+pre, .pre {
+  font-family: "Code new roman";
+  font-size: 1rem;
+}
+
+h1.logo {
+}
+
+#search-btn {
+  padding: 0 1rem;
+  line-height: normal;
+  align-self: stretch;
+}

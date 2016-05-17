@@ -130,18 +130,23 @@ html_theme = 'alabaster'
 # documentation.
 
 html_theme_options = {
-    'description': 'Browser-based GUI library',
+    'description': 'Browser-based GUI Library for Python',
     'github_user': 'miyakogi',
     'github_repo': 'wdom',
-    'travis_button': 'miyakogi/wdom',
-    'codecov_button': 'miyakogi/wdom',
-    'font_family': '',
-    'head_font_family': '',
-    # 'code_font_family': '',
+    'github_banner': True,
+    # 'travis_button': 'miyakogi/wdom',
+    # 'codecov_button': 'miyakogi/wdom',
+    # 'font_family': '"Charis SIL", Georgia',
+    # 'head_font_family': 'Raleway, "Source Sans Pro", Helvetica, "Helvetica Neue"',
+    # 'font_family': '',
+    # 'head_font_family': '',
+    # 'code_font_family': None,
+    'sidebar_width': '260px',
+    # 'logo_text_align': 'center',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-#html_theme_path = []
+html_theme_path = ['alabaster']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
