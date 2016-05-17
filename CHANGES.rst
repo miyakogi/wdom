@@ -3,6 +3,11 @@ Version 0.2
 
 (next version)
 
+Version 0.1.3 (2016-05-17)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* (bug fix) Add dependency of mypy-lang for python < 3.5
+
 Version 0.1.2 (2016-05-15)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
