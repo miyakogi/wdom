@@ -147,6 +147,36 @@ Of course, WDOM can handle events:
 
 When string ``"Hello, WDOM"`` is clicked, it will be flipped.
 
+Making components with python class:
+
+.. code-block:: python
+
+    import asyncio
+    from wdom.tag import Div, H1, Input
+    from wdom.server import start_server, stop_server
+    from wdom.document import get_document
+
+    class MyApp(Div):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.text = H1('Hello', parent=self)
+            self.textbox = Input(parent=self, placeholder='input here...')
+            self.textbox.addEventListener('input', self.update)
+
+        def update(self, event):
+            self.text.textContent = event.target.value
+            # or, you can write as below
+            # self.text.textContent = self.textbox.value
+
+    if __name__ == '__main__':
+        document = get_document()
+        document.body.append(MyApp())
+        start_server()
+        try:
+            asyncio.get_event_loop().run_forever()
+        except KeyboardInterrupt:
+            stop_server()
+
 More documents are in preparation, but you can see them in **docs** directory of
 this repository.
 
