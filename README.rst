@@ -26,8 +26,8 @@ be used as a web framework, please use for **Desktop** GUI Applications!
 Disclaimer
 ----------
 
-WDOM is in early development stage, and may contain many (critical) bugs.
-All APIs are not stable and may be changed in future release.
+WDOM is in the early development stage, and may contain many bugs. All APIs are
+not stable, and may be changed in future release.
 
 Features
 --------

@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import asyncio
 from wdom.document import get_document
 from wdom.server import start_server, stop_server
