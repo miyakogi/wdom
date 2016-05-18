@@ -548,11 +548,11 @@ div.sphinxsidebar h3 a:hover {
 }
 
 div.sphinxsidebar ul li.toctree-l1 > a {
-    font-size: 115%;
+    font-size: 110%;
 }
 
 div.sphinxsidebar ul li.toctree-l2 > a {
-    font-size: 105%;
+    font-size: 100%;
 }
 
 div.sphinxsidebar hr {

@@ -25,7 +25,8 @@ div.sphinxsidebar li.toctree-l1 {
 }
 
 body {
-  font-family: "Open Sans", sans-serif;
+  font-family: "Charis SIL", "Open Sans", sans-serif;
+  font-size: 17px;
 }
 
 ul ul {
