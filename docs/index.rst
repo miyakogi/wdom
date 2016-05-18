@@ -12,9 +12,7 @@ Contents
     :titlesonly:
 
     guide/index
-    dom
-    server
-    test
+    reference
     changes
 
 

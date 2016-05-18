@@ -97,3 +97,8 @@ of the new class.
 To inherit multiple classes, use tuple at the third argument.
 
 These features are not DOM standard and specially defined for WDOM.
+
+Execute JavaScript on Browser
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+(T.B.D.)
