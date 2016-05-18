@@ -1,38 +1,31 @@
 h1.logo a {
   font-family: "Raleway";
-  font-weight: normal;
+  font-weight: 500;
   text-decoration: none;
   border-bottom: none;
 }
 
-h1.logo {
-}
-
-/* code.descname { */
-/*   font-size: 1rem; */
-/* } */
-/*  */
 a.headerlink {
   color: rgba(0, 0, 0, 0.1);
 }
 
 div.sphinxsidebarwrapper p.blurb {
-  font-family: "Raleway";
+  font-family: "Raleway", sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: Lato, Arimo, "Noto Sans";
+  font-family: "Raleway", sans-serif;
+  font-weight: 500;
   color: #555;
-  /* font-weight: 400; */
 }
 
 div.sphinxsidebar li.toctree-l1 {
-  font-family: Lato, "Noto Sans";
+  font-family: "Raleway", sans-serif;
+  font-weight: 500;
 }
 
 body {
-  font-family: Helvetica, Lora, "Charis SIL", "Noto Serif", "Source Serif Pro", Andada, Alike;
-  font-size: 16px;
+  font-family: "Open Sans", sans-serif;
 }
 
 ul ul {
@@ -44,14 +37,11 @@ code {
 }
 
 pre, .pre {
-  font-family: "Code new roman";
+  font-family: "Code new roman", "Ubuntu Mono", monospace;
   font-size: 1rem;
 }
 
-h1.logo {
-}
-
-#search-btn {
+.search-btn {
   padding: 0 1rem;
   line-height: normal;
   align-self: stretch;
