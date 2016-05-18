@@ -59,7 +59,7 @@ For example, in case to use ``my_static`` as a prefix, change to
 Not only css files but also any static files, like js files, html files, or
 images are able to be served.
 
-Any names can be used if it is valid for URL, but ``_static`` is already used by
-WDOM, so do not use for a prefix.
+Any names can be used if it is valid for URL, but ``_static`` and ``tmp`` is
+already used by WDOM internally, so do not use them for a prefix.
 
 .. _bootstrap: http://getbootstrap.com/
