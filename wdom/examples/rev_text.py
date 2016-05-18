@@ -1,21 +1,32 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.tag import H1, Div
-from wdom.document import get_document
+from wdom.themes.default import H1, Div
 
 
-def sample_page(**kwargs) -> Div:
-    app = Div()
-    text = H1(parent=app)
-    text.textContent = 'Click!'
+class App(Div):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.text = H1('Click!', parent=self)
+        self.text.addEventListener('click', self.reverse)
 
-    def reverse(event):
-        text.textContent = text.textContent[::-1]
+    def reverse(self, event):
+        self.text.textContent = self.text.textContent[::-1]
 
-    text.addEventListener('click', reverse)
 
-    page = get_document(**kwargs)
-    page.body.prepend(app)
+def sample_app(**kwargs) -> Div:
+    return App()
 
-    return page
+
+if __name__ == '__main__':
+    import asyncio
+    from wdom.document import get_document
+    from wdom import server
+    document = get_document()
+    document.body.prepend(sample_app())
+    server.start_server()
+    try:
+        asyncio.get_event_loop().run_forever()
+    except KeyboardInterrupt:
+        pass
+    server.stop_server()

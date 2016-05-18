@@ -5,12 +5,7 @@
 Data binding example
 '''
 
-from wdom.tag import H1, Div, Input
-from wdom.document import get_document
-
-
-class Check(Input):
-    type_ = 'checkbox'
+from wdom.themes.default import H1, Div, Input
 
 
 class App(Div):
@@ -26,7 +21,19 @@ class App(Div):
         self.text.textContent = self.textbox.getAttribute('value')
 
 
-def sample_page(**kwargs):
-    page = get_document(**kwargs)
-    page.body.prepend(App())
-    return page
+def sample_app(**kwargs):
+    return App()
+
+
+if __name__ == '__main__':
+    import asyncio
+    from wdom.document import get_document
+    from wdom import server
+    document = get_document()
+    document.body.prepend(sample_app())
+    server.start_server()
+    try:
+        asyncio.get_event_loop().run_forever()
+    except KeyboardInterrupt:
+        pass
+    server.stop_server()
