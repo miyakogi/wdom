@@ -60,13 +60,13 @@ class TestMainDocument(TestCase):
             '\s*<title rimo_id="\d+">'
             '\s*W-DOM'
             '\s*</title>'
-            '(\s*<style>.*?</style>)?'
+            '(\s*<script( type="text/javascript"| rimo_id="\d+"){2}>.*?</script>)?'
             '\s*</head>'
             '\s*<body rimo_id="\d+">'
             '\s*<script( type="text/javascript"| rimo_id="\d+"){2}>'
             '.*?</script>'
             '\s*</body>'
-            '\s*</html>',
+            '.*\s*</html>',
             re.S
         )
         html = self.doc.build()

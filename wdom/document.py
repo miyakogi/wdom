@@ -60,6 +60,7 @@ class Document(Node):
         super().__init__()
         self._window = Window(self)
         self._default_class = default_class
+        self._autoreload = autoreload
         self._reload_wait = reload_wait
 
         self.doctype = DocumentType(doctype, parent=self)
@@ -72,22 +73,23 @@ class Document(Node):
 
         self.body = Body(parent=self.html)
         self.script = Script(parent=self.body)
-        self._set_autoreload(autoreload, reload_wait)
+        self._autoreload_script = Script(parent=self.head)
 
-    def _set_autoreload(self, autoreload, reload_wait: int = None):
-        if autoreload is None:
-            self._autoreload = (config.autoreload or config.debug)
+    def _set_autoreload(self):
+        self._autoreload_script.textContent = ''
+        if self._autoreload is None:
+            autoreload = (config.autoreload or config.debug)
         else:
-            self._autoreload = autoreload
+            autoreload = self._autoreload
 
-        if self._autoreload:
+        if autoreload:
             ar_script = []
             ar_script.append('var RIMO_AUTORELOAD = true')
-            if reload_wait is not None:
+            if self._reload_wait is not None:
                 ar_script.append('var RIMO_RELOAD_WAIT = {}'.format(
-                    reload_wait))
-            _s = Script(parent=self.head)
-            _s.textContent = '\n{}\n'.format('\n'.join(ar_script))
+                    self._reload_wait))
+            self._autoreload_script.textContent = '\n{}\n'.format(
+                '\n'.join(ar_script))
 
     def getElementById(self, id: Union[str, int]) -> Optional[Node]:
         elm = getElementById(id)
@@ -166,6 +168,7 @@ class Document(Node):
             self.defaultView.customElements.define(cls)
 
     def build(self) -> str:
+        self._set_autoreload()
         return ''.join(child.html for child in self.childNodes)
 
 
