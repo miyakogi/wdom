@@ -168,8 +168,8 @@ This method is also same as JavaScript's one, so for details please see `Element
 
 ``outerHTML`` is not implemented.
 
-Events
-^^^^^^
+Event Handling
+^^^^^^^^^^^^^^
 
 Reverse Text on Click
 ~~~~~~~~~~~~~~~~~~~~~
