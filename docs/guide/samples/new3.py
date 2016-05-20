@@ -1,22 +1,16 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import asyncio
 from wdom.server import start_server, stop_server
 from wdom.document import get_document
 from wdom.tag import Button, Div
-
 
 class MyButton(Button):
     # tag = 'button'  <- tag name is already defined in Button class
     class_ = 'btn'
     is_ = 'my-button'  # set name at is_
 
-
 class DefaultButton(MyButton):
     class_ = 'btn-default'
     is_ = 'default-button'
-
 
 if __name__ == '__main__':
     document = get_document()

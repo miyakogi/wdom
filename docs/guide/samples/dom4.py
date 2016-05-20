@@ -1,10 +1,6 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import asyncio
 from wdom.server import start_server, stop_server
 from wdom.document import get_document
-
 
 if __name__ == '__main__':
     document = get_document()

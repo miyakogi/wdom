@@ -1,11 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import asyncio
 from wdom.server import start_server, stop_server
 from wdom.document import get_document
 from wdom.tag import Div, H1, Input
-
 
 class MyElement(Div):
     def __init__(self, *args, **kwargs):
@@ -17,7 +13,6 @@ class MyElement(Div):
 
     def update(self, event):
         self.h1.textContent = event.target.value
-
 
 if __name__ == '__main__':
     document = get_document()

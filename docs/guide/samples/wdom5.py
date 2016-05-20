@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 from wdom.tag import H1
 
 h1 = H1(class_='title')

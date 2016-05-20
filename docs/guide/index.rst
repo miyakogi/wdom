@@ -7,3 +7,5 @@ User Guide
     wdom
     load_resource
     new_features
+    theming
+    freezing

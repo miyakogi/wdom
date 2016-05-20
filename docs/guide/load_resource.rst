@@ -43,7 +43,7 @@ as follows:
 
 .. literalinclude:: samples/static3.py
 
-The first argument of the ``app.add_static_path`` is a prefix to access the
+The first argument of the ``add_static_path`` is a prefix to access the
 static files and the second argument is a path to the directory to be served.
 Files under the assigned directory can be accessed by URL like
 ``http://localhost:8888/prefix/(dirname/)filename``.
@@ -59,7 +59,7 @@ For example, in case to use ``my_static`` as a prefix, change to
 Not only css files but also any static files, like js files, html files, or
 images are able to be served.
 
-Any names can be used if it is valid for URL, but ``_static`` is already used by
-WDOM, so do not use for a prefix.
+Any prefixes can be used if it is valid for URL, but ``_static`` and ``tmp`` is
+already used by WDOM internally, so do not use them for a prefix.
 
 .. _bootstrap: http://getbootstrap.com/
