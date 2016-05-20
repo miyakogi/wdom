@@ -47,3 +47,7 @@ pre, .pre {
   line-height: normal;
   align-self: stretch;
 }
+
+dl dd {
+  margin-left: 30px;
+}
