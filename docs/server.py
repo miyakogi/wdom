@@ -10,7 +10,7 @@ subprocess.run(['make', 'html'])
 
 server = Server()
 make = shell(['make', 'html'])
-clean_make = shell(['make', 'clean', '&&', 'make', 'html'])
+# clean_make = shell(['make', 'html_all'])
 
 # Wtach documets
 server.watch('../*.rst', make)
@@ -20,8 +20,13 @@ server.watch('./*/*/*.rst', make)
 
 # Watch template/style
 server.watch('./_templates/*.html', make)
-server.watch('./_static/*.css', clean_make)
+server.watch('./_static/*.css', make)
 server.watch('./_static/*.js', make)
+
+# Watch theme
+server.watch('./alabaster/alabaster/static/*.css_t', make)
+server.watch('./alabaster/alabaster/*.html', make)
+server.watch('./alabaster/alabaster/theme.conf', make)
 
 # Watch package
 server.watch('../*/*.py', make)

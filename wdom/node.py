@@ -8,6 +8,7 @@ from wdom.interface import Node, NodeList
 
 
 class Node(Node):
+    """Base Abstract Class for Node interface."""
     # DOM Level 1
     nodeType = None
     nodeName = ''
@@ -35,9 +36,11 @@ class Node(Node):
             parent.appendChild(self)
 
     def __bool__(self) -> bool:
+        """Return always True."""
         return True
 
     def __len__(self) -> int:
+        """Return number of child nodes."""
         return self.length
 
     def __contains__(self, other: Node) -> bool:
@@ -56,18 +59,33 @@ class Node(Node):
     # DOM Level 1
     @property
     def length(self) -> int:
+        """Return number of child nodes."""
         return len(self.childNodes)
 
     @property
     def parentNode(self) -> Node:
+        """Return parent node.
+
+        If this node does not have a parent, return ``None``.
+        """
         return self._parent
 
     @property
     def childNodes(self) -> NodeList:
+        """Return child nodes of this node.
+
+        Returned object is an instance of NodeList, which is a list like object
+        but not support any modification. NodeList is a **live object**, which
+        means that changes on this node is reflected to the object.
+        """
         return NodeList(self._children)
 
     @property
     def firstChild(self) -> Node:
+        """Return the first child node.
+
+        If this node does not have any child, return ``None``.
+        """
         if self.hasChildNodes():
             return self.childNodes[0]
         else:
@@ -75,6 +93,10 @@ class Node(Node):
 
     @property
     def lastChild(self) -> Node:
+        """Return the last child node.
+
+        If this node does not have any child, return ``None``.
+        """
         if self.hasChildNodes():
             return self.childNodes[-1]
         else:
@@ -82,6 +104,10 @@ class Node(Node):
 
     @property
     def previousSibling(self) -> Node:
+        """Return the previous sibling of this node.
+
+        If there is no previous sibling, return ``None``.
+        """
         parent = self.parentNode
         if parent is None:
             return None
@@ -89,6 +115,10 @@ class Node(Node):
 
     @property
     def nextSibling(self) -> Node:
+        """Return the next sibling of this node.
+
+        If there is no next sibling, return ``None``.
+        """
         parent = self.parentNode
         if parent is None:
             return None
@@ -97,6 +127,12 @@ class Node(Node):
     # DOM Level 2
     @property
     def ownerDocument(self) -> Node:
+        """Return the owner document of this node.
+
+        Owner document is an ancestor document node of this node. If this node
+        (or node tree including this node) is not appended to any document
+        node, this property returns ``None``.
+        """
         if self.nodeType == Node.DOCUMENT_NODE:
             return self
         elif self.parentNode:
@@ -129,9 +165,14 @@ class Node(Node):
             return self._append_element(node)
 
     def appendChild(self, node: Node) -> Node:
+        """Append the node at the last of this child nodes."""
         return self._append_child(node)
 
-    def index(self, node):
+    def index(self, node: Node):
+        """Return index of the node.
+
+        If the node is not a child of this node, raise ``ValueError``.
+        """
         if node in self.childNodes:
             return self.childNodes.index(node)
         elif isinstance(node, Text):
@@ -166,9 +207,11 @@ class Node(Node):
             return self._insert_element_before(node, ref_node)
 
     def insertBefore(self, node: Node, ref_node: Node) -> Node:
+        """Insert a node just before the reference node."""
         return self._insert_before(node, ref_node)
 
     def hasChildNodes(self) -> bool:
+        """Return True if this node has child nodes, otherwise return False."""
         return bool(self.childNodes)
 
     def _remove_child(self, node: Node) -> Node:
@@ -179,6 +222,10 @@ class Node(Node):
         return node
 
     def removeChild(self, node: Node) -> Node:
+        """Remove a node from this node.
+
+        If node is not a child of this node, raise ``ValueError``.
+        """
         return self._remove_child(node)
 
     def _replace_child(self, new_child: Node, old_child: Node) -> Node:
@@ -186,12 +233,19 @@ class Node(Node):
         return self._remove_child(old_child)
 
     def replaceChild(self, new_child: Node, old_child: Node) -> Node:
+        """Replace an old child with new child."""
         return self._replace_child(new_child, old_child)
 
     def hasAttributes(self) -> bool:
+        """Return True if this node has attributes."""
         return bool(self.attributes)
 
     def cloneNode(self, deep: bool=False) -> Node:
+        """Return new copy of this node.
+
+        If optional argument ``deep`` is specified and is True, new node has
+        clones of child nodes of this node (if presents).
+        """
         if deep:
             return self.__deepcopy__()
         else:
@@ -202,8 +256,10 @@ class Node(Node):
             self._remove_child(child)
 
     def empty(self):
-        '''[Not Standard] Remove all child nodes from this node. This is
-        equivalent to ``node.textContent = ''``.'''
+        """[Not Standard] Remove all child nodes from this node.
+
+        This is equivalent to ``node.textContent = ''``.
+        """
         self._empty()
 
     def _get_text_content(self) -> str:
@@ -216,10 +272,12 @@ class Node(Node):
 
     @property
     def textContent(self) -> str:
+        """Return text contents of this node and child nodes."""
         return self._get_text_content()
 
     @textContent.setter
     def textContent(self, value: str):
+        """Remove all child nodes and set new text."""
         self._set_text_content(value)
 
 
@@ -243,28 +301,37 @@ def _to_node_list(nodes: Tuple[str, 'ChildNode']) -> Node:
 
 
 class ParentNode:
-    '''[DOM Level 4] Mixin class for Document, DocumentFragment, and Element.
-    '''
+    """[DOM Level 4] Mixin class for Document, DocumentFragment, and Element.
+    """
     @property
     def children(self):
-        '''Currently this is not a live object'''
+        """Currently this is not a live object"""
         return NodeList([
             e for e in self.childNodes if e.nodeType == Node.ELEMENT_NODE
         ])
 
     @property
     def firstElementChild(self):
+        """First Element child node.
+
+        If this node has no element child, return None.
+        """
         for child in self.childNodes:
             if child.nodeType == Node.ELEMENT_NODE:
                 return child
 
     @property
     def lastElementChild(self):
+        """Last Element child node.
+
+        If this node has no element child, return None.
+        """
         for child in reversed(self.childNodes):
             if child.nodeType == Node.ELEMENT_NODE:
                 return child
 
     def prepend(self, *nodes: Tuple['ChildNode', str]):
+        """Insert new nodes before first child node."""
         node = _to_node_list(nodes)
         if self.firstChild:
             self.insertBefore(node, self.firstChild)
@@ -272,6 +339,7 @@ class ParentNode:
             self.appendChild(node)
 
     def append(self, *nodes: Tuple['ChildNode', str]):
+        """Append new nodes after last child node."""
         node = _to_node_list(nodes)
         self.appendChild(node)
 
@@ -295,6 +363,10 @@ class ParentNode:
 class NonDocumentTypeChildNode:
     @property
     def previousElementSibling(self) -> Node:
+        """Previous Element Node.
+
+        If this node has no previous element node, return None.
+        """
         if self.parentNode is None:
             return None
         siblings = self.parentNode.childNodes
@@ -305,6 +377,10 @@ class NonDocumentTypeChildNode:
 
     @property
     def nextElementSibling(self) -> Node:
+        """Next Element Node.
+
+        If this node has no next element node, return None.
+        """
         if self.parentNode is None:
             return None
         siblings = self.parentNode.childNodes
@@ -315,19 +391,24 @@ class NonDocumentTypeChildNode:
 
 
 class ChildNode:
-    '''[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData
+    """[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData
     (Text, RawHTML, Comment).
-    '''
+    """
+
     def before(self, *nodes: Tuple['ChildNode', str]) -> None:
-        '''Insert nodes before this node. If nodes contains ``str``, it will be
-        converted to Text node.'''
+        """Insert nodes before this node.
+
+        If nodes contains ``str``, it will be converted to Text node.
+        """
         if self.parentNode:
             node = _to_node_list(nodes)
             self.parentNode.insertBefore(node, self)
 
     def after(self, *nodes: Tuple['ChildNode', str]) -> None:
-        '''Append nodes after this node. If nodes contains ``str``, it will be
-        converted to Text node.'''
+        """Append nodes after this node.
+
+        If nodes contains ``str``, it will be converted to Text node.
+        """
         if self.parentNode:
             node = _to_node_list(nodes)
             _next_node = self.nextSibling
@@ -337,8 +418,10 @@ class ChildNode:
                 self.parentNode.insertBefore(node, _next_node)
 
     def replaceWith(self, *nodes: Tuple['ChildNode', str]) -> None:
-        '''Replace this node with nodes. If nodes contains ``str``, it will be
-        converted to Text node.'''
+        """Replace this node with nodes.
+
+        If nodes contains ``str``, it will be converted to Text node.
+        """
         if self.parentNode:
             node = _to_node_list(nodes)
             self.parentNode.replaceChild(node, self)
@@ -348,7 +431,7 @@ class ChildNode:
             self.parentNode.removeChild(self)
 
     def remove(self) -> None:
-        '''Remove this node from the parent node.'''
+        """Remove this node from the parent node."""
         self._remove()
 
 
@@ -445,8 +528,10 @@ class Text(CharacterData):
 
 
 class RawHtml(Text):
-    '''Very similar to ``Text`` class, but contents are not escaped. Used for
-    inner contents of ``<script>`` element or ``<style>`` element.'''
+    """Very similar to ``Text`` class, but contents are not escaped.
+
+    Used for inner contents of ``<script>`` element or ``<style>`` element.
+    """
     @property
     def html(self) -> str:
         return self.data

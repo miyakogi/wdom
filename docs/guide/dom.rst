@@ -17,7 +17,7 @@ JavaScript.
 ``document`` object in JavaScript on browsers.
 ``document.createElement('{tag-name}')`` generates new element with the given
 tag-name.
-``appendChild`` method inserts the child node at last.
+``appendChild`` method inserts the child node at the last of its child nodes.
 Not used in the sample code, by using ``removeChild`` method, one can remove the
 child node.
 
@@ -50,9 +50,10 @@ Create New Element
 ~~~~~~~~~~~~~~~~~~
 
 To make elements, WDOM provides two methods.
+
 One is ``document.createElement`` mentioned above, and the other is to
-instantiate classes defined in ``wdom.tag`` module.
-For details about the ``wdom.tag`` module, see :doc:`wdom` section.
+instantiate classes defined in ``wdom.tag`` module. For details about the
+``wdom.tag`` module, see :doc:`wdom` section.
 
 .. note:: Every element does not appear on browser until inserted to the DOM
     tree which roots on the document node returned by ``get_document()``.
@@ -74,32 +75,73 @@ Remove Node
 ~~~~~~~~~~~
 
 It is also able to remove child node from the DOM tree.
-``A.removeChild(B)`` removes the child node B from the parent node A.
-If B is not a child node of A, it will raise Error.
+
+``A.removeChild(B)`` removes the child node B from the parent node A. If B is
+not a child node of A, it will raise Error.
 
 More simple method ``B.remove()`` is also available, see :doc:`new_features`
 section.
 
-Access Child/Parent Nodes
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Access Child/Parent/Sibling Nodes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``childNodes`` property returns list-like live-object which contains its direct
-child nodes.
-``firstChild`` and ``lastChild`` property returns its first/last child node.
+child nodes. ``firstChild`` and ``lastChild`` property returns its first/last
+child node. 
 
 On the other way, ``parentNode`` property returns its parent node.
 These properties are same as JavaScript's DOM.
 
+``nextSibling`` and ``previousSibling`` returns its next/previous
+sibling node.
+
+If there is no corresponding node, all these properties return ``None``.
+
 Attributes
 ~~~~~~~~~~
 
-To get/set element's attributes like ``class="..."`` in HTML tag, use
-``getAttribute/setAttribute`` method.
+To get element's attributes like ``class="..."`` in HTML tag, use
+``getAttribute('attribute-name')`` method.
+If called ``getAttribute`` to the attribute which does not exists, it will return
+``None``.
+
+To set or change attribute's value, use ``setAttribute('attribute-name', value)``
+method. And to remove an attribute, use ``removeAttribute`` method.
+
+To obtain all attributes set for the element, access ``attributes`` property.
+This property returns dictionary-like abject ``NamedNodeMap``. This object has
+attributes and its value as ``{'attribute-name': value, ...}``.
+
+Special Attributes
+~~~~~~~~~~~~~~~~~~
 
 Some attributes are accessible via special properties, for exmaple, ``A.id``
-returns its ID attribute.
-Available properties will be found in `wiki page at gihub
-<https://github.com/miyakogi/wdom/wiki/Features>`_.
+returns its ID attribute. Available properties will be found in `wiki page at
+gihub <https://github.com/miyakogi/wdom/wiki/Features>`_.
+
+With ``getAttribute`` returns string or None, but attributes accessed via its
+properties return different types depending on its property.
+For example, ``element.id`` return always string even if it is not set (in case
+id is not set, ``element.id`` returns empty string, not None).
+Similarly, ``element.hidden`` returns boolean (``True`` or ``False``) and
+``element.style`` returns ``CSSStyleDeclaration``.
+
+* References
+    * `HTMLElement | MDN <https://developer.mozilla.org/en/docs/Web/API/HTMLElement>`_
+    * `element.id | MDN <https://developer.mozilla.org/ja/docs/Web/API/Element/id>`_
+    * `element.style | MDN <https://developer.mozilla.org/ja/docs/Web/API/HTMLElement/style>`_
+
+Style Attribute (CSSStyleDeclaration)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``CSSStyleDeclaration`` obtained by ``element.style`` provides property access
+to its css properties. For example, ``element.style.color = 'red'`` makes
+element's color red.
+
+Some css properties including ``-`` will be converted to CamelCase name, for
+example, ``background-color`` will become ``element.style.backgroundColor``. For
+more examples, please refer to `CSS Properties Reference
+<https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference>`_
 
 Using HTML
 ^^^^^^^^^^
@@ -109,7 +151,7 @@ difficult.
 So writing HTML and parse it to WDOM elements is sometimes useful.
 
 It can be done by ``innerHTML`` method, as same as JavaScript.
-For example, an example to make large list is below:
+An example to make large list is below:
 
 .. literalinclude:: samples/dom2.py
 
@@ -119,8 +161,6 @@ For example, an example to make large list is below:
 
 Each child nodes can be accessed via ``childNodes`` property, which returns
 list-like live-object, but not able to modify its values.
-Similar to JavaScript, ``firstChild`` and ``lastChild`` property provides
-reference to the first/last child node.
 
 ``insertAdjacentHTML({position}, {html})`` also parses HTML and insert new
 elements to the ``position``.
@@ -143,15 +183,14 @@ Then it will be reversed.
 When clicked again, it will be reversed again and back to ``"Hello, WDOM"``.
 
 ``addEventListener('{event-type}', {handler})`` method registers ``handler`` to
-the given ``event-type``.
-In the sample code, ``rev_text`` function is registered to ``click`` event.
-Values available for event type are same as JavaScript's DOM, for example, it is
-listed at `Event reference | MDN
+the given ``event-type``. In the sample code, ``rev_text`` function is
+registered to ``click`` event. Values available for event type are same as
+JavaScript's DOM, as listed in `Event reference | MDN
 <https://developer.mozilla.org/en-US/docs/Web/Events>`_.
 
 When the ``h1`` element is clicked, registered function ``rev_text`` is called with
 a single argument, event, which is an Event object, though it is not used in the
-sample code.
+above example.
 
 User Input Event
 ~~~~~~~~~~~~~~~~
@@ -167,6 +206,9 @@ In the ``update`` function, ``event.target`` has a reference to the element
 which emitted the event, in this case it is a ``textarea`` element.
 And, as same as JavaScript, a ``textarea`` element (and ``input`` element) contains
 its current value at ``value`` attribute.
+At the moment ``update`` function is called, ``textarea.value`` is already
+updated to the latest value. So the above code you can use ``textarea.value``
+instead of ``event.target.value``.
 In the sample code, setting its value to ``h1`` element's ``textContent``.
 
 

@@ -5,6 +5,15 @@
 
 .. include:: ../README.rst
 
+About This Document
+-------------------
+
+This document is still incomplete, and will contain typos and bad descriptions.
+Furthermore, my English is so bad, so if you find any incorrect expression,
+please let me know at `issues <https://github.com/miyakogi/wdom/issues>`_ or
+send `PR <https://github.com/miyakogi/wdom/pulls>`_. Any small
+improvements/suggestions (e.g. just changing **a** to **the**) are welcome! 
+
 Contents
 --------
 
@@ -12,9 +21,7 @@ Contents
     :titlesonly:
 
     guide/index
-    dom
-    server
-    test
+    reference
     changes
 
 

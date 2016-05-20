@@ -1,13 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import asyncio
 from os import path
 
 from wdom.document import get_document
 from wdom.server import start_server, stop_server, add_static_path
 from wdom.tag import Button
-
 
 if __name__ == '__main__':
     static_dir = path.join(path.dirname(path.abspath(__file__)), 'static')

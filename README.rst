@@ -7,6 +7,10 @@ WDOM
 .. image:: https://img.shields.io/pypi/pyversions/wdom.svg
    :target: https://pypi.python.org/pypi/wdom
 
+.. image:: https://readthedocs.org/projects/wdom-py/badge/?version=latest
+   :target: http://wdom-py.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 .. image:: https://travis-ci.org/miyakogi/wdom.svg?branch=dev
    :target: https://travis-ci.org/miyakogi/wdom
 
@@ -26,8 +30,8 @@ be used as a web framework, please use for **Desktop** GUI Applications!
 Disclaimer
 ----------
 
-WDOM is in early development stage, and may contain many (critical) bugs.
-All APIs are not stable and may be changed in future release.
+WDOM is in the early development stage, and may contain many bugs. All APIs are
+not stable, and may be changed in future release.
 
 Features
 --------
@@ -71,6 +75,11 @@ performance. If you want to use WDOM with aiohttp, install it with pip::
 
 Any configurations are not required; when aiohttp is available, WDOM will use it
 automatically.
+
+Documents
+---------
+
+Document is available `here <http://wdom-py.readthedocs.io/en/latest/>`_.
 
 Example
 -------
@@ -147,8 +156,44 @@ Of course, WDOM can handle events:
 
 When string ``"Hello, WDOM"`` is clicked, it will be flipped.
 
-More documents are in preparation, but you can see them in **docs** directory of
-this repository.
+Making components with python class:
+
+.. code-block:: python
+
+    import asyncio
+    from wdom.tag import Div, H1, Input
+    from wdom.server import start_server, stop_server
+    from wdom.document import get_document
+
+    class MyApp(Div):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.text = H1('Hello', parent=self)
+            self.textbox = Input(parent=self, placeholder='input here...')
+            self.textbox.addEventListener('input', self.update)
+
+        def update(self, event):
+            self.text.textContent = event.target.value
+            # or, you can write as below
+            # self.text.textContent = self.textbox.value
+
+    if __name__ == '__main__':
+        document = get_document()
+        document.body.append(MyApp())
+        start_server()
+        try:
+            asyncio.get_event_loop().run_forever()
+        except KeyboardInterrupt:
+            stop_server()
+
+
+WDOM package includes some tiny examples. From command line, try::
+
+    python -m wdom.exapmles.rev_text
+    python -m wdom.exapmles.data_binding
+    python -m wdom.exapmles.timer
+
+Source codes of these examples will be found in `wdom/examples <https://github.com/miyakogi/wdom/tree/dev/wdom/examples>`_.
 
 Contributing
 ------------

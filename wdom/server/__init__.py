@@ -92,7 +92,7 @@ def start_server(app: Optional[module.Application] = None,
     doc = get_document()
     if os.path.exists(doc.tempdir):
         add_static_path('tmp', doc.tempdir, no_watch=True)
-    if doc._autoreload:
+    if doc._autoreload or config.autoreload or config.debug:
         install_asyncio()
         autoreload.start(check_time=check_time)
     global _server

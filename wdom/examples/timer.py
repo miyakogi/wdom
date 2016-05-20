@@ -49,17 +49,15 @@ class Timer(Container):
         self.set(self._count)
 
 
-def sample_page(**kwargs) -> Div:
-    app = Timer()
-    page = get_document(**kwargs)
-    page.body.prepend(app)
-    return page
+def sample_app(**kwargs) -> Div:
+    return Timer()
 
 
 if __name__ == '__main__':
     from wdom.themes import default
-    doc = sample_page()
-    doc.register_theme(default)
+    document = get_document()
+    document.register_theme(default)
+    document.body.prepend(sample_app())
     start_server()
     try:
         asyncio.get_event_loop().run_forever()

@@ -25,10 +25,10 @@ class SimpleTestCase(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
-        self.document = get_document()
+        document = get_document()
         self.h1 = H1()
         self.h1.textContent = 'TITLE'
-        self.document.body.appendChild(self.h1)
+        document.body.appendChild(self.h1)
         self.start()
 
     def test_page(self):
@@ -41,8 +41,9 @@ class TestDataBinding(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
-        from wdom.examples.data_binding import sample_page
-        self.document = sample_page(autoreload=False)
+        from wdom.examples.data_binding import sample_app
+        document = get_document()
+        document.body.prepend(sample_app())
         self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
@@ -67,8 +68,9 @@ class TestRevText(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
-        from wdom.examples.rev_text import sample_page
-        self.document = sample_page(autoreload=False)
+        from wdom.examples.rev_text import sample_app
+        document = get_document()
+        document.body.prepend(sample_app())
         self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
@@ -94,8 +96,9 @@ class TestTimer(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
         reset()  # I don't know why, but need reset for aiohttp.
-        from wdom.examples.timer import sample_page
-        self.document = sample_page(autoreload=False)
+        from wdom.examples.timer import sample_app
+        document = get_document()
+        document.body.prepend(sample_app())
         self.start()
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
