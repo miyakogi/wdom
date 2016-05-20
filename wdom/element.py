@@ -17,6 +17,10 @@ from wdom.webif import WebIF
 
 
 class DOMTokenList:
+    """List of DOM token.
+
+    DOM token is a string which does not contain spases.
+    """
     def __init__(self, owner, *args):
         self._list = list()
         self._owner = owner
@@ -54,9 +58,11 @@ class DOMTokenList:
 
     @property
     def length(self) -> int:
+        """Number of DOM token in this list."""
         return len(self)
 
     def add(self, *tokens: Tuple[str]):
+        """Add new tokens to list."""
         _new_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -67,6 +73,7 @@ class DOMTokenList:
             self._owner.js_exec('addClass', _new_tokens)
 
     def remove(self, *tokens: Tuple[str]):
+        """Remove tokens from list."""
         _removed_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -77,6 +84,11 @@ class DOMTokenList:
             self._owner.js_exec('removeClass', _removed_tokens)
 
     def toggle(self, token: str):
+        """Add or remove token to/from list.
+
+        If token is in this list, the token will be removed. Otherwise add it
+        to list.
+        """
         self._validate_token(token)
         if token in self:
             self.remove(token)
@@ -84,20 +96,35 @@ class DOMTokenList:
             self.add(token)
 
     def item(self, index: int) -> str:
+        """Return the token of the ``index``.
+
+        ``index`` must be 0 or positive integer. If index is out of range,
+        return None.
+        """
         if 0 <= index < len(self):
             return self._list[index]
         else:
             return None
 
     def contains(self, token: str) -> bool:
+        """Return if the token is in the list or not."""
         self._validate_token(token)
         return token in self
 
     def toString(self) -> str:
+        """Return string representation of this list.
+
+        Actually it will be a spase-separated tokens.
+        """
         return ' '.join(self)
 
 
 class Attr:
+    """Attribute node.
+
+    In the latest DOM specification, Attr interface does not inherits ``Node``
+    interface. (Previously, Attr inherited Node interface.)
+    """
     def __init__(self, name: str, value=None, owner: Node = None):
         self._name = name.lower()
         self._value = value
@@ -105,6 +132,10 @@ class Attr:
 
     @property
     def html(self) -> str:
+        """Return string representation of this.
+
+        Used in start tag of HTML representation of the Element node.
+        """
         if self._owner and self.name in self._owner._special_attr_boolean:
             return self.name
         else:
@@ -116,10 +147,12 @@ class Attr:
 
     @property
     def name(self) -> str:
+        """Name of this attr."""
         return self._name
 
     @property
     def value(self) -> str:
+        """Value of this attr."""
         return self._value
 
     @value.setter
@@ -128,6 +161,7 @@ class Attr:
 
     @property
     def isId(self) -> bool:
+        """Return True if this Attr is an ID node (name is ``id``)."""
         return self.name.lower() == 'id'
 
 
