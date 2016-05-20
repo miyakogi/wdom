@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Provides utility functions/classes for tests.
+
+This module depend on selenium webdriver, so please install selenium before
+use this module::
+
+    pip install selenium
+
+"""
+
 import sys
 import time
 import logging
