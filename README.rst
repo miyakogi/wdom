@@ -7,6 +7,10 @@ WDOM
 .. image:: https://img.shields.io/pypi/pyversions/wdom.svg
    :target: https://pypi.python.org/pypi/wdom
 
+.. image:: https://readthedocs.org/projects/wdom-py/badge/?version=latest
+   :target: http://wdom-py.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
 .. image:: https://travis-ci.org/miyakogi/wdom.svg?branch=dev
    :target: https://travis-ci.org/miyakogi/wdom
 
@@ -71,6 +75,11 @@ performance. If you want to use WDOM with aiohttp, install it with pip::
 
 Any configurations are not required; when aiohttp is available, WDOM will use it
 automatically.
+
+Documents
+---------
+
+Document is available `here <http://wdom-py.readthedocs.io/en/latest/>`_.
 
 Example
 -------
@@ -185,9 +194,6 @@ WDOM package includes some tiny examples. From command line, try::
     python -m wdom.exapmles.timer
 
 Source codes of these examples will be found in `wdom/examples <https://github.com/miyakogi/wdom/tree/dev/wdom/examples>`_.
-
-More documents are in preparation, but you can see them in **docs** directory of
-this repository.
 
 Contributing
 ------------
