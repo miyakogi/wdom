@@ -3,6 +3,12 @@ Version 0.2
 
 (next version)
 
+Version 0.1.4 (2016-05-20)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Examples are executable by one file
+* Upload document to readthedocs
+
 Version 0.1.3 (2016-05-17)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
