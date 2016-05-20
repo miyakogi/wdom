@@ -123,7 +123,12 @@ def parse_command_line():
     import tornado.options
     _, unkown_args = parser.parse_known_args(namespace=config)
     set_loglevel()
-    if unkown_args and not re.search(r'py\.test[-.0-9]*$', sys.argv[0]):
+    if unkown_args and not (
+            'sphinx-build' in sys.argv[0]
+            or re.search(r'green[-.\d]*$,', sys.argv[0])
+            or re.search(r'nose(tests)?[-.\d]*$,', sys.argv[0])
+            or re.search(r'py\.test[-.0-9]*$', sys.argv[0])
+    ):
         # warn when get unknown argument
         # if run in test, skip warning since test runner adds some arguments
         logger.warning('Unknown Arguments: {}'.format(unkown_args))
