@@ -1,7 +1,7 @@
 Newest DOM Features
 -------------------
 
-Some new features of DOM, which have not been implemented yet on browsers are
+Some newest DOM features, which have not been implemented yet on browsers are
 available on WDOM.
 
 ParentNode and ChildNode Interfaces
@@ -9,16 +9,17 @@ ParentNode and ChildNode Interfaces
 
 ``appendChild`` method add only one child node, but ``append`` method can append
 multiple nodes at once. Furthermore, strings are also available (strings are
-automatically converted to Text Node).
+automatically converted to a Text Node).
 
 .. literalinclude:: samples/new1.py
 
 Similarly, ``prepend``, ``after``, and ``before`` methods are available.
-Furthermore, ``remove``, ``replaceWith``, ``children``, ``firstElementChild``,
-and ``lastElementChild`` methods are also available on WDOM.
+Additionally, ``remove``, ``replaceWith``, ``children``, ``firstElementChild``,
+``lastElementChild``, ``previousElementSibling``, and ``nextElementSibling``
+methods/properties are also available on WDOM.
 
 Internally, these methods update view on the browser at once, so using these
-methods usually result in better performance.
+methods usually results in better performance.
 
 * References
 
@@ -26,15 +27,15 @@ methods usually result in better performance.
     * `NonDocumentTypeChildNode | DOM Standard <https://dom.spec.whatwg.org/#nondocumenttypechildnode>`_
     * `ChildNode | DOM Standard <https://dom.spec.whatwg.org/#interface-childnode>`_
 
-Custom Element
-^^^^^^^^^^^^^^
+Custom Elements
+^^^^^^^^^^^^^^^
 
-WDOM provides limited supports on custom elements (experimentally).
+WDOM provides limited supports on custom elements (**experimental**).
 
 User Defined Custom Tags
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
-As an example, define ``MyElement`` as a custom tag (``<my-element>``).
+As an example, define ``MyElement`` as a custom tag ``<my-element>``.
 
 .. literalinclude:: samples/new2.py
 
@@ -55,7 +56,7 @@ which is same as the ``window`` object of JavaScript on browsers.
 Now you can use the registered custom tag from
 ``document.createElement('my-element')`` or ``innerHTML =
 '<my-element></my-element>>'.
-Both these methods return new instance of ``MyElement``
+Both these methods make a new instance of ``MyElement``
 
 Extended Custom Tags
 ~~~~~~~~~~~~~~~~~~~~
@@ -76,19 +77,19 @@ argument to ``customElements.define`` and pass dictionary which contains
 ``'extends'`` field to specify the tag name to be extended, at the third
 argument.
 
-After the registration, an HTML like ``<button is="my-button">`` will be parsed
+After the new tag is registered, an HTML like ``<button is="my-button">`` will be parsed
 to an instance of ``MyElement``, and ``<button is="default-button">`` to
 ``DefaultButton``.
 
 .. caution::
-    Register custom tags as early as possible.
-    If the instance was generated before registering it, it becomes different
-    class.
-    When the ``customElements.define`` is called and registerd, WDOM will try to
-    update the class of existing instances but ``__init__`` will not be not
-    called.
+    It's highly recommended to register custom tags as early as possible.
 
-    Additionally, changing ``is`` attribute of the existing instances, likely
+    If the instance was generated before registering it, it becomes different
+    class. When the ``customElements.define`` is called and registerd the custom
+    tag, WDOM will try to update the class of existing instances but
+    ``__init__`` will not be not called.
+
+    Additionally, changing ``is`` attribute of the existing instances, e.g.
     ``element.setAttribute('is', '...')``, do not change its class currently.
 
     In future, `Lifecycle callback methods

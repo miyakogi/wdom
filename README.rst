@@ -21,8 +21,8 @@ WDOM
 
 WDOM is a python GUI library for browser-based desktop applications. WDOM
 controls HTML elements (DOM) on browser from python, as if it is a GUI element.
-APIs are same as browser DOM, but of course, you can write logic codes in
-python.
+APIs are same as DOM or browser JavaScript, but of course, you can write logic
+codes in python.
 
 This library includes web-server (`tornado`_/`aiohttp`_), but is not intended to
 be used as a web framework, please use for **Desktop** GUI Applications!
@@ -75,11 +75,6 @@ performance. If you want to use WDOM with aiohttp, install it with pip::
 
 Any configurations are not required; when aiohttp is available, WDOM will use it
 automatically.
-
-Documents
----------
-
-Document is available `here <http://wdom-py.readthedocs.io/en/latest/>`_.
 
 Example
 -------
@@ -203,6 +198,11 @@ Contributions are welcome!!
 If you find any bug, or have any comments, please don't hesitate to report to
 `issues on GitHub <https://github.com/miyakogi/wdom/issues>`_.
 All your comments are welcome!
+
+More Documents
+--------------
+
+Please see `User Guide <http://wdom-py.readthedocs.io/en/latest/guide/index.html>`_.
 
 .. _DOM specification: https://dom.spec.whatwg.org/
 .. _Selenium: http://selenium-python.readthedocs.org/
