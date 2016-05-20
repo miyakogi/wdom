@@ -134,15 +134,7 @@ html_theme_options = {
     'github_user': 'miyakogi',
     'github_repo': 'wdom',
     'github_banner': True,
-    # 'travis_button': 'miyakogi/wdom',
-    # 'codecov_button': 'miyakogi/wdom',
-    # 'font_family': '"Charis SIL", Georgia',
-    # 'head_font_family': 'Raleway, "Source Sans Pro", Helvetica, "Helvetica Neue"',
-    # 'font_family': '',
-    # 'head_font_family': '',
-    # 'code_font_family': None,
     'sidebar_width': '260px',
-    # 'logo_text_align': 'center',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.

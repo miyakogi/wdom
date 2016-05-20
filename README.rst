@@ -177,6 +177,15 @@ Making components with python class:
         except KeyboardInterrupt:
             stop_server()
 
+
+WDOM package includes some tiny examples. From command line, try::
+
+    python -m wdom.exapmles.rev_text
+    python -m wdom.exapmles.data_binding
+    python -m wdom.exapmles.timer
+
+Source codes of these examples will be found in `wdom/examples <https://github.com/miyakogi/wdom/tree/dev/wdom/examples>`_.
+
 More documents are in preparation, but you can see them in **docs** directory of
 this repository.
 
