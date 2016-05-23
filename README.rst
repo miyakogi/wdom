@@ -236,11 +236,18 @@ And execute the code with ``--theme theme_name`` option (see below).
     </div>
 
 
-Currently, WDOM bundles 20+ CSS frameworks by default, and they are listed with screenshots in `Wiki <https://github.com/miyakogi/wdom/wiki/ScreenShots>`_.
-If your favourite CSS framework is not included, please let me know on `Issue <https://github.com/miyakogi/wdom/issues>`_, or write its wrapper module and send `PR <https://github.com/miyakogi/wdom/pulls>`_.
+Currently, WDOM bundles 20+ CSS frameworks by default, and they are listed with
+screenshots in `Wiki <https://github.com/miyakogi/wdom/wiki/ScreenShots>`_.
+In each theme modules, only primitive HTML elements (typographies, buttons, form components,
+tables, and grids) are defined, but complex elements like navigations, tabs, or
+lists are not defined.
+If your favourite CSS framework is not included, please let me know on `Issues`_,
+or write its wrapper module and send `PR`_.
 
 Do you want to use your original css? Of course it's possible! See `Loading
-Static Contents -> Local Resource <http://wdom-py.readthedocs.io/en/latest/guide/load_resource.html#local-resources>`_ section in the `User Guide`_.
+Static Contents -> Local Resource
+<http://wdom-py.readthedocs.io/en/latest/guide/load_resource.html#local-resources>`_
+section in the `User Guide`_.
 
 Contributing
 ------------
@@ -248,7 +255,7 @@ Contributing
 Contributions are welcome!!
 
 If you find any bug, or have any comments, please don't hesitate to report to
-`issues on GitHub <https://github.com/miyakogi/wdom/issues>`_.
+`Issues`_ on GitHub.
 All your comments are welcome!
 
 More Documents
@@ -261,3 +268,5 @@ Please see `User Guide`_.
 .. _tornado: http://www.tornadoweb.org/en/stable/
 .. _aiohttp: http://aiohttp.readthedocs.org/en/stable/
 .. _User Guide: http://wdom-py.readthedocs.io/en/latest/guide/index.html
+.. _Issues: https://github.com/miyakogi/wdom/issues
+.. _PR: https://github.com/miyakogi/wdom/pulls
