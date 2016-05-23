@@ -24,9 +24,9 @@ server.watch('./_static/*.css', make)
 server.watch('./_static/*.js', make)
 
 # Watch theme
-server.watch('./alabaster/alabaster/static/*.css_t', make)
-server.watch('./alabaster/alabaster/*.html', make)
-server.watch('./alabaster/alabaster/theme.conf', make)
+server.watch('./themes/slex/static/*.css_t', make)
+server.watch('./themes/slex/*.html', make)
+server.watch('./themes/slex/theme.conf', make)
 
 # Watch package
 server.watch('../*/*.py', make)

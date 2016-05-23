@@ -1,8 +1,6 @@
 h1.logo a {
   font-family: "Raleway";
   font-weight: 500;
-  text-decoration: none;
-  border-bottom: none;
 }
 
 a.headerlink {
@@ -29,25 +27,32 @@ body {
   font-size: 17px;
 }
 
-ul ul {
-  padding-left: 1.5rem;
-}
-
-code {
-  vertical-align: baseline;
-}
-
 pre, .pre {
   font-family: "Code new roman", "Ubuntu Mono", monospace;
-  font-size: 1rem;
+  font-size: 1em;
 }
 
 .search-btn {
-  padding: 0 1rem;
+  padding: 0 1em;
   line-height: normal;
   align-self: stretch;
 }
 
-dl dd {
-  margin-left: 30px;
+
+table.docutils {
+    border-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+table.docutils th.field-name {
+    border-style: none;
+    font-size: 1em;
+}
+
+td.field-body code {
+    margin: 0;
+    padding: 0;
+    border-style: none;
+    font-size: 1em;
 }
