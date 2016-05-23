@@ -190,6 +190,58 @@ WDOM package includes some tiny examples. From command line, try::
 
 Source codes of these examples will be found in `wdom/examples <https://github.com/miyakogi/wdom/tree/dev/wdom/examples>`_.
 
+Theming with CSS Frameworks
+---------------------------
+
+WDOM is CSS friendly, and provides easy way to theme your app with CSS
+frameworks. For example, use bootstrap3:
+
+.. code-block:: python
+
+    import asyncio
+    from wdom.themes import bootstrap3
+    from wdom.themes.bootstrap3 import Button, PrimaryButton, DangerButton
+    from wdom.server import start_server, stop_server
+    from wdom.document import get_document
+
+    if __name__ == '__main__':
+        document = get_document()
+        document.register_theme(bootstrap3)
+        document.body.append(
+            Button('Button'), PrimaryButton('Primary'), DangerButton('Danger')
+        )
+        start_server()
+        try:
+            asyncio.get_event_loop().run_forever()
+        except KeyboardInterrupt:
+            stop_server()
+
+Differences are:
+
+- import tag classes from ``wdom.themes.[theme_name]`` instead of ``wdom.tag``
+- register theme-module by ``document.register_theme(theme_module)``
+
+If you want to more easily change themes (or, css frameworks), try command-line option ``--theme``.
+``wdom.themes.default`` module is switched by ``--theme`` option.
+
+For example, in the above code, change ``bootstrap3`` to ``default``.
+And execute the code with ``--theme theme_name`` option (see below).
+
+.. raw:: html
+
+    <div style="text-align: center;">
+        <a href="//raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif">
+            <img src="//raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif" width="90%" alt="theming with command-line option" title="theming with command-line option">
+        </a>
+    </div>
+
+
+Currently, WDOM bundles 20+ CSS frameworks by default, and they are listed with screenshots in `Wiki <https://github.com/miyakogi/wdom/wiki/ScreenShots>`_.
+If your favourite CSS framework is not included, please let me know on `Issue <https://github.com/miyakogi/wdom/issues>`_, or write its wrapper module and send `PR <https://github.com/miyakogi/wdom/pulls>`_.
+
+Do you want to use your original css? Of course it's possible! See `Loading
+Static Contents -> Local Resource <http://wdom-py.readthedocs.io/en/latest/guide/load_resource.html#local-resources>`_ section in the `User Guide`_.
+
 Contributing
 ------------
 
@@ -202,9 +254,10 @@ All your comments are welcome!
 More Documents
 --------------
 
-Please see `User Guide <http://wdom-py.readthedocs.io/en/latest/guide/index.html>`_.
+Please see `User Guide`_.
 
 .. _DOM specification: https://dom.spec.whatwg.org/
 .. _Selenium: http://selenium-python.readthedocs.org/
 .. _tornado: http://www.tornadoweb.org/en/stable/
 .. _aiohttp: http://aiohttp.readthedocs.org/en/stable/
+.. _User Guide: http://wdom-py.readthedocs.io/en/latest/guide/index.html
