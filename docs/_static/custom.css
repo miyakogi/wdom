@@ -1,4 +1,4 @@
-h1.logo a {
+h1.logo, div.section#wdom > h1 {
   font-family: "Raleway";
   font-weight: 500;
 }
