@@ -227,25 +227,23 @@ If you want to more easily change themes (or, css frameworks), try command-line 
 For example, in the above code, change ``bootstrap3`` to ``default``.
 And execute the code with ``--theme theme_name`` option (see below).
 
-.. raw:: html
 
-    <div style="text-align: center;">
-        <a href="//raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif">
-            <img src="//raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif" width="90%" alt="theming with command-line option" title="theming with command-line option">
-        </a>
-    </div>
+.. image:: https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif
+   :target: https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif
+   :width: 90%
 
 
-Currently, WDOM bundles 20+ CSS frameworks by default, and they are listed with
-screenshots in `Wiki <https://github.com/miyakogi/wdom/wiki/ScreenShots>`_.
-In each theme modules, only primitive HTML elements (typographies, buttons, form components,
-tables, and grids) are defined, but complex elements like navigations, tabs, or
-lists are not defined.
+Currently, WDOM bundles 20+ CSS frameworks by default, and they are listed in
+`Wiki <https://github.com/miyakogi/wdom/wiki/ScreenShots>`_ with screenshots. In
+each theme module, only primitive HTML elements (typographies, buttons, form
+components, tables, and grids) are defined, but complex elements like
+navigations or tabs are not defined.
+
 If your favourite CSS framework is not included, please let me know on `Issues`_,
 or write its wrapper module and send `PR`_.
 
-Do you want to use your original css? Of course it's possible! See `Loading
-Static Contents -> Local Resource
+Of course you can use your original css. See `Loading Static Contents -> Local
+Resource
 <http://wdom-py.readthedocs.io/en/latest/guide/load_resource.html#local-resources>`_
 section in the `User Guide`_.
 
