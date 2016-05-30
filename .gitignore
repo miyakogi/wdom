@@ -1,6 +1,7 @@
 wiki
 build
 tmp
+.bumpversion.cfg
 .cache
 .coverage
 .tox
