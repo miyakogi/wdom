@@ -43,6 +43,8 @@ autoclass_content = 'both'
 # autodoc_docstring_signature = False
 autodoc_default_flags = ['show-inheritance']
 
+suppress_warnings = ['image.nonlocal_uri']
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -139,7 +141,7 @@ html_theme_options = {
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['themes']
+# html_theme_path = ['themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
