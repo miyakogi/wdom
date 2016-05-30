@@ -20,8 +20,11 @@ cmd = shell(['sphinx-build', '-b', 'html', '-E',
 # Wtach documets
 server.watch('../*.rst', cmd, delay=1)
 server.watch('*.rst', cmd, delay=1)
+server.watch('*.md', cmd, delay=1)
 server.watch('./*/*.rst', cmd, delay=1)
+server.watch('./*/*.md', cmd, delay=1)
 server.watch('./*/*/*.rst', cmd, delay=1)
+server.watch('./*/*/*.md', cmd, delay=1)
 
 # Watch template/style
 server.watch('./_templates/*.html', cmd, delay=1)
