@@ -32,19 +32,18 @@ rendered as an `<h1>` tag on a browser.
 All WDOM elements have their own HTML representations, which can be obtained by
 their `html` property.
 
-Elements created by WDOM are all based on `DOM Living Standard
-<https://dom.spec.whatwg.org/>`_ and related standards (`HTML Living Standard
-<https://html.spec.whatwg.org/multipage/>`_, `CSS Object Model
-<https://drafts.csswg.org/cssom/>`_, `DOM Parsing
-<https://w3c.github.io/DOM-Parsing/>`_, and `Custom Elements in WebComponents
-<http://w3c.github.io/webcomponents/spec/custom/>`_).
+Elements created by WDOM are all based on [DOM Living
+Standard](https://dom.spec.whatwg.org/) and related standards ([HTML Living
+Standard](https://html.spec.whatwg.org/multipage/), [CSS Object
+Model](https://drafts.csswg.org/cssom/), [DOM
+Parsing](https://w3c.github.io/DOM-Parsing/), and [Custom Elements in
+WebComponents](http://w3c.github.io/webcomponents/spec/custom/)).
 
 As elements are modeled by DOM, you can add/remove/replace them as same as the
-way in JavaScript on browsers.
-Currently, not all of DOM features have been implemented in WDOM, but lots of
-frequently-used methods/properties are available.
-Implemented features are listed in `wiki pages at gihub
-<https://github.com/miyakogi/wdom/wiki/Features>`_.
+way in JavaScript on browsers. Currently, not all of DOM features have been
+implemented in WDOM, but lots of frequently-used methods/properties are
+available. Implemented features are listed in [wiki pages at
+gihub](https://github.com/miyakogi/wdom/wiki/Features).
 
 ### Create New Element
 
@@ -55,7 +54,7 @@ instantiate classes defined in `wdom.tag` module. For details about the
 `wdom.tag` module, see :doc:`wdom` section.
 
 .. note:: Every element does not appear on browser until inserted to the DOM
-    tree which roots on the document node returned by `get_document()`.
+    tree which roots on the document node returned by ``get_document()``.
 
 ### Append/Insert Node
 
@@ -66,8 +65,8 @@ The reference node C must be a child node of the parent node A.
 
 These method names are quite long, so some methods specified in `DOM
 specification`_ are also available on WDOM: `prepend`, `append`, `before`,
-`after`, and `replaceWith`.
-Details about these methods are described in :doc:`new_features` section.
+`after`, and `replaceWith`. Details about these methods are described in
+:doc:`new_features` section.
 
 ### Remove Node
 
@@ -83,7 +82,7 @@ section.
 
 `childNodes` property returns list-like live-object which contains its direct
 child nodes. `firstChild` and `lastChild` property returns its first/last
-child node. 
+child node.
 
 On the other way, `parentNode` property returns its parent node.
 These properties are same as JavaScript's DOM.
@@ -110,8 +109,8 @@ attributes and its value as `{'attribute-name': value, ...}`.
 ### Special Attributes
 
 Some attributes are accessible via special properties, for exmaple, `A.id`
-returns its ID attribute. Available properties will be found in `wiki page at
-gihub <https://github.com/miyakogi/wdom/wiki/Features>`_.
+returns its ID attribute. Available properties will be found in
+[wiki page at gihub](https://github.com/miyakogi/wdom/wiki/Features).
 
 With `getAttribute` returns string or None, but attributes accessed via its
 properties return different types depending on its property.
@@ -121,9 +120,9 @@ Similarly, `element.hidden` returns boolean (`True` or `False`) and
 `element.style` returns `CSSStyleDeclaration`.
 
 * References
-    * `HTMLElement | MDN <https://developer.mozilla.org/en/docs/Web/API/HTMLElement>`_
-    * `element.id | MDN <https://developer.mozilla.org/ja/docs/Web/API/Element/id>`_
-    * `element.style | MDN <https://developer.mozilla.org/ja/docs/Web/API/HTMLElement/style>`_
+    * [HTMLElement | MDN](https://developer.mozilla.org/en/docs/Web/API/HTMLElement)
+    * [element.id | MDN](https://developer.mozilla.org/ja/docs/Web/API/Element/id)
+    * [element.style | MDN](https://developer.mozilla.org/ja/docs/Web/API/HTMLElement/style)
 
 ### Style Attribute (CSSStyleDeclaration)
 
@@ -133,8 +132,8 @@ element's color red.
 
 Some css properties including hyphen (`-`) will be converted to CamelCase name.
 For example, `background-color` will become `element.style.backgroundColor`.
-For more examples, please see `CSS Properties Reference
-<https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference>`_
+For more examples, please see [CSS Properties
+Reference](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference)
 
 Using HTML
 ----------
@@ -149,17 +148,18 @@ An example to make large list is below:
 .. literalinclude:: samples/dom2.py
 
 .. note::
-    Assignment to `innerHTML` **removes all child nodes** and insert parsed
+    Assignment to ``innerHTML`` **removes all child nodes** and insert parsed
     elements.
 
 Each child nodes can be accessed via `childNodes` property, which returns
 list-like live-object, but not able to modify its values.
 
 `insertAdjacentHTML({position}, {html})` also parses HTML and insert new
-elements to the `position`.
-This method is also same as JavaScript's one, so for details please see `Element.insertAdjacentHTML() | MDN <https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML>`_ or `DOM specification`_.
+elements to the `position`. This method is also same as JavaScript's one, so
+for details please see [MDN Element.insertAdjacentHTML()](https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML)
+or `DOM specification`_.
 
-`outerHTML` is not implemented.
+`outerHTML` is not implemented in WDOM.
 
 Event Handling
 --------------
@@ -174,11 +174,11 @@ Run this code and click `"Hello, WDOM"`.
 Then it will be reversed.
 When clicked again, it will be reversed again and back to `"Hello, WDOM"`.
 
-`addEventListener('{event-type}', {handler})` method registers `handler` to
-the given `event-type`. In the sample code, `rev_text` function is
-registered to `click` event. Values available for event type are same as
-JavaScript's DOM, as listed in `Event reference | MDN
-<https://developer.mozilla.org/en-US/docs/Web/Events>`_.
+`addEventListener('{event-type}', {handler})` method registers `handler` to the
+given `event-type`. In the sample code, `rev_text` function is registered to
+`click` event. Values available for event type are same as JavaScript's DOM, as
+listed in [Event reference |
+MDN](https://developer.mozilla.org/en-US/docs/Web/Events).
 
 When the `h1` element is clicked, registered function `rev_text` is called with
 a single argument, event, which is an Event object, though it is not used in the
