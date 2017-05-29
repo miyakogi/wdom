@@ -3,7 +3,7 @@
 
 import importlib
 
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from wdom.themes import theme_list
 from wdom.testing import TestCase
