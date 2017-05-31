@@ -6,7 +6,7 @@ import asyncio
 import socket
 from typing import Optional
 
-from aiohttp import web, MsgType
+from aiohttp import web, WSMsgType
 
 from wdom.options import config
 from wdom.server.handler import on_websocket_message
@@ -52,9 +52,9 @@ class WSHandler:
 
         while not self.ws.closed:
             msg = yield from self.ws.receive()
-            if msg.tp == MsgType.text:
+            if msg.tp == WSMsgType.text:
                 yield from self.on_message(msg.data)
-            elif msg.tp in (MsgType.close, MsgType.closed, MsgType.error):
+            elif msg.tp in (WSMsgType.close, WSMsgType.closed, WSMsgType.error):
                 yield from self.ws.close()
         self.on_close()
         return self.ws
@@ -153,6 +153,8 @@ def start_server(app: Optional[web.Application] = None,
     port = port if port is not None else config.port
     address = address if address is not None else config.address
     app = app or get_app()
+    # set signals until make handlers
+    app.on_shutdown.append(close_connections)
     loop = loop or asyncio.get_event_loop()
 
     handler = app.make_handler(logger=logger, access_log=logger,
@@ -163,7 +165,6 @@ def start_server(app: Optional[web.Application] = None,
     server.handler = handler
     server.port = server.sockets[-1].getsockname()[1]
     server.address = address or 'localhost'
-    app.on_shutdown.append(close_connections)
     app['server'] = server
 
     return server
