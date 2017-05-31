@@ -139,19 +139,19 @@ class TestInput(RemoteBrowserTestCase, TestCase):
                      reason='This test not pass only on travis')
     def test_textinput(self):
         self.set_element(self.input)
-        self.element.send_keys('abc')
-        self.wait_until(lambda: self.input.value == 'abc')
-        self.assertEqual(self.input.value, 'abc')
+        self.element.send_keys('a')
+        self.wait_until(lambda: self.input.value == 'a')
+        self.assertEqual(self.input.value, 'a')
 
         self.browser.get(self.url)
         self.set_element(self.input)
-        self.wait_until(lambda: self.element.get_attribute('value') == 'abc')
-        self.assertEqual(self.element.get_attribute('value'), 'abc')
+        self.wait_until(lambda: self.element.get_attribute('value') == 'a')
+        self.assertEqual(self.element.get_attribute('value'), 'a')
 
-        self.element.send_keys('def')
+        self.element.send_keys('d')
         self.wait_until(
-            lambda: self.element.get_attribute('value') == 'abcdef')
-        self.assertEqual(self.input.value, 'abcdef')
+            lambda: self.element.get_attribute('value') == 'ad')
+        self.assertEqual(self.input.value, 'ad')
 
     @unittest.skipIf(os.environ.get('TRAVIS', False),
                      reason='This test not pass only on travis')
