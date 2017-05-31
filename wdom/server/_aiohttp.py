@@ -7,6 +7,7 @@ import socket
 from typing import Optional
 
 from aiohttp import web, WSMsgType
+from aiohttp import WSCloseCode
 
 from wdom.options import config
 from wdom.server.handler import on_websocket_message
@@ -25,7 +26,8 @@ def main_handler(request):
     """Main handler to serve root ``document`` object of the application."""
     from wdom.document import get_document
     logger.info('connected')
-    return web.Response(body=get_document().build().encode())
+    return web.Response(body=get_document().build().encode(),
+                        content_type='text/html')
 
 
 @asyncio.coroutine
@@ -95,8 +97,9 @@ class Application(web.Application):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # self.router.add_route('GET', '/', MainHandler)
-        root_resource = self.router.add_resource('/', name='root')
-        root_resource.add_route('GET', main_handler)
+        # root_resource = self.router.add_resource('/', name='root')
+        # root_resource.add_route('GET', main_handler)
+        self.router.add_get('/', main_handler)
         # self.router.add_route('*', '/rimo_ws', ws_open)
         root_ws_resource = self.router.add_resource('/rimo_ws', name='root_ws')
         root_ws_resource.add_route('*', ws_open)
@@ -130,7 +133,9 @@ def set_application(app: Application):
 def close_connections(app: web.Application):
     """Close all websocket connections."""
     for conn in connections:
-        yield from conn.ws.close(code=999, message='server shutdown')
+        # yield from conn.ws.close(code=999, message='server shutdown')
+        yield from conn.ws.close(code=WSCloseCode.GOING_AWAY,
+                                 message='server shutdown')
 
 
 def start_server(app: Optional[web.Application] = None,
