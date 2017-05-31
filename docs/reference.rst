@@ -3,5 +3,5 @@ API Reference
 
 .. toctree::
     dom
-    server
+    webserver
     test

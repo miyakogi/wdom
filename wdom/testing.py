@@ -1,6 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Provides utility functions/classes for tests.
+
+This module depend on selenium webdriver, so please install selenium before
+use this module::
+
+    pip install selenium
+
+"""
+
 import sys
 import time
 import logging
@@ -26,7 +35,7 @@ from wdom.window import customElements
 from wdom.element import Element
 from wdom import server
 
-driver = webdriver.Firefox
+driver = webdriver.Chrome
 local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
@@ -141,9 +150,12 @@ class HTTPTestCase(TestCase):
         """
         response = yield from to_asyncio_future(
             AsyncHTTPClient().fetch(url, raise_error=False))
-        try:
-            response.text = response.body.decode(encoding)
-        except UnicodeDecodeError:
+        if response.body:
+            try:
+                response.text = response.body.decode(encoding)
+            except UnicodeDecodeError:
+                response.text = None
+        else:
             response.text = None
         return response
 
