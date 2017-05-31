@@ -150,9 +150,12 @@ class HTTPTestCase(TestCase):
         """
         response = yield from to_asyncio_future(
             AsyncHTTPClient().fetch(url, raise_error=False))
-        try:
-            response.text = response.body.decode(encoding)
-        except UnicodeDecodeError:
+        if response.body:
+            try:
+                response.text = response.body.decode(encoding)
+            except UnicodeDecodeError:
+                response.text = None
+        else:
             response.text = None
         return response
 
