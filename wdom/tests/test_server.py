@@ -145,7 +145,7 @@ class TestAutoShutdown(TestServerBase):
 
 
 class TestOpenBrowser(TestServerBase):
-    cmd = ['--debug', '--open-browser', '--browser', 'chrome']
+    cmd = ['--debug', '--open-browser']
 
     @unittest.skipIf('TOX' in os.environ, 'not test browser')
     def test_open_browser(self):
@@ -158,7 +158,7 @@ class TestOpenBrowser(TestServerBase):
 
 
 class TestOpenBrowserFreePort(TestServerBase):
-    cmd = ['--port', '0', '--open-browser', '--browser', 'chrome']
+    cmd = ['--port', '0', '--open-browser']
 
     @unittest.skipIf('TOX' in os.environ, 'not test browser')
     def test_open_browser_free_port(self):

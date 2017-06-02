@@ -8,7 +8,6 @@ addons:
     sources:
       - google-chrome
     packages:
-      - xvfb
       - google-chrome-stable
 
 before_script:
