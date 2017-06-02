@@ -5,8 +5,11 @@ python:
 
 addons:
   apt:
+    sources:
+      - google-chrome
     packages:
       - xvfb
+      - google-chrome-stable
 
 before_script:
   - "export DISPLAY=:99.0"
