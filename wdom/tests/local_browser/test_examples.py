@@ -46,8 +46,8 @@ class TestDataBinding(WebDriverTestCase, TestCase):
         document.body.prepend(sample_app())
         self.start()
 
-    @unittest.skipIf(os.environ.get('TRAVIS', False),
-                     reason='This test not pass only on travis')
+    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    #                  reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
         self.assertEqual(view.text, 'Hello!')
@@ -73,8 +73,8 @@ class TestRevText(WebDriverTestCase, TestCase):
         document.body.prepend(sample_app())
         self.start()
 
-    @unittest.skipIf(os.environ.get('TRAVIS', False),
-                     reason='This test not pass only on travis')
+    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    #                  reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
         text = 'Click!'
@@ -101,8 +101,8 @@ class TestTimer(WebDriverTestCase, TestCase):
         document.body.prepend(sample_app())
         self.start()
 
-    @unittest.skipIf(os.environ.get('TRAVIS', False),
-                     reason='This test not pass only on travis')
+    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    #                  reason='This test not pass only on travis')
     def test_timer(self):
         view = self.wd.find_element_by_tag_name('h1')
         start_btn = self.wd.find_element_by_id('start_btn')

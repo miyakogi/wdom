@@ -13,7 +13,7 @@ from wdom.testing import TestCase
 from wdom.testing import close_webdriver, get_webdriver
 
 
-@unittest.skipIf(os.environ.get('TRAVIS', False), reason='skip on CI')
+# @unittest.skipIf(os.environ.get('TRAVIS', False), reason='skip on CI')
 def setUpModule():
     pass
 
