@@ -150,7 +150,7 @@ class TestOpenBrowser(TestServerBase):
     @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
     @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
     def test_open_browser(self):
-        time.sleep(1)
+        time.sleep(3)
         # terminate server and gett all log
         self.proc.terminate()
         log = self.proc.stdout.read()
@@ -164,7 +164,7 @@ class TestOpenBrowserFreePort(TestServerBase):
     @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
     @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
     def test_open_browser_free_port(self):
-        time.sleep(1)
+        time.sleep(3)
         # terminate server and gett all log
         self.proc.terminate()
         log = self.proc.stdout.read()
