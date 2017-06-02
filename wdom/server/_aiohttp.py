@@ -76,7 +76,7 @@ class WSHandler:
         yield from asyncio.sleep(config.shutdown_wait)
         # stop server and close loop if no more connection exists
         if not is_connected():
-            server = self.req.app['server']
+            server = main_server
             yield from terminate_server(server)
             server._loop.stop()
 
@@ -96,11 +96,7 @@ class Application(web.Application):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # self.router.add_route('GET', '/', MainHandler)
-        # root_resource = self.router.add_resource('/', name='root')
-        # root_resource.add_route('GET', main_handler)
         self.router.add_get('/', main_handler)
-        # self.router.add_route('*', '/rimo_ws', ws_open)
         root_ws_resource = self.router.add_resource('/rimo_ws', name='root_ws')
         root_ws_resource.add_route('*', ws_open)
 
@@ -116,6 +112,7 @@ class Application(web.Application):
 
 
 main_application = Application()
+main_server = None
 
 
 def get_app(*args, **kwargs) -> web.Application:
@@ -170,7 +167,8 @@ def start_server(app: Optional[web.Application] = None,
     server.handler = handler
     server.port = server.sockets[-1].getsockname()[1]
     server.address = address or 'localhost'
-    app['server'] = server
+    global main_server
+    main_server = server
 
     return server
 

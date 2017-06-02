@@ -224,16 +224,6 @@ class TestStaticFileHandler(HTTPTestCase):
 
     @sync
     @asyncio.coroutine
-    def test_add_static_path(self) -> None:
-        from os import path
-        server.add_static_path('a', path.abspath(path.dirname(__file__)))
-        with self.assertLogs('wdom.server', 'INFO'):
-            res = yield from self.fetch(self.url + '/a/' + __file__)
-        self.assertEqual(res.code, 200)
-        self.assertIn('this text', res.text)
-
-    @sync
-    @asyncio.coroutine
     def test_tempdir(self):
         from os import path
         self.assertTrue(path.exists(self.document.tempdir))
@@ -272,6 +262,23 @@ class TestStaticFileHandler(HTTPTestCase):
         self.assertEqual(response.code, 404)
         response = yield from self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(response.code, 404)
+
+
+class TestAddStaticPath(HTTPTestCase):
+    def setUp(self) -> None:
+        from os import path
+        server.add_static_path('a', path.abspath(path.dirname(__file__)))
+        super().setUp()
+        self.document = get_document()
+        self.start()
+
+    @sync
+    @asyncio.coroutine
+    def test_add_static_path(self) -> None:
+        with self.assertLogs('wdom.server', 'INFO'):
+            res = yield from self.fetch(self.url + '/a/' + __file__)
+        self.assertEqual(res.code, 200)
+        self.assertIn('this text', res.text)
 
 
 class TestRootWSHandler(HTTPTestCase):
