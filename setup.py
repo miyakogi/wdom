@@ -14,7 +14,7 @@ with open(readme_file) as readme_file:
     readme = readme_file.read()
 
 install_requires = ['tornado']
-test_requites = ['nose_parameterized', 'selenium', 'syncer']
+test_requites = ['parameterized', 'selenium', 'syncer']
 
 if sys.version_info < (3, 5):
     install_requires.append('mypy-lang')

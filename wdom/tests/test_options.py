@@ -10,7 +10,7 @@ import unittest
 from importlib import reload
 import subprocess
 
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from wdom.misc import root_dir
 from wdom.options import parse_command_line, config, set_loglevel

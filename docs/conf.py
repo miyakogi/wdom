@@ -33,6 +33,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
+    'm2r',
 ]
 
 primary_domain = 'py'
@@ -43,13 +44,15 @@ autoclass_content = 'both'
 # autodoc_docstring_signature = False
 autodoc_default_flags = ['show-inheritance']
 
+suppress_warnings = ['image.nonlocal_uri']
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
@@ -88,7 +91,7 @@ gettext_compat = False
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
-exclude_patterns = ['_build']
+exclude_patterns = ['_build', 'alabaster']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -123,7 +126,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 # html_theme = 'sphinx_rtd_theme'
-html_theme = 'alabaster'
+html_theme = 'slex'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -134,11 +137,12 @@ html_theme_options = {
     'github_user': 'miyakogi',
     'github_repo': 'wdom',
     'github_banner': True,
-    'sidebar_width': '260px',
+    'github_type': 'mark',
+    'github_count': False,
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['alabaster']
+# html_theme_path = ['themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".

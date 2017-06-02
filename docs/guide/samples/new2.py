@@ -20,7 +20,7 @@ if __name__ == '__main__':
     document.defaultView.customElements.define('my-element', MyElement)
     # Make instance of MyElement from HTML
     document.body.insertAdjacentHTML('beforeend', '<my-element></my-element>')
-    # Of, from createElement
+    # Or, from createElement method
     my_element = document.createElement('my-element')
     document.body.appendChild(my_element)
 

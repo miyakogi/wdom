@@ -21,8 +21,8 @@ WDOM
 
 WDOM is a python GUI library for browser-based desktop applications. WDOM
 controls HTML elements (DOM) on browser from python, as if it is a GUI element.
-APIs are same as browser DOM, but of course, you can write logic codes in
-python.
+APIs are same as DOM or browser JavaScript, but of course, you can write logic
+codes in python.
 
 This library includes web-server (`tornado`_/`aiohttp`_), but is not intended to
 be used as a web framework, please use for **Desktop** GUI Applications!
@@ -75,11 +75,6 @@ performance. If you want to use WDOM with aiohttp, install it with pip::
 
 Any configurations are not required; when aiohttp is available, WDOM will use it
 automatically.
-
-Documents
----------
-
-Document is available `here <http://wdom-py.readthedocs.io/en/latest/>`_.
 
 Example
 -------
@@ -195,16 +190,81 @@ WDOM package includes some tiny examples. From command line, try::
 
 Source codes of these examples will be found in `wdom/examples <https://github.com/miyakogi/wdom/tree/dev/wdom/examples>`_.
 
+Theming with CSS Frameworks
+---------------------------
+
+WDOM is CSS friendly, and provides easy way to theme your app with CSS
+frameworks. For example, use bootstrap3:
+
+.. code-block:: python
+
+    import asyncio
+    from wdom.themes import bootstrap3
+    from wdom.themes.bootstrap3 import Button, PrimaryButton, DangerButton
+    from wdom.server import start_server, stop_server
+    from wdom.document import get_document
+
+    if __name__ == '__main__':
+        document = get_document()
+        document.register_theme(bootstrap3)
+        document.body.append(
+            Button('Button'), PrimaryButton('Primary'), DangerButton('Danger')
+        )
+        start_server()
+        try:
+            asyncio.get_event_loop().run_forever()
+        except KeyboardInterrupt:
+            stop_server()
+
+Differences are:
+
+- import tag classes from ``wdom.themes.[theme_name]`` instead of ``wdom.tag``
+- register theme-module by ``document.register_theme(theme_module)``
+
+If you want to more easily change themes (or, css frameworks), try command-line option ``--theme``.
+``wdom.themes.default`` module is switched by ``--theme`` option.
+
+For example, in the above code, change ``bootstrap3`` to ``default``.
+And execute the code with ``--theme theme_name`` option (see below).
+
+
+.. image:: https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif
+   :target: https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif
+   :width: 90%
+
+
+Currently, WDOM bundles 20+ CSS frameworks by default, and they are listed in
+`Wiki <https://github.com/miyakogi/wdom/wiki/ScreenShots>`_ with screenshots. In
+each theme module, only primitive HTML elements (typographies, buttons, form
+components, tables, and grids) are defined, but complex elements like
+navigations or tabs are not defined.
+
+If your favourite CSS framework is not included, please let me know on `Issues`_,
+or write its wrapper module and send `PR`_.
+
+Of course you can use your original css. See `Loading Static Contents -> Local
+Resource
+<http://wdom-py.readthedocs.io/en/latest/guide/load_resource.html#local-resources>`_
+section in the `User Guide`_.
+
 Contributing
 ------------
 
 Contributions are welcome!!
 
 If you find any bug, or have any comments, please don't hesitate to report to
-`issues on GitHub <https://github.com/miyakogi/wdom/issues>`_.
+`Issues`_ on GitHub.
 All your comments are welcome!
+
+More Documents
+--------------
+
+Please see `User Guide`_.
 
 .. _DOM specification: https://dom.spec.whatwg.org/
 .. _Selenium: http://selenium-python.readthedocs.org/
 .. _tornado: http://www.tornadoweb.org/en/stable/
 .. _aiohttp: http://aiohttp.readthedocs.org/en/stable/
+.. _User Guide: http://wdom-py.readthedocs.io/en/latest/guide/index.html
+.. _Issues: https://github.com/miyakogi/wdom/issues
+.. _PR: https://github.com/miyakogi/wdom/pulls

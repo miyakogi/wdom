@@ -4,7 +4,7 @@
 import sys
 import unittest
 
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from wdom.css import _normalize_css_property
 from wdom.css import CSSStyleDeclaration, parse_style_decl

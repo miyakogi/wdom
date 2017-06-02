@@ -1,8 +1,6 @@
-h1.logo a {
+h1.logo, div.section#wdom > h1 {
   font-family: "Raleway";
   font-weight: 500;
-  text-decoration: none;
-  border-bottom: none;
 }
 
 a.headerlink {
@@ -10,18 +8,17 @@ a.headerlink {
 }
 
 div.sphinxsidebarwrapper p.blurb {
-  font-family: "Raleway", sans-serif;
+  font-family: Lato, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: "Raleway", sans-serif;
-  font-weight: 500;
+  font-family: Lato, sans-serif;
+  font-weight: normal;
   color: #555;
 }
 
 div.sphinxsidebar li.toctree-l1 {
-  font-family: "Raleway", sans-serif;
-  font-weight: 500;
+  font-family: Lato, sans-serif;
 }
 
 body {
@@ -29,21 +26,38 @@ body {
   font-size: 17px;
 }
 
-ul ul {
-  padding-left: 1.5rem;
+pre, .pre {
+  font-family: "Code new roman", "Ubuntu Mono", monospace;
+  font-size: 1em;
 }
 
 code {
-  vertical-align: baseline;
-}
-
-pre, .pre {
-  font-family: "Code new roman", "Ubuntu Mono", monospace;
-  font-size: 1rem;
+  border-style: none;
+  vertical-align: inherit;
 }
 
 .search-btn {
-  padding: 0 1rem;
+  padding: 0 1em;
+  font-family: Lato, sans-serif;
+  font-weight: normal;
   line-height: normal;
   align-self: stretch;
+}
+
+table.docutils {
+    border-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+table.docutils th.field-name {
+    border-style: none;
+    font-size: 1em;
+}
+
+td.field-body code {
+    margin: 0;
+    padding: 0;
+    border-style: none;
+    font-size: 1em;
 }

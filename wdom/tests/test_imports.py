@@ -5,7 +5,7 @@ import sys
 from os import path
 import subprocess
 
-from nose_parameterized import parameterized
+from parameterized import parameterized
 
 from wdom.testing import TestCase
 

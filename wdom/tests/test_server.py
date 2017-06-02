@@ -10,6 +10,7 @@ import time
 import subprocess
 import asyncio
 import tempfile
+import unittest
 
 from selenium.webdriver.common.utils import free_port
 from syncer import sync
@@ -79,6 +80,7 @@ class TestServerBase(HTTPTestCase):
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
+            bufsize=0,
         )
         sync(self.wait(times=10))
 
@@ -143,21 +145,29 @@ class TestAutoShutdown(TestServerBase):
 
 
 class TestOpenBrowser(TestServerBase):
-    cmd = ['--debug', '--open-browser', '--browser', 'firefox']
+    cmd = ['--debug', '--open-browser', '--browser', 'chrome']
 
+    @unittest.skipIf('TOX' in os.environ, 'not test browser')
     def test_open_browser(self):
-        time.sleep(0.5)
-        self.assertIn('Start server on', self.proc.stdout.readline())
-        self.assertIn('connected', self.proc.stdout.readline())
+        time.sleep(1)
+        # terminate server and gett all log
+        self.proc.terminate()
+        log = self.proc.stdout.read()
+        self.assertIn('Start server on', log)
+        self.assertIn('connected', log)
 
 
 class TestOpenBrowserFreePort(TestServerBase):
-    cmd = ['--port', '0', '--open-browser', '--browser', 'firefox']
+    cmd = ['--port', '0', '--open-browser', '--browser', 'chrome']
 
+    @unittest.skipIf('TOX' in os.environ, 'not test browser')
     def test_open_browser_free_port(self):
-        time.sleep(0.5)
-        self.assertIn('Start server on', self.proc.stdout.readline())
-        self.assertIn('connected', self.proc.stdout.readline())
+        time.sleep(1)
+        # terminate server and gett all log
+        self.proc.terminate()
+        log = self.proc.stdout.read()
+        self.assertIn('Start server on', log)
+        self.assertIn('connected', log)
 
 
 class TestMainHandlerBlank(HTTPTestCase):
@@ -214,16 +224,6 @@ class TestStaticFileHandler(HTTPTestCase):
 
     @sync
     @asyncio.coroutine
-    def test_add_static_path(self) -> None:
-        from os import path
-        server.add_static_path('a', path.abspath(path.dirname(__file__)))
-        with self.assertLogs('wdom.server', 'INFO'):
-            res = yield from self.fetch(self.url + '/a/' + __file__)
-        self.assertEqual(res.code, 200)
-        self.assertIn('this text', res.text)
-
-    @sync
-    @asyncio.coroutine
     def test_tempdir(self):
         from os import path
         self.assertTrue(path.exists(self.document.tempdir))
@@ -262,6 +262,23 @@ class TestStaticFileHandler(HTTPTestCase):
         self.assertEqual(response.code, 404)
         response = yield from self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(response.code, 404)
+
+
+class TestAddStaticPath(HTTPTestCase):
+    def setUp(self) -> None:
+        from os import path
+        server.add_static_path('a', path.abspath(path.dirname(__file__)))
+        super().setUp()
+        self.document = get_document()
+        self.start()
+
+    @sync
+    @asyncio.coroutine
+    def test_add_static_path(self) -> None:
+        with self.assertLogs('wdom.server', 'INFO'):
+            res = yield from self.fetch(self.url + '/a/' + __file__)
+        self.assertEqual(res.code, 200)
+        self.assertIn('this text', res.text)
 
 
 class TestRootWSHandler(HTTPTestCase):

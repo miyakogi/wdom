@@ -11,7 +11,7 @@ from tornado import websocket
 from tornado.httpserver import HTTPServer
 
 from wdom.options import config
-from wdom.misc import install_asyncio
+from wdom.misc import install_asyncio, static_dir
 from wdom.server.handler import on_websocket_message
 
 logger = logging.getLogger(__name__)
@@ -113,10 +113,10 @@ class Application(web.Application):
             pattern = '/' + pattern
         if not pattern.endswith('/(.*)'):
             pattern = pattern + '/(.*)'
-        spec = web.URLSpec(pattern, web.StaticFileHandler, dict(path=path))
-        # Need some check
-        handlers = self.handlers[0][1]
-        handlers.append(spec)
+        self.add_handlers(
+            r'.*',  # add static path for all virtual host
+            [(pattern, web.StaticFileHandler, dict(path=path))]
+        )
 
     def add_favicon_path(self, path: str):
         """Add path to serve favicon file.

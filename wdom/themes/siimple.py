@@ -19,6 +19,7 @@ SuccessButton = NewTag('SuccessButton', 'button', PrimaryButton, is_='success-bu
 InfoButton = NewTag('InfoButton', 'button', PrimaryButton, is_='info-button')
 WarningButton = NewTag('WarningButton', 'button', PrimaryButton, is_='warning-button')
 DangerButton = NewTag('DangerButton', 'button', PrimaryButton, is_='danger-button')
+ErrorButton = NewTag('ErrorButton', 'button', PrimaryButton, is_='error-button')
 Button = NewTag('Button', bases=Button, class_='btn-outline')
 DefaultButton = NewTag('Button', bases=Button, is_='default-button')
 SecondaryButton = NewTag('SecondaryButton', bases=Button, is_='secondary-button')
