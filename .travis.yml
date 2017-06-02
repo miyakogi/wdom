@@ -2,8 +2,8 @@ sudo: false
 dist: trusty
 language: python
 python:
-  - "3.4.4"
-  - "3.5.1"
+  - "3.4"
+  - "3.5"
 
 addons:
   apt:
