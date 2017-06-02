@@ -42,6 +42,7 @@ def setUpModule():
     install_asyncio()
 
 
+@unittest.skip('Tentatively disable aiohttp')
 class TestServerTypeSet(TestCase):
     def test_server_module(self):
         from wdom.server import _tornado
