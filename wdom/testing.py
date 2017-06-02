@@ -36,7 +36,7 @@ from wdom.window import customElements
 from wdom.element import Element
 from wdom import server
 
-driver = webdriver.Firefox if 'TRAVIS' in os.environ else webdriver.Chrome
+driver = webdriver.Chrome
 local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
