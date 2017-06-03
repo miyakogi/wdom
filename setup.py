@@ -22,7 +22,7 @@ if sys.version_info < (3, 5):
 
 setup(
     name='wdom',
-    version='0.1.4',
+    version='0.1.5',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
