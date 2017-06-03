@@ -36,11 +36,31 @@ from wdom.window import customElements
 from wdom.element import Element
 from wdom import server
 
-driver = webdriver.Firefox if 'TRAVIS' in os.environ else webdriver.Chrome
+driver = webdriver.Chrome
 local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
 logger = logging.getLogger(__name__)
+
+
+def get_chromedriver_path():
+    if 'TRAVIS' in os.environ:
+        chromedriver_path = os.path.join(
+            os.environ['TRAVIS_BUILD_DIR'], 'chromedriver')
+    else:
+        chromedriver_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            'chromedriver'
+        )
+    return chromedriver_path
+
+
+# see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/
+def get_chrome_options():
+    chrome_options = webdriver.ChromeOptions()
+    if 'TRAVIS'in os.environ:
+        chrome_options.add_argument('--no-sandbox')
+    return chrome_options
 
 
 def reset():
@@ -198,7 +218,10 @@ def start_webdriver():
     """Start WebDriver and set implicit_wait if it is not started."""
     global local_webdriver
     if local_webdriver is None:
-        local_webdriver = driver()
+        local_webdriver = driver(
+            executable_path=get_chromedriver_path(),
+            chrome_options=get_chrome_options(),
+        )
         if browser_implict_wait:
             local_webdriver.implicitly_wait(browser_implict_wait)
 
@@ -259,7 +282,10 @@ def get_remote_browser():
     """Start new WebDriver for remote process."""
     global remote_webdriver
     if remote_webdriver is None:
-        remote_webdriver = driver()
+        remote_webdriver = driver(
+            executable_path=get_chromedriver_path(),
+            chrome_options=get_chrome_options(),
+        )
         if browser_implict_wait:
             remote_webdriver.implicitly_wait(browser_implict_wait)
         return remote_webdriver

@@ -25,7 +25,9 @@ APIs are same as DOM or browser JavaScript, but of course, you can write logic
 codes in python.
 
 This library includes web-server (`tornado`_/`aiohttp`_), but is not intended to
-be used as a web framework, please use for **Desktop** GUI Applications!
+be used as a web framework, please use for **Desktop** GUI Applications.
+
+.. caution:: Currently aiohttp support is disabled.
 
 Disclaimer
 ----------

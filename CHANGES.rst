@@ -3,9 +3,13 @@ Version 0.2
 
 (next version)
 
-Version 0.1.5 (not yer)
+* Drop python 3.4 support (in plan)
+
+Version 0.1.5 (2017-06-03)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Tentatively disable aiohttp
+* Catch up recent updates
 * Add Concise CSS
 
 Version 0.1.4 (2016-05-20)

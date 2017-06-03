@@ -453,8 +453,8 @@ class TestEvent(ElementTestCase, TestCase):
         self.root.appendChild(self.input)
         return self.root
 
-    @unittest.skipIf(os.environ.get('TRAVIS', False),
-                     reason='This test not pass only on travis')
+    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    #                  reason='This test not pass only on travis')
     def test_click(self):
         # need to wait some times
         self.wait(times=10)

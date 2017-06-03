@@ -42,6 +42,7 @@ def setUpModule():
     install_asyncio()
 
 
+@unittest.skip('Tentatively disable aiohttp')
 class TestServerTypeSet(TestCase):
     def test_server_module(self):
         from wdom.server import _tornado
@@ -145,11 +146,12 @@ class TestAutoShutdown(TestServerBase):
 
 
 class TestOpenBrowser(TestServerBase):
-    cmd = ['--debug', '--open-browser', '--browser', 'chrome']
+    cmd = ['--debug', '--open-browser']
 
-    @unittest.skipIf('TOX' in os.environ, 'not test browser')
+    @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
+    @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
     def test_open_browser(self):
-        time.sleep(1)
+        time.sleep(3)
         # terminate server and gett all log
         self.proc.terminate()
         log = self.proc.stdout.read()
@@ -158,11 +160,12 @@ class TestOpenBrowser(TestServerBase):
 
 
 class TestOpenBrowserFreePort(TestServerBase):
-    cmd = ['--port', '0', '--open-browser', '--browser', 'chrome']
+    cmd = ['--port', '0', '--open-browser']
 
-    @unittest.skipIf('TOX' in os.environ, 'not test browser')
+    @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
+    @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
     def test_open_browser_free_port(self):
-        time.sleep(1)
+        time.sleep(3)
         # terminate server and gett all log
         self.proc.terminate()
         log = self.proc.stdout.read()
