@@ -21,6 +21,7 @@ if False:
         v = aiohttp.__version__.split('.')
         if int(v[0]) > 0 or int(v[1]) >= 21:
             from wdom.server import _aiohttp as module
+            logger.info('Use aiohttp server')
         else:
             logger.warning(
                 'wdom requires aiohttp >= 0.21.0, but {} is installed. '
@@ -35,6 +36,7 @@ else:
 
 __all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
 _server = None
+server_config = module.server_config
 
 
 def is_connected():
@@ -102,10 +104,11 @@ def start_server(app: Optional[module.Application] = None,
     global _server
     _server = module.start_server(**kwargs)
     logger.info('Start server on {0}:{1:d}'.format(
-        _server.address, _server.port))
+        server_config['address'], server_config['port']))
 
     if config.open_browser:
-        open_browser('http://{}:{}/'.format(_server.address, _server.port),
+        open_browser('http://{}:{}/'.format(server_config['address'],
+                                            server_config['port']),
                      browser or config.browser)
     return _server
 

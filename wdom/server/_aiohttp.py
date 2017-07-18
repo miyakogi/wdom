@@ -15,6 +15,7 @@ from wdom.server.handler import on_websocket_message
 logger = logging.getLogger(__name__)
 connections = []
 _access_log_format = '%s %r (%a) %D us'
+server_config = dict()
 
 
 def is_connected():
@@ -163,10 +164,10 @@ def start_server(app: Optional[web.Application] = None,
                                access_log_format=_access_log_format)
     f = loop.create_server(handler, address, port)
     server = loop.run_until_complete(f)
-    server.app = app
-    server.handler = handler
-    server.port = server.sockets[-1].getsockname()[1]
-    server.address = address or 'localhost'
+    server_config['app'] = app
+    server_config['handler'] = handler
+    server_config['port'] = server.sockets[-1].getsockname()[1]
+    server_config['address'] = address or 'localhost'
     global main_server
     main_server = server
 
@@ -179,9 +180,9 @@ def terminate_server(server: asyncio.base_events.Server):
     logger.info('Start server shutdown')
     server.close()
     yield from server.wait_closed()
-    yield from server.app.shutdown()
-    yield from server.handler.finish_connections(1.0)
-    yield from server.app.cleanup()
+    yield from server_config['app'].shutdown()
+    yield from server_config['handler'].finish_connections(1.0)
+    yield from server_config['app'].cleanup()
     logger.info('Server terminated')
 
 

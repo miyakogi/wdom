@@ -17,6 +17,7 @@ from wdom.server.handler import on_websocket_message
 logger = logging.getLogger(__name__)
 install_asyncio()
 connections = []
+server_config = dict()
 
 
 def is_connected():
@@ -167,10 +168,10 @@ def start_server(app: web.Application = None, port: int = None,
 
     server = app.listen(port, address=address)
     app.server = server
-    server.address = address
+    server_config['address'] = address
     for sock in server._sockets.values():
         if sock.family == socket.AF_INET:
-            server.port = sock.getsockname()[1]
+            server_config['port'] = sock.getsockname()[1]
             break
     return server
 

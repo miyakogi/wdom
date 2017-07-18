@@ -41,6 +41,7 @@ local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
 logger = logging.getLogger(__name__)
+server_config = server.server_config
 
 
 def get_chromedriver_path():
@@ -146,7 +147,7 @@ class HTTPTestCase(TestCase):
         """
         with self.assertLogs('wdom', 'INFO'):
             self.server = server.start_server(port=0)
-        self.port = self.server.port
+        self.port = server_config['port']
         self.url = 'http://localhost:{}'.format(self.port)
         self.ws_url = 'ws://localhost:{}'.format(self.port)
         self._server_started = True
@@ -465,7 +466,7 @@ class RemoteBrowserTestCase:
         except OSError:
             self.wait(0.2)
             self.server = server.start_server(port=0)
-        self.address = self.server.address
+        self.address = server_config['address']
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
         self.browser.get(self.url)
         self.wait_until(lambda: server.is_connected())
@@ -480,7 +481,7 @@ class RemoteBrowserTestCase:
     @property
     def port(self) -> int:
         """Get port of the server."""
-        return self.server.port
+        return server_config['port']
 
     def wait(self, timeout: float = None, times: int = 1):
         """Wait for ``timeout`` seconds.
