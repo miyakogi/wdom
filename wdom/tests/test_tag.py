@@ -263,6 +263,11 @@ class TestTag(TestCase):
         clone = self.tag.cloneNode(deep=True)
         self._test_deep_copy(clone)
 
+    def test_clone_style(self):
+        self.tag.style = 'color: red;'
+        clone = self.tag.cloneNode()
+        self.assertEqual(clone.html, self.tag.html)
+
     def test_siblings(self):
         self.tag.appendChild(self.c1)
         self.tag.appendChild(self.c2)

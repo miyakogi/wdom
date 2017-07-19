@@ -576,6 +576,11 @@ class TestElement(TestCase):
         self.assertTrue(self.c1.getAttribute('src'), 'a')
         self.assertTrue(clone.firstChild.getAttribute('src'), 'b')
 
+    def test_clone_style(self):
+        self.elm.setAttribute('style', 'color: red;')
+        clone = self.elm.cloneNode()
+        self.assertEqual(clone.html, self.elm.html)
+
     def test_init_class(self):
         elm = Element('a', class_='a')
         self.assertEqual(elm.html, '<a class="a"></a>')

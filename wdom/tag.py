@@ -98,6 +98,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
             clone.setAttribute(attr, self.getAttribute(attr))
         for c in self.classList:
             clone.addClass(c)
+        clone.style.update(self.style)
         return clone
 
     def getAttribute(self, attr: str) -> str:
