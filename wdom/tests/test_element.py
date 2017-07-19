@@ -754,7 +754,7 @@ class TestHTMLElement(TestCase):
     def test_draggable(self):
         n = HTMLElement('img')
         n.draggable = True
-        self.assertEqual(n.start_tag, '<img draggable>')
+        self.assertEqual(n.start_tag, '<img draggable="true">')
 
     def test_hidden(self):
         n = HTMLElement('img')
@@ -833,22 +833,22 @@ class TestHTMLElement(TestCase):
         self.elm.draggable = True
         self.elm.hidden = True
         clone = self.elm.cloneNode()
-        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        self.assertEqual(clone.html, '<a draggable="true" hidden></a>')
         self.elm.hidden = False
-        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        self.assertEqual(clone.html, '<a draggable="true" hidden></a>')
         clone.draggable = False
-        self.assertEqual(self.elm.html, '<a draggable></a>')
+        self.assertEqual(self.elm.html, '<a draggable="true"></a>')
         self.assertEqual(clone.html, '<a hidden></a>')
 
     def test_attr_clone_deep(self):
         self.elm.draggable = True
         self.elm.hidden = True
         clone = self.elm.cloneNode(deep=True)
-        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        self.assertEqual(clone.html, '<a draggable="true" hidden></a>')
         self.elm.hidden = False
-        self.assertEqual(clone.html, '<a draggable hidden></a>')
+        self.assertEqual(clone.html, '<a draggable="true" hidden></a>')
         clone.draggable = False
-        self.assertEqual(self.elm.html, '<a draggable></a>')
+        self.assertEqual(self.elm.html, '<a draggable="true"></a>')
         self.assertEqual(clone.html, '<a hidden></a>')
 
 

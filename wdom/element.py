@@ -165,6 +165,13 @@ class Attr:
         return self.name.lower() == 'id'
 
 
+class DraggableAttr(Attr):
+    @property
+    def html(self) -> str:
+        val = 'true' if self.value else 'false'
+        return 'draggable="{}"'.format(val)
+
+
 class NamedNodeMap:
     def __init__(self, owner):
         self._owner = owner
@@ -472,7 +479,11 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
                     self._elements_with_id.pop(self.id, None)
                 # register this elements with new id
                 self._elements_with_id[value] = self
-            new_attr_node = Attr(attr, value)
+            if attr == 'draggable':
+                attr_cls = DraggableAttr
+            else:
+                attr_cls = Attr
+            new_attr_node = attr_cls(attr, value)
             self.setAttributeNode(new_attr_node)
 
     def setAttribute(self, attr: str, value: Union[str, bool]):
@@ -522,7 +533,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
 class HTMLElement(Element):
     _special_attr_string = ['title', 'type']
-    _special_attr_boolean = ['draggable', 'hidden']
+    _special_attr_boolean = ['hidden']
 
     def __init__(self, *args, style: str=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -564,6 +575,20 @@ class HTMLElement(Element):
             self._style.update()
         else:
             raise TypeError('Invalid type for style: {}'.format(type(style)))
+
+    @property
+    def draggable(self) -> bool:
+        if not self.hasAttribute('draggable'):
+            return False
+        else:
+            return self.getAttribute('draggable')
+
+    @draggable.setter
+    def draggable(self, val: bool):
+        if val:
+            self.setAttribute('draggable', val)
+        else:
+            self.removeAttribute('draggable')
 
     def getAttribute(self, attr: str) -> str:
         if attr == 'style':
