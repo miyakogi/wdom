@@ -148,8 +148,8 @@ class TestAutoShutdown(TestServerBase):
 class TestOpenBrowser(TestServerBase):
     cmd = ['--debug', '--open-browser']
 
-    @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
-    @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
+    @unittest.skipIf(os.getenv('TOX', False), 'Not test browser on TOX')
+    @unittest.skipIf(os.getenv('TRAVIS', False), 'Not test browser on TRAVIS')
     def test_open_browser(self):
         time.sleep(3)
         # terminate server and gett all log
@@ -162,8 +162,8 @@ class TestOpenBrowser(TestServerBase):
 class TestOpenBrowserFreePort(TestServerBase):
     cmd = ['--port', '0', '--open-browser']
 
-    @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
-    @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
+    @unittest.skipIf(os.getenv('TOX', False), 'Not test browser on TOX')
+    @unittest.skipIf(os.getenv('TRAVIS', False), 'Not test browser on TRAVIS')
     def test_open_browser_free_port(self):
         time.sleep(3)
         # terminate server and gett all log

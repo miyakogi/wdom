@@ -28,7 +28,7 @@ def tearDownModule():
 
 
 class ElementTestCase(RemoteBrowserTestCase):
-    if os.environ.get('TRAVIS', False):
+    if os.getenv('TRAVIS', False):
         wait_time = 0.1
 
     def setUp(self):
@@ -453,7 +453,7 @@ class TestEvent(ElementTestCase, TestCase):
         self.root.appendChild(self.input)
         return self.root
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    # @unittest.skipIf(os.getenv('TRAVIS', False),
     #                  reason='This test not pass only on travis')
     def test_click(self):
         # need to wait some times

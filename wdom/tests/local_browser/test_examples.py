@@ -46,7 +46,7 @@ class TestDataBinding(WebDriverTestCase, TestCase):
         document.body.prepend(sample_app())
         self.start()
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    # @unittest.skipIf(os.getenv('TRAVIS', False),
     #                  reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
@@ -73,7 +73,7 @@ class TestRevText(WebDriverTestCase, TestCase):
         document.body.prepend(sample_app())
         self.start()
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    # @unittest.skipIf(os.getenv('TRAVIS', False),
     #                  reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
@@ -101,7 +101,7 @@ class TestTimer(WebDriverTestCase, TestCase):
         document.body.prepend(sample_app())
         self.start()
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
+    # @unittest.skipIf(os.getenv('TRAVIS', False),
     #                  reason='This test not pass only on travis')
     def test_timer(self):
         view = self.wd.find_element_by_tag_name('h1')
