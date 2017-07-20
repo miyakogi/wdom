@@ -4,6 +4,7 @@
 import logging
 from collections import Iterable
 from typing import Tuple, Union
+from types import new_class
 
 from wdom.node import Node
 from wdom.element import DOMTokenList, ElementMeta
@@ -255,7 +256,7 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
     '''
     if tag is None:
         tag = class_name.lower()
-    if type(bases) is not tuple:
+    if not isinstance(type, tuple):
         if isinstance(bases, Iterable):
             bases = tuple(bases)
         elif isinstance(bases, type):
@@ -263,7 +264,9 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
         else:
             TypeError('Invalid base class: {}'.format(str(bases)))
     kwargs['tag'] = tag
-    cls = type(class_name, bases, kwargs)
+    # Here not use type() function, since it does not support
+    # metaclasss (__prepare__) properly.
+    cls = new_class(class_name, bases, {}, lambda ns: ns.update(kwargs))
     return cls
 
 
