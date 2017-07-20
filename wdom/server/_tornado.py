@@ -65,6 +65,17 @@ class WSHandler(websocket.WebSocketHandler):
             asyncio.ensure_future(self.terminate())
 
 
+class StaticFileHandlerNoCache(web.StaticFileHandler):
+    def set_extra_headers(self, path):
+        self.set_header('Cache-control', 'no-cache')
+
+
+if config.debug:
+    StaticFileHandler = StaticFileHandlerNoCache
+else:
+    StaticFileHandler = web.StaticFileHandler
+
+
 class Application(web.Application):
     """Application for a tornado web server.
 
@@ -78,7 +89,6 @@ class Application(web.Application):
             *args,
             debug=config.debug,
             autoreload=False,
-            static_hash_cashe=False,
             compiled_template_cashe=False,
             **kwargs
         )
@@ -116,7 +126,7 @@ class Application(web.Application):
             pattern = pattern + '/(.*)'
         self.add_handlers(
             r'.*',  # add static path for all virtual host
-            [(pattern, web.StaticFileHandler, dict(path=path))]
+            [(pattern, StaticFileHandler, dict(path=path))]
         )
 
     def add_favicon_path(self, path: str):
@@ -127,7 +137,7 @@ class Application(web.Application):
         """
         spec = web.URLSpec(
             '/(favicon.ico)',
-            web.StaticFileHandler,
+            StaticFileHandler,
             dict(path=path)
         )
         # Need some check
