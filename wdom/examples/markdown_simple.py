@@ -8,8 +8,9 @@ from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name
 
 from wdom.document import get_document
+from wdom.node import RawHtml
 from wdom.themes.bootstrap3 import css_files, js_files
-from wdom.themes.bootstrap3 import Div, TextArea, Col6, Row, H1, Hr
+from wdom.themes.bootstrap3 import Div, Textarea, Col6, Row, H1, Hr
 from wdom.themes.bootstrap3 import Select, Option, Style
 
 
@@ -39,28 +40,28 @@ class HighlighterRenderer(m.HtmlRenderer):
 class Editor(Row):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.md = m.Markdown(HighlighterRenderer(), extensions=('fenced-code',))
+        self.md = m.Markdown(HighlighterRenderer(),
+                             extensions=('fenced-code',))
         self.css = Style(parent=self)
 
         self.setAttribute('style', 'height: 80vh;')
         editor_col = Col6(parent=self)
-        self.editor = TextArea(parent=editor_col)
+        self.editor = Textarea(parent=editor_col)
         self.editor.setAttribute('style', 'height: 80vh')
 
         viewer_col = Col6(parent=self)
 
-        style_selector = Select(parent=viewer_col)
+        self.style_selector = Select()
         styles = sorted(get_all_styles())
         styles.remove('default')
-        style_selector.appendChild(
+        self.style_selector.appendChild(
             Option('default', value='default', selected=True))
         for style in styles:
-            style_selector.appendChild(Option(style, value=style))
-        style_selector.addEventListener(
-            'change', lambda event: self.set_style(
-                event.currentTarget['value']))
+            self.style_selector.appendChild(Option(style, value=style))
+        self.style_selector.addEventListener(
+            'change', lambda event: self.set_style(event.currentTarget.value))
 
-        self.viewer = Div(parent=viewer_col)
+        self.viewer = Div()
         self.viewer.setAttribute(
             'style',
             '''
@@ -72,17 +73,22 @@ class Editor(Row):
             ''',
         )
 
+        viewer_col.appendChild(self.style_selector)
+        viewer_col.appendChild(self.viewer)
+
         self.editor.addEventListener('input', self.render)
         self.editor.addEventListener('change', self.render)
 
         self.set_style('default')
         self.editor.textContent = src
-        self.viewer.innerHTML = self.md(src)
+        self.viewer.appendChild(RawHtml(self.md(src)))
 
     def render(self, event):
-        self.viewer.innerHTML = self.md(event.currentTarget['value'])
+        content = event.currentTarget.textContent
+        self.viewer.empty()
+        self.viewer.appendChild(RawHtml(self.md(content)))
 
-    def set_style(self, style:str):
+    def set_style(self, style: str):
         self.css.innerHTML = HtmlFormatter(style=style).get_style_defs()
 
 
@@ -98,3 +104,15 @@ def sample_page(**kwargs):
     app.appendChild(Hr())
     app.appendChild(Editor())
     return doc
+
+
+if __name__ == '__main__':
+    import asyncio
+    from wdom import server
+    sample_page()
+    server.start_server()
+    try:
+        asyncio.get_event_loop().run_forever()
+    except KeyboardInterrupt:
+        pass
+    server.stop_server()
