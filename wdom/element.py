@@ -168,7 +168,10 @@ class Attr:
 class DraggableAttr(Attr):
     @property
     def html(self) -> str:
-        val = 'true' if self.value else 'false'
+        if isinstance(self.value, bool):
+            val = 'true' if self.value else 'false'
+        else:
+            val = self.value
         return 'draggable="{}"'.format(val)
 
 
@@ -585,10 +588,10 @@ class HTMLElement(Element):
 
     @draggable.setter
     def draggable(self, val: bool):
-        if val:
-            self.setAttribute('draggable', val)
-        else:
+        if val is False:
             self.removeAttribute('draggable')
+        else:
+            self.setAttribute('draggable', val)
 
     def getAttribute(self, attr: str) -> str:
         if attr == 'style':
