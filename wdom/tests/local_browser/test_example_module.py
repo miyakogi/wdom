@@ -5,7 +5,6 @@ import sys
 import os
 import subprocess
 import time
-import unittest
 
 from selenium.webdriver.common.utils import free_port
 

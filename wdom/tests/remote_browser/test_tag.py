@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import unittest
 
 from selenium.common.exceptions import NoSuchElementException
 

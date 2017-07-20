@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
-import unittest
-
 from selenium.webdriver.common.keys import Keys
 
 from wdom.tag import H1

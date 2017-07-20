@@ -809,7 +809,7 @@ class TestHTMLElement(TestCase):
         self.elm.style.background = 'red'
         # py34 does not keep style order
         self.assertEqual(self.elm.style.cssText,
-                        'color: black; background: red;')
+                         'color: black; background: red;')
 
     def test_style_remove(self):
         self.elm.style = 'color: red;'

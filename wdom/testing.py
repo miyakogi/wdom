@@ -56,7 +56,7 @@ def get_chromedriver_path():
     return chromedriver_path
 
 
-# see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/
+# see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/  # noqa
 def get_chrome_options():
     chrome_options = webdriver.ChromeOptions()
     if 'TRAVIS'in os.environ:
@@ -312,8 +312,8 @@ class BrowserController:
     def set_element_by_id(self, id):
         """Find element with ``id`` and set it to element property.
 
-        When successfully find the element, send ``True``. If failed to find the
-        element, send message ``Error NoSuchElement: {{ id }}``.
+        When successfully find the element, send ``True``. If failed to find
+        the element, send message ``Error NoSuchElement: {{ id }}``.
         """
         try:
             self.element = self.wd.find_element_by_css_selector(

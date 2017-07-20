@@ -57,7 +57,8 @@ class WSHandler:
             msg = yield from self.ws.receive()
             if msg.tp == WSMsgType.text:
                 yield from self.on_message(msg.data)
-            elif msg.tp in (WSMsgType.close, WSMsgType.closed, WSMsgType.error):
+            elif msg.tp in (WSMsgType.close, WSMsgType.closed,
+                            WSMsgType.error):
                 yield from self.ws.close()
         self.on_close()
         return self.ws

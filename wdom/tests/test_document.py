@@ -60,7 +60,7 @@ class TestMainDocument(TestCase):
             '\s*<title rimo_id="\d+">'
             '\s*W-DOM'
             '\s*</title>'
-            '(\s*<script( type="text/javascript"| rimo_id="\d+"){2}>.*?</script>)?'
+            '(\s*<script( type="text/javascript"| rimo_id="\d+"){2}>.*?</script>)?'  # noqa
             '\s*</head>'
             '\s*<body rimo_id="\d+">'
             '\s*<script( type="text/javascript"| rimo_id="\d+"){2}>'

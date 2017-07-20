@@ -11,7 +11,7 @@ from tornado import websocket
 from tornado.httpserver import HTTPServer
 
 from wdom.options import config
-from wdom.misc import install_asyncio, static_dir
+from wdom.misc import install_asyncio
 from wdom.server.handler import on_websocket_message
 
 logger = logging.getLogger(__name__)
