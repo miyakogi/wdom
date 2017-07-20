@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import misaka as m
+try:
+    import misaka as m
+except ImportError:
+    print('ERROR: Install `misaka` before run this example, '
+          'by `pip install misaka`.')
+    exit()
 from pygments import highlight
 from pygments.styles import get_all_styles
 from pygments.formatters import HtmlFormatter
