@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Python Classes and Extensions of WDOM &mdash; WDOM 0.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/slex.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="WDOM 0.1.5 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="index.html" />
+    <link rel="next" title="Loading Static Contents" href="load_resource.html" />
+    <link rel="prev" title="Basic DOM Features" href="dom.html" />
+  <!-- font -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- Style -->
+  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
+  
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+
+  </head>
+  <body role="document">
+  <div class="document"> 
+    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebarwrapper">
+
+  <h1 class="logo"><a href="../index.html">WDOM</a></h1>
+
+
+
+  <p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+  
+    
+      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
+        <img class="github-mark" src="../_static/GitHub-Mark-64px.png">
+      </a>
+    
+  
+
+
+
+
+
+<h3>Contents</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dom.html">Basic DOM Features</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Python Classes and Extensions of WDOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_resource.html">Loading Static Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_features.html">Newest DOM Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theming.html">Theming with CSS Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freezing.html">Freezing Application</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changes</a></li>
+</ul>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">User Guide</a><ul>
+      <li>Previous: <a href="dom.html" title="previous chapter">Basic DOM Features</a></li>
+      <li>Next: <a href="load_resource.html" title="next chapter">Loading Static Contents</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div class="searchbox" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div class="search-container">
+        <input class="form-control control search-input" type="text" name="q" />
+        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </div>
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+      </div>
+    </div> 
+      <div class="documentwrapper">
+        <div class="body" role="main">
+          
+  <div class="section" id="python-classes-and-extensions-of-wdom">
+<h1>Python Classes and Extensions of WDOM<a class="headerlink" href="#python-classes-and-extensions-of-wdom" title="Permalink to this headline">¶</a></h1>
+<p>Generating new elements by <code class="docutils literal"><span class="pre">document.createElement</span></code> every time is quite mess.
+So WDOM’s <code class="docutils literal"><span class="pre">wdom.tag</span></code> module provides simple tag classes usually used.</p>
+<p>By using tag classes, the previous example can be written as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Div</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">Input</span>
+
+<span class="k">class</span> <span class="nc">MyElement</span><span class="p">(</span><span class="n">Div</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;Hello, WDOM&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">h1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">MyElement</span><span class="p">())</span>
+    <span class="n">server</span> <span class="o">=</span> <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Instead of using <code class="docutils literal"><span class="pre">document.createElement</span></code>, in the above example is using
+<code class="docutils literal"><span class="pre">H1</span></code> class and <code class="docutils literal"><span class="pre">Input</span></code> class to generate h1 element and input element.
+Furthermore, <code class="docutils literal"><span class="pre">MyElement</span></code> class inherits <code class="docutils literal"><span class="pre">Div</span></code> class. Its instance is
+rendered as <code class="docutils literal"><span class="pre">div</span></code> element, or <code class="docutils literal"><span class="pre">&lt;div&gt;</span></code> tag on a browser. These instances are
+same as instances generated by <code class="docutils literal"><span class="pre">document.createElement</span></code> method.</p>
+<p>Names of pre-defined classes on <code class="docutils literal"><span class="pre">wdom.tag</span></code> module are same as related tag
+names, starting with upper-case and followed by lower-case.
+For example, <code class="docutils literal"><span class="pre">&lt;button&gt;</span></code> tag is <code class="docutils literal"><span class="pre">Button</span></code> class, <code class="docutils literal"><span class="pre">&lt;br&gt;</span></code> tag is <code class="docutils literal"><span class="pre">Br</span></code> class,
+and <code class="docutils literal"><span class="pre">&lt;textarea&gt;</span></code> tag is <code class="docutils literal"><span class="pre">Textarea</span></code>.</p>
+<p>Actual HTML strings can be obtained by <code class="docutils literal"><span class="pre">html</span></code> property of each elements.
+For example, <code class="docutils literal"><span class="pre">print(MyElement().html)</span></code> shows</p>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">rimo_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">rimo_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;&lt;</span><span class="nt">h1</span> <span class="na">rimo_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;</span>Hello, WDOM<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">rimo_id</span></code> attribute is used internally.
+If you want to omit it for tests, use <code class="docutils literal"><span class="pre">html_noid</span></code> property instead</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">MyElement</span><span class="p">()</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>
+<span class="c1"># -&gt; &lt;div&gt;&lt;input&gt;&lt;h1&gt;Hello, WDOM&lt;/h1&gt;&lt;/div&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="append-to-parent-node">
+<h2>Append to Parent Node<a class="headerlink" href="#append-to-parent-node" title="Permalink to this headline">¶</a></h2>
+<p>By using <code class="docutils literal"><span class="pre">parent</span></code> argument of constructor, newly generated elements will be
+automatically appended to the parent node.
+Using this, the above example can be written as:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Div</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">Input</span>
+
+<span class="k">class</span> <span class="nc">MyElement</span><span class="p">(</span><span class="n">Div</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;Hello, WDOM&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">MyElement</span><span class="p">())</span>
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>At the line <code class="docutils literal"><span class="pre">self.h1</span> <span class="pre">=</span> <span class="pre">H1(parent=self)</span></code>, new <code class="docutils literal"><span class="pre">h1</span></code> element is automatically
+appended to <code class="docutils literal"><span class="pre">self</span></code> as its child node.</p>
+</div>
+<div class="section" id="append-child-nodes">
+<h2>Append Child Nodes<a class="headerlink" href="#append-child-nodes" title="Permalink to this headline">¶</a></h2>
+<p>In the other way, child nodes can be appended on generation.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Div</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">Input</span>
+
+<span class="k">class</span> <span class="nc">MyElement</span><span class="p">(</span><span class="n">Div</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">(</span><span class="s1">&#39;Hello, WDOM&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">MyElement</span><span class="p">())</span>
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>At the <code class="docutils literal"><span class="pre">self.h1</span> <span class="pre">=</span> <span class="pre">H1('Hello,</span> <span class="pre">WDOM',</span> <span class="pre">parent=self)</span></code>, the first argument is
+converted to Text Node and appended to the newly generated <code class="docutils literal"><span class="pre">h1</span></code> element.
+With multiple arguments, more than one child node can be appended, like
+<code class="docutils literal"><span class="pre">H1(H2(),</span> <span class="pre">P(),</span> <span class="pre">...)</span></code>.</p>
+</div>
+<div class="section" id="initialization-with-attributes">
+<h2>Initialization with Attributes<a class="headerlink" href="#initialization-with-attributes" title="Permalink to this headline">¶</a></h2>
+<p>Attributes are also able to be defined with keyword arguments on the
+constructor.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Input</span>
+
+<span class="nb">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="s1">&#39;checkbox&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>  <span class="c1"># &lt;input type=&quot;checkbox&quot;&gt;</span>
+
+<span class="c1"># this is equivalent to:</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
+<span class="nb">input</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="s1">&#39;checkbox&#39;</span><span class="p">)</span>
+<span class="c1"># also same as:</span>
+<span class="nb">input</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;checkbox&#39;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">class</span></code> is a python’s keyword, so use <code class="docutils literal"><span class="pre">class_</span></code> (trailing underscore) instead.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">H1</span>
+
+<span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">(</span><span class="n">class_</span><span class="o">=</span><span class="s1">&#39;title&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">h1</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>  <span class="c1"># &lt;h1 class=&quot;title&quot;&gt;&lt;/h1&gt;</span>
+
+<span class="c1"># this is equivalent to:</span>
+<span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">()</span>
+<span class="n">h1</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">)</span>
+<span class="c1"># also same as:</span>
+<span class="n">h1</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">)</span>
+<span class="c1"># classList.add accepts mutliple arguments</span>
+<span class="n">h1</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;heading&#39;</span><span class="p">,</span> <span class="s1">&#39;...&#39;</span><span class="p">,</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="default-class-attribute">
+<h2>Default Class Attribute<a class="headerlink" href="#default-class-attribute" title="Permalink to this headline">¶</a></h2>
+<p>User-defined class can have default class attributes.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Button</span>
+
+<span class="k">class</span> <span class="nc">MyButton</span><span class="p">(</span><span class="n">Button</span><span class="p">):</span>
+    <span class="n">class_</span> <span class="o">=</span> <span class="s1">&#39;btn&#39;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">MyButton</span><span class="p">()</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>
+<span class="c1"># &lt;button class=&quot;btn&quot;&gt;&lt;/button&gt;</span>
+
+<span class="c1"># This is almost same as:</span>
+<span class="k">class</span> <span class="nc">MyButton2</span><span class="p">(</span><span class="n">Button</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="s1">&#39;btn&#39;</span><span class="p">)</span>
+        <span class="o">...</span>
+
+<span class="c1"># class-level classes are not able to remove from instance</span>
+<span class="n">btn</span> <span class="o">=</span> <span class="n">MyButton</span><span class="p">()</span>
+<span class="n">btn</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;btn&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">btn</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>  <span class="c1"># &lt;button class=&quot;btn&quot;&gt;&lt;/button&gt;</span>
+
+<span class="n">btn2</span> <span class="o">=</span> <span class="n">MyButton2</span><span class="p">()</span>
+<span class="n">btn2</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">&#39;btn&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">btn2</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>  <span class="c1"># &lt;button&gt;&lt;/button&gt;</span>
+
+<span class="c1"># Inherited class_ not overrides super-classes class_</span>
+<span class="k">class</span> <span class="nc">DefaultButton</span><span class="p">(</span><span class="n">MyButton</span><span class="p">):</span>
+    <span class="n">class_</span> <span class="o">=</span> <span class="s1">&#39;btn-default&#39;</span>
+
+<span class="n">db</span> <span class="o">=</span> <span class="n">DefaultButton</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">db</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>  <span class="c1"># &lt;button class=&quot;btn btn-default&quot;&gt;&lt;/button&gt;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">class_</span></code> class-variable is added to the instance. This attribute cannot be
+removed at its instance and it is inherited to the subclasses. If you don’t want
+to inherit parent’s class attributes, add <code class="docutils literal"><span class="pre">inherit_class</span> <span class="pre">=</span> <span class="pre">False</span></code> as a class
+variable.</p>
+</div>
+<div class="section" id="shortcut-of-class-definition">
+<h2>Shortcut of Class Definition<a class="headerlink" href="#shortcut-of-class-definition" title="Permalink to this headline">¶</a></h2>
+<p>Defining lots of similar classes by <code class="docutils literal"><span class="pre">class</span></code> statement is quite mess.
+WDOM provides <code class="docutils literal"><span class="pre">wdom.tag.NewTagClass</span></code> function to make new user-defined
+classes.</p>
+<p><code class="docutils literal"><span class="pre">MyButton</span></code> class and <code class="docutils literal"><span class="pre">DefaultButton</span></code> class defined in the above example can
+be defined simply by using <code class="docutils literal"><span class="pre">NewTagClass</span></code> function as below:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">NewTagClass</span>
+
+<span class="c1"># Making new class easily</span>
+<span class="n">MyButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;MyButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s1">&#39;btn&#39;</span><span class="p">)</span>
+<span class="n">DefaultButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;DefaultButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">MyButton</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s1">&#39;btn-default&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">MyButton</span><span class="p">()</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">DefaultButton</span><span class="p">()</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first argument is a name of new class, the second is a tag name, the third
+is a base class, and the firth and other keyword arguments are class-variables
+of the new class.
+To inherit multiple classes, use tuple at the third argument.</p>
+<p>These features are not DOM standard and specially defined for WDOM.</p>
+</div>
+<div class="section" id="execute-javascript-on-browser">
+<h2>Execute JavaScript on Browser<a class="headerlink" href="#execute-javascript-on-browser" title="Permalink to this headline">¶</a></h2>
+<p>(to be written)</p>
+</div>
+</div>
+
+
+        </div>
+      </div>
+  </div>
+  <div class="footer">
+    &copy;2016, Hiroyuki Takagi.
+    
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      
+    
+      |
+      <a href="../_sources/guide/wdom.md.txt" rel="nofollow">Page source</a>
+  </div>
+
+  
+    <a href="https://github.com/miyakogi/wdom" class="github">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+  
+
+  
+
+  </body>
+</html>

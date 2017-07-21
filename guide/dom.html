@@ -1,0 +1,403 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Basic DOM Features &mdash; WDOM 0.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/slex.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="WDOM 0.1.5 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="index.html" />
+    <link rel="next" title="Python Classes and Extensions of WDOM" href="wdom.html" />
+    <link rel="prev" title="User Guide" href="index.html" />
+  <!-- font -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- Style -->
+  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
+  
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+
+  </head>
+  <body role="document">
+  <div class="document"> 
+    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebarwrapper">
+
+  <h1 class="logo"><a href="../index.html">WDOM</a></h1>
+
+
+
+  <p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+  
+    
+      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
+        <img class="github-mark" src="../_static/GitHub-Mark-64px.png">
+      </a>
+    
+  
+
+
+
+
+
+<h3>Contents</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Basic DOM Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdom.html">Python Classes and Extensions of WDOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_resource.html">Loading Static Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_features.html">Newest DOM Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theming.html">Theming with CSS Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freezing.html">Freezing Application</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changes</a></li>
+</ul>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">User Guide</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">User Guide</a></li>
+      <li>Next: <a href="wdom.html" title="next chapter">Python Classes and Extensions of WDOM</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div class="searchbox" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div class="search-container">
+        <input class="form-control control search-input" type="text" name="q" />
+        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </div>
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+      </div>
+    </div> 
+      <div class="documentwrapper">
+        <div class="body" role="main">
+          
+  <div class="section" id="basic-dom-features">
+<h1>Basic DOM Features<a class="headerlink" href="#basic-dom-features" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="first-example">
+<h2>First Example<a class="headerlink" href="#first-example" title="Permalink to this headline">¶</a></h2>
+<p>Program to show <code class="docutils literal"><span class="pre">&quot;Hello,</span> <span class="pre">WDOM&quot;</span></code> on browser is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">)</span>
+    <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;Hello, WDOM&#39;</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
+
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Save and execute code and access <code class="docutils literal"><span class="pre">http://localhost:8888</span></code> by browser.
+Then, web page with <code class="docutils literal"><span class="pre">&quot;Hello,</span> <span class="pre">WDOM&quot;</span></code> will be shown.</p>
+<p>The four lines beginning from <code class="docutils literal"><span class="pre">document</span> <span class="pre">=</span> <span class="pre">get_document()</span></code> are very similar to
+JavaScript.
+<code class="docutils literal"><span class="pre">document</span></code> returned by <code class="docutils literal"><span class="pre">get_document()</span></code> is a Document Node, equivalent to
+<code class="docutils literal"><span class="pre">document</span></code> object in JavaScript on browsers.
+<code class="docutils literal"><span class="pre">document.createElement('{tag-name}')</span></code> generates new element with the given
+tag-name.
+<code class="docutils literal"><span class="pre">appendChild</span></code> method inserts the child node at the last of its child nodes.
+Not used in the sample code, by using <code class="docutils literal"><span class="pre">removeChild</span></code> method, one can remove the
+child node.</p>
+</div>
+<div class="section" id="model-of-wdom-elements">
+<h2>Model of WDOM Elements<a class="headerlink" href="#model-of-wdom-elements" title="Permalink to this headline">¶</a></h2>
+<p>GUI elements of the WDOM are composed of HTML tags (elements or nodes) on a
+browser.
+Usually they have one-by-one relationships:
+thus <code class="docutils literal"><span class="pre">document.createElement('h1')</span></code> returns one WDOM element, and it is
+rendered as an <code class="docutils literal"><span class="pre">&lt;h1&gt;</span></code> tag on a browser.
+All WDOM elements have their own HTML representations, which can be obtained by
+their <code class="docutils literal"><span class="pre">html</span></code> property.</p>
+<p>Elements created by WDOM are all based on <a class="reference external" href="https://dom.spec.whatwg.org/">DOM Living
+Standard</a> and related standards (<a class="reference external" href="https://html.spec.whatwg.org/multipage/">HTML Living
+Standard</a>, <a class="reference external" href="https://drafts.csswg.org/cssom/">CSS Object
+Model</a>, <a class="reference external" href="https://w3c.github.io/DOM-Parsing/">DOM
+Parsing</a>, and <a class="reference external" href="http://w3c.github.io/webcomponents/spec/custom/">Custom Elements in
+WebComponents</a>).</p>
+<p>As elements are modeled by DOM, you can add/remove/replace them as same as the
+way in JavaScript on browsers. Currently, not all of DOM features have been
+implemented in WDOM, but lots of frequently-used methods/properties are
+available. Implemented features are listed in <a class="reference external" href="https://github.com/miyakogi/wdom/wiki/Features">wiki pages at
+gihub</a>.</p>
+<div class="section" id="create-new-element">
+<h3>Create New Element<a class="headerlink" href="#create-new-element" title="Permalink to this headline">¶</a></h3>
+<p>To make elements, WDOM provides two methods.</p>
+<p>One is <code class="docutils literal"><span class="pre">document.createElement</span></code> mentioned above, and the other is to
+instantiate classes defined in <code class="docutils literal"><span class="pre">wdom.tag</span></code> module. For details about the
+<code class="docutils literal"><span class="pre">wdom.tag</span></code> module, see <a class="reference internal" href="wdom.html"><span class="doc">Python Classes and Extensions of WDOM</span></a> section.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Every element does not appear on browser until inserted to the DOM
+tree which roots on the document node returned by <code class="docutils literal"><span class="pre">get_document()</span></code>.</p>
+</div>
+</div>
+<div class="section" id="append-insert-node">
+<h3>Append/Insert Node<a class="headerlink" href="#append-insert-node" title="Permalink to this headline">¶</a></h3>
+<p>To insert nodes on the DOM tree, use <code class="docutils literal"><span class="pre">appendChild</span></code> or <code class="docutils literal"><span class="pre">insertBefore</span></code> method.
+<code class="docutils literal"><span class="pre">A.appendChild(B)</span></code> append the node B at last of child nodes of the parent node A.
+<code class="docutils literal"><span class="pre">A.insertBefore(B,</span> <span class="pre">C)</span></code> inserts new element B just before the reference node C.
+The reference node C must be a child node of the parent node A.</p>
+<p>These method names are quite long, so some methods specified in <a class="reference external" href="https://dom.spec.whatwg.org/">DOM
+specification</a> are also available on WDOM: <code class="docutils literal"><span class="pre">prepend</span></code>, <code class="docutils literal"><span class="pre">append</span></code>, <code class="docutils literal"><span class="pre">before</span></code>,
+<code class="docutils literal"><span class="pre">after</span></code>, and <code class="docutils literal"><span class="pre">replaceWith</span></code>. Details about these methods are described in
+<a class="reference internal" href="new_features.html"><span class="doc">Newest DOM Features</span></a> section.</p>
+</div>
+<div class="section" id="remove-node">
+<h3>Remove Node<a class="headerlink" href="#remove-node" title="Permalink to this headline">¶</a></h3>
+<p>It is also able to remove child node from the DOM tree.</p>
+<p><code class="docutils literal"><span class="pre">A.removeChild(B)</span></code> removes the child node B from the parent node A. If B is
+not a child node of A, it will raise Error.</p>
+<p>More simple method <code class="docutils literal"><span class="pre">B.remove()</span></code> is also available, see <a class="reference internal" href="new_features.html"><span class="doc">Newest DOM Features</span></a>
+section.</p>
+</div>
+<div class="section" id="access-child-parent-sibling-nodes">
+<h3>Access Child/Parent/Sibling Nodes<a class="headerlink" href="#access-child-parent-sibling-nodes" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">childNodes</span></code> property returns list-like live-object which contains its direct
+child nodes. <code class="docutils literal"><span class="pre">firstChild</span></code> and <code class="docutils literal"><span class="pre">lastChild</span></code> property returns its first/last
+child node.</p>
+<p>On the other way, <code class="docutils literal"><span class="pre">parentNode</span></code> property returns its parent node.
+These properties are same as JavaScript’s DOM.</p>
+<p><code class="docutils literal"><span class="pre">nextSibling</span></code> and <code class="docutils literal"><span class="pre">previousSibling</span></code> returns its next/previous
+sibling node.</p>
+<p>If there is no corresponding node, all these properties return <code class="docutils literal"><span class="pre">None</span></code>.</p>
+</div>
+<div class="section" id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h3>
+<p>To get element’s attributes like <code class="docutils literal"><span class="pre">class=&quot;...&quot;</span></code> in HTML tag, use
+<code class="docutils literal"><span class="pre">getAttribute('attribute-name')</span></code> method.
+If called <code class="docutils literal"><span class="pre">getAttribute</span></code> to the attribute which does not exists, it will return
+<code class="docutils literal"><span class="pre">None</span></code>.</p>
+<p>To set or change attribute’s value, use <code class="docutils literal"><span class="pre">setAttribute('attribute-name',</span> <span class="pre">value)</span></code>
+method. And to remove an attribute, use <code class="docutils literal"><span class="pre">removeAttribute</span></code> method.</p>
+<p>To obtain all attributes set for the element, access <code class="docutils literal"><span class="pre">attributes</span></code> property.
+This property returns dictionary-like abject <code class="docutils literal"><span class="pre">NamedNodeMap</span></code>. This object has
+attributes and its value as <code class="docutils literal"><span class="pre">{'attribute-name':</span> <span class="pre">value,</span> <span class="pre">...}</span></code>.</p>
+</div>
+<div class="section" id="special-attributes">
+<h3>Special Attributes<a class="headerlink" href="#special-attributes" title="Permalink to this headline">¶</a></h3>
+<p>Some attributes are accessible via special properties, for exmaple, <code class="docutils literal"><span class="pre">A.id</span></code>
+returns its ID attribute. Available properties will be found in
+<a class="reference external" href="https://github.com/miyakogi/wdom/wiki/Features">wiki page at gihub</a>.</p>
+<p>With <code class="docutils literal"><span class="pre">getAttribute</span></code> returns string or None, but attributes accessed via its
+properties return different types depending on its property.
+For example, <code class="docutils literal"><span class="pre">element.id</span></code> return always string even if it is not set (in case
+id is not set, <code class="docutils literal"><span class="pre">element.id</span></code> returns empty string, not None).
+Similarly, <code class="docutils literal"><span class="pre">element.hidden</span></code> returns boolean (<code class="docutils literal"><span class="pre">True</span></code> or <code class="docutils literal"><span class="pre">False</span></code>) and
+<code class="docutils literal"><span class="pre">element.style</span></code> returns <code class="docutils literal"><span class="pre">CSSStyleDeclaration</span></code>.</p>
+<ul class="simple">
+<li>References<ul>
+<li><a class="reference external" href="https://developer.mozilla.org/en/docs/Web/API/HTMLElement">HTMLElement | MDN</a></li>
+<li><a class="reference external" href="https://developer.mozilla.org/ja/docs/Web/API/Element/id">element.id | MDN</a></li>
+<li><a class="reference external" href="https://developer.mozilla.org/ja/docs/Web/API/HTMLElement/style">element.style | MDN</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="style-attribute-cssstyledeclaration">
+<h3>Style Attribute (CSSStyleDeclaration)<a class="headerlink" href="#style-attribute-cssstyledeclaration" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">CSSStyleDeclaration</span></code> obtained by <code class="docutils literal"><span class="pre">element.style</span></code> provides property access
+to its css properties. For example, <code class="docutils literal"><span class="pre">element.style.color</span> <span class="pre">=</span> <span class="pre">'red'</span></code> makes
+element’s color red.</p>
+<p>Some css properties including hyphen (<code class="docutils literal"><span class="pre">-</span></code>) will be converted to CamelCase name.
+For example, <code class="docutils literal"><span class="pre">background-color</span></code> will become <code class="docutils literal"><span class="pre">element.style.backgroundColor</span></code>.
+For more examples, please see <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Properties_Reference">CSS Properties
+Reference</a></p>
+</div>
+</div>
+<div class="section" id="using-html">
+<h2>Using HTML<a class="headerlink" href="#using-html" title="Permalink to this headline">¶</a></h2>
+<p>Making large applications with <code class="docutils literal"><span class="pre">appendChild</span></code> and <code class="docutils literal"><span class="pre">insertBefore</span></code> are quite
+difficult.
+So writing HTML and parse it to WDOM elements is sometimes useful.</p>
+<p>It can be done by <code class="docutils literal"><span class="pre">innerHTML</span></code> method, as same as JavaScript.
+An example to make large list is below:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Ul</span>
+
+<span class="n">ul</span> <span class="o">=</span> <span class="n">Ul</span><span class="p">()</span>
+<span class="n">ul</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span><span class="se">\</span>
+<span class="s1">&lt;li&gt;item1&lt;/li&gt;</span>
+<span class="s1">&lt;li&gt;item2&lt;/li&gt;</span>
+<span class="s1">&lt;li&gt;item3&lt;/li&gt;</span>
+<span class="s1">&lt;li&gt;item4&lt;/li&gt;</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">ul</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>  <span class="c1"># &lt;ul&gt;&lt;li&gt;...</span>
+
+<span class="c1"># Accessing child nodes</span>
+<span class="c1"># for child in ul.childNodes:</span>
+<span class="c1">#     print(child.html)</span>
+
+<span class="c1"># or, first/lastChild</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ul</span><span class="o">.</span><span class="n">firstChild</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ul</span><span class="o">.</span><span class="n">lastChild</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
+
+<span class="c1"># excluding Text nodes</span>
+<span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">ul</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
+
+<span class="c1"># first/lastElementChild</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ul</span><span class="o">.</span><span class="n">firstElementChild</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ul</span><span class="o">.</span><span class="n">lastElementChild</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Assignment to <code class="docutils literal"><span class="pre">innerHTML</span></code> <strong>removes all child nodes</strong> and insert parsed
+elements.</p>
+</div>
+<p>Each child nodes can be accessed via <code class="docutils literal"><span class="pre">childNodes</span></code> property, which returns
+list-like live-object, but not able to modify its values.</p>
+<p><code class="docutils literal"><span class="pre">insertAdjacentHTML({position},</span> <span class="pre">{html})</span></code> also parses HTML and insert new
+elements to the <code class="docutils literal"><span class="pre">position</span></code>. This method is also same as JavaScript’s one, so
+for details please see <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/Element/insertAdjacentHTML">MDN Element.insertAdjacentHTML()</a>
+or <a class="reference external" href="https://dom.spec.whatwg.org/">DOM specification</a>.</p>
+<p><code class="docutils literal"><span class="pre">outerHTML</span></code> is not implemented in WDOM.</p>
+</div>
+<div class="section" id="event-handling">
+<h2>Event Handling<a class="headerlink" href="#event-handling" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="reverse-text-on-click">
+<h3>Reverse Text on Click<a class="headerlink" href="#reverse-text-on-click" title="Permalink to this headline">¶</a></h3>
+<p>WDOM’s event handling is also same as JavaScript:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">)</span>
+    <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;Hello, WDOM&#39;</span>
+    <span class="k">def</span> <span class="nf">rev_text</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">h1</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="n">rev_text</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run this code and click <code class="docutils literal"><span class="pre">&quot;Hello,</span> <span class="pre">WDOM&quot;</span></code>.
+Then it will be reversed.
+When clicked again, it will be reversed again and back to <code class="docutils literal"><span class="pre">&quot;Hello,</span> <span class="pre">WDOM&quot;</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">addEventListener('{event-type}',</span> <span class="pre">{handler})</span></code> method registers <code class="docutils literal"><span class="pre">handler</span></code> to the
+given <code class="docutils literal"><span class="pre">event-type</span></code>. In the sample code, <code class="docutils literal"><span class="pre">rev_text</span></code> function is registered to
+<code class="docutils literal"><span class="pre">click</span></code> event. Values available for event type are same as JavaScript’s DOM, as
+listed in <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/Events">Event reference |
+MDN</a>.</p>
+<p>When the <code class="docutils literal"><span class="pre">h1</span></code> element is clicked, registered function <code class="docutils literal"><span class="pre">rev_text</span></code> is called with
+a single argument, event, which is an Event object, though it is not used in the
+above example.</p>
+</div>
+<div class="section" id="user-input-event">
+<h3>User Input Event<a class="headerlink" href="#user-input-event" title="Permalink to this headline">¶</a></h3>
+<p>The below sample shows how to use event object:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">)</span>
+    <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;Hello, WDOM&#39;</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;textarea&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
+    <span class="nb">input</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">update</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
+
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>In this sample, <code class="docutils literal"><span class="pre">textarea</span></code> element is added.
+When user inputs some text on the <code class="docutils literal"><span class="pre">textarea</span></code>, it will be shown as <code class="docutils literal"><span class="pre">h1</span></code> element.</p>
+<p>In the <code class="docutils literal"><span class="pre">update</span></code> function, <code class="docutils literal"><span class="pre">event.target</span></code> has a reference to the element
+which emitted the event, in this case it is a <code class="docutils literal"><span class="pre">textarea</span></code> element.
+And, as same as JavaScript, a <code class="docutils literal"><span class="pre">textarea</span></code> element (and <code class="docutils literal"><span class="pre">input</span></code> element) contains
+its current value at <code class="docutils literal"><span class="pre">value</span></code> attribute.
+At the moment <code class="docutils literal"><span class="pre">update</span></code> function is called, <code class="docutils literal"><span class="pre">textarea.value</span></code> is already
+updated to the latest value. So the above code you can use <code class="docutils literal"><span class="pre">textarea.value</span></code>
+instead of <code class="docutils literal"><span class="pre">event.target.value</span></code>.
+In the sample code, setting its value to <code class="docutils literal"><span class="pre">h1</span></code> element’s <code class="docutils literal"><span class="pre">textContent</span></code>.</p>
+</div>
+</div>
+</div>
+
+
+        </div>
+      </div>
+  </div>
+  <div class="footer">
+    &copy;2016, Hiroyuki Takagi.
+    
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      
+    
+      |
+      <a href="../_sources/guide/dom.md.txt" rel="nofollow">Page source</a>
+  </div>
+
+  
+    <a href="https://github.com/miyakogi/wdom" class="github">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+  
+
+  
+
+  </body>
+</html>

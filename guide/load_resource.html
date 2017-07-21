@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Loading Static Contents &mdash; WDOM 0.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/slex.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="WDOM 0.1.5 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="index.html" />
+    <link rel="next" title="Newest DOM Features" href="new_features.html" />
+    <link rel="prev" title="Python Classes and Extensions of WDOM" href="wdom.html" />
+  <!-- font -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- Style -->
+  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
+  
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+
+  </head>
+  <body role="document">
+  <div class="document"> 
+    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebarwrapper">
+
+  <h1 class="logo"><a href="../index.html">WDOM</a></h1>
+
+
+
+  <p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+  
+    
+      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
+        <img class="github-mark" src="../_static/GitHub-Mark-64px.png">
+      </a>
+    
+  
+
+
+
+
+
+<h3>Contents</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dom.html">Basic DOM Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdom.html">Python Classes and Extensions of WDOM</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Loading Static Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="new_features.html">Newest DOM Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theming.html">Theming with CSS Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freezing.html">Freezing Application</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changes</a></li>
+</ul>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">User Guide</a><ul>
+      <li>Previous: <a href="wdom.html" title="previous chapter">Python Classes and Extensions of WDOM</a></li>
+      <li>Next: <a href="new_features.html" title="next chapter">Newest DOM Features</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div class="searchbox" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div class="search-container">
+        <input class="form-control control search-input" type="text" name="q" />
+        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </div>
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+      </div>
+    </div> 
+      <div class="documentwrapper">
+        <div class="body" role="main">
+          
+  <div class="section" id="loading-static-contents">
+<h1>Loading Static Contents<a class="headerlink" href="#loading-static-contents" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="contents-on-the-web">
+<h2>Contents on the Web<a class="headerlink" href="#contents-on-the-web" title="Permalink to this headline">¶</a></h2>
+<p>As an example, use <a class="reference external" href="http://getbootstrap.com/">bootstrap</a>.</p>
+<p>To use bootstrap, one css file (bootstrap.min.css) and two js files (jquery and
+bootstrap.min.js) are need to be loaded.
+To load css file, use <code class="docutils literal"><span class="pre">&lt;link&gt;</span></code> tag and insert into the <code class="docutils literal"><span class="pre">&lt;head&gt;</span></code>.
+And to load js files, use <code class="docutils literal"><span class="pre">&lt;script&gt;</span></code> tag and insert into the <code class="docutils literal"><span class="pre">&lt;body&gt;</span></code>.
+Both <code class="docutils literal"><span class="pre">&lt;head&gt;</span></code> and <code class="docutils literal"><span class="pre">&lt;body&gt;</span></code> tags can be accessed via <code class="docutils literal"><span class="pre">document.head</span></code> and
+<code class="docutils literal"><span class="pre">document.body</span></code> (same as JavaScript).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Link</span><span class="p">,</span> <span class="n">Script</span><span class="p">,</span> <span class="n">Button</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="c1"># Add &lt;link&gt;-tag sourcing bootstrap.min.css on &lt;head&gt;</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Link</span><span class="p">(</span><span class="n">rel</span><span class="o">=</span><span class="s1">&#39;stylesheet&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="s1">&#39;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Add &lt;script&gt;-tag sourcing jquery and bootstrap.min.js to &lt;body&gt;</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">&#39;https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js&#39;</span><span class="p">))</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="s1">&#39;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js&#39;</span><span class="p">))</span>
+
+    <span class="c1"># Add bootstrap button element</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Button</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s1">&#39;btn btn-primary&#39;</span><span class="p">))</span>
+
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>As frequently required to load css and js files on document, WDOM provides
+shortcut method; <code class="docutils literal"><span class="pre">document.add_cssfile({/path/to/cssfile})</span></code> and
+<code class="docutils literal"><span class="pre">document.add_jsfile({/path/to/jsfile})</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Button</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="c1"># Add &lt;link&gt;-tag sourcing bootstrap.min.css on &lt;head&gt;</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">add_cssfile</span><span class="p">(</span><span class="s1">&#39;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css&#39;</span><span class="p">)</span>
+    <span class="c1"># Add &lt;script&gt;-tag sourcing jquery and bootstrap.min.js to &lt;body&gt;</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">add_jsfile</span><span class="p">(</span><span class="s1">&#39;https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js&#39;</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">add_jsfile</span><span class="p">(</span><span class="s1">&#39;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add bootstrap button element</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Button</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="n">class_</span><span class="o">=</span><span class="s1">&#39;btn btn-primary&#39;</span><span class="p">))</span>
+
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="local-resources">
+<h2>Local Resources<a class="headerlink" href="#local-resources" title="Permalink to this headline">¶</a></h2>
+<p>User’s css files and other static contents, like images or html files, are also
+available on WDOM app.</p>
+<p>For the directory tree like below:</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span>.
+├── static
+│   └── css
+│       └── app.css
+├── app.py
+├── module1.py
+├── ...
+...
+</pre></div>
+</div>
+<p>When want to use <code class="docutils literal"><span class="pre">static/css/app.css</span></code> from <code class="docutils literal"><span class="pre">app.py</span></code>, <code class="docutils literal"><span class="pre">app.py</span></code> will become
+as follows:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
+
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span><span class="p">,</span> <span class="n">add_static_path</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Button</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">static_dir</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)),</span> <span class="s1">&#39;static&#39;</span><span class="p">)</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">add_cssfile</span><span class="p">(</span><span class="s1">&#39;/static/css/app.css&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add button element</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Button</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">))</span>
+
+    <span class="n">add_static_path</span><span class="p">(</span><span class="s1">&#39;static&#39;</span><span class="p">,</span> <span class="n">static_dir</span><span class="p">)</span>
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The first argument of the <code class="docutils literal"><span class="pre">add_static_path</span></code> is a prefix to access the
+static files and the second argument is a path to the directory to be served.
+Files under the assigned directory can be accessed by URL like
+<code class="docutils literal"><span class="pre">http://localhost:8888/prefix/(dirname/)filename</span></code>.
+For example, if accessed to <code class="docutils literal"><span class="pre">http://localhost:8888/static/css/app.css</span></code> with a
+browser, <code class="docutils literal"><span class="pre">app.css</span></code> will be shown.</p>
+<p>It’s not necessary to use the same name for the prefix as the directory name to
+be registered.
+For example, in case to use <code class="docutils literal"><span class="pre">my_static</span></code> as a prefix, change to
+<code class="docutils literal"><span class="pre">add_static_path('my_static',</span> <span class="pre">static_dir)</span></code> and then can be accessed to
+<code class="docutils literal"><span class="pre">app.css</span></code> from <code class="docutils literal"><span class="pre">http://localhost:8888/my_static/css/app.css</span></code>.</p>
+<p>Not only css files but also any static files, like js files, html files, or
+images are able to be served.</p>
+<p>Any prefixes can be used if it is valid for URL, but <code class="docutils literal"><span class="pre">_static</span></code> and <code class="docutils literal"><span class="pre">tmp</span></code> is
+already used by WDOM internally, so do not use them for a prefix.</p>
+</div>
+</div>
+
+
+        </div>
+      </div>
+  </div>
+  <div class="footer">
+    &copy;2016, Hiroyuki Takagi.
+    
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      
+    
+      |
+      <a href="../_sources/guide/load_resource.md.txt" rel="nofollow">Page source</a>
+  </div>
+
+  
+    <a href="https://github.com/miyakogi/wdom" class="github">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+  
+
+  
+
+  </body>
+</html>

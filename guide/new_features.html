@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Newest DOM Features &mdash; WDOM 0.1.5 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/slex.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1.5',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="top" title="WDOM 0.1.5 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="index.html" />
+    <link rel="next" title="Theming with CSS Frameworks" href="theming.html" />
+    <link rel="prev" title="Loading Static Contents" href="load_resource.html" />
+  <!-- font -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- Style -->
+  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
+  
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+
+  </head>
+  <body role="document">
+  <div class="document"> 
+    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebarwrapper">
+
+  <h1 class="logo"><a href="../index.html">WDOM</a></h1>
+
+
+
+  <p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+  
+    
+      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
+        <img class="github-mark" src="../_static/GitHub-Mark-64px.png">
+      </a>
+    
+  
+
+
+
+
+
+<h3>Contents</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">User Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="dom.html">Basic DOM Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="wdom.html">Python Classes and Extensions of WDOM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="load_resource.html">Loading Static Contents</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Newest DOM Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theming.html">Theming with CSS Frameworks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="freezing.html">Freezing Application</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changes</a></li>
+</ul>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">User Guide</a><ul>
+      <li>Previous: <a href="load_resource.html" title="previous chapter">Loading Static Contents</a></li>
+      <li>Next: <a href="theming.html" title="next chapter">Theming with CSS Frameworks</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div class="searchbox" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div class="search-container">
+        <input class="form-control control search-input" type="text" name="q" />
+        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </div>
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+      </div>
+    </div> 
+      <div class="documentwrapper">
+        <div class="body" role="main">
+          
+  <div class="section" id="newest-dom-features">
+<h1>Newest DOM Features<a class="headerlink" href="#newest-dom-features" title="Permalink to this headline">¶</a></h1>
+<p>Some newest DOM features, which have not been implemented yet on browsers are
+available on WDOM.</p>
+<div class="section" id="parentnode-and-childnode-interfaces">
+<h2>ParentNode and ChildNode Interfaces<a class="headerlink" href="#parentnode-and-childnode-interfaces" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">appendChild</span></code> method add only one child node, but <code class="docutils literal"><span class="pre">append</span></code> method can append
+multiple nodes at once. Furthermore, strings are also available (strings are
+automatically converted to a Text Node).</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Ul</span><span class="p">,</span> <span class="n">Li</span>
+
+<span class="n">ul</span> <span class="o">=</span> <span class="n">Ul</span><span class="p">()</span>
+<span class="n">li1</span> <span class="o">=</span> <span class="n">Li</span><span class="p">(</span><span class="s1">&#39;item1&#39;</span><span class="p">)</span>
+<span class="n">li2</span> <span class="o">=</span> <span class="n">Li</span><span class="p">(</span><span class="s1">&#39;item2&#39;</span><span class="p">)</span>
+<span class="o">...</span>
+
+<span class="n">ul</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">li1</span><span class="p">)</span>
+<span class="n">ul</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">li2</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ul</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>
+
+<span class="c1"># by append</span>
+<span class="n">ul2</span> <span class="o">=</span> <span class="n">Ul</span><span class="p">()</span>
+<span class="n">ul2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Li</span><span class="p">(</span><span class="s1">&#39;item1&#39;</span><span class="p">),</span> <span class="n">Li</span><span class="p">(</span><span class="s1">&#39;item2&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ul2</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Similarly, <code class="docutils literal"><span class="pre">prepend</span></code>, <code class="docutils literal"><span class="pre">after</span></code>, and <code class="docutils literal"><span class="pre">before</span></code> methods are available.
+Additionally, <code class="docutils literal"><span class="pre">remove</span></code>, <code class="docutils literal"><span class="pre">replaceWith</span></code>, <code class="docutils literal"><span class="pre">children</span></code>, <code class="docutils literal"><span class="pre">firstElementChild</span></code>,
+<code class="docutils literal"><span class="pre">lastElementChild</span></code>, <code class="docutils literal"><span class="pre">previousElementSibling</span></code>, and <code class="docutils literal"><span class="pre">nextElementSibling</span></code>
+methods/properties are also available on WDOM.</p>
+<p>Internally, these methods update view on the browser at once, so using these
+methods usually results in better performance.</p>
+<ul class="simple">
+<li>References<ul>
+<li><a class="reference external" href="https://dom.spec.whatwg.org/#interface-parentnode">ParentNode | DOM Standard</a></li>
+<li><a class="reference external" href="https://dom.spec.whatwg.org/#nondocumenttypechildnode">NonDocumentTypeChildNode | DOM Standard</a></li>
+<li><a class="reference external" href="https://dom.spec.whatwg.org/#interface-childnode">ChildNode | DOM Standard</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="custom-elements">
+<h2>Custom Elements<a class="headerlink" href="#custom-elements" title="Permalink to this headline">¶</a></h2>
+<p>WDOM provides limited supports on custom elements (<strong>experimental</strong>).</p>
+<div class="section" id="user-defined-custom-tags">
+<h3>User Defined Custom Tags<a class="headerlink" href="#user-defined-custom-tags" title="Permalink to this headline">¶</a></h3>
+<p>As an example, define <code class="docutils literal"><span class="pre">MyElement</span></code> as a custom tag <code class="docutils literal"><span class="pre">&lt;my-element&gt;</span></code>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Div</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+
+<span class="k">class</span> <span class="nc">MyElement</span><span class="p">(</span><span class="n">Div</span><span class="p">):</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;my-element&#39;</span>  <span class="c1"># custom tag name</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">(</span><span class="s1">&#39;Hello, WDOM&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="c1"># Register MyElement</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">defaultView</span><span class="o">.</span><span class="n">customElements</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="s1">&#39;my-element&#39;</span><span class="p">,</span> <span class="n">MyElement</span><span class="p">)</span>
+    <span class="c1"># Make instance of MyElement from HTML</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">insertAdjacentHTML</span><span class="p">(</span><span class="s1">&#39;beforeend&#39;</span><span class="p">,</span> <span class="s1">&#39;&lt;my-element&gt;&lt;/my-element&gt;&#39;</span><span class="p">)</span>
+    <span class="c1"># Or, from createElement method</span>
+    <span class="n">my_element</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;my-element&#39;</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">my_element</span><span class="p">)</span>
+
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Difference is a class variable <code class="docutils literal"><span class="pre">tag</span> <span class="pre">=</span> <span class="pre">'my-element'</span></code>.</p>
+<p>To register <code class="docutils literal"><span class="pre">MyElement</span></code> class as a custom tag, use
+<code class="docutils literal"><span class="pre">document.defaultView.customElements.define()</span></code> method.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Formerly, <code class="docutils literal"><span class="pre">document.registerElement</span></code> method was used to define custom
+tags, but in the <a class="reference external" href="http://w3c.github.io/webcomponents/spec/custom/">latest specification</a> uses
+<code class="docutils literal"><span class="pre">customElements.define</span></code> method to reagister custom tags. WDOM supports
+the same method as the latest specification.</p>
+</div>
+<p><code class="docutils literal"><span class="pre">document.defaultView</span></code> property returns a reference to the window object,
+which is same as the <code class="docutils literal"><span class="pre">window</span></code> object of JavaScript on browsers.</p>
+<p>Now you can use the registered custom tag from
+<code class="docutils literal"><span class="pre">document.createElement('my-element')</span></code> or <code class="docutils literal"><span class="pre">innerHTML</span> <span class="pre">=</span> <span class="pre">'&lt;my-element&gt;&lt;/my-element&gt;'</span></code>.
+Both these methods make a new instance of <code class="docutils literal"><span class="pre">MyElement</span></code></p>
+</div>
+<div class="section" id="extended-custom-tags">
+<h3>Extended Custom Tags<a class="headerlink" href="#extended-custom-tags" title="Permalink to this headline">¶</a></h3>
+<p>WDOM supports to extend existing tags with <code class="docutils literal"><span class="pre">is</span></code> attribute.</p>
+<p>For example, to define <code class="docutils literal"><span class="pre">MyButton</span></code> or <code class="docutils literal"><span class="pre">DefaultButton</span></code> as a custom tag:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">Div</span>
+
+<span class="k">class</span> <span class="nc">MyButton</span><span class="p">(</span><span class="n">Button</span><span class="p">):</span>
+    <span class="c1"># tag = &#39;button&#39;  &lt;- tag name is already defined in Button class</span>
+    <span class="n">class_</span> <span class="o">=</span> <span class="s1">&#39;btn&#39;</span>
+    <span class="n">is_</span> <span class="o">=</span> <span class="s1">&#39;my-button&#39;</span>  <span class="c1"># set name at is_</span>
+
+<span class="k">class</span> <span class="nc">DefaultButton</span><span class="p">(</span><span class="n">MyButton</span><span class="p">):</span>
+    <span class="n">class_</span> <span class="o">=</span> <span class="s1">&#39;btn-default&#39;</span>
+    <span class="n">is_</span> <span class="o">=</span> <span class="s1">&#39;default-button&#39;</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="c1"># Register MyElement</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">defaultView</span><span class="o">.</span><span class="n">customElements</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="s1">&#39;my-button&#39;</span><span class="p">,</span> <span class="n">MyButton</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;extends&#39;</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">})</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">defaultView</span><span class="o">.</span><span class="n">customElements</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="s1">&#39;default-button&#39;</span><span class="p">,</span> <span class="n">DefaultButton</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;extends&#39;</span><span class="p">:</span> <span class="s1">&#39;button&#39;</span><span class="p">})</span>
+
+    <span class="c1"># Load css and js file for bootstrap</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">add_cssfile</span><span class="p">(</span><span class="s1">&#39;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css&#39;</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">add_jsfile</span><span class="p">(</span><span class="s1">&#39;https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js&#39;</span><span class="p">)</span>
+    <span class="n">document</span><span class="o">.</span><span class="n">add_jsfile</span><span class="p">(</span><span class="s1">&#39;https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js&#39;</span><span class="p">)</span>
+
+    <span class="n">div</span> <span class="o">=</span> <span class="n">Div</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+    <span class="n">div</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">        &lt;button is=&quot;my-button&quot;&gt;MyButton&lt;/button&gt;</span>
+<span class="s1">        &lt;button is=&quot;default-button&quot;&gt;DefaultButton&lt;/button&gt;</span>
+<span class="s1">    &#39;&#39;&#39;</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">div</span><span class="o">.</span><span class="n">firstChild</span><span class="p">,</span> <span class="n">MyButton</span><span class="p">))</span>  <span class="c1"># True</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">div</span><span class="o">.</span><span class="n">lastChild</span><span class="p">,</span> <span class="n">DefaultButton</span><span class="p">))</span>  <span class="c1"># True</span>
+
+    <span class="n">start_server</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>On the class statements, add class variable <code class="docutils literal"><span class="pre">is_</span></code> and specify the name of the
+custom tag.
+Class variable <code class="docutils literal"><span class="pre">tag</span></code> is a tag name to be extended, but in the above example,
+it is already defined in <code class="docutils literal"><span class="pre">Button</span></code> class.</p>
+<p>When registering the custom tag, pass the name (value of <code class="docutils literal"><span class="pre">is_</span></code>) at the first
+argument to <code class="docutils literal"><span class="pre">customElements.define</span></code> and pass dictionary which contains
+<code class="docutils literal"><span class="pre">'extends'</span></code> field to specify the tag name to be extended, at the third
+argument.</p>
+<p>After the new tag is registered, an HTML like <code class="docutils literal"><span class="pre">&lt;button</span> <span class="pre">is=&quot;my-button&quot;&gt;</span></code> will be parsed
+to an instance of <code class="docutils literal"><span class="pre">MyElement</span></code>, and <code class="docutils literal"><span class="pre">&lt;button</span> <span class="pre">is=&quot;default-button&quot;&gt;</span></code> to
+<code class="docutils literal"><span class="pre">DefaultButton</span></code>.</p>
+<div class="highlight-guess"><div class="highlight"><pre><span></span>It&#39;s highly recommended to register custom tags as early as possible.
+
+If the instance was generated before registering it, it becomes different
+class. When the ``customElements.define`` is called and registerd the custom
+tag, WDOM will try to update the class of existing instances but
+``__init__`` will not be not called.
+
+Additionally, changing ``is`` attribute of the existing instances, e.g.
+``element.setAttribute(&#39;is&#39;, &#39;...&#39;)``, do not change its class currently.
+
+In future, `Lifecycle callback methods
+&lt;http://www.html5rocks.com/en/tutorials/webcomponents/customelements/#lifecycle&gt;`_
+or silimar features will be implemented, but still it&#39;s safer to register
+custom tags before instanciate it.
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+        </div>
+      </div>
+  </div>
+  <div class="footer">
+    &copy;2016, Hiroyuki Takagi.
+    
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      
+    
+      |
+      <a href="../_sources/guide/new_features.md.txt" rel="nofollow">Page source</a>
+  </div>
+
+  
+    <a href="https://github.com/miyakogi/wdom" class="github">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+  
+
+  
+
+  </body>
+</html>
