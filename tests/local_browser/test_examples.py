@@ -113,11 +113,13 @@ class TestTimer(WebDriverTestCase, TestCase):
             self.wait(times=20)
             self.assertTrue(float(view.text) < 179.90)
             stop_btn.click()
+            self.wait(times=20)
             t = view.text
             self.wait(times=20)
             self.assertEqual(view.text, t)
 
         test_timer()
+        self.wait(times=20)
         reset_btn.click()
         self.wait(times=20)
         test_timer()
