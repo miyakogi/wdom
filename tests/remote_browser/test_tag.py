@@ -157,15 +157,18 @@ class TestInput(RemoteBrowserTestCase, TestCase):
     def test_textarea(self):
         self.set_element(self.textarea)
         self.element.send_keys('abc')
+        self.wait()
         self.wait_until(lambda: self.textarea.value == 'abc')
         self.assertEqual(self.textarea.value, 'abc')
 
         self.browser.get(self.url)
         self.set_element(self.textarea)
+        self.wait()
         self.wait_until(lambda: self.element.get_attribute('value') == 'abc')
         self.assertEqual(self.element.get_attribute('value'), 'abc')
 
         self.element.send_keys('def')
+        self.wait()
         self.wait_until(
             lambda: self.element.get_attribute('value') == 'abcdef')
         self.assertEqual(self.textarea.value, 'abcdef')

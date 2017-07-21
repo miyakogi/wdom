@@ -86,6 +86,7 @@ class TestTimer(BaseTestCase, TestCase):
             time.sleep(0.5)
             self.assertTrue(float(view.text) < 179.90)
             stop_btn.click()
+            time.sleep(0.5)
             t = view.text
             time.sleep(0.5)
             self.assertEqual(view.text, t)
