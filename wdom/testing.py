@@ -135,7 +135,7 @@ class TestCase(unittest.TestCase):
 class HTTPTestCase(TestCase):
     """For http/ws connection test."""
 
-    wait_time = 0.01
+    wait_time = 0.03 if os.getenv('TRAVIS') else 0.01
     timeout = 1.0
     _server_started = False
     _ws_connections = []
