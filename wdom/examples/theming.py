@@ -1,16 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
-import sys
-from pathlib import Path
-
-CURFILE = Path(__file__).resolve()
-CURDIR = CURFILE.parent.resolve()
-
-if __name__ == '__main__':
-    sys.path.insert(0, str(CURDIR.parent.parent.resolve()))
-
 from wdom import options, tag
 from wdom.themes import default
 from wdom.document import Document, get_document
@@ -58,11 +48,11 @@ def sample_app(theme=default) -> tag.Tag:
         theme.Input(placeholder='<input type="text">'),
         theme.Label(theme.CheckBox(id='checkbox1'), 'CheckBox 1'),
         theme.CheckBox(id='checkbox2'),
-        theme.Label('CheckBox 2', **{'for':'checkbox2'}),
+        theme.Label('CheckBox 2', **{'for': 'checkbox2'}),
         theme.RadioButton(id='radio1', name='radio_group'),
-        theme.Label('RadioButton 1', **{'for':'radio1'}),
+        theme.Label('RadioButton 1', **{'for': 'radio1'}),
         theme.RadioButton(id='radio2', name='radio_group'),
-        theme.Label('RadioButton 2', **{'for':'radio2'}),
+        theme.Label('RadioButton 2', **{'for': 'radio2'}),
     )
 
     dropdown_list = theme.Select(parent=body)
@@ -169,16 +159,18 @@ def sample_app(theme=default) -> tag.Tag:
     )
     body.append(theme.Hr())
 
-    grid = theme.Container(parent=body,
-                           style='border: solid 1px #bbb; background-color: #666;')
+    grid = theme.Container(
+        parent=body,
+        style='border: solid 1px #bbb; background-color: #666;'
+    )
     left_style = 'background-color: #eeeeee;'
     right_style = 'background-color: #fafafa'
     for i in range(0, 13):
-        l = 'Col' + str(i or '')
-        r = 'Col' + str(12 - i or '')
+        lcol = 'Col' + str(i or '')
+        rcol = 'Col' + str(12 - i or '')
         grid.append(theme.Row(
-            getattr(theme, l)(l, style=left_style),
-            getattr(theme, r)(r, style=right_style),
+            getattr(theme, lcol)(lcol, style=left_style),
+            getattr(theme, rcol)(rcol, style=right_style),
         ))
 
     return app

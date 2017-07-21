@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
-import unittest
-
 from selenium.webdriver.common.keys import Keys
 
 from wdom.tag import H1
 from wdom.document import get_document
 from wdom.misc import install_asyncio
-from wdom.testing import WebDriverTestCase, TestCase, reset
+from wdom.testing import WebDriverTestCase, TestCase
 from wdom.testing import close_webdriver
 
 
@@ -24,7 +21,6 @@ def tearDownModule():
 class SimpleTestCase(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        reset()  # I don't know why, but need reset for aiohttp.
         document = get_document()
         self.h1 = H1()
         self.h1.textContent = 'TITLE'
@@ -40,14 +36,11 @@ class SimpleTestCase(WebDriverTestCase, TestCase):
 class TestDataBinding(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        reset()  # I don't know why, but need reset for aiohttp.
         from wdom.examples.data_binding import sample_app
         document = get_document()
         document.body.prepend(sample_app())
         self.start()
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
-    #                  reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
         self.assertEqual(view.text, 'Hello!')
@@ -67,14 +60,11 @@ class TestDataBinding(WebDriverTestCase, TestCase):
 class TestRevText(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        reset()  # I don't know why, but need reset for aiohttp.
         from wdom.examples.rev_text import sample_app
         document = get_document()
         document.body.prepend(sample_app())
         self.start()
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
-    #                  reason='This test not pass only on travis')
     def test_app(self):
         view = self.wd.find_element_by_tag_name('h1')
         text = 'Click!'
@@ -95,14 +85,11 @@ class TestRevText(WebDriverTestCase, TestCase):
 class TestTimer(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()
-        reset()  # I don't know why, but need reset for aiohttp.
         from wdom.examples.timer import sample_app
         document = get_document()
         document.body.prepend(sample_app())
         self.start()
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
-    #                  reason='This test not pass only on travis')
     def test_timer(self):
         view = self.wd.find_element_by_tag_name('h1')
         start_btn = self.wd.find_element_by_id('start_btn')
@@ -116,11 +103,13 @@ class TestTimer(WebDriverTestCase, TestCase):
             self.wait(times=20)
             self.assertTrue(float(view.text) < 179.90)
             stop_btn.click()
+            self.wait(times=20)
             t = view.text
             self.wait(times=20)
             self.assertEqual(view.text, t)
 
         test_timer()
+        self.wait(times=20)
         reset_btn.click()
         self.wait(times=20)
         test_timer()

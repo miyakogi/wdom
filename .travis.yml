@@ -4,6 +4,7 @@ language: python
 python:
   - "3.4"
   - "3.5"
+  - "3.6"
 
 addons:
   apt:
@@ -18,17 +19,15 @@ before_script:
   - unzip chromedriver_linux64.zip -d ${TRAVIS_BUILD_DIR}
 
 install:
-  - pip install tox
-  - pip install selenium nose_parameterized syncer coverage tornado
+  - pip install selenium parameterized syncer coverage green
   - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then pip install codecov coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls; fi
+  - pip install ${TRAVIS_BUILD_DIR}
 script:
-  - tox -c tox_travis.ini
-  - coverage erase
-  - make clean
-  - PYTHONPATH=${TRAVIS_BUILD_DIR} python -m coverage run --source wdom -m wdom.tests.run_tests
-  - pip install aiohttp
-  - PYTHONPATH=${TRAVIS_BUILD_DIR} python -m coverage run -a --source wdom -m wdom.tests.run_tests
+  - mkdir maint && cd maint
+  - cp ${TRAVIS_BUILD_DIR}/.green ./
+  - green -R ${TRAVIS_BUILD_DIR}/tests
   - coverage report
+  - cp .coverage ../
 after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.5* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then cd ../ && codecov -b $TRAVIS_BRANCH && coveralls; fi

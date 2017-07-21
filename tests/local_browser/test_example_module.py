@@ -5,7 +5,6 @@ import sys
 import os
 import subprocess
 import time
-import unittest
 
 from selenium.webdriver.common.utils import free_port
 
@@ -13,7 +12,6 @@ from wdom.testing import TestCase
 from wdom.testing import close_webdriver, get_webdriver
 
 
-# @unittest.skipIf(os.environ.get('TRAVIS', False), reason='skip on CI')
 def setUpModule():
     pass
 
@@ -87,6 +85,7 @@ class TestTimer(BaseTestCase, TestCase):
             time.sleep(0.5)
             self.assertTrue(float(view.text) < 179.90)
             stop_btn.click()
+            time.sleep(0.5)
             t = view.text
             time.sleep(0.5)
             self.assertEqual(view.text, t)

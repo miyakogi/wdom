@@ -11,12 +11,13 @@ from tornado import websocket
 from tornado.httpserver import HTTPServer
 
 from wdom.options import config
-from wdom.misc import install_asyncio, static_dir
+from wdom.misc import install_asyncio
 from wdom.server.handler import on_websocket_message
 
 logger = logging.getLogger(__name__)
 install_asyncio()
 connections = []
+server_config = dict()
 
 
 def is_connected():
@@ -64,6 +65,17 @@ class WSHandler(websocket.WebSocketHandler):
             asyncio.ensure_future(self.terminate())
 
 
+class StaticFileHandlerNoCache(web.StaticFileHandler):
+    def set_extra_headers(self, path):
+        self.set_header('Cache-control', 'no-cache')
+
+
+if config.debug:
+    StaticFileHandler = StaticFileHandlerNoCache
+else:
+    StaticFileHandler = web.StaticFileHandler
+
+
 class Application(web.Application):
     """Application for a tornado web server.
 
@@ -77,7 +89,6 @@ class Application(web.Application):
             *args,
             debug=config.debug,
             autoreload=False,
-            static_hash_cashe=False,
             compiled_template_cashe=False,
             **kwargs
         )
@@ -115,7 +126,7 @@ class Application(web.Application):
             pattern = pattern + '/(.*)'
         self.add_handlers(
             r'.*',  # add static path for all virtual host
-            [(pattern, web.StaticFileHandler, dict(path=path))]
+            [(pattern, StaticFileHandler, dict(path=path))]
         )
 
     def add_favicon_path(self, path: str):
@@ -126,7 +137,7 @@ class Application(web.Application):
         """
         spec = web.URLSpec(
             '/(favicon.ico)',
-            web.StaticFileHandler,
+            StaticFileHandler,
             dict(path=path)
         )
         # Need some check
@@ -167,10 +178,10 @@ def start_server(app: web.Application = None, port: int = None,
 
     server = app.listen(port, address=address)
     app.server = server
-    server.address = address
+    server_config['address'] = address
     for sock in server._sockets.values():
         if sock.family == socket.AF_INET:
-            server.port = sock.getsockname()[1]
+            server_config['port'] = sock.getsockname()[1]
             break
     return server
 

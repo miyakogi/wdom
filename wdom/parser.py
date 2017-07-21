@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
-from os import path
-
-sys.path.append(path.dirname(path.dirname(__file__)))
-
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
 
@@ -46,7 +41,7 @@ class DocumentParser(HTMLParser):
         if _d and self.elm:
             self.elm.append(_d)
 
-    def handle_comment(self, comment:str):
+    def handle_comment(self, comment: str):
         self.elm.append(Comment(comment))
 
 
@@ -70,17 +65,17 @@ class FragmentParser(HTMLParser):
         if data and self.elm:
             self.elm.append(data)
 
-    def handle_comment(self, comment:str):
+    def handle_comment(self, comment: str):
         self.elm.append(Comment(comment))
 
 
-def parse_document(doc:str):
+def parse_document(doc: str):
     parser = DocumentParser()
     parser.feet(doc)
     return parser.root
 
 
-def parse_html(html:str):
+def parse_html(html: str):
     parser = FragmentParser()
     parser.feed(html)
     return parser.root

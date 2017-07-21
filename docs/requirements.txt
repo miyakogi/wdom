@@ -1,5 +1,4 @@
 tornado
-aiohttp
 selenium
 mypy-lang
 sphinx-autodoc-typehints

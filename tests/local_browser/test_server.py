@@ -61,17 +61,17 @@ src_exclude_dir = '\n'.join(_src)
 
 
 class TestAutoReload(TestCase):
-    wait_time = 3 if os.environ.get('TRAVIS') else 1
+    wait_time = 3 if os.getenv('TRAVIS') else 1
 
     @classmethod
     def setUpClass(cls):
         cls.wd = get_webdriver()
-        if os.environ.get('TRAVIS', True):
+        if os.getenv('TRAVIS', True):
             cls.wd.implicitly_wait(10)
 
     @classmethod
     def tearDownClass(cls):
-        if os.environ.get('TRAVIS', True):
+        if os.getenv('TRAVIS', True):
             cls.wd.implicitly_wait(browser_implict_wait)
 
     def setUp(self):

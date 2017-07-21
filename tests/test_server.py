@@ -18,10 +18,10 @@ from syncer import sync
 from wdom.misc import install_asyncio
 from wdom.document import get_document
 from wdom import server
-from wdom.testing import TestCase, HTTPTestCase
+from wdom.testing import HTTPTestCase
 
 curdir = path.dirname(__file__)
-root = path.dirname(path.dirname(curdir))
+root = path.join(path.dirname(path.dirname(curdir)), 'wdom')
 script = '''
 import asyncio
 import atexit
@@ -40,25 +40,6 @@ except:
 
 def setUpModule():
     install_asyncio()
-
-
-@unittest.skip('Tentatively disable aiohttp')
-class TestServerTypeSet(TestCase):
-    def test_server_module(self):
-        from wdom.server import _tornado
-        server.set_server_type('tornado')
-        self.assertTrue(isinstance(server.get_app(), _tornado.Application))
-        try:
-            from wdom.server import _aiohttp
-            server.set_server_type('aiohttp')
-            self.assertTrue(isinstance(server.get_app(), _aiohttp.Application))
-        except ImportError:
-            pass
-        # here server type is the same as original one
-
-    def test_invalid_server_type(self):
-        with self.assertRaises(ValueError):
-            server.set_server_type('a')
 
 
 class TestServerBase(HTTPTestCase):
@@ -148,8 +129,8 @@ class TestAutoShutdown(TestServerBase):
 class TestOpenBrowser(TestServerBase):
     cmd = ['--debug', '--open-browser']
 
-    @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
-    @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
+    @unittest.skipIf(os.getenv('TOX', False), 'Not test browser on TOX')
+    @unittest.skipIf(os.getenv('TRAVIS', False), 'Not test browser on TRAVIS')
     def test_open_browser(self):
         time.sleep(3)
         # terminate server and gett all log
@@ -162,8 +143,8 @@ class TestOpenBrowser(TestServerBase):
 class TestOpenBrowserFreePort(TestServerBase):
     cmd = ['--port', '0', '--open-browser']
 
-    @unittest.skipIf(os.environ.get('TOX', False), 'not test browser')
-    @unittest.skipIf(os.environ.get('TRAVIS', False), 'not test browser')
+    @unittest.skipIf(os.getenv('TOX', False), 'Not test browser on TOX')
+    @unittest.skipIf(os.getenv('TRAVIS', False), 'Not test browser on TRAVIS')
     def test_open_browser_free_port(self):
         time.sleep(3)
         # terminate server and gett all log

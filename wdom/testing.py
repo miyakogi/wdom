@@ -41,6 +41,7 @@ local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
 logger = logging.getLogger(__name__)
+server_config = server.server_config
 
 
 def get_chromedriver_path():
@@ -55,7 +56,7 @@ def get_chromedriver_path():
     return chromedriver_path
 
 
-# see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/
+# see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/  # noqa: E501
 def get_chrome_options():
     chrome_options = webdriver.ChromeOptions()
     if 'TRAVIS'in os.environ:
@@ -74,12 +75,6 @@ def reset():
     from wdom.server import _tornado
     _tornado.connections.clear()
     _tornado.set_application(_tornado.Application())
-    try:
-        from wdom.server import _aiohttp
-        _aiohttp.connections.clear()
-        _aiohttp.set_application(_aiohttp.Application())
-    except ImportError:
-        pass
     Element._elements_with_id.clear()
     Element._elements.clear()
     customElements.clear()
@@ -134,7 +129,7 @@ class TestCase(unittest.TestCase):
 class HTTPTestCase(TestCase):
     """For http/ws connection test."""
 
-    wait_time = 0.01
+    wait_time = 0.05 if os.getenv('TRAVIS') else 0.01
     timeout = 1.0
     _server_started = False
     _ws_connections = []
@@ -146,7 +141,7 @@ class HTTPTestCase(TestCase):
         """
         with self.assertLogs('wdom', 'INFO'):
             self.server = server.start_server(port=0)
-        self.port = self.server.port
+        self.port = server_config['port']
         self.url = 'http://localhost:{}'.format(self.port)
         self.ws_url = 'ws://localhost:{}'.format(self.port)
         self._server_started = True
@@ -311,8 +306,8 @@ class BrowserController:
     def set_element_by_id(self, id):
         """Find element with ``id`` and set it to element property.
 
-        When successfully find the element, send ``True``. If failed to find the
-        element, send message ``Error NoSuchElement: {{ id }}``.
+        When successfully find the element, send ``True``. If failed to find
+        the element, send message ``Error NoSuchElement: {{ id }}``.
         """
         try:
             self.element = self.wd.find_element_by_css_selector(
@@ -338,7 +333,7 @@ class BrowserController:
             # not callable, just send it back
             self.conn.send(method)
 
-    def run(self):
+    def run(self):  # noqa: C901
         """Wait message from the other end of the connection.
 
         When gat message, execute the method specified by the message. The
@@ -465,7 +460,7 @@ class RemoteBrowserTestCase:
         except OSError:
             self.wait(0.2)
             self.server = server.start_server(port=0)
-        self.address = self.server.address
+        self.address = server_config['address']
         self.url = 'http://{0}:{1}/'.format(self.address, self.port)
         self.browser.get(self.url)
         self.wait_until(lambda: server.is_connected())
@@ -480,7 +475,7 @@ class RemoteBrowserTestCase:
     @property
     def port(self) -> int:
         """Get port of the server."""
-        return self.server.port
+        return server_config['port']
 
     def wait(self, timeout: float = None, times: int = 1):
         """Wait for ``timeout`` seconds.
@@ -541,10 +536,8 @@ class WebDriverTestCase:
 
     @classmethod
     def setUpClass(cls):
+        # Keep original loop
         cls._orig_loop = asyncio.get_event_loop()
-        # Need to use different loop for aiohttp after remote_browser tests
-        # but I can't understand why...?
-        asyncio.set_event_loop(asyncio.new_event_loop())
         # When change default loop, tornado's ioloop needs to be reinstalled
         AsyncIOMainLoop().clear_current()
         AsyncIOMainLoop().clear_instance()

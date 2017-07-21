@@ -4,7 +4,6 @@
 import os
 import re
 import asyncio
-import unittest
 from unittest.mock import MagicMock
 
 from syncer import sync
@@ -28,7 +27,7 @@ def tearDownModule():
 
 
 class ElementTestCase(RemoteBrowserTestCase):
-    if os.environ.get('TRAVIS', False):
+    if os.getenv('TRAVIS', False):
         wait_time = 0.1
 
     def setUp(self):
@@ -413,14 +412,14 @@ class TestWebElement(ElementTestCase, TestCase):
         self.set_element(self.tag)
         self.wait_until(
             lambda: re.search(r'255,\s*0,\s* 0,\s*1\s*',
-                self.element.value_of_css_property('color')))
+                              self.element.value_of_css_property('color')))
         self.assertRegex(self.element.value_of_css_property('color'),
                          r'255,\s*0,\s* 0,\s*1\s*')
 
         self.tag.exec('node.style = "color: blue;"')
         self.wait_until(
             lambda: re.search(r'0,\s*0,\s* 255,\s*1\s*',
-                self.element.value_of_css_property('color')))
+                              self.element.value_of_css_property('color')))
         self.assertRegex(self.element.value_of_css_property('color'),
                          r'0,\s*0,\s*255,\s*1\s*')
 
@@ -453,8 +452,6 @@ class TestEvent(ElementTestCase, TestCase):
         self.root.appendChild(self.input)
         return self.root
 
-    # @unittest.skipIf(os.environ.get('TRAVIS', False),
-    #                  reason='This test not pass only on travis')
     def test_click(self):
         # need to wait some times
         self.wait(times=10)

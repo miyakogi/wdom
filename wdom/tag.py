@@ -4,6 +4,7 @@
 import logging
 from collections import Iterable
 from typing import Tuple, Union
+from types import new_class
 
 from wdom.node import Node
 from wdom.element import DOMTokenList, ElementMeta
@@ -98,6 +99,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
             clone.setAttribute(attr, self.getAttribute(attr))
         for c in self.classList:
             clone.addClass(c)
+        clone.style.update(self.style)
         return clone
 
     def getAttribute(self, attr: str) -> str:
@@ -254,7 +256,7 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
     '''
     if tag is None:
         tag = class_name.lower()
-    if type(bases) is not tuple:
+    if not isinstance(type, tuple):
         if isinstance(bases, Iterable):
             bases = tuple(bases)
         elif isinstance(bases, type):
@@ -262,7 +264,9 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
         else:
             TypeError('Invalid base class: {}'.format(str(bases)))
     kwargs['tag'] = tag
-    cls = type(class_name, bases, kwargs)
+    # Here not use type() function, since it does not support
+    # metaclasss (__prepare__) properly.
+    cls = new_class(class_name, bases, {}, lambda ns: ns.update(kwargs))
     return cls
 
 
@@ -386,15 +390,15 @@ Col11 = NewTagClass('Col11', 'div', Div, is_='col11')
 Col12 = NewTagClass('Col12', 'div', Div, is_='col12')
 
 # Some css updates
-DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')  # noqa
-PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')  # noqa
-SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')  # noqa
-SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')  # noqa
-InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')  # noqa
-WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')  # noqa
-DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')  # noqa
-ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')  # noqa
-LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')  # noqa
+DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')  # noqa: E501
+PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')  # noqa: E501
+SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')  # noqa: E501
+SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')  # noqa: E501
+InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')  # noqa: E501
+WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')  # noqa: E501
+DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')  # noqa: E501
+ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')  # noqa: E501
+LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')  # noqa: E501
 
 # css/js/headers
 css_files = []

@@ -9,7 +9,8 @@ from wdom import options
 from wdom.interface import Event
 from wdom.node import DocumentFragment, Comment, Text
 from wdom.element import Attr, Element
-from wdom.document import Document, get_document, get_new_document, set_document  # noqa
+from wdom.document import Document
+from wdom.document import get_document, get_new_document, set_document
 from wdom.document import getElementById, getElementByRimoId
 from wdom.web_node import WebElement
 from wdom.tag import Tag, HTMLElement, A
@@ -60,7 +61,7 @@ class TestMainDocument(TestCase):
             '\s*<title rimo_id="\d+">'
             '\s*W-DOM'
             '\s*</title>'
-            '(\s*<script( type="text/javascript"| rimo_id="\d+"){2}>.*?</script>)?'
+            '(\s*<script( type="text/javascript"| rimo_id="\d+"){2}>.*?</script>)?'  # noqa: E501
             '\s*</head>'
             '\s*<body rimo_id="\d+">'
             '\s*<script( type="text/javascript"| rimo_id="\d+"){2}>'

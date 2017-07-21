@@ -9,6 +9,7 @@ from wdom.document import get_document, Document
 
 class Item(Tag):
     tag = 'span'
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 

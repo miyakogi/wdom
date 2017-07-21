@@ -172,7 +172,7 @@ class Document(Node):
         return ''.join(child.html for child in self.childNodes)
 
 
-def get_new_document(include_rimo: bool = True,
+def get_new_document(include_rimo: bool = True,  # noqa: C901
                      include_skeleton: bool = False,
                      include_normalizecss: bool = False,
                      autoreload: Optional[bool] = None,
@@ -183,20 +183,21 @@ def get_new_document(include_rimo: bool = True,
                      ws_url: str = None,
                      document_factory: Callable[..., Document] = Document,
                      **kwargs) -> Document:
+    """Make and return new `document` object."""
     document = document_factory(
         autoreload=autoreload,
         reload_wait=reload_wait,
         **kwargs)
+
     if log_level is None:
         log_level = config.logging
 
     log_script = []
-    if log_level is not None:
-        if isinstance(log_level, str):
-            log_script.append('var RIMO_LOG_LEVEL = \'{}\''.format(log_level))
-        elif isinstance(log_level, int):
-            log_script.append('var RIMO_LOG_LEVEL = {}'.format(log_level))
-    if log_prefix is not None:
+    if isinstance(log_level, str):
+        log_script.append('var RIMO_LOG_LEVEL = \'{}\''.format(log_level))
+    elif isinstance(log_level, int):
+        log_script.append('var RIMO_LOG_LEVEL = {}'.format(log_level))
+    if log_prefix:
         log_script.append('var RIMO_LOG_PREFIX = \'{}\''.format(log_prefix))
     if log_console:
         log_script.append('var RIMO_LOG_CONSOLE = true')
@@ -204,7 +205,7 @@ def get_new_document(include_rimo: bool = True,
         _s = Script(parent=document.head)
         _s.textContent = '\n{}\n'.format('\n'.join(log_script))
 
-    if ws_url is not None:
+    if ws_url:
         _s = Script(parent=document.head)
         _s.textContent = '\nvar RIMO_WS_URL = \'{}\'\n'.format(ws_url)
 
