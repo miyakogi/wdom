@@ -27,6 +27,7 @@ script:
   - mkdir maint && cd maint
   - cp ${TRAVIS_BUILD_DIR}/.green ./
   - green -R ${TRAVIS_BUILD_DIR}/tests
+  - coverage report
   - cp .coverage ../
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then cd ../ && codecov -b $TRAVIS_BRANCH && coveralls; fi
