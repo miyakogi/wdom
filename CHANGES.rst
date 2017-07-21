@@ -5,6 +5,12 @@ Version 0.2
 
 * Drop python 3.4 support (in plan)
 
+Version 0.1.7 (2017-07-21)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Update PyPI metadata
+* Add shortcut functions (``server.start()`` and ``document.set_app()``)
+
 Version 0.1.6 (2017-07-21)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

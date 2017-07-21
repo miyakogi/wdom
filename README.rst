@@ -27,6 +27,8 @@ codes in python.
 This library includes web-server (`tornado`_), but is not intended to
 be used as a web framework, please use for **Desktop** GUI Applications.
 
+Document: `Read the Docs <http://wdom-py.readthedocs.io/en/latest/?badge=latest>`_
+
 Disclaimer
 ----------
 
