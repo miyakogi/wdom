@@ -25,9 +25,6 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls; fi
 script:
   - tox -c tox_travis.ini
-  - coverage erase
-  - make clean
-  - PYTHONPATH=${TRAVIS_BUILD_DIR} python -m coverage run --source wdom tests/run_tests.py
   - coverage report
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
