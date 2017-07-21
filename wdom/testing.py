@@ -75,12 +75,6 @@ def reset():
     from wdom.server import _tornado
     _tornado.connections.clear()
     _tornado.set_application(_tornado.Application())
-    try:
-        from wdom.server import _aiohttp
-        _aiohttp.connections.clear()
-        _aiohttp.set_application(_aiohttp.Application())
-    except ImportError:
-        pass
     Element._elements_with_id.clear()
     Element._elements.clear()
     customElements.clear()
@@ -542,10 +536,8 @@ class WebDriverTestCase:
 
     @classmethod
     def setUpClass(cls):
+        # Keep original loop
         cls._orig_loop = asyncio.get_event_loop()
-        # Need to use different loop for aiohttp after remote_browser tests
-        # but I can't understand why...?
-        asyncio.set_event_loop(asyncio.new_event_loop())
         # When change default loop, tornado's ioloop needs to be reinstalled
         AsyncIOMainLoop().clear_current()
         AsyncIOMainLoop().clear_instance()

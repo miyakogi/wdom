@@ -37,12 +37,6 @@ cases = [
     ('wdom.examples', 'rev_text'),
     ('wdom.examples', 'theming'),
 ]
-try:
-    import aiohttp
-    cases.append(('wdom.server', '_aiohttp'))
-    del aiohttp
-except ImportError:
-    pass
 
 
 class TestImportModules(TestCase):

@@ -11,30 +11,10 @@ from tornado import autoreload
 from wdom.misc import static_dir, install_asyncio
 from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
-
-logger = logging.getLogger(__name__)
-
-# temporary disable aiohttp
-if False:
-    try:
-        import aiohttp
-        v = aiohttp.__version__.split('.')
-        if int(v[0]) > 0 or int(v[1]) >= 21:
-            from wdom.server import _aiohttp as module
-            logger.info('Use aiohttp server')
-        else:
-            logger.warning(
-                'wdom requires aiohttp >= 0.21.0, but {} is installed. '
-                'please update it by `pip install -U aiohttp.'.format(
-                    aiohttp.__version__)
-            )
-            raise ImportError
-    except ImportError:
-        from wdom.server import _tornado as module
-else:
-    from wdom.server import _tornado as module
+from wdom.server import _tornado as module
 
 __all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
+logger = logging.getLogger(__name__)
 _server = None
 server_config = module.server_config
 
