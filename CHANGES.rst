@@ -5,6 +5,11 @@ Version 0.2
 
 * Drop python 3.4 support (in plan)
 
+Version 0.1.6 (2017-07-21)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Drop aiohttp support
+
 Version 0.1.5 (2017-06-03)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

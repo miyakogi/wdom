@@ -24,10 +24,8 @@ controls HTML elements (DOM) on browser from python, as if it is a GUI element.
 APIs are same as DOM or browser JavaScript, but of course, you can write logic
 codes in python.
 
-This library includes web-server (`tornado`_/`aiohttp`_), but is not intended to
+This library includes web-server (`tornado`_), but is not intended to
 be used as a web framework, please use for **Desktop** GUI Applications.
-
-.. caution:: Currently aiohttp support is disabled.
 
 Disclaimer
 ----------
@@ -67,16 +65,6 @@ Install by pip::
 Or, install latest version from github::
 
     pip install git+http://github.com/miyakogi/wdom
-
-As WDOM depends on `tornado`_ web framework, it will be installed automatically.
-Optionally supports `aiohttp`_, which is a web framework natively supports
-asyncio and is partly written in C. Using aiohttp will result in better
-performance. If you want to use WDOM with aiohttp, install it with pip::
-
-    pip install aiohttp
-
-Any configurations are not required; when aiohttp is available, WDOM will use it
-automatically.
 
 Example
 -------
@@ -266,7 +254,6 @@ Please see `User Guide`_.
 .. _DOM specification: https://dom.spec.whatwg.org/
 .. _Selenium: http://selenium-python.readthedocs.org/
 .. _tornado: http://www.tornadoweb.org/en/stable/
-.. _aiohttp: http://aiohttp.readthedocs.org/en/stable/
 .. _User Guide: http://wdom-py.readthedocs.io/en/latest/guide/index.html
 .. _Issues: https://github.com/miyakogi/wdom/issues
 .. _PR: https://github.com/miyakogi/wdom/pulls
