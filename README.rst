@@ -27,6 +27,8 @@ codes in python.
 This library includes web-server (`tornado`_), but is not intended to
 be used as a web framework, please use for **Desktop** GUI Applications.
 
+Document: `Read the Docs <http://wdom-py.readthedocs.io/en/latest/?badge=latest>`_
+
 Disclaimer
 ----------
 
@@ -73,21 +75,15 @@ Simple example:
 
 .. code-block:: python
 
-    import asyncio
     from wdom.document import get_document
-    from wdom.server import start_server, stop_server
+    from wdom.server import start
 
     if __name__ == '__main__':
         document = get_document()
         h1 = document.createElement('h1')
         h1.textContent = 'Hello, WDOM'
         document.body.appendChild(h1)
-
-        start_server()
-        try:
-            asyncio.get_event_loop().run_forever()
-        except KeyboardInterrupt:
-            stop_server()
+        start()
 
 Execute this code and access ``http://localhost:8888`` by browser.
 ``"Hello, WDOM"`` will shown on the browser.
@@ -101,43 +97,31 @@ tag classes to easily generate elements:
 
 .. code-block:: python
 
-    import asyncio
     from wdom.tag import H1
-    from wdom.document import get_document
-    from wdom.server import start_server, stop_server
+    from wdom.document import set_app
+    from wdom.server import start
 
     if __name__ == '__main__':
-        document = get_document()
         h1 = H1()
         h1.textContent = 'Hello, WDOM'
-        document.body.append(h1)
-
-        start_server()
-        try:
-            asyncio.get_event_loop().run_forever()
-        except KeyboardInterrupt:
-            stop_server()
+        set_app(h1) # equivalent to `wdom.document.get_document().body.appendChild(h1)`
+        start()
 
 Of course, WDOM can handle events:
 
 .. code-block:: python
 
-    import asyncio
     from wdom.tag import H1
-    from wdom.server import start_server, stop_server
-    from wdom.document import get_document
+    from wdom.document import set_app
+    from wdom.server import start
 
     if __name__ == '__main__':
-        document = get_document()
-        h1 = H1('Hello, WDOM', parent=document.body)
+        h1 = H1('Hello, WDOM')
         def rev_text(event):
             h1.textContent = h1.textContent[::-1]
         h1.addEventListener('click', rev_text)
-        start_server()
-        try:
-            asyncio.get_event_loop().run_forever()
-        except KeyboardInterrupt:
-            stop_server()
+        set_app(h1)
+        start()
 
 When string ``"Hello, WDOM"`` is clicked, it will be flipped.
 
@@ -145,10 +129,9 @@ Making components with python class:
 
 .. code-block:: python
 
-    import asyncio
     from wdom.tag import Div, H1, Input
-    from wdom.server import start_server, stop_server
-    from wdom.document import get_document
+    from wdom.document import set_app
+    from wdom.server import start
 
     class MyApp(Div):
         def __init__(self, *args, **kwargs):
@@ -159,17 +142,12 @@ Making components with python class:
 
         def update(self, event):
             self.text.textContent = event.target.value
-            # or, you can write as below
+            # Or, you can write as below
             # self.text.textContent = self.textbox.value
 
     if __name__ == '__main__':
-        document = get_document()
-        document.body.append(MyApp())
-        start_server()
-        try:
-            asyncio.get_event_loop().run_forever()
-        except KeyboardInterrupt:
-            stop_server()
+        set_app(MyApp())
+        start()
 
 
 WDOM package includes some tiny examples. From command line, try::
@@ -188,11 +166,10 @@ frameworks. For example, use bootstrap3:
 
 .. code-block:: python
 
-    import asyncio
     from wdom.themes import bootstrap3
     from wdom.themes.bootstrap3 import Button, PrimaryButton, DangerButton
-    from wdom.server import start_server, stop_server
     from wdom.document import get_document
+    from wdom.server import start
 
     if __name__ == '__main__':
         document = get_document()
@@ -200,11 +177,7 @@ frameworks. For example, use bootstrap3:
         document.body.append(
             Button('Button'), PrimaryButton('Primary'), DangerButton('Danger')
         )
-        start_server()
-        try:
-            asyncio.get_event_loop().run_forever()
-        except KeyboardInterrupt:
-            stop_server()
+        start()
 
 Differences are:
 

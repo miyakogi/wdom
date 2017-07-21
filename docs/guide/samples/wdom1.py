@@ -1,6 +1,5 @@
-import asyncio
-from wdom.server import start_server, stop_server
-from wdom.document import get_document
+from wdom.document import set_app
+from wdom.server import start
 from wdom.tag import Div, H1, Input
 
 class MyElement(Div):
@@ -17,10 +16,5 @@ class MyElement(Div):
         self.h1.textContent = event.target.value
 
 if __name__ == '__main__':
-    document = get_document()
-    document.body.appendChild(MyElement())
-    server = start_server()
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        stop_server()
+    set_app(MyElement())
+    server = start()

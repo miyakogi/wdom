@@ -3,7 +3,7 @@
 
 import os
 import logging
-import importlib
+import asyncio
 from typing import Optional
 
 from tornado import autoreload
@@ -48,29 +48,8 @@ def get_app(*args, **kwargs):
     return module.get_app()
 
 
-def set_server_type(type):
-    """Set server type to document and handle websocket connection.
-
-    By default, if aiohttp is available wdom uses aiohttp for server. Otherwise
-    use tornado.
-    """
-    global module
-    if type == 'aiohttp':
-        module = importlib.import_module('wdom.server._aiohttp')
-    elif type == 'tornado':
-        module = importlib.import_module('wdom.server._tornado')
-    else:
-        raise ValueError(
-            '{0} is not supported now. Available server types are:'
-            ' aiohttp, tornado'.format(type)
-        )
-
-
-def start_server(app: Optional[module.Application] = None,
-                 browser: Optional[str] = None,
-                 address: Optional[str] = None,
-                 check_time: Optional[int] = 500,
-                 **kwargs):
+def start_server(browser: Optional[str] = None, address: Optional[str] = None,
+                 check_time: Optional[int] = 500, **kwargs):
     """Start web server."""
     # Add application's static files directory
     from wdom.document import get_document
@@ -96,3 +75,15 @@ def start_server(app: Optional[module.Application] = None,
 def stop_server(server=None):
     """Terminate web server."""
     module.stop_server(server or _server)
+
+
+def start(**kwargs):
+    """Start web server.
+    Run until ``Ctrl-c`` pressed, or if auto-shutdown is enabled, until when
+    window is closed.
+    """
+    start_server(**kwargs)
+    try:
+        asyncio.get_event_loop().run_forever()
+    except KeyboardInterrupt:
+        stop_server()

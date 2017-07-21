@@ -272,7 +272,10 @@ class Node(Node):
 
     @property
     def textContent(self) -> str:
-        """Return text contents of this node and child nodes."""
+        '''Return text contents of this node and all chid nodes. When any value
+        is set to this property, all child nodes are removed and new value is
+        set as a text node.
+        '''
         return self._get_text_content()
 
     @textContent.setter

@@ -131,18 +131,10 @@ class WebElement(HTMLElement, WebIF):
         fut = yield from self.js_query('getBoundingClientRect')
         return fut
 
-    @property
-    def textContent(self) -> str:
-        '''Return text contents of this node and all chid nodes. Any value is
-        set to this property, all child nodes are removed and new value is set
-        as a text node.
-        '''
-        return self._get_text_content()
-
     def _set_text_content_web(self, text: str):
         self.js_exec('textContent', self.textContent)
 
-    @textContent.setter
+    @HTMLElement.textContent.setter
     def textContent(self, text: str):
         self._set_text_content(text)
         self._set_text_content_web(text)
@@ -150,11 +142,7 @@ class WebElement(HTMLElement, WebIF):
     def _set_inner_html_web(self, html: str):
         self.js_exec('innerHTML', html)
 
-    @property
-    def innerHTML(self) -> str:
-        return self._get_inner_html()
-
-    @innerHTML.setter
+    @HTMLElement.innerHTML.setter
     def innerHTML(self, html: str):
         self._set_inner_html_web(html)
         self._set_inner_html(html)

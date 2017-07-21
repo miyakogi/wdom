@@ -1,7 +1,6 @@
-import asyncio
 from wdom.tag import Div, H1, Input
 from wdom.document import get_document
-from wdom.server import start_server, stop_server
+from wdom.server import start
 
 class MyElement(Div):
     tag = 'my-element'  # custom tag name
@@ -23,9 +22,4 @@ if __name__ == '__main__':
     # Or, from createElement method
     my_element = document.createElement('my-element')
     document.body.appendChild(my_element)
-
-    start_server()
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        stop_server()
+    start()

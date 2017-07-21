@@ -3,8 +3,6 @@
 
 import asyncio
 
-from wdom.document import get_document
-from wdom.server import start_server, stop_server
 from wdom.themes.default import Div, H1, Container
 from wdom.themes.default import PrimaryButton, DangerButton, DefaultButton
 
@@ -54,14 +52,7 @@ def sample_app(**kwargs) -> Div:
 
 
 if __name__ == '__main__':
-    from wdom.themes import default
-    document = get_document()
-    document.register_theme(default)
-    document.body.prepend(sample_app())
-    start_server()
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        stop_server()
+    from wdom.document import set_app
+    from wdom import server
+    set_app(sample_app())
+    server.start()

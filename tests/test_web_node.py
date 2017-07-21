@@ -9,7 +9,7 @@ from syncer import sync
 from wdom.interface import Event
 from wdom.testing import TestCase
 from wdom.web_node import WebElement
-from wdom.server import set_server_type, _tornado
+from wdom.server import _tornado
 
 
 class TestWebElement(TestCase):
@@ -190,7 +190,6 @@ class TestEventMessage(TestCase):
 class TestQuery(TestCase):
     def setUp(self):
         super().setUp()
-        set_server_type('tornado')
         _tornado.connections.append(MagicMock())
         self.elm = WebElement('tag')
         self.elm.js_exec = MagicMock()

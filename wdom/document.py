@@ -225,4 +225,11 @@ def set_document(new_document: Document, *args, **kwargs):
     rootDocument = new_document
 
 
+def set_app(app: 'Tag') -> None:
+    """Set root ``Tag`` as applicaion."""
+    document = get_document()
+    document.body.prepend(app)
+
+
+
 rootDocument = get_new_document()

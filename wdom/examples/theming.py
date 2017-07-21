@@ -188,17 +188,9 @@ def sample_page(theme=default) -> Document:
 
 
 def main():
-    import asyncio
-    from wdom.server import start_server, get_app, stop_server
-    doc = sample_page()
-    app = get_app(document=doc)
-    loop = asyncio.get_event_loop()
-    server = start_server(app=app, loop=loop)
-    try:
-        loop.run_forever()
-    except KeyboardInterrupt:
-        stop_server(server)
-        loop.close()
+    from wdom import server
+    sample_page()
+    server.start()
 
 
 if __name__ == '__main__':

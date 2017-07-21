@@ -203,11 +203,7 @@ class NestedTag(Tag):
         else:
             super().empty()
 
-    @property
-    def textContent(self) -> str:
-        return super().textContent
-
-    @textContent.setter
+    @Tag.textContent.setter
     def textContent(self, text: str):
         if self._inner_element:
             self._inner_element.textContent = text

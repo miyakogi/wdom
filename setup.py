@@ -22,7 +22,7 @@ if sys.version_info < (3, 5):
 
 setup(
     name='wdom',
-    version='0.1.6',
+    version='0.1.7',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
@@ -47,6 +47,7 @@ setup(
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
     test_suite='wdom.tests',
 
