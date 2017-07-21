@@ -172,7 +172,7 @@ class Document(Node):
         return ''.join(child.html for child in self.childNodes)
 
 
-def get_new_document(include_rimo: bool = True,  # noqa
+def get_new_document(include_rimo: bool = True,  # noqa: C901
                      include_skeleton: bool = False,
                      include_normalizecss: bool = False,
                      autoreload: Optional[bool] = None,

@@ -125,9 +125,9 @@ class TestInput(RemoteBrowserTestCase, TestCase):
         self.textarea = Textarea(parent=self.root)
         self.checkbox = CheckBox(parent=self.root, id='check1')
         self.check_l = Label('Check 1', parent=self.root, **{'for': 'check1'})
-        self.radio1 = Input(parent=self.root, type='radio', name='radio_test', id='r1')  # noqa
-        self.radio2 = Input(parent=self.root, type='radio', name='radio_test', id='r2')  # noqa
-        self.radio3 = Input(parent=self.root, type='radio', name='radio_test2', id='r3')  # noqa
+        self.radio1 = Input(parent=self.root, type='radio', name='radio_test', id='r1')  # noqa: E501
+        self.radio2 = Input(parent=self.root, type='radio', name='radio_test', id='r2')  # noqa: E501
+        self.radio3 = Input(parent=self.root, type='radio', name='radio_test2', id='r3')  # noqa: E501
         self.radio1_l = Label('Radio 1', parent=self.root, **{'for': 'r1'})
         self.radio2_l = Label('Radio 2', parent=self.root, **{'for': 'r2'})
         self.radio3_l = Label('Radio 3', parent=self.root, **{'for': 'r3'})

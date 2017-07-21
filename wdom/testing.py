@@ -56,7 +56,7 @@ def get_chromedriver_path():
     return chromedriver_path
 
 
-# see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/  # noqa
+# see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/  # noqa: E501
 def get_chrome_options():
     chrome_options = webdriver.ChromeOptions()
     if 'TRAVIS'in os.environ:
@@ -339,7 +339,7 @@ class BrowserController:
             # not callable, just send it back
             self.conn.send(method)
 
-    def run(self):
+    def run(self):  # noqa: C901
         """Wait message from the other end of the connection.
 
         When gat message, execute the method specified by the message. The

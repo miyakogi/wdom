@@ -390,15 +390,15 @@ Col11 = NewTagClass('Col11', 'div', Div, is_='col11')
 Col12 = NewTagClass('Col12', 'div', Div, is_='col12')
 
 # Some css updates
-DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')  # noqa
-PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')  # noqa
-SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')  # noqa
-SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')  # noqa
-InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')  # noqa
-WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')  # noqa
-DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')  # noqa
-ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')  # noqa
-LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')  # noqa
+DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')  # noqa: E501
+PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')  # noqa: E501
+SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')  # noqa: E501
+SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')  # noqa: E501
+InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')  # noqa: E501
+WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')  # noqa: E501
+DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')  # noqa: E501
+ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')  # noqa: E501
+LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')  # noqa: E501
 
 # css/js/headers
 css_files = []
