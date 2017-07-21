@@ -24,6 +24,7 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:
+  - mkdir maint && cd maint
   - coverage run --source wdom ${TRAVIS_BUILD_DIR}/tests/run_tests.py
   - coverage report
 after_success:
