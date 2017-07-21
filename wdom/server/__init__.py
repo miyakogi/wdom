@@ -3,7 +3,6 @@
 
 import os
 import logging
-import importlib
 import asyncio
 from typing import Optional
 
@@ -47,24 +46,6 @@ def add_static_path(prefix, path, no_watch: bool = False):
 def get_app(*args, **kwargs):
     """Get root Application object."""
     return module.get_app()
-
-
-def set_server_type(type):
-    """Set server type to document and handle websocket connection.
-
-    By default, if aiohttp is available wdom uses aiohttp for server. Otherwise
-    use tornado.
-    """
-    global module
-    if type == 'aiohttp':
-        module = importlib.import_module('wdom.server._aiohttp')
-    elif type == 'tornado':
-        module = importlib.import_module('wdom.server._tornado')
-    else:
-        raise ValueError(
-            '{0} is not supported now. Available server types are:'
-            ' aiohttp, tornado'.format(type)
-        )
 
 
 def start_server(browser: Optional[str] = None, address: Optional[str] = None,
