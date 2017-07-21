@@ -25,7 +25,8 @@ install:
   - pip install ${TRAVIS_BUILD_DIR}
 script:
   - mkdir maint && cd maint
-  - green -r -o "*/themes/*,*/exapmles/*" ${TRAVIS_BUILD_DIR}/tests
+  - cp ${TRAVIS_BUILD_DIR}/.green ./
+  - green -R ${TRAVIS_BUILD_DIR}/tests
   - cp .coverage ../
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then cd ../ && codecov -b $TRAVIS_BRANCH && coveralls; fi
