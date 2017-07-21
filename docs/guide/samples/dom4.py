@@ -1,6 +1,5 @@
-import asyncio
-from wdom.server import start_server, stop_server
 from wdom.document import get_document
+from wdom.server import start
 
 if __name__ == '__main__':
     document = get_document()
@@ -12,9 +11,4 @@ if __name__ == '__main__':
     input.addEventListener('input', update)
     document.body.appendChild(input)
     document.body.appendChild(h1)
-
-    start_server()
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        stop_server()
+    start()

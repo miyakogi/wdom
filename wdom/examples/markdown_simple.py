@@ -103,21 +103,16 @@ def sample_page(**kwargs):
         doc.add_jsfile(js)
     for css in css_files:
         doc.add_cssfile(css)
-    app = Div(parent=doc.body, style='width: 90vw; margin: auto')
+    app = Div(style='width: 90vw; margin: auto')
     title = H1('Simple Markdown Editor', class_='text-center')
     app.appendChild(title)
     app.appendChild(Hr())
     app.appendChild(Editor())
-    return doc
+    return app
 
 
 if __name__ == '__main__':
-    import asyncio
+    from wdom.document import set_app
     from wdom import server
-    sample_page()
-    server.start_server()
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        pass
-    server.stop_server()
+    set_app(sample_page())
+    server.start()

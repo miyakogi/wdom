@@ -26,14 +26,7 @@ def sample_app(**kwargs):
 
 
 if __name__ == '__main__':
-    import asyncio
-    from wdom.document import get_document
+    from wdom.document import set_app
     from wdom import server
-    document = get_document()
-    document.body.prepend(sample_app())
-    server.start_server()
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        pass
-    server.stop_server()
+    set_app(sample_app())
+    server.start()
