@@ -423,7 +423,7 @@ class TestElement(TestCase):
         self.elm.innerHTML = '<b></b>'
         self.assertEqual(self.elm.innerHTML, '<b></b>')
         self.assertEqual(self.elm.firstChild.tag, 'b')
-        self.assertTrue(isinstance(self.elm.firstChild, HTMLElement))
+        self.assertTrue(isinstance(self.elm.firstChild, Element))
 
     def test_inner_html_nest(self):
         html = '<b><c>d</c>e</b>'
@@ -445,8 +445,8 @@ class TestElement(TestCase):
         self.assertEqual(self.elm.childNodes.length, 3)
         self.assertTrue(isinstance(self.elm.firstChild, Text))
         self.assertTrue(isinstance(self.elm.lastChild, Text))
-        self.assertTrue(isinstance(self.elm.firstElementChild, HTMLElement))
-        self.assertTrue(isinstance(self.elm.lastElementChild, HTMLElement))
+        self.assertTrue(isinstance(self.elm.firstElementChild, Element))
+        self.assertTrue(isinstance(self.elm.lastElementChild, Element))
 
     def test_insert_adjacent_html(self):
         self.elm.appendChild(self.c1)
@@ -689,7 +689,7 @@ class TestElement(TestCase):
     def test_custom_tag(self):
         self.elm.innerHTML = '<new-tag></new-tag>'
         child = self.elm.firstChild
-        self.assertEqual(child.__class__, HTMLElement)
+        self.assertEqual(child.__class__, Element)
         customElements.define('new-tag', self.NewTag)
         self.assertEqual(child.__class__, self.NewTag)
 
@@ -701,7 +701,7 @@ class TestElement(TestCase):
     def test_custom_tag_is(self):
         self.elm.innerHTML = '<a is="my-a"></a>'
         child = self.elm.firstChild
-        self.assertEqual(child.__class__, HTMLElement)
+        self.assertEqual(child.__class__, Element)
         self.assertEqual(child.getAttribute('is'), 'my-a')
         customElements.define('my-a', self.NewTag, {'extends': 'a'})
         self.assertEqual(self.elm.firstChild.__class__, self.NewTag)
@@ -850,6 +850,16 @@ class TestHTMLElement(TestCase):
         clone.draggable = False
         self.assertEqual(self.elm.html, '<a draggable="true"></a>')
         self.assertEqual(clone.html, '<a hidden></a>')
+
+    def test_inner_html(self):
+        self.assertEqual(self.elm.innerHTML, '')
+        self.elm.appendChild(HTMLElement('a'))
+        self.assertEqual(self.elm.innerHTML, '<a></a>')
+
+        self.elm.innerHTML = '<b></b>'
+        self.assertEqual(self.elm.innerHTML, '<b></b>')
+        self.assertEqual(self.elm.firstChild.tag, 'b')
+        self.assertTrue(isinstance(self.elm.firstChild, HTMLElement))
 
 
 class TestSelectElement(TestCase):

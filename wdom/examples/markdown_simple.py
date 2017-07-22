@@ -86,12 +86,17 @@ class Editor(Row):
 
         self.set_style('default')
         self.editor.textContent = src
-        self.viewer.appendChild(RawHtml(self.md(src)))
+        self.viewer.innerHTML = self.md(src)
+        # TIPS: Wen just showing HTML, `appendChild(RawHTML(html))` is better
+        # than innerHTML on performance since it skips parse process.
+        # self.viewer.appendChild(RawHtml(self.md(src)))
 
     def render(self, event):
         content = event.currentTarget.textContent
-        self.viewer.empty()
-        self.viewer.appendChild(RawHtml(self.md(content)))
+        self.viewer.innerHTML = self.md(content)
+        # TIPS: Same as above reason, RawHtml is also better here
+        # self.viewer.empty()
+        # self.viewer.appendChild(RawHtml(self.md(content)))
 
     def set_style(self, style: str):
         self.css.innerHTML = HtmlFormatter(style=style).get_style_defs()

@@ -5,6 +5,12 @@ Version 0.2
 
 * Drop python 3.4 support (in plan)
 
+Version 0.1.8 (not released)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Improve HTML parsing
+* Don't send events to unmounted DOM
+
 Version 0.1.7 (2017-07-21)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

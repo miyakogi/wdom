@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.element import HTMLElement
+from wdom.web_node import WebElement
 from wdom.tag import Tag, DOMTokenList, NewTagClass, NestedTag
 from wdom.window import customElements
 from wdom.testing import TestCase
@@ -309,7 +309,7 @@ class TestTag(TestCase):
 
     def test_custom_tag(self):
         self.tag.innerHTML = '<new-tag></new-tag>'
-        self.assertEqual(type(self.tag.firstChild), HTMLElement)
+        self.assertEqual(type(self.tag.firstChild), WebElement)
         self.assertFalse(self.tag.firstChild._registered)
         customElements.define('new-tag', self.NewTag)
         self.assertEqual(type(self.tag.firstChild), self.NewTag)
@@ -327,7 +327,7 @@ class TestTag(TestCase):
 
     def test_custom_tag_is(self):
         self.tag.innerHTML = '<a is="new-a"></a>'
-        self.assertEqual(type(self.tag.firstChild), HTMLElement)
+        self.assertEqual(type(self.tag.firstChild), WebElement)
         self.assertFalse(self.tag.firstChild._registered)
         customElements.define('new-a', self.NewTag, {'extends': 'a'})
         self.assertEqual(type(self.tag.firstChild), self.NewTag)
@@ -341,7 +341,7 @@ class TestTag(TestCase):
 
         # test unregistered `is`
         self.tag.innerHTML = '<a is="new-b"></a>'
-        self.assertEqual(type(self.tag.firstChild), HTMLElement)
+        self.assertEqual(type(self.tag.firstChild), WebElement)
         self.assertFalse(self.tag.firstChild._registered)
 
     def test_custom_tag_define_by_class(self):
