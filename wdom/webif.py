@@ -70,8 +70,9 @@ class WebIF:
         on browser. The message is serialized by JSON object and send via
         WebSocket connection.
         '''
-        obj['target'] = 'node'
-        obj['id'] = self.rimo_id
-        obj['tag'] = self.tag
-        msg = json.dumps(obj)
-        server.send_message(msg)
+        if self.ownerDocument is not None:
+            obj['target'] = 'node'
+            obj['id'] = self.rimo_id
+            obj['tag'] = self.tag
+            msg = json.dumps(obj)
+            server.send_message(msg)

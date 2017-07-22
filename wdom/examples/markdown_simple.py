@@ -90,8 +90,9 @@ class Editor(Row):
 
     def render(self, event):
         content = event.currentTarget.textContent
-        self.viewer.empty()
-        self.viewer.appendChild(RawHtml(self.md(content)))
+        # self.viewer.empty()
+        # self.viewer.appendChild(RawHtml(self.md(content)))
+        self.viewer.innerHTML = self.md(content)
 
     def set_style(self, style: str):
         self.css.innerHTML = HtmlFormatter(style=style).get_style_defs()
