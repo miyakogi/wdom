@@ -3,17 +3,16 @@
 
 try:
     import misaka as m
+    from pygments import highlight
+    from pygments.styles import get_all_styles
+    from pygments.formatters import HtmlFormatter
+    from pygments.lexers import get_lexer_by_name
 except ImportError:
-    print('ERROR: Install `misaka` before run this example, '
-          'by `pip install misaka`.')
+    print('ERROR: Install `misaka` and `pygments` before run this example, '
+          'by `pip install misaka pygments`.')
     exit()
-from pygments import highlight
-from pygments.styles import get_all_styles
-from pygments.formatters import HtmlFormatter
-from pygments.lexers import get_lexer_by_name
 
 from wdom.document import get_document
-from wdom.node import RawHtml
 from wdom.themes.bootstrap3 import css_files, js_files
 from wdom.themes.bootstrap3 import Div, Textarea, Col6, Row, H1, Hr
 from wdom.themes.bootstrap3 import Select, Option, Style
@@ -89,6 +88,7 @@ class Editor(Row):
         self.viewer.innerHTML = self.md(src)
         # TIPS: Wen just showing HTML, `appendChild(RawHTML(html))` is better
         # than innerHTML on performance since it skips parse process.
+        # from wdom.node import RawHtml
         # self.viewer.appendChild(RawHtml(self.md(src)))
 
     def render(self, event):
