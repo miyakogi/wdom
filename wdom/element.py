@@ -233,6 +233,7 @@ class NamedNodeMap:
 
 def _create_element(tag: str, name: str = None, base: type = None,
                     attr: dict = None):
+    from wdom.web_node import WebElement
     from wdom.tag import Tag
     from wdom.window import customElements
     if attr is None:
@@ -243,20 +244,19 @@ def _create_element(tag: str, name: str = None, base: type = None,
         base_class = customElements.get((tag, None))
     if base_class is None:
         attr['_registered'] = False
-        base_class = base or HTMLElement
+        base_class = base or WebElement
     if issubclass(base_class, Tag):
         return base_class(**attr)
     else:
         return base_class(tag, **attr)
 
 
-class Parser(HTMLParser):
+class ElementParser(HTMLParser):
     def __init__(self, *args, default_class=None, **kwargs):
-        # Import here
-        self.default_class = default_class or HTMLElement
         super().__init__(*args, **kwargs)
         self.elm = DocumentFragment()
         self.root = self.elm
+        self.default_class = Element
 
     def handle_starttag(self, tag, attr):
         attrs = dict(attr)
@@ -276,6 +276,12 @@ class Parser(HTMLParser):
 
     def handle_comment(self, comment: str):
         self.elm.append(Comment(comment))
+
+
+class HTMLElementParser(ElementParser):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.default_class = HTMLElement
 
 
 _str_attr_doc = '''
@@ -338,7 +344,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
               ChildNode, metaclass=ElementMeta):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
-    _parser_default_class = None
+    _parser_class = ElementParser
     _elements = WeakSet()
     _elements_with_id = WeakValueDictionary()
     _should_escape_text = True
@@ -384,7 +390,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         return tag + '>'
 
     def _parse_html(self, html: str) -> DocumentFragment:
-        parser = Parser(default_class=self._parser_default_class)
+        parser = self._parser_class()
         parser.feed(html)
         return parser.root
 
@@ -537,6 +543,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 class HTMLElement(Element):
     _special_attr_string = ['title', 'type']
     _special_attr_boolean = ['hidden']
+    _parser_class = HTMLElementParser
 
     def __init__(self, *args, style: str=None, **kwargs):
         super().__init__(*args, **kwargs)
