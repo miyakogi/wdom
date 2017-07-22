@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import json
 import logging
 from asyncio import Future
 from typing import Optional
@@ -74,5 +73,4 @@ class WebIF:
             obj['target'] = 'node'
             obj['id'] = self.rimo_id
             obj['tag'] = self.tag
-            msg = json.dumps(obj)
-            server.send_message(msg)
+            server.push_message(obj)

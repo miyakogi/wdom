@@ -29,7 +29,8 @@ def event_handler(msg: dict):
     _id = e.currentTarget.get('id')
     currentTarget = getElementByRimoId(_id)
     if currentTarget is None:
-        logger.warning('No such element: rimo_id={}'.format(_id))
+        if e.type not in ['mount', 'unmount']:
+            logger.warning('No such element: rimo_id={}'.format(_id))
         return
 
     currentTarget.on_event_pre(e)
@@ -51,13 +52,14 @@ def response_handler(msg: dict):
 
 def on_websocket_message(message):
     """Handle messages from browser."""
-    msg = json.loads(message)
-    _type = msg.get('type')
-    if _type == 'log':
-        log_handler(msg.get('level'), msg.get('message'))
-    elif _type == 'event':
-        event_handler(msg)
-    elif _type == 'response':
-        response_handler(msg)
-    else:
-        raise ValueError('unkown message type: {}'.format(message))
+    msgs = json.loads(message)
+    for msg in msgs:
+        _type = msg.get('type')
+        if _type == 'log':
+            log_handler(msg.get('level'), msg.get('message'))
+        elif _type == 'event':
+            event_handler(msg)
+        elif _type == 'response':
+            response_handler(msg)
+        else:
+            raise ValueError('unkown message type: {}'.format(message))

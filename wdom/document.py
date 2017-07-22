@@ -181,6 +181,7 @@ def get_new_document(include_rimo: bool = True,  # noqa: C901
                      log_prefix: str = None,
                      log_console: bool = False,
                      ws_url: str = None,
+                     message_wait: float = config.message_wait,
                      document_factory: Callable[..., Document] = Document,
                      **kwargs) -> Document:
     """Make and return new `document` object."""
@@ -193,6 +194,7 @@ def get_new_document(include_rimo: bool = True,  # noqa: C901
         log_level = config.logging
 
     log_script = []
+    log_script.append('var RIMO_MESSAGE_WAIT = {}'.format(message_wait))
     if isinstance(log_level, str):
         log_script.append('var RIMO_LOG_LEVEL = \'{}\''.format(log_level))
     elif isinstance(log_level, int):
@@ -229,7 +231,6 @@ def set_app(app: 'Tag') -> None:
     """Set root ``Tag`` as applicaion."""
     document = get_document()
     document.body.prepend(app)
-
 
 
 rootDocument = get_new_document()

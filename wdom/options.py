@@ -76,6 +76,10 @@ parser.add_argument(
     ' when --auto-shutdown is enabled (default: 1.0 [sec]).',
 )
 parser.add_argument(
+    '--message-wait', default=0.005, type=float,
+    help='Duration (seconds) to send WS messages (default: 0.005 [sec]).',
+)
+parser.add_argument(
     '--open-browser', default=False, action='store_const', const=True,
     help='Open browser automatically (default: False).',
 )
