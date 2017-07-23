@@ -14,7 +14,7 @@ from wdom.interface import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
 from wdom.element import Element, Attr, _create_element
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 from wdom.tag import HTMLElement
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
@@ -28,8 +28,8 @@ def getElementById(id: Union[str, int]) -> Optional[Node]:
         return None
 
 
-def getElementByRimoId(id: Union[str, int]) -> Optional[WebElement]:
-    elm = WebElement._elements_with_rimo_id.get(str(id))
+def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
+    elm = WdomElement._elements_with_rimo_id.get(str(id))
     if elm and elm.ownerDocument:
         return elm
     else:
@@ -96,7 +96,7 @@ class Document(Node):
         if elm and elm.ownerDocument is self:
             return elm
 
-    def getElementByRimoId(self, id: Union[str, int]) -> Optional[WebElement]:
+    def getElementByRimoId(self, id: Union[str, int]) -> Optional[WdomElement]:
         elm = getElementByRimoId(id)
         if elm and elm.ownerDocument is self:
             return elm
@@ -181,6 +181,7 @@ def get_new_document(include_rimo: bool = True,  # noqa: C901
                      log_prefix: str = None,
                      log_console: bool = False,
                      ws_url: str = None,
+                     message_wait: float = config.message_wait,
                      document_factory: Callable[..., Document] = Document,
                      **kwargs) -> Document:
     """Make and return new `document` object."""
@@ -193,6 +194,7 @@ def get_new_document(include_rimo: bool = True,  # noqa: C901
         log_level = config.logging
 
     log_script = []
+    log_script.append('var RIMO_MESSAGE_WAIT = {}'.format(message_wait))
     if isinstance(log_level, str):
         log_script.append('var RIMO_LOG_LEVEL = \'{}\''.format(log_level))
     elif isinstance(log_level, int):
@@ -229,7 +231,6 @@ def set_app(app: 'Tag') -> None:
     """Set root ``Tag`` as applicaion."""
     document = get_document()
     document.body.prepend(app)
-
 
 
 rootDocument = get_new_document()

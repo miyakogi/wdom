@@ -8,15 +8,15 @@ from syncer import sync
 
 from wdom.interface import Event
 from wdom.testing import TestCase
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 from wdom.server import _tornado
 
 
 class TestWebElement(TestCase):
     def setUp(self):
-        self.elm = WebElement('tag')
-        self.c1 = WebElement()
-        self.c2 = WebElement()
+        self.elm = WdomElement('tag')
+        self.c1 = WdomElement()
+        self.c2 = WdomElement()
         self.js_mock = MagicMock()
         self.js_mock1 = MagicMock()
         self.js_mock2 = MagicMock()
@@ -42,7 +42,7 @@ class TestWebElement(TestCase):
         self.assertEqual('<tag><c1><c2></c2></c1></tag>', self.elm.html_noid)
 
     def test_id_init(self):
-        elm = WebElement('tag', rimo_id='myid')
+        elm = WdomElement('tag', rimo_id='myid')
         self.assertEqual('<tag rimo_id="myid"></tag>', elm.html)
 
     def test_not_connected(self):
@@ -113,9 +113,9 @@ class TestWebElement(TestCase):
             'setAttribute', 'style', 'color: black;')
 
     def test_style_init(self):
-        _js_exec = WebElement.js_exec
-        WebElement.js_exec = self.js_mock
-        WebElement('elm', style='color: red;')
+        _js_exec = WdomElement.js_exec
+        WdomElement.js_exec = self.js_mock
+        WdomElement('elm', style='color: red;')
         _call = call('setAttribute', 'style', 'color: red;')
         _call_remove = call('removeAttribute', 'style')
         self.js_mock.assert_has_calls([_call])
@@ -126,7 +126,7 @@ class TestWebElement(TestCase):
             elif c == _call_remove:
                 raise AssertionError('Unexpeted remove style')
         self.assertEqual(count, 1)
-        WebElement.js_exec = _js_exec
+        WdomElement.js_exec = _js_exec
 
     def test_set_text_content(self):
         self.elm.textContent = 'text'
@@ -162,7 +162,7 @@ class TestWebElement(TestCase):
 
 class TestEventMessage(TestCase):
     def setUp(self):
-        self.elm = WebElement('tag')
+        self.elm = WdomElement('tag')
         self.elm.js_exec = MagicMock()
         self.mock = MagicMock(_is_coroutine=False)
         self.elm.addEventListener('click', self.mock)
@@ -191,7 +191,7 @@ class TestQuery(TestCase):
     def setUp(self):
         super().setUp()
         _tornado.connections.append(MagicMock())
-        self.elm = WebElement('tag')
+        self.elm = WdomElement('tag')
         self.elm.js_exec = MagicMock()
         self.msg = {
             'type': 'response',

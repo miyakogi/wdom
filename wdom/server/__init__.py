@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import json
 import logging
 import asyncio
 from typing import Optional
@@ -17,20 +18,30 @@ __all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
 logger = logging.getLogger(__name__)
 _server = None
 server_config = module.server_config
+_msg_queue = []
 
 
-def is_connected():
+def is_connected() -> bool:
     """Check if the current server has a client connection."""
     return module.is_connected()
 
 
-def send_message(msg: str):
+def push_message(msg: dict) -> None:
+    """Push message on the message queue."""
+    _msg_queue.append(msg)
+
+
+def send_message() -> None:
     """Send message to all client connections."""
+    if not _msg_queue:
+        return
+    msg = json.dumps(_msg_queue)
+    _msg_queue.clear()
     for conn in module.connections:
         conn.write_message(msg)
 
 
-def add_static_path(prefix, path, no_watch: bool = False):
+def add_static_path(prefix, path, no_watch: bool = False) -> None:
     """Add directory to serve static files.
 
     First argument ``prefix`` is a URL prefix for the ``path``. ``path`` must
@@ -43,9 +54,16 @@ def add_static_path(prefix, path, no_watch: bool = False):
         watch_dir(path)
 
 
-def get_app(*args, **kwargs):
+def get_app(*args, **kwargs) -> 'Application':
     """Get root Application object."""
     return module.get_app()
+
+
+@asyncio.coroutine
+def _message_loop():
+    while True:
+        send_message()
+        yield from asyncio.sleep(config.message_wait)
 
 
 def start_server(browser: Optional[str] = None, address: Optional[str] = None,
@@ -64,6 +82,9 @@ def start_server(browser: Optional[str] = None, address: Optional[str] = None,
     _server = module.start_server(**kwargs)
     logger.info('Start server on {0}:{1:d}'.format(
         server_config['address'], server_config['port']))
+
+    # start messaging loop
+    asyncio.ensure_future(_message_loop())
 
     if config.open_browser:
         open_browser('http://{}:{}/'.format(server_config['address'],

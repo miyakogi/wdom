@@ -12,7 +12,7 @@ from wdom.testing import TestCase
 from wdom.document import get_document
 from wdom.misc import install_asyncio
 from wdom.node import DocumentFragment, Text
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
 from wdom.testing import start_remote_browser, close_remote_browser
 
@@ -42,13 +42,13 @@ class ElementTestCase(RemoteBrowserTestCase):
 
 class TestWebElement(ElementTestCase, TestCase):
     def get_elements(self):
-        self.root = WebElement('div')
-        self.tag = WebElement('span', parent=self.root)
+        self.root = WdomElement('div')
+        self.tag = WdomElement('span', parent=self.root)
         self.df = DocumentFragment()
-        self.c1 = WebElement('c1')
-        self.c2 = WebElement('c2')
-        self.c3 = WebElement('c3')
-        self.c4 = WebElement('c4')
+        self.c1 = WdomElement('c1')
+        self.c2 = WdomElement('c2')
+        self.c3 = WdomElement('c3')
+        self.c4 = WdomElement('c4')
         self.c1.textContent = 'child1'
         self.c2.textContent = 'child2'
         self.c3.textContent = 'child3'
@@ -124,7 +124,7 @@ class TestWebElement(ElementTestCase, TestCase):
     def test_insert_child(self):
         self.set_element(self.tag)
         # test parent in constructor
-        self.c1 = WebElement('c1', parent=self.tag)
+        self.c1 = WdomElement('c1', parent=self.tag)
         self.c1.textContent = 'child1'
 
         self.assertIsTrue(self.set_element(self.c1))
@@ -388,7 +388,7 @@ class TestWebElement(ElementTestCase, TestCase):
     @sync
     @asyncio.coroutine
     def test_get_rect(self):
-        rect = WebElement('div', style='width:200px;height:100px;')
+        rect = WdomElement('div', style='width:200px;height:100px;')
         self.tag.appendChild(rect)
         yield from asyncio.sleep(self.wait_time)
 
@@ -399,8 +399,7 @@ class TestWebElement(ElementTestCase, TestCase):
     @sync
     @asyncio.coroutine
     def test_scroll(self):
-        rect = WebElement('div',
-                          style='width:3000px;height:3000px;background:#eee;')
+        rect = WdomElement('div', style='width:3000px;height:3000px;background:#eee;')  # noqa: #501
         self.tag.appendChild(rect)
         yield from asyncio.sleep(self.wait_time)
 
@@ -441,20 +440,20 @@ class TestWebElement(ElementTestCase, TestCase):
 
 class TestEvent(ElementTestCase, TestCase):
     def get_elements(self):
-        self.root = WebElement('div')
-        self.tag = WebElement('span', parent=self.root)
+        self.root = WdomElement('div')
+        self.tag = WdomElement('span', parent=self.root)
 
         self.click_event_mock = MagicMock()
         self.click_event_mock._is_coroutine = False
 
-        self.btn = WebElement('button')
+        self.btn = WdomElement('button')
         self.btn.textContent = 'click'
         self.btn.addEventListener('click', self.click_event_mock)
 
         self.input_event_mock = MagicMock()
         self.input_event_mock._is_coroutine = False
 
-        self.input = WebElement('input', type='text')
+        self.input = WdomElement('input', type='text')
         self.input.addEventListener('input', self.input_event_mock)
 
         self.root.appendChild(self.btn)

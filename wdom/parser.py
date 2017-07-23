@@ -6,7 +6,7 @@ from html.parser import HTMLParser
 
 from wdom.document import Document
 from wdom.node import DocumentFragment, Comment
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 
 
 class DocumentParser(HTMLParser):
@@ -27,7 +27,7 @@ class DocumentParser(HTMLParser):
         elif tag == 'body':
             self.elm = self.root.body
         else:
-            elm = WebElement(tag, parent=self.elm, **dict(attrs))
+            elm = WdomElement(tag, parent=self.elm, **dict(attrs))
             if self.elm:
                 self.elm.append(elm)
             if tag not in HTML_EMPTY:
@@ -52,7 +52,7 @@ class FragmentParser(HTMLParser):
         self.root = self.elm
 
     def handle_starttag(self, tag, attrs):
-        elm = WebElement(tag, parent=self.elm, **dict(attrs))
+        elm = WdomElement(tag, parent=self.elm, **dict(attrs))
         if self.elm:
             self.elm.append(elm)
         if tag not in HTML_EMPTY:

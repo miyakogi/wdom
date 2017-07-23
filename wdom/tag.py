@@ -22,12 +22,12 @@ from wdom.element import (
     HTMLStyleElement,
     HTMLTextAreaElement,
 )
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 
 logger = logging.getLogger(__name__)
 
 
-class HTMLElement(WebElement):
+class HTMLElement(WdomElement):
     pass
 
 
@@ -209,28 +209,28 @@ class NestedTag(Tag):
             self._inner_element.textContent = text
         else:
             # Need a trick to call property of super-class
-            Tag.textContent.fset(self, text)
+            super().textContent = text
 
     @property
     def html(self) -> str:
         if self._inner_element:
             return self.start_tag + self._inner_element.html + self.end_tag
         else:
-            return Tag.html.fget(self)
+            return super().html
 
     @property
     def innerHTML(self) -> str:
         if self._inner_element:
             return self._inner_element.innerHTML
         else:
-            return Tag.innerHTML.fget(self)
+            return super().innerHTML
 
     @innerHTML.setter
     def innerHTML(self, html: str):
         if self._inner_element:
             self._inner_element.innerHTML = html
         else:
-            Tag.innerHTML.fset(self, html)
+            super().innerHTML = html
 
 
 def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
