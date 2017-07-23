@@ -93,3 +93,5 @@ to an instance of `MyElement`, and `<button is="default-button">` to
     <http://www.html5rocks.com/en/tutorials/webcomponents/customelements/#lifecycle>`_
     or silimar features will be implemented, but still it's safer to register
     custom tags before instanciate it.
+
+TODO

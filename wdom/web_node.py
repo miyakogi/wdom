@@ -77,11 +77,11 @@ class WdomElement(HTMLElement, WebIF):
         self._empty_web()
         self._empty()
 
-    def _append_child_web(self, child: 'WebElement'):
+    def _append_child_web(self, child: 'WdomElement'):
         html = child.html if isinstance(child, Node) else str(child)
         self.js_exec('insertAdjacentHTML', 'beforeend', html)
 
-    def appendChild(self, child: 'WebElement') -> Node:
+    def appendChild(self, child: 'WdomElement') -> Node:
         '''Append child node at the last of child nodes. If this instance is
         connected to the node on browser, the child node is also added to it.
         '''

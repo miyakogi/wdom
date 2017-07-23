@@ -40,7 +40,7 @@ class ElementTestCase(RemoteBrowserTestCase):
         raise NotImplementedError
 
 
-class TestWebElement(ElementTestCase, TestCase):
+class TestWdomElement(ElementTestCase, TestCase):
     def get_elements(self):
         self.root = WdomElement('div')
         self.tag = WdomElement('span', parent=self.root)

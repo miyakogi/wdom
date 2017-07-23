@@ -11,7 +11,7 @@ from wdom.web_node import WdomElement
 from wdom.server import _tornado
 
 
-class TestWebElement(TestCase):
+class TestWdomElement(TestCase):
     def setUp(self):
         self.elm = WdomElement('tag')
         self.c1 = WdomElement()
