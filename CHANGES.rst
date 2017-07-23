@@ -5,7 +5,13 @@ Version 0.2
 
 * Drop python 3.4 support (in plan)
 
-Version 0.1.8 (not released)
+Version 0.2.0 (next version)
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Enable ``python setup.py test``
+* Moved ``suppress_logging`` function from ``wdom.testing`` to ``wdom.misc``
+
+Version 0.1.8 (2017-07-23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Raise warning if python version is < 3.5
