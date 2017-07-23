@@ -386,32 +386,30 @@ class TestWebElement(ElementTestCase, TestCase):
         self.assertEqual(mock.call_count, 1)
 
     @sync
-    @asyncio.coroutine
-    def test_get_rect(self):
+    async def test_get_rect(self):
         rect = WdomElement('div', style='width:200px;height:100px;')
         self.tag.appendChild(rect)
-        yield from asyncio.sleep(self.wait_time)
+        await asyncio.sleep(self.wait_time)
 
-        data = yield from rect.getBoundingClientRect()
+        data = await rect.getBoundingClientRect()
         self.assertEqual(data['width'], 200)
         self.assertEqual(data['height'], 100)
 
     @sync
-    @asyncio.coroutine
-    def test_scroll(self):
+    async def test_scroll(self):
         rect = WdomElement('div', style='width:3000px;height:3000px;background:#eee;')  # noqa: #501
         self.tag.appendChild(rect)
-        yield from asyncio.sleep(self.wait_time)
+        await asyncio.sleep(self.wait_time)
 
-        X = yield from rect.scrollX()
-        Y = yield from rect.scrollY()
+        X = await rect.scrollX()
+        Y = await rect.scrollY()
         self.assertEqual(X['x'], 0)
         self.assertEqual(Y['y'], 0)
 
         rect.scrollTo(200, 200)
-        yield from asyncio.sleep(self.wait_time)
-        X = yield from rect.scrollX()
-        Y = yield from rect.scrollY()
+        await asyncio.sleep(self.wait_time)
+        X = await rect.scrollX()
+        Y = await rect.scrollY()
         self.assertEqual(X['x'], 200)
         self.assertEqual(Y['y'], 200)
 

@@ -5,6 +5,7 @@ Version 0.2.0 (next version)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Drop python 3.4 support
+* Use async/await
 * Enable ``python setup.py test``
 * Moved ``suppress_logging`` function from ``wdom.testing`` to ``wdom.misc``
 
