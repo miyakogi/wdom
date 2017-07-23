@@ -14,7 +14,7 @@ with open(readme_file) as readme_file:
     readme = readme_file.read()
 
 install_requires = ['tornado']
-test_requites = ['parameterized', 'selenium', 'syncer']
+tests_require = ['parameterized', 'selenium', 'syncer']
 
 if sys.version_info < (3, 5):
     install_requires.append('mypy-lang')
@@ -32,6 +32,7 @@ setup(
         'wdom',
         'wdom.examples',
         'wdom.server',
+        'wdom.tests',
         'wdom.themes',
     ],
     include_package_data=True,
@@ -51,4 +52,5 @@ setup(
     test_suite='wdom.tests',
 
     install_requires=install_requires,
+    tests_require=tests_require,
 )
