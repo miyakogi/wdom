@@ -7,8 +7,6 @@ Test Utilities
 
     .. autofunction:: reset
 
-    .. autofunction:: suppress_logging
-
     .. autoclass:: TestCase
 
     .. autoclass:: HTTPTestCase

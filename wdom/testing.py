@@ -80,16 +80,6 @@ def reset():
     customElements.clear()
 
 
-def suppress_logging():
-    """Suppress log output to stdout.
-
-    This function is intended to be used in test's setup. This function removes
-    log handler of ``wdom`` logger and set NullHandler to suppress log.
-    """
-    options.root_logger.removeHandler(options._log_handler)
-    options.root_logger.addHandler(logging.NullHandler())
-
-
 class TestCase(unittest.TestCase):
     """Base class for testing wdom modules.
 
