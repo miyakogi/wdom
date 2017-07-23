@@ -13,7 +13,7 @@ from wdom.options import config
 from wdom.interface import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
-from wdom.element import Element, Attr, _create_element
+from wdom.element import Element, Attr
 from wdom.web_node import WdomElement
 from wdom.tag import HTMLElement
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
@@ -39,6 +39,26 @@ def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
 def _cleanup(path):
     if os.path.isdir(path):
         shutil.rmtree(path)
+
+
+def create_element(tag: str, name: str = None, base: type = None,
+                   attr: dict = None):
+    from wdom.web_node import WdomElement
+    from wdom.tag import Tag
+    from wdom.window import customElements
+    if attr is None:
+        attr = {}
+    if name:
+        base_class = customElements.get((name, tag))
+    else:
+        base_class = customElements.get((tag, None))
+    if base_class is None:
+        attr['_registered'] = False
+        base_class = base or WdomElement
+    if issubclass(base_class, Tag):
+        return base_class(**attr)
+    else:
+        return base_class(tag, **attr)
 
 
 class Document(Node):
@@ -102,7 +122,7 @@ class Document(Node):
             return elm
 
     def createElement(self, tag: str):
-        return _create_element(tag, base=self._default_class)
+        return create_element(tag, base=self._default_class)
 
     def createDocumentFragment(self):
         return DocumentFragment()

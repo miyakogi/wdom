@@ -4,14 +4,42 @@
 from xml.etree.ElementTree import HTML_EMPTY
 from html.parser import HTMLParser
 
-from wdom.document import Document
-from wdom.node import DocumentFragment, Comment
-from wdom.web_node import WdomElement
 
+class FragmentParser(HTMLParser):
+    default_class = None
 
-class DocumentParser(HTMLParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        from wdom.node import DocumentFragment
+        self.elm = DocumentFragment()
+        self.root = self.elm
+
+    def handle_starttag(self, tag, attr):
+        from wdom.document import create_element
+        attrs = dict(attr)
+        params = dict(parent=self.elm, **attrs)
+        elm = create_element(tag, attrs.get('is'), self.default_class, params)
+        if self.elm:
+            self.elm.append(elm)
+        if tag not in HTML_EMPTY:
+            self.elm = elm
+
+    def handle_endtag(self, tag):
+        self.elm = self.elm.parentNode
+
+    def handle_data(self, data):
+        if data and self.elm:
+            self.elm.append(data)
+
+    def handle_comment(self, comment: str):
+        from wdom.node import Comment
+        self.elm.append(Comment(comment))
+
+
+class DocumentParser(FragmentParser):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        from wdom.document import Document
         self.root = Document()
         self.elm = self.root.body
 
@@ -27,46 +55,7 @@ class DocumentParser(HTMLParser):
         elif tag == 'body':
             self.elm = self.root.body
         else:
-            elm = WdomElement(tag, parent=self.elm, **dict(attrs))
-            if self.elm:
-                self.elm.append(elm)
-            if tag not in HTML_EMPTY:
-                self.elm = elm
-
-    def handle_endtag(self, tag):
-        self.elm = self.elm.parentNode
-
-    def handle_data(self, data):
-        _d = data.strip()
-        if _d and self.elm:
-            self.elm.append(_d)
-
-    def handle_comment(self, comment: str):
-        self.elm.append(Comment(comment))
-
-
-class FragmentParser(HTMLParser):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.elm = DocumentFragment()
-        self.root = self.elm
-
-    def handle_starttag(self, tag, attrs):
-        elm = WdomElement(tag, parent=self.elm, **dict(attrs))
-        if self.elm:
-            self.elm.append(elm)
-        if tag not in HTML_EMPTY:
-            self.elm = elm
-
-    def handle_endtag(self, tag):
-        self.elm = self.elm.parentNode
-
-    def handle_data(self, data):
-        if data and self.elm:
-            self.elm.append(data)
-
-    def handle_comment(self, comment: str):
-        self.elm.append(Comment(comment))
+            super().handle_starttag(tag, attrs)
 
 
 def parse_document(doc: str):

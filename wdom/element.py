@@ -4,16 +4,15 @@
 from collections import Iterable, OrderedDict
 from xml.etree.ElementTree import HTML_EMPTY
 import html as html_
-from html.parser import HTMLParser
 from typing import Union, Tuple, Callable
 from weakref import WeakSet, WeakValueDictionary
 
 from wdom.interface import NodeList, Event
 from wdom.css import CSSStyleDeclaration
 from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
-from wdom.node import DocumentFragment, Comment
 from wdom.event import EventTarget
 from wdom.webif import WebIF
+from wdom.parser import FragmentParser
 
 
 class DOMTokenList:
@@ -231,51 +230,10 @@ class NamedNodeMap:
         return ' '.join(attr.html for attr in self._dict.values())
 
 
-def _create_element(tag: str, name: str = None, base: type = None,
-                    attr: dict = None):
-    from wdom.web_node import WdomElement
-    from wdom.tag import Tag
-    from wdom.window import customElements
-    if attr is None:
-        attr = {}
-    if name:
-        base_class = customElements.get((name, tag))
-    else:
-        base_class = customElements.get((tag, None))
-    if base_class is None:
-        attr['_registered'] = False
-        base_class = base or WdomElement
-    if issubclass(base_class, Tag):
-        return base_class(**attr)
-    else:
-        return base_class(tag, **attr)
-
-
-class ElementParser(HTMLParser):
+class ElementParser(FragmentParser):
     def __init__(self, *args, default_class=None, **kwargs):
         super().__init__(*args, **kwargs)
-        self.elm = DocumentFragment()
-        self.root = self.elm
         self.default_class = Element
-
-    def handle_starttag(self, tag, attr):
-        attrs = dict(attr)
-        params = dict(parent=self.elm, **attrs)
-        elm = _create_element(tag, attrs.get('is'), self.default_class, params)
-        if self.elm:
-            self.elm.append(elm)
-        if tag not in HTML_EMPTY:
-            self.elm = elm
-
-    def handle_endtag(self, tag):
-        self.elm = self.elm.parentNode
-
-    def handle_data(self, data):
-        if data and self.elm:
-            self.elm.append(data)
-
-    def handle_comment(self, comment: str):
-        self.elm.append(Comment(comment))
 
 
 class HTMLElementParser(ElementParser):
@@ -389,7 +347,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             tag = ' '.join((tag, attrs))
         return tag + '>'
 
-    def _parse_html(self, html: str) -> DocumentFragment:
+    def _parse_html(self, html: str) -> 'DocumentFragment':
         parser = self._parser_class()
         parser.feed(html)
         return parser.root
