@@ -8,8 +8,10 @@ Version 0.2
 Version 0.1.8 (not released)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Raise warning if python version is < 3.5
 * Improve HTML parsing
 * Don't send events to unmounted DOM
+* Send multiple WS messages once
 
 Version 0.1.7 (2017-07-21)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

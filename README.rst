@@ -52,7 +52,7 @@ Features
 Requirements
 ------------
 
-Python 3.4.4+ and any modern-browsers are required.
+Python 3.5.3+ and any modern-browsers are required.
 Also supports Electron and PyQt's webkit browsers.
 IE is not supported, but most of features will work with IE11 (but not
 recomended).
