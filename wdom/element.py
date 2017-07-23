@@ -233,7 +233,7 @@ class NamedNodeMap:
 
 def _create_element(tag: str, name: str = None, base: type = None,
                     attr: dict = None):
-    from wdom.web_node import WebElement
+    from wdom.web_node import WdomElement
     from wdom.tag import Tag
     from wdom.window import customElements
     if attr is None:
@@ -244,7 +244,7 @@ def _create_element(tag: str, name: str = None, base: type = None,
         base_class = customElements.get((tag, None))
     if base_class is None:
         attr['_registered'] = False
-        base_class = base or WebElement
+        base_class = base or WdomElement
     if issubclass(base_class, Tag):
         return base_class(**attr)
     else:

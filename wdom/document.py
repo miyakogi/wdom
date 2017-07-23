@@ -14,7 +14,7 @@ from wdom.interface import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
 from wdom.element import Element, Attr, _create_element
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 from wdom.tag import HTMLElement
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
@@ -28,8 +28,8 @@ def getElementById(id: Union[str, int]) -> Optional[Node]:
         return None
 
 
-def getElementByRimoId(id: Union[str, int]) -> Optional[WebElement]:
-    elm = WebElement._elements_with_rimo_id.get(str(id))
+def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
+    elm = WdomElement._elements_with_rimo_id.get(str(id))
     if elm and elm.ownerDocument:
         return elm
     else:
@@ -96,7 +96,7 @@ class Document(Node):
         if elm and elm.ownerDocument is self:
             return elm
 
-    def getElementByRimoId(self, id: Union[str, int]) -> Optional[WebElement]:
+    def getElementByRimoId(self, id: Union[str, int]) -> Optional[WdomElement]:
         elm = getElementByRimoId(id)
         if elm and elm.ownerDocument is self:
             return elm

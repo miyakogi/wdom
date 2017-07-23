@@ -12,7 +12,7 @@ from wdom.element import Attr, Element
 from wdom.document import Document
 from wdom.document import get_document, get_new_document, set_document
 from wdom.document import getElementById, getElementByRimoId
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 from wdom.tag import Tag, HTMLElement, A
 from wdom.testing import TestCase
 
@@ -31,7 +31,7 @@ class TestGetElement(TestCase):
         self.assertIs(getElementById('a'), elm)
 
     def test_get_element_by_rimo_id(self):
-        elm = WebElement(tag='a', id='a', rimo_id='b')
+        elm = WdomElement(tag='a', id='a', rimo_id='b')
         self.assertIsNone(getElementById('a'))
         self.assertIsNone(getElementByRimoId('b'))
         self.doc.appendChild(elm)

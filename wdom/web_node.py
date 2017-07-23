@@ -19,10 +19,10 @@ remove_id_re = re.compile(r' rimo_id="\d+"')
 class WebElementParser(ElementParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.default_class = WebElement
+        self.default_class = WdomElement
 
 
-class WebElement(HTMLElement, WebIF):
+class WdomElement(HTMLElement, WebIF):
     _elements_with_rimo_id = WeakValueDictionary()
     _parser_class = WebElementParser
 
@@ -91,7 +91,7 @@ class WebElement(HTMLElement, WebIF):
 
     def _insert_before_web(self, child: Node, ref_node: Node):
         html = child.html if isinstance(child, Node) else str(child)
-        if isinstance(ref_node, WebElement):
+        if isinstance(ref_node, WdomElement):
             ref_node.js_exec('insertAdjacentHTML', 'beforebegin', html)
         else:
             index = self.index(ref_node)
@@ -108,7 +108,7 @@ class WebElement(HTMLElement, WebIF):
 
     def _remove_child_web(self, child: Node):
         if child in self.childNodes:
-            if isinstance(child, WebElement):
+            if isinstance(child, WdomElement):
                 self.js_exec('removeChildById', child.rimo_id)
             else:
                 self.js_exec('removeChildByIndex', self.index(child))
@@ -120,7 +120,7 @@ class WebElement(HTMLElement, WebIF):
         return self._remove_child(child)
 
     def _replace_child_web(self, new_child: Node, old_child: Node):
-        if isinstance(old_child, WebElement):
+        if isinstance(old_child, WdomElement):
             self.js_exec('replaceChildById', new_child.html, old_child.rimo_id)
         else:
             # old_child will be Text Node

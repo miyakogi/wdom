@@ -22,12 +22,12 @@ from wdom.element import (
     HTMLStyleElement,
     HTMLTextAreaElement,
 )
-from wdom.web_node import WebElement
+from wdom.web_node import WdomElement
 
 logger = logging.getLogger(__name__)
 
 
-class HTMLElement(WebElement):
+class HTMLElement(WdomElement):
     pass
 
 
