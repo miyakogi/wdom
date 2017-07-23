@@ -26,7 +26,7 @@ install:
 script:
   - mkdir maint && cd maint
   - cp ${TRAVIS_BUILD_DIR}/.green ./
-  - green -R ${TRAVIS_BUILD_DIR}
+  - green -R -s 1 ${TRAVIS_BUILD_DIR}
   - coverage report
   - cp .coverage ${TRAVIS_BUILD_DIR}
   - cd ${TRAVIS_BUILD_DIR}
