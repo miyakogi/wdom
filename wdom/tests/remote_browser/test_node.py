@@ -399,8 +399,7 @@ class TestWebElement(ElementTestCase, TestCase):
     @sync
     @asyncio.coroutine
     def test_scroll(self):
-        rect = WdomElement('div',
-                          style='width:3000px;height:3000px;background:#eee;')
+        rect = WdomElement('div', style='width:3000px;height:3000px;background:#eee;')  # noqa: #501
         self.tag.appendChild(rect)
         yield from asyncio.sleep(self.wait_time)
 
