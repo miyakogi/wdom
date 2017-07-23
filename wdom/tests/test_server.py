@@ -21,7 +21,7 @@ from wdom import server
 from wdom.testing import HTTPTestCase
 
 curdir = path.dirname(__file__)
-root = path.join(path.dirname(path.dirname(curdir)), 'wdom')
+root = path.dirname(path.dirname(curdir))
 script = '''
 import asyncio
 import atexit
