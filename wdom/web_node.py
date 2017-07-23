@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 remove_id_re = re.compile(r' rimo_id="\d+"')
 
 
-class WebElementParser(ElementParser):
+class WdomElementParser(ElementParser):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.default_class = WdomElement
@@ -23,7 +23,7 @@ class WebElementParser(ElementParser):
 
 class WdomElement(HTMLElement, WebIF):
     _elements_with_rimo_id = WeakValueDictionary()
-    _parser_class = WebElementParser
+    _parser_class = WdomElementParser
 
     @property
     def rimo_id(self) -> str:
