@@ -4,7 +4,6 @@
 import logging
 import re
 from typing import Union
-from asyncio import coroutine
 from weakref import WeakValueDictionary
 
 from wdom.interface import Event
@@ -133,9 +132,8 @@ class WdomElement(HTMLElement, WebIF):
         self._replace_child_web(new_child, old_child)
         return self._replace_child(new_child, old_child)
 
-    @coroutine
-    def getBoundingClientRect(self):
-        fut = yield from self.js_query('getBoundingClientRect')
+    async def getBoundingClientRect(self):
+        fut = await self.js_query('getBoundingClientRect')
         return fut
 
     def _set_text_content_web(self, text: str):

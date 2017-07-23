@@ -59,11 +59,10 @@ def get_app(*args, **kwargs) -> 'Application':
     return module.get_app()
 
 
-@asyncio.coroutine
-def _message_loop():
+async def _message_loop():
     while True:
         send_message()
-        yield from asyncio.sleep(config.message_wait)
+        await asyncio.sleep(config.message_wait)
 
 
 def start_server(browser: Optional[str] = None, address: Optional[str] = None,

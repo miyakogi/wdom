@@ -45,10 +45,9 @@ class WSHandler(websocket.WebSocketHandler):
         """Called when get message from client."""
         on_websocket_message(message)
 
-    @asyncio.coroutine
-    def terminate(self):
+    async def terminate(self):
         """Terminate server if no more connection exists."""
-        yield from asyncio.sleep(config.shutdown_wait)
+        await asyncio.sleep(config.shutdown_wait)
         # stop server and close loop if no more connection exists
         if not is_connected():
             stop_server(self.application.server)

@@ -147,14 +147,13 @@ class HTTPTestCase(TestCase):
             ws.close()
         super().tearDown()
 
-    @asyncio.coroutine
-    def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
+    async def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
         """Fetch url and return ``tornado.httpclient.HTTPResponse`` object.
 
         Response body is decoded by ``encoding`` and set ``text`` property of
         the response. If failed to decode, ``text`` property will be ``None``.
         """
-        response = yield from to_asyncio_future(
+        response = await to_asyncio_future(
             AsyncHTTPClient().fetch(url, raise_error=False))
         if response.body:
             try:
@@ -165,9 +164,8 @@ class HTTPTestCase(TestCase):
             response.text = None
         return response
 
-    @asyncio.coroutine
-    def ws_connect(self, url: str, timeout: float = None
-                   ) -> WebSocketClientConnection:
+    async def ws_connect(self, url: str, timeout: float = None
+                         ) -> WebSocketClientConnection:
         """Make WebSocket connection to the url.
 
         Retries up to _max (default: 20) times. Client connections made by this
@@ -177,9 +175,9 @@ class HTTPTestCase(TestCase):
         timeout = timeout or self.timeout
         while (time.perf_counter() - st) < timeout:
             try:
-                ws = yield from to_asyncio_future(websocket_connect(url))
+                ws = await to_asyncio_future(websocket_connect(url))
             except ConnectionRefusedError:
-                yield from self.wait()
+                await self.wait()
                 continue
             else:
                 self._ws_connections.append(ws)
@@ -187,8 +185,7 @@ class HTTPTestCase(TestCase):
         raise ConnectionRefusedError(
             'WebSocket connection refused: {}'.format(url))
 
-    @asyncio.coroutine
-    def wait(self, timeout: float = None, times: int = 1):
+    async def wait(self, timeout: float = None, times: int = 1):
         """Coroutine to wait for ``timeout``.
 
         ``timeout`` is second to wait, and its default value is
@@ -196,7 +193,7 @@ class HTTPTestCase(TestCase):
         ``timeout * times``.
         """
         for i in range(times):
-            yield from asyncio.sleep(timeout or self.wait_time)
+            await asyncio.sleep(timeout or self.wait_time)
 
 
 def start_webdriver():
@@ -358,8 +355,7 @@ def wait_for():
     return asyncio.get_event_loop().run_until_complete(wait_coro())
 
 
-@asyncio.coroutine
-def wait_coro():
+async def wait_coro():
     """Wait response from the other process."""
     while True:
         state = conn.poll()
@@ -367,7 +363,7 @@ def wait_coro():
             res = conn.recv()
             return res
         else:
-            yield from asyncio.sleep(0)
+            await asyncio.sleep(0)
             continue
 
 
