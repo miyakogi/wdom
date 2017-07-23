@@ -2,7 +2,6 @@ sudo: false
 dist: trusty
 language: python
 python:
-  - "3.4"
   - "3.5"
   - "3.6"
 
@@ -20,7 +19,6 @@ before_script:
 
 install:
   - pip install selenium parameterized syncer coverage green
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.4* ]]; then pip install mypy; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls flake8; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:

@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
 from os import path
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 readme_file = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
 with open(readme_file) as readme_file:
@@ -15,9 +11,6 @@ with open(readme_file) as readme_file:
 
 install_requires = ['tornado']
 tests_require = ['parameterized', 'selenium', 'syncer']
-
-if sys.version_info < (3, 5):
-    install_requires.append('mypy-lang')
 
 
 setup(
@@ -49,8 +42,8 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    test_suite='wdom.tests',
-
+    python_requires='>=3.5.2',
     install_requires=install_requires,
     tests_require=tests_require,
+    test_suite='wdom.tests',
 )
