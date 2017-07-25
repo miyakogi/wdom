@@ -19,7 +19,7 @@ before_script:
 
 install:
   - pip install selenium parameterized syncer coverage green
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls flake8; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls flake8 mypy; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:
   - mkdir maint && cd maint
@@ -29,5 +29,6 @@ script:
   - cp .coverage ${TRAVIS_BUILD_DIR}
   - cd ${TRAVIS_BUILD_DIR}
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then flake8 setup.py wdom; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then mypy wdom; fi
 after_success:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
