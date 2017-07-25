@@ -64,6 +64,8 @@ def create_element(tag: str, name: str = None, base: type = None,
 class Document(Node):
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
+    body = None  # type: Node
+    html = None  # type: Node
 
     @property
     def defaultView(self) -> Window:

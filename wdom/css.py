@@ -5,7 +5,7 @@ import sys
 import re
 from collections import OrderedDict
 import logging
-from typing import Optional, Match
+from typing import Any, Match, Optional
 
 from wdom.interface import Node
 from wdom.webif import WebIF
@@ -163,7 +163,7 @@ class CSSStyleRule(object):
 
 
 class CSSRuleList(list):
-    def __init__(self, *args, **kwargs) -> None:  # type: ignore
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
     @property

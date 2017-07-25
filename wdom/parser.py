@@ -9,6 +9,7 @@ from wdom.node import Node  # noqa
 
 if TYPE_CHECKING:
     from typing import Optional  # noqa
+    from wdom.document import Document  # noqa
 
 
 class FragmentParser(HTMLParser):
@@ -31,7 +32,11 @@ class FragmentParser(HTMLParser):
             self.elm = elm
 
     def handle_endtag(self, tag: str) -> None:
-        self.elm = self.elm.parentNode  # type: ignore
+        parent = self.elm.parentNode
+        if parent is None:
+            raise ValueError('Parse Failed')
+        else:
+            self.elm = parent
 
     def handle_data(self, data: str) -> None:
         if data and self.elm:
@@ -45,9 +50,10 @@ class FragmentParser(HTMLParser):
 class DocumentParser(FragmentParser):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        from wdom.document import Document
-        self.root = Document()
-        self.elm = self.root.body  # type: ignore
+        from wdom.document import Document  # noqa
+        doc = Document()
+        self.root = doc  # type: Document
+        self.elm = doc.body  # type: Node
 
     def handle_decl(self, decl: str) -> None:
         if decl.startswith('DOCTYPE'):
@@ -56,7 +62,8 @@ class DocumentParser(FragmentParser):
     def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
         if tag == 'html':
             # mypy ignores asignment in Document.__init__()
-            self.elm = self.root.html  # type: ignore
+            doc = self.root  # type: Document
+            self.elm = doc.html  # type: Node
         elif tag == 'head':
             self.elm = self.root.head
         elif tag == 'body':

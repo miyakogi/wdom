@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Iterable, Sized
+from typing import Any, Iterable, Sized
 from xml.dom import Node  # type: ignore
 
 
@@ -12,7 +12,7 @@ class Event:
     currentTarget = None  # type: Node
     target = None  # type: Node
 
-    def __init__(self, type: str, **kwargs) -> None:  # type: ignore
+    def __init__(self, type: str, **kwargs: Any) -> None:
         self.type = type.lower()
         self.__dict__.update(kwargs)
 

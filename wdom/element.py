@@ -6,7 +6,7 @@ from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 import html as html_
 from typing import Union, Callable, Optional, Dict, Tuple
 from typing import Iterable, MutableSequence
-from typing import Any, Iterator, List, TYPE_CHECKING
+from typing import Any, Iterator, List, TYPE_CHECKING, Type
 from weakref import WeakSet, WeakValueDictionary
 
 from wdom.interface import NodeList, Event
@@ -19,6 +19,7 @@ from wdom.parser import FragmentParser
 
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa
+    from wdom.tag import Tag  # noqa
 
 _AttrValueType = Union[List[str], str, int, bool, CSSStyleDeclaration, None]
 
@@ -28,7 +29,7 @@ class DOMTokenList(MutableSequence[str]):
 
     DOM token is a string which does not contain spases.
     """
-    def __init__(self, owner: Union[Node, type],
+    def __init__(self, owner: Union[Node, Type['Tag']],
                  *args: Union[str, 'DOMTokenList']) -> None:
         self._list = list()  # type: List[str]
         self._owner = owner
@@ -37,10 +38,10 @@ class DOMTokenList(MutableSequence[str]):
     def __len__(self) -> int:
         return len(self._list)
 
-    def __contains__(self, item: str) -> bool:  # type: ignore
+    def __contains__(self, item: object) -> bool:
         return item in self._list
 
-    def __iter__(self) -> Iterable[str]:  # type: ignore
+    def __iter__(self) -> Iterator[str]:
         for token in self._list:
             yield token
 
@@ -138,7 +139,7 @@ class DOMTokenList(MutableSequence[str]):
 
         Actually it will be a spase-separated tokens.
         """
-        return ' '.join(self)  # type: ignore
+        return ' '.join(self)
 
 
 class Attr:
@@ -206,7 +207,7 @@ class NamedNodeMap(UserDict):
     def __len__(self) -> int:
         return len(self._dict)
 
-    def __contains__(self, item: str) -> bool:  # type: ignore
+    def __contains__(self, item: object) -> bool:
         return item in self._dict
 
     def __getitem__(self, index: Union[int, str]) -> Optional[Attr]:
@@ -221,7 +222,7 @@ class NamedNodeMap(UserDict):
     def __delitem__(self, attr: str) -> None:
         del self._dict[attr]
 
-    def __iter__(self) -> Iterator[str]:  # type: ignore
+    def __iter__(self) -> Iterator[str]:
         for attr in self._dict.keys():
             yield attr
 
@@ -334,7 +335,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
               ChildNode, metaclass=ElementMeta):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
-    _parser_class = ElementParser
+    _parser_class = ElementParser  # type: Type[ElementParser]
     _elements = WeakSet()  # type: WeakSet[Node]
     _elements_with_id = WeakValueDictionary()  # type: MutableMapping
     _should_escape_text = True
@@ -552,7 +553,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 class HTMLElement(Element):
     _special_attr_string = ['title', 'type']
     _special_attr_boolean = ['hidden']
-    _parser_class = HTMLElementParser
+    _parser_class = HTMLElementParser  # type: Type[ElementParser]
 
     def __init__(self, *args: Any, style: str=None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -582,16 +583,16 @@ class HTMLElement(Element):
         return self._style
 
     @style.setter
-    def style(self, style: Optional[Union[str, CSSStyleDeclaration]]) -> None:
+    def style(self, style: _AttrValueType) -> None:
         if isinstance(style, str):
             self._style._parse_str(style)
         elif style is None:
             self._style._parse_str('')
         elif isinstance(style, CSSStyleDeclaration):
             self._style._owner = None
-            style._owner = self
+            style._owner = self  # type: ignore
             self._style = style
-            self._style.update()
+            self._style.update()  # type: ignore
         else:
             raise TypeError('Invalid type for style: {}'.format(type(style)))
 
@@ -624,16 +625,19 @@ class HTMLElement(Element):
         if attr == 'style':
             self.style = value  # type: ignore
         else:
-            super()._set_attribute(attr, value)
+            super()._set_attribute(attr, value)  # type: ignore
 
     def _remove_attribute(self, attr: str) -> None:
         if attr == 'style':
             self.style = None  # type: ignore
         else:
-            super()._remove_attribute(attr)
+            super()._remove_attribute(attr)  # type: ignore
 
 
 class FormControlMixin:
+    @property
+    def parentNode(self) -> Optional[Node]: ...  # for type check
+
     def __init__(self, *args: Any,
                  form: Optional[Union[str, int, 'HTMLFormElement']] = None,
                  **kwargs: Any) -> None:
@@ -655,7 +659,7 @@ class FormControlMixin:
         if self._form:
             return self._form
         else:
-            parent = self.parentNode  # type: ignore
+            parent = self.parentNode
             while parent:
                 if isinstance(parent, HTMLFormElement):
                     return parent

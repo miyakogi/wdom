@@ -9,7 +9,7 @@ from wdom.interface import NodeList
 from wdom.interface import Node as _Node
 
 if TYPE_CHECKING:
-    from typing import List, Mapping, Any, Iterable  # noqa
+    from typing import List, Mapping, Any, Iterable, Callable  # noqa
     from wdom.element import NamedNodeMap  # noqa
 
 
@@ -312,23 +312,34 @@ class ParentNode:
     """[DOM Level 4] Mixin class for Document, DocumentFragment, and Element.
     """
     @property
+    def childNodes(self) -> NodeList: ...  # for type check
+
+    @property
+    def firstChild(self) -> Optional[Node]: ...  # for type check
+
+    def appendChild(self, node: Node) -> Node: ...  # for type check
+
+    def insertBefore(self, node1: Node, node2: Node) -> Node: ...  # type check
+
+    @property
     def children(self) -> NodeList:
         """Currently this is not a live object"""
-        return NodeList([e for e in self.childNodes  # type: ignore
+        return NodeList([e for e in self.childNodes
                          if e.nodeType == Node.ELEMENT_NODE])
 
     @property
-    def firstElementChild(self) -> Optional[Node]:  # type: ignore
+    def firstElementChild(self) -> Optional[Node]:
         """First Element child node.
 
         If this node has no element child, return None.
         """
-        for child in self.childNodes:  # type: ignore
+        for child in self.childNodes:
             if child.nodeType == Node.ELEMENT_NODE:
                 return child
+        return None
 
     @property
-    def lastElementChild(self) -> Optional[Node]:  # type: ignore
+    def lastElementChild(self) -> Optional[Node]:
         """Last Element child node.
 
         If this node has no element child, return None.
@@ -336,19 +347,20 @@ class ParentNode:
         for child in reversed(self.childNodes):  # type: ignore
             if child.nodeType == Node.ELEMENT_NODE:
                 return child
+        return None
 
     def prepend(self, *nodes: Union[str, Node]) -> None:
         """Insert new nodes before first child node."""
         node = _to_node_list(nodes)
-        if self.firstChild:  # type: ignore
-            self.insertBefore(node, self.firstChild)  # type: ignore
+        if self.firstChild:
+            self.insertBefore(node, self.firstChild)
         else:
-            self.appendChild(node)  # type: ignore
+            self.appendChild(node)
 
     def append(self, *nodes: Union['Node', str]) -> None:
         """Append new nodes after last child node."""
         node = _to_node_list(nodes)
-        self.appendChild(node)  # type: ignore
+        self.appendChild(node)
 
     def query(self, relativeSelectors: str) -> Node:
         raise NotImplementedError
@@ -364,47 +376,56 @@ class ParentNode:
 
 
 class NonDocumentTypeChildNode:
+    @property
+    def parentNode(self) -> Optional[Node]: ...  # for type check
 
     @property
-    def previousElementSibling(self) -> Optional[Node]:  # type: ignore
+    def previousElementSibling(self) -> Optional[Node]:
         """Previous Element Node.
 
         If this node has no previous element node, return None.
         """
-        if self.parentNode is None:  # type: ignore
+        if self.parentNode is None:
             return None
-        siblings = self.parentNode.childNodes  # type: ignore
+        siblings = self.parentNode.childNodes
         for i in range(siblings.index(self), 0, -1):
             n = siblings[i-1]
             if n.nodeType == Node.ELEMENT_NODE:
                 return n
+        return None
 
     @property
-    def nextElementSibling(self) -> Optional[Node]:  # type: ignore
+    def nextElementSibling(self) -> Optional[Node]:
         """Next Element Node.
 
         If this node has no next element node, return None.
         """
-        if self.parentNode is None:  # type: ignore
+        if self.parentNode is None:
             return None
-        siblings = self.parentNode.childNodes  # type: ignore
+        siblings = self.parentNode.childNodes
         for i in range(siblings.index(self) + 1, len(siblings)):
             n = siblings[i]
             if n.nodeType == Node.ELEMENT_NODE:
                 return n
+        return None
 
 
 class ChildNode:
     """[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData
     (Text, RawHTML, Comment).
     """
+    @property
+    def parentNode(self) -> Optional[Node]: ...  # for type check
+
+    @property
+    def nextSibling(self) -> Optional[Node]: ...  # for type check
 
     def before(self, *nodes: Union[Node, str]) -> None:
         """Insert nodes before this node.
 
         If nodes contains ``str``, it will be converted to Text node.
         """
-        if self.parentNode:  # type: ignore
+        if self.parentNode:
             node = _to_node_list(nodes)
             self.parentNode.insertBefore(node, self)  # type: ignore
 
@@ -413,25 +434,25 @@ class ChildNode:
 
         If nodes contains ``str``, it will be converted to Text node.
         """
-        if self.parentNode:  # type: ignore
+        if self.parentNode:
             node = _to_node_list(nodes)
-            _next_node = self.nextSibling  # type: ignore
+            _next_node = self.nextSibling
             if _next_node is None:
-                self.parentNode.appendChild(node)  # type: ignore
+                self.parentNode.appendChild(node)
             else:
-                self.parentNode.insertBefore(node, _next_node)  # type: ignore
+                self.parentNode.insertBefore(node, _next_node)
 
     def replaceWith(self, *nodes: Union[Node, str]) -> None:
         """Replace this node with nodes.
 
         If nodes contains ``str``, it will be converted to Text node.
         """
-        if self.parentNode:  # type: ignore
+        if self.parentNode:
             node = _to_node_list(nodes)
             self.parentNode.replaceChild(node, self)  # type: ignore
 
     def _remove(self) -> None:
-        if self.parentNode:  # type: ignore
+        if self.parentNode:
             self.parentNode.removeChild(self)  # type: ignore
 
     def remove(self) -> None:

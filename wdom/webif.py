@@ -10,9 +10,15 @@ from wdom import server
 from wdom.interface import Event
 
 logger = logging.getLogger(__name__)
+_T_MsgItem = Union[int, str]
 
 
 class WebIF:
+    tag = None  # type: str
+
+    @property
+    def rimo_id(self) -> _T_MsgItem: ...  # for type check
+
     @property
     def ownerDocument(self) -> Optional[Node]:
         return None
@@ -63,7 +69,8 @@ class WebIF:
             f.set_result(None)
             return f
 
-    def ws_send(self, obj: Dict[str, Iterable[Union[str, int]]]) -> None:
+    def ws_send(self, obj: Dict[str, Union[Iterable[_T_MsgItem], _T_MsgItem]]
+                ) -> None:
         '''Send message to the related nodes on browser, with ``tagname`` and
         ``id`` which specifies relation between python's object and element
         on browser. The message is serialized by JSON object and send via
@@ -71,6 +78,6 @@ class WebIF:
         '''
         if self.ownerDocument is not None:
             obj['target'] = 'node'
-            obj['id'] = self.rimo_id  # type: ignore
-            obj['tag'] = self.tag  # type: ignore
+            obj['id'] = self.rimo_id
+            obj['tag'] = self.tag
             server.push_message(obj)

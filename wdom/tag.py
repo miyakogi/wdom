@@ -104,7 +104,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         clone = type(self)()
         for attr in self.attributes:
             clone.setAttribute(attr, self.getAttribute(attr))
-        for c in self.classList:  # type: ignore
+        for c in self.classList:
             clone.addClass(c)
         clone.style.update(self.style)
         return clone
