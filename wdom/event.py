@@ -15,6 +15,13 @@ _EventListenerType = Union[Callable[[Event], None],
                            Callable[[Event], Awaitable[None]]]
 
 
+def wrap_coro_func(coro: Callable[[Event], Awaitable]
+                   ) -> Callable[[Event], Awaitable]:
+    def wrapper(e: Event) -> Future:
+        return ensure_future(coro(e))
+    return wrapper
+
+
 class EventListener:
     '''Class to wrap an event listener. Acceptable listeners are function,
     coroutine, and coroutine-function. If ``apply_data`` is True, ``data`` is
@@ -25,17 +32,11 @@ class EventListener:
         self.listener = listener
 
         if iscoroutinefunction(self.listener):
-            self.action = self.wrap_coro_func(self.listener)  # type: ignore
+            self.action = wrap_coro_func(self.listener)  # type: ignore
             self._is_coroutine = True
         else:
             self.action = self.listener  # type: ignore
             self._is_coroutine = False
-
-    def wrap_coro_func(self, coro: Callable[[Event], Awaitable]
-                       ) -> Callable[[Event], Awaitable]:
-        def wrapper(e: Event) -> Future:
-            return ensure_future(coro(e))
-        return wrapper
 
     def __call__(self, event: Event) -> Awaitable[None]:
         return self.action(event)
