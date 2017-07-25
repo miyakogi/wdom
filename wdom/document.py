@@ -6,7 +6,7 @@ import tempfile
 import shutil
 from functools import partial
 from types import ModuleType
-from typing import Optional, Union, Callable
+from typing import Optional, Union, Callable, Any
 import weakref
 
 from wdom.options import config
@@ -15,7 +15,7 @@ from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
 from wdom.element import Element, Attr
 from wdom.web_node import WdomElement
-from wdom.tag import HTMLElement
+from wdom.tag import HTMLElement, Tag
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.window import Window
 
@@ -36,13 +36,13 @@ def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
         return None
 
 
-def _cleanup(path):
+def _cleanup(path: str) -> None:
     if os.path.isdir(path):
         shutil.rmtree(path)
 
 
 def create_element(tag: str, name: str = None, base: type = None,
-                   attr: dict = None):
+                   attr: dict = None) -> Node:
     from wdom.web_node import WdomElement
     from wdom.tag import Tag
     from wdom.window import customElements
@@ -73,10 +73,14 @@ class Document(Node):
     def tempdir(self) -> str:
         return self._tempdir
 
-    def __init__(self, doctype='html', title='W-DOM', charset='utf-8',
-                 default_class=HTMLElement, autoreload=None, reload_wait=None):
+    def __init__(self, doctype: str = 'html', title: str = 'W-DOM',
+                 charset: str = 'utf-8', default_class: type = HTMLElement,
+                 autoreload: Optional[bool] = None,
+                 reload_wait: Optional[float] =None,
+                 ) -> None:
         self._tempdir = _tempdir = tempfile.mkdtemp()
-        self._finalizer = weakref.finalize(self, partial(_cleanup, _tempdir))
+        self._finalizer = weakref.finalize(self,  # type: ignore
+                                           partial(_cleanup, _tempdir))
         super().__init__()
         self._window = Window(self)
         self._default_class = default_class
@@ -95,7 +99,7 @@ class Document(Node):
         self.script = Script(parent=self.body)
         self._autoreload_script = Script(parent=self.head)
 
-    def _set_autoreload(self):
+    def _set_autoreload(self) -> None:
         self._autoreload_script.textContent = ''
         if self._autoreload is None:
             autoreload = (config.autoreload or config.debug)
@@ -115,28 +119,32 @@ class Document(Node):
         elm = getElementById(id)
         if elm and elm.ownerDocument is self:
             return elm
+        else:
+            return None
 
     def getElementByRimoId(self, id: Union[str, int]) -> Optional[WdomElement]:
         elm = getElementByRimoId(id)
         if elm and elm.ownerDocument is self:
             return elm
+        else:
+            return None
 
-    def createElement(self, tag: str):
+    def createElement(self, tag: str) -> Node:
         return create_element(tag, base=self._default_class)
 
-    def createDocumentFragment(self):
+    def createDocumentFragment(self) -> DocumentFragment:
         return DocumentFragment()
 
-    def createTextNode(self, text: str):
+    def createTextNode(self, text: str) -> Text:
         return Text(text)
 
-    def createComment(self, text: str):
+    def createComment(self, text: str) -> Comment:
         return Comment(text)
 
-    def createEvent(self, event: str):
+    def createEvent(self, event: str) -> Event:
         return Event(event)
 
-    def createAttribute(self, name: str):
+    def createAttribute(self, name: str) -> Attr:
         return Attr(name)
 
     @property
@@ -144,7 +152,7 @@ class Document(Node):
         return self.title_element.textContent
 
     @title.setter
-    def title(self, value: str):
+    def title(self, value: str) -> None:
         self.title_element.textContent = value
 
     @property
@@ -152,7 +160,7 @@ class Document(Node):
         return self.charset_element.getAttribute('charset')
 
     @characterSet.setter
-    def characterSet(self, value: str):
+    def characterSet(self, value: str) -> None:
         self.charset_element.setAttribute('charset', value)
 
     @property
@@ -160,19 +168,19 @@ class Document(Node):
         return self.characterSet
 
     @charset.setter
-    def charset(self, value: str):
+    def charset(self, value: str) -> None:
         self.characterSet = value
 
-    def add_jsfile(self, src: str):
+    def add_jsfile(self, src: str) -> None:
         self.body.appendChild(Script(src=src))
 
-    def add_jsfile_head(self, src: str):
+    def add_jsfile_head(self, src: str) -> None:
         self.head.appendChild(Script(src=src))
 
-    def add_cssfile(self, src: str):
+    def add_cssfile(self, src: str) -> None:
         self.head.appendChild(Link(rel='stylesheet', href=src))
 
-    def add_header(self, header: str):
+    def add_header(self, header: str) -> None:
         self.head.appendChild(RawHtml(header))
 
     def register_theme(self, theme: ModuleType) -> None:
@@ -192,18 +200,19 @@ class Document(Node):
         return ''.join(child.html for child in self.childNodes)
 
 
-def get_new_document(include_rimo: bool = True,  # noqa: C901
-                     include_skeleton: bool = False,
-                     include_normalizecss: bool = False,
-                     autoreload: Optional[bool] = None,
-                     reload_wait: int = None,
-                     log_level: int = None,
-                     log_prefix: str = None,
-                     log_console: bool = False,
-                     ws_url: str = None,
-                     message_wait: float = config.message_wait,
-                     document_factory: Callable[..., Document] = Document,
-                     **kwargs) -> Document:
+def get_new_document(  # noqa: C901
+        include_rimo: bool = True,
+        include_skeleton: bool = False,
+        include_normalizecss: bool = False,
+        autoreload: Optional[bool] = None,
+        reload_wait: Optional[int] = None,
+        log_level: Optional[int] = None,
+        log_prefix: Optional[str] = None,
+        log_console: bool = False,
+        ws_url: Optional[str] = None,
+        message_wait: Optional[float] = None,
+        document_factory: Callable[..., Document] = Document,
+        **kwargs: Any) -> Document:
     """Make and return new `document` object."""
     document = document_factory(
         autoreload=autoreload,
@@ -212,6 +221,8 @@ def get_new_document(include_rimo: bool = True,  # noqa: C901
 
     if log_level is None:
         log_level = config.logging
+    if message_wait is None:
+        message_wait = config.message_wait
 
     log_script = []
     log_script.append('var RIMO_MESSAGE_WAIT = {}'.format(message_wait))
@@ -238,16 +249,16 @@ def get_new_document(include_rimo: bool = True,  # noqa: C901
 
 
 # get_document = get_new_document
-def get_document(*args, **kwargs):
+def get_document(*args: Any, **kwargs: Any) -> Document:
     return rootDocument
 
 
-def set_document(new_document: Document, *args, **kwargs):
+def set_document(new_document: Document) -> None:
     global rootDocument
     rootDocument = new_document
 
 
-def set_app(app: 'Tag') -> None:
+def set_app(app: Tag) -> None:
     """Set root ``Tag`` as applicaion."""
     document = get_document()
     document.body.prepend(app)

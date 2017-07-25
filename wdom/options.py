@@ -92,7 +92,7 @@ parser.add_argument(
 )
 
 
-def level_to_int(level: Union[str, int]):
+def level_to_int(level: Union[str, int]) -> int:
     if isinstance(level, int):
         if logging.NOTSET <= level <= logging.FATAL:
             return level
@@ -110,7 +110,7 @@ def level_to_int(level: Union[str, int]):
             'but gat type: {}'.format(type(level)))
 
 
-def set_loglevel(level=None):
+def set_loglevel(level: Union[int, str, None] = None) -> None:
     if level is not None:
         lv = level_to_int(level)
     elif config.logging:
@@ -123,7 +123,7 @@ def set_loglevel(level=None):
     _log_handler.setLevel(lv)
 
 
-def parse_command_line():
+def parse_command_line() -> Namespace:
     '''Parse command line options and set options in ``tornado.options``.'''
     import tornado.options
     _, unkown_args = parser.parse_known_args(namespace=config)

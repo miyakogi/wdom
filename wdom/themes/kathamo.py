@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
+from wdom.tag import Button as _Button
 from wdom.tag import *
 
 name = 'KATHAMO'
@@ -14,7 +15,7 @@ css_files = [
     '_static/css/kathamo.min.css',
 ]
 
-class Button(Button):
+class Button(_Button):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAttribute('data-role', 'button')

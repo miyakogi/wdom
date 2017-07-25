@@ -6,23 +6,26 @@ import re
 import copy
 import pathlib
 import webbrowser
-from typing import Optional
+from webbrowser import _browsers  # type: ignore
+from typing import Optional, TYPE_CHECKING
 
 from tornado import autoreload
 
 from wdom.options import config
 
+if TYPE_CHECKING:
+    from typing import List, Pattern  # noqa
 
 exclude_patterns = [
     r'node_modules',
     r'__pycache__',
     r'\..*',
 ]
-_exclude_patterns_re = []
-_exclude_patterns_prev = []
+_exclude_patterns_re = []  # type: List[Pattern]
+_exclude_patterns_prev = []  # type: List[str]
 
 
-def _compile_exclude_patterns():
+def _compile_exclude_patterns() -> None:
     global _exclude_patterns_re, _exclude_patterns_prev
     if _exclude_patterns_prev == exclude_patterns:
         return
@@ -32,11 +35,11 @@ def _compile_exclude_patterns():
         _exclude_patterns_re.append(re.compile(pat))
 
 
-def _is_exclude(name: str):
+def _is_exclude(name: str) -> bool:
     return any(pat.match(name) for pat in _exclude_patterns_re)
 
 
-def _add_watch_path(path: pathlib.Path):
+def _add_watch_path(path: pathlib.Path) -> None:
     if _is_exclude(path.name):
         return
     elif path.is_dir():
@@ -46,7 +49,7 @@ def _add_watch_path(path: pathlib.Path):
         autoreload.watch(str(path))
 
 
-def watch_dir(path: str):
+def watch_dir(path: str) -> None:
     """Add ``path`` to watch for autoreload."""
     _compile_exclude_patterns()
     if config.autoreload or config.debug:
@@ -56,14 +59,14 @@ def watch_dir(path: str):
         _add_watch_path(p)
 
 
-def open_browser(url, browser: Optional[str] = None):
+def open_browser(url: str, browser: Optional[str] = None) -> None:
     """Open web browser."""
     if '--open-browser' in sys.argv:
         # Remove open browser to prevent making new tab on autoreload
         sys.argv.remove('--open-browser')
     if browser is None:
         browser = config.browser
-    if browser in webbrowser._browsers:
+    if browser in _browsers:
         webbrowser.get(browser).open(url)
     else:
         webbrowser.open(url)

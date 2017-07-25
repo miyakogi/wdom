@@ -5,7 +5,7 @@ import os
 import json
 import logging
 import asyncio
-from typing import Optional
+from typing import Any, Optional
 
 from tornado import autoreload
 
@@ -14,7 +14,14 @@ from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
 from wdom.server import _tornado as module
 
-__all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
+__all__ = (
+    'add_static_path',
+    'exclude_patterns',
+    'get_app',
+    'start',
+    'start_server',
+    'stop_server',
+)
 logger = logging.getLogger(__name__)
 _server = None
 server_config = module.server_config
@@ -41,7 +48,7 @@ def send_message() -> None:
         conn.write_message(msg)
 
 
-def add_static_path(prefix, path, no_watch: bool = False) -> None:
+def add_static_path(prefix: str, path: str, no_watch: bool = False) -> None:
     """Add directory to serve static files.
 
     First argument ``prefix`` is a URL prefix for the ``path``. ``path`` must
@@ -54,19 +61,20 @@ def add_static_path(prefix, path, no_watch: bool = False) -> None:
         watch_dir(path)
 
 
-def get_app(*args, **kwargs) -> 'Application':
+def get_app() -> module.Application:
     """Get root Application object."""
     return module.get_app()
 
 
-async def _message_loop():
+async def _message_loop() -> None:
     while True:
         send_message()
         await asyncio.sleep(config.message_wait)
 
 
 def start_server(browser: Optional[str] = None, address: Optional[str] = None,
-                 check_time: Optional[int] = 500, **kwargs):
+                 check_time: Optional[int] = 500, **kwargs: Any
+                 ) -> module.HTTPServer:
     """Start web server."""
     # Add application's static files directory
     from wdom.document import get_document
@@ -92,12 +100,12 @@ def start_server(browser: Optional[str] = None, address: Optional[str] = None,
     return _server
 
 
-def stop_server(server=None):
+def stop_server(server: Optional[module.HTTPServer] = None) -> None:
     """Terminate web server."""
     module.stop_server(server or _server)
 
 
-def start(**kwargs):
+def start(**kwargs: Any) -> None:
     """Start web server.
     Run until ``Ctrl-c`` pressed, or if auto-shutdown is enabled, until when
     window is closed.
