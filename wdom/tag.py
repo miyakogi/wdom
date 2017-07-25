@@ -3,11 +3,11 @@
 
 import logging
 from collections import Iterable
-from typing import Tuple, Union
+from typing import Any, Dict, Optional, Tuple, Union, TYPE_CHECKING
 from types import new_class
 
-from wdom.node import Node
-from wdom.element import DOMTokenList, ElementMeta
+from wdom.node import Node, NodeList
+from wdom.element import DOMTokenList, ElementMeta, _AttrValueType
 from wdom.element import (
     HTMLAnchorElement,
     HTMLButtonElement,
@@ -24,6 +24,9 @@ from wdom.element import (
 )
 from wdom.web_node import WdomElement
 
+if TYPE_CHECKING:
+    from typing import List  # noqa
+
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +36,9 @@ class HTMLElement(WdomElement):
 
 class TagBaseMeta(ElementMeta):
     '''Meta class to set default class variable of HtmlDom'''
-    def __prepare__(name, bases, **kwargs) -> dict:
+    @classmethod
+    def __prepare__(metacls, name: str, bases: Tuple[type], **kwargs: Any
+                    ) -> Dict[str, bool]:
         return {'inherit_class': True}
 
 
@@ -57,14 +62,15 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
     #: custom element which extends built-in tag (like <table is="your-tag">)
     is_ = ''
 
-    def __init__(self, *args, attrs=None, **kwargs):
+    def __init__(self, *args: Any, attrs: Dict[str, _AttrValueType] = None,
+                 **kwargs: Any) -> None:
         if attrs:
             kwargs.update(attrs)
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         if self.is_ and 'is' not in kwargs and 'is_' not in kwargs:
             kwargs['is'] = self.is_
-        super().__init__(self.tag, **kwargs)
+        super().__init__(self.tag, **kwargs)  # type: ignore
         self.append(*args)
 
     @classmethod
@@ -79,21 +85,22 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
                     l.append(base_cls.get_class_list())
         # Reverse order so that parent's class comes to front
         l.reverse()
-        return DOMTokenList(cls, l)
+        return DOMTokenList(cls, *l)
 
-    def __getitem__(self, attr: Union[str, int]) -> Union[Node, str]:
+    def __getitem__(self, attr: Union[str, int]
+                    ) -> Union[Node, _AttrValueType]:
         if isinstance(attr, int):
             return self.childNodes[attr]
         else:
             return self.getAttribute(attr)
 
-    def __setitem__(self, attr: str, val):
+    def __setitem__(self, attr: str, val: _AttrValueType) -> None:
         self.setAttribute(attr, val)
 
-    def __delitem__(self, attr: str):
+    def __delitem__(self, attr: str) -> None:
         self.removeAttribute(attr)
 
-    def __copy__(self) -> HTMLElement:
+    def __copy__(self) -> 'Tag':
         clone = type(self)()
         for attr in self.attributes:
             clone.setAttribute(attr, self.getAttribute(attr))
@@ -102,7 +109,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         clone.style.update(self.style)
         return clone
 
-    def getAttribute(self, attr: str) -> str:
+    def getAttribute(self, attr: str) -> _AttrValueType:
         if attr == 'class':
             cls = self.get_class_list()
             cls._append(self.classList)
@@ -113,7 +120,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         else:
             return super().getAttribute(attr)
 
-    def addClass(self, *classes: Tuple[str]):
+    def addClass(self, *classes: str) -> None:
         self.classList.add(*classes)
 
     def hasClass(self, class_: str) -> bool:
@@ -122,11 +129,11 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
     def hasClasses(self) -> bool:
         return len(self.classList) > 0
 
-    def removeClass(self, *classes: Tuple[str]):
+    def removeClass(self, *classes: str) -> None:
         _remove_cl = []
         for class_ in classes:
             if class_ not in self.classList:
-                if class_ in self.__class__.get_class_list():
+                if class_ in self.get_class_list():
                     logger.warning(
                         'tried to remove class-level class: '
                         '{}'.format(class_)
@@ -139,18 +146,18 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
                 _remove_cl.append(class_)
         self.classList.remove(*_remove_cl)
 
-    def show(self):
+    def show(self) -> None:
         self.hidden = False
 
-    def hide(self):
+    def hide(self) -> None:
         self.hidden = True
 
     @property
-    def type(self) -> str:
+    def type(self) -> _AttrValueType:
         return self.getAttribute('type') or self.type_
 
     @type.setter
-    def type(self, val: str):
+    def type(self, val: str) -> None:
         self.setAttribute('type', val)
 
 
@@ -158,7 +165,7 @@ class NestedTag(Tag):
     #: Inner nested tag class
     inner_tag_class = None
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._inner_element = None
         super().__init__(**kwargs)
         if self.inner_tag_class:
@@ -166,7 +173,7 @@ class NestedTag(Tag):
             super().appendChild(self._inner_element)
         self.append(*args)
 
-    def appendChild(self, child) -> Node:
+    def appendChild(self, child: Node) -> Node:
         if self._inner_element:
             return self._inner_element.appendChild(child)
         else:
@@ -191,25 +198,25 @@ class NestedTag(Tag):
             return super().replaceChild(new_child, old_child)
 
     @property
-    def childNodes(self):
+    def childNodes(self) -> NodeList:
         if self._inner_element:
             return self._inner_element.childNodes
         else:
             return super().childNodes
 
-    def empty(self):
+    def empty(self) -> None:
         if self._inner_element:
             self._inner_element.empty()
         else:
             super().empty()
 
     @Tag.textContent.setter
-    def textContent(self, text: str):
+    def textContent(self, text: str) -> None:  # type: ignore
         if self._inner_element:
             self._inner_element.textContent = text
         else:
             # Need a trick to call property of super-class
-            super().textContent = text
+            super().textContent = text  # type: ignore
 
     @property
     def html(self) -> str:
@@ -226,15 +233,16 @@ class NestedTag(Tag):
             return super().innerHTML
 
     @innerHTML.setter
-    def innerHTML(self, html: str):
+    def innerHTML(self, html: str) -> None:
         if self._inner_element:
             self._inner_element.innerHTML = html
         else:
-            super().innerHTML = html
+            super().innerHTML = html  # type: ignore
 
 
-def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
-                **kwargs) -> type:
+def NewTagClass(class_name: str, tag: Optional[str] = None,
+                bases: Union[type, Iterable] = (Tag, ),
+                **kwargs: Any) -> type:
     '''Generate and return new ``Tag`` class. If ``tag`` is empty, lower case
     of ``class_name`` is used for a tag name of the new class. ``bases`` should
     be a tuple of base classes. If it is empty, use ``Tag`` class for a base
@@ -262,7 +270,8 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
     kwargs['tag'] = tag
     # Here not use type() function, since it does not support
     # metaclasss (__prepare__) properly.
-    cls = new_class(class_name, bases, {}, lambda ns: ns.update(kwargs))
+    cls = new_class(  # type: ignore
+        class_name, bases, {}, lambda ns: ns.update(kwargs))
     return cls
 
 
@@ -273,7 +282,7 @@ class Input(Tag, HTMLInputElement):
     #: type attribute; text, button, checkbox, or radio... and so on.
     type_ = ''
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         super().__init__(*args, **kwargs)
@@ -298,7 +307,8 @@ class Textarea(Tag, HTMLTextAreaElement):
 class Script(Tag, HTMLScriptElement):
     tag = 'script'
 
-    def __init__(self, *args, type='text/javascript', **kwargs):
+    def __init__(self, *args: Any, type: str = 'text/javascript',
+                 **kwargs: Any) -> None:
         super().__init__(*args, type=type, **kwargs)
 
 
@@ -397,9 +407,9 @@ ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')  
 LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')  # noqa: E501
 
 # css/js/headers
-css_files = []
-js_files = []
-headers = []
+css_files = []  # type: List[str]
+js_files = []  # type: List[str]
+headers = []  # type: List[str]
 
 default_classes = (
     Input,

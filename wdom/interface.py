@@ -1,22 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from xml.dom import Node
+from typing import Any, Iterable, Sized
+from xml.dom import Node  # type: ignore
+
 
 __all__ = ('Event', 'Node', 'NodeList', 'HTMLCollection')
 
 
 class Event:
-    def __init__(self, type: str, **kwargs):
+    currentTarget = None  # type: Node
+    target = None  # type: Node
+
+    def __init__(self, type: str, **kwargs: Any) -> None:
         self.type = type.lower()
         self.__dict__.update(kwargs)
 
-    def stopPrapagation(self):
+    def stopPrapagation(self) -> None:
         raise NotImplementedError
 
 
-class NodeList:
-    def __init__(self, ref: list):
+class NodeList(Iterable, Sized):
+    def __init__(self, ref: list) -> None:
         self.ref = ref
 
     def __getitem__(self, index: int) -> Node:

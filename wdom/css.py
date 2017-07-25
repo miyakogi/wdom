@@ -5,7 +5,7 @@ import sys
 import re
 from collections import OrderedDict
 import logging
-from typing import Optional
+from typing import Any, Match, Optional
 
 from wdom.interface import Node
 from wdom.webif import WebIF
@@ -21,11 +21,11 @@ else:
     _dict = dict
 
 
-def _lower_dash(m):
+def _lower_dash(m: Match) -> str:
     return m.group(1) + '-' + m.group(2).lower()
 
 
-def _normalize_css_property(prop):
+def _normalize_css_property(prop: str) -> str:
     if prop == 'cssFloat':  # Special case
         return 'float'
     else:
@@ -33,14 +33,15 @@ def _normalize_css_property(prop):
 
 
 class CSSStyleDeclaration(_dict):
-    def __init__(self, style: str = None, parent: Optional['CSSRule'] = None,
-                 owner: Optional['Node'] = None):
+    def __init__(self, style: Optional[str] = None,
+                 parent: Optional['CSSStyleRule'] = None,
+                 owner: Optional['Node'] = None) -> None:
         self.parentRule = parent
         self._owner = owner
         if style:
             self._parse_str(style)
 
-    def _update(self):
+    def _update(self) -> None:
         if isinstance(self._owner, WebIF):
             css = self.cssText
             if css:
@@ -87,11 +88,11 @@ class CSSStyleDeclaration(_dict):
         return len(self)
 
     @property
-    def parentRule(self):
+    def parentRule(self) -> 'CSSStyleRule':
         return self._parent
 
     @parentRule.setter
-    def parentRule(self, parent):
+    def parentRule(self, parent: 'CSSStyleRule') -> None:
         self._parent = parent
 
     def getPropertyValue(self, prop: str) -> str:
@@ -104,33 +105,34 @@ class CSSStyleDeclaration(_dict):
             del self[prop]
         return removed_prop
 
-    def setProperty(self, prop: str, value: str, priority=None):
+    def setProperty(self, prop: str, value: str, priority: Optional[str] = None
+                    ) -> None:
         self[prop] = value
 
-    def __getitem__(self, attr) -> str:
+    def __getitem__(self, attr: str) -> str:
         return self.get(_normalize_css_property(attr), '')
 
-    def __setitem__(self, attr, value) -> str:
+    def __setitem__(self, attr: str, value: str) -> None:
         super().__setitem__(_normalize_css_property(attr), value)
         self._update()
 
-    def __delitem__(self, attr):
+    def __delitem__(self, attr: str) -> None:
         super().__delitem__(_normalize_css_property(attr))
         self._update()
 
     def __getattr__(self, attr: str) -> str:
         if attr.startswith('_') or attr in dir(self):
-            return super().__getattr__(attr)
+            return super().__getattr__(attr)  # type: ignore
         else:
             return self.get(_normalize_css_property(attr), '')
 
-    def __setattr__(self, attr, value):
+    def __setattr__(self, attr: str, value: str) -> None:
         if attr.startswith('_') or attr in dir(self):
             super().__setattr__(attr, value)
         else:
             self[_normalize_css_property(attr)] = value
 
-    def __delattr__(self, attr):
+    def __delattr__(self, attr: str) -> None:
         if attr.startswith('_') or attr in dir(self):
             super().__delattr__(attr)
         else:
@@ -138,12 +140,13 @@ class CSSStyleDeclaration(_dict):
 
 
 def parse_style_decl(style: str, owner: Node = None) -> CSSStyleDeclaration:
-    style = CSSStyleDeclaration(style, owner=owner)
-    return style
+    _style = CSSStyleDeclaration(style, owner=owner)
+    return _style
 
 
 class CSSStyleRule(object):
-    def __init__(self, selector: str = '', style: CSSStyleDeclaration = None):
+    def __init__(self, selector: str = '', style: CSSStyleDeclaration = None
+                 ) -> None:
         self.selectorText = selector
         if style is None:
             self.style = CSSStyleDeclaration()
@@ -160,7 +163,7 @@ class CSSStyleRule(object):
 
 
 class CSSRuleList(list):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
     @property

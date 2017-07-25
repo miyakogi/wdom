@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# type: ignore
 
 from wdom.tag import NewTagClass as NewTag
+from wdom.tag import Form as _Form
 from wdom.tag import *
 
 name = 'Spark'
@@ -32,7 +34,7 @@ DangerButton = NewTag('DangerButton', 'button', Button, class_='red', is_='dange
 ErrorButton = NewTag('ErrorButton', 'button', Button, class_='red', is_='error-button')
 LinkButton = NewTag('LinkButton', 'button', Button, class_='flat', is_='link-button')
 
-class Form(Form):
+class Form(_Form):
     class_ = 'form'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

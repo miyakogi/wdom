@@ -29,7 +29,7 @@ Example:
 include_dirs = [static_dir, template_dir]
 
 
-def install_asyncio():
+def install_asyncio() -> None:
     from tornado.ioloop import IOLoop
     from tornado.platform.asyncio import AsyncIOMainLoop
     '''Ensure that asyncio's io-loop is installed to tornado.'''
@@ -37,7 +37,7 @@ def install_asyncio():
         AsyncIOMainLoop().install()
 
 
-def suppress_logging():
+def suppress_logging() -> None:
     """Suppress log output to stdout.
 
     This function is intended to be used in test's setup. This function removes

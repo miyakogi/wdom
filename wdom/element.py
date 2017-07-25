@@ -1,41 +1,51 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from collections import Iterable, OrderedDict
-from xml.etree.ElementTree import HTML_EMPTY
+from collections import OrderedDict, UserDict
+from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 import html as html_
-from typing import Union, Tuple, Callable
+from typing import Union, Callable, Optional, Dict, Tuple
+from typing import Iterable, MutableSequence
+from typing import Any, Iterator, List, TYPE_CHECKING, Type
 from weakref import WeakSet, WeakValueDictionary
 
 from wdom.interface import NodeList, Event
 from wdom.css import CSSStyleDeclaration
 from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
+from wdom.node import DocumentFragment
 from wdom.event import EventTarget
 from wdom.webif import WebIF
 from wdom.parser import FragmentParser
 
+if TYPE_CHECKING:
+    from typing import MutableMapping  # noqa
+    from wdom.tag import Tag  # noqa
 
-class DOMTokenList:
+_AttrValueType = Union[List[str], str, int, bool, CSSStyleDeclaration, None]
+
+
+class DOMTokenList(MutableSequence[str]):
     """List of DOM token.
 
     DOM token is a string which does not contain spases.
     """
-    def __init__(self, owner, *args):
-        self._list = list()
+    def __init__(self, owner: Union[Node, Type['Tag']],
+                 *args: Union[str, 'DOMTokenList']) -> None:
+        self._list = list()  # type: List[str]
         self._owner = owner
         self._append(args)
 
     def __len__(self) -> int:
         return len(self._list)
 
-    def __contains__(self, item: str) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self._list
 
-    def __iter__(self) -> str:
+    def __iter__(self) -> Iterator[str]:
         for token in self._list:
             yield token
 
-    def _validate_token(self, token: str):
+    def _validate_token(self, token: str) -> None:
         if not isinstance(token, str):
             raise TypeError(
                 'Token must be str, but {} passed.'.format(type(token)))
@@ -43,7 +53,7 @@ class DOMTokenList:
             raise ValueError(
                 'Token contains space characters, which are invalid.')
 
-    def _append(self, token):
+    def _append(self, token: Union[Iterable, str]) -> None:
         if isinstance(token, str):
             for t in token.split(' '):
                 self.add(t)
@@ -55,12 +65,26 @@ class DOMTokenList:
         else:
             raise TypeError
 
+    def __getitem__(self, index: Union[int, slice]  # type: ignore
+                    ) -> Optional[str]:
+        if isinstance(index, slice):
+            TypeError('slicing is not supported.')
+        elif 0 <= index < len(self._list):
+            return self._list[index]
+        return None
+
+    def __setitem__(self, s, item) -> None:  # type: ignore
+        raise NotImplementedError
+
+    def __delitem__(self, index: int) -> None:  # type: ignore
+        raise NotImplementedError
+
     @property
     def length(self) -> int:
         """Number of DOM token in this list."""
-        return len(self)
+        return self.__len__()
 
-    def add(self, *tokens: Tuple[str]):
+    def add(self, *tokens: str) -> None:
         """Add new tokens to list."""
         _new_tokens = []
         for token in tokens:
@@ -71,7 +95,7 @@ class DOMTokenList:
         if isinstance(self._owner, WebIF) and _new_tokens:
             self._owner.js_exec('addClass', _new_tokens)
 
-    def remove(self, *tokens: Tuple[str]):
+    def remove(self, *tokens: str) -> None:
         """Remove tokens from list."""
         _removed_tokens = []
         for token in tokens:
@@ -82,7 +106,7 @@ class DOMTokenList:
         if isinstance(self._owner, WebIF) and _removed_tokens:
             self._owner.js_exec('removeClass', _removed_tokens)
 
-    def toggle(self, token: str):
+    def toggle(self, token: str) -> None:
         """Add or remove token to/from list.
 
         If token is in this list, the token will be removed. Otherwise add it
@@ -94,16 +118,16 @@ class DOMTokenList:
         else:
             self.add(token)
 
-    def item(self, index: int) -> str:
+    def item(self, index: int) -> Optional[str]:
         """Return the token of the ``index``.
 
         ``index`` must be 0 or positive integer. If index is out of range,
         return None.
         """
-        if 0 <= index < len(self):
-            return self._list[index]
-        else:
-            return None
+        return self[index]
+
+    def insert(self, index: int, item: str) -> None:
+        raise NotImplementedError
 
     def contains(self, token: str) -> bool:
         """Return if the token is in the list or not."""
@@ -124,7 +148,9 @@ class Attr:
     In the latest DOM specification, Attr interface does not inherits ``Node``
     interface. (Previously, Attr inherited Node interface.)
     """
-    def __init__(self, name: str, value=None, owner: Node = None):
+    def __init__(self, name: str,
+                 value: _AttrValueType = None,
+                 owner: Node = None) -> None:
         self._name = name.lower()
         self._value = value
         self._owner = owner
@@ -138,10 +164,9 @@ class Attr:
         if self._owner and self.name in self._owner._special_attr_boolean:
             return self.name
         else:
-            if isinstance(self.value, str):
-                value = html_.escape(self.value)
-            else:
-                value = self.value
+            value = self.value
+            if isinstance(value, str):
+                value = html_.escape(value)
             return '{name}="{value}"'.format(name=self.name, value=value)
 
     @property
@@ -150,12 +175,12 @@ class Attr:
         return self._name
 
     @property
-    def value(self) -> str:
+    def value(self) -> _AttrValueType:
         """Value of this attr."""
-        return self._value
+        return self._value or ''
 
     @value.setter
-    def value(self, val):
+    def value(self, val: str) -> None:
         self._value = val
 
     @property
@@ -170,28 +195,34 @@ class DraggableAttr(Attr):
         if isinstance(self.value, bool):
             val = 'true' if self.value else 'false'
         else:
-            val = self.value
+            val = str(self.value)
         return 'draggable="{}"'.format(val)
 
 
-class NamedNodeMap:
-    def __init__(self, owner):
+class NamedNodeMap(UserDict):
+    def __init__(self, owner: Node) -> None:
         self._owner = owner
-        self._dict = OrderedDict()
+        self._dict = OrderedDict()  # type: OrderedDict[str, Attr]
 
     def __len__(self) -> int:
         return len(self._dict)
 
-    def __contains__(self, item: str) -> bool:
+    def __contains__(self, item: object) -> bool:
         return item in self._dict
 
-    def __getitem__(self, index: Union[int, str]) -> Attr:
+    def __getitem__(self, index: Union[int, str]) -> Optional[Attr]:
         if isinstance(index, int):
             return tuple(self._dict.values())[index]
         else:
             return None
 
-    def __iter__(self) -> Attr:
+    def __setitem__(self, attr: str, item: Attr) -> None:
+        self._dict[attr] = item
+
+    def __delitem__(self, attr: str) -> None:
+        del self._dict[attr]
+
+    def __iter__(self) -> Iterator[str]:
         for attr in self._dict.keys():
             yield attr
 
@@ -199,10 +230,10 @@ class NamedNodeMap:
     def length(self) -> int:
         return len(self)
 
-    def getNamedItem(self, name: str) -> Attr:
+    def getNamedItem(self, name: str) -> Optional[Attr]:
         return self._dict.get(name, None)
 
-    def setNamedItem(self, item: Attr):
+    def setNamedItem(self, item: Attr) -> None:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
@@ -210,7 +241,7 @@ class NamedNodeMap:
         self._dict[item.name] = item
         item._owner = self._owner
 
-    def removeNamedItem(self, item: Attr) -> Attr:
+    def removeNamedItem(self, item: Attr) -> Optional[Attr]:
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
@@ -220,7 +251,7 @@ class NamedNodeMap:
             removed_item._owner = self._owner
         return removed_item
 
-    def item(self, index: int) -> Attr:
+    def item(self, index: int) -> Optional[Attr]:
         if 0 <= index < len(self):
             return self._dict[tuple(self._dict.keys())[index]]
         else:
@@ -231,13 +262,14 @@ class NamedNodeMap:
 
 
 class ElementParser(FragmentParser):
-    def __init__(self, *args, default_class=None, **kwargs):
+    def __init__(self, *args: Any, default_class: type = None,
+                 **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.default_class = Element
 
 
 class HTMLElementParser(ElementParser):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.default_class = HTMLElement
 
@@ -259,37 +291,38 @@ Deleter: Remove ``{attr}`` attribute from this element.
 '''
 
 
-def _string_properties(attr) -> property:
-    def getter(self) -> str:
+def _string_properties(attr: str) -> property:
+    def getter(self: Node) -> str:
         return self.getAttribute(attr) or ''
 
-    def setter(self, value: str):
+    def setter(self: Node, value: str) -> None:
         self.setAttribute(attr, str(value))
 
-    def deleter(self):
+    def deleter(self: Node) -> None:
         self.removeAttribute(attr)
 
     return property(getter, setter, deleter, _str_attr_doc.format(attr=attr))
 
 
-def _boolean_properties(attr) -> property:
+def _boolean_properties(attr: str) -> property:
     def getter(self: Node) -> bool:
         return bool(self.getAttribute(attr))
 
-    def setter(self: Node, value: bool):
+    def setter(self: Node, value: bool) -> None:
         if value:
             self.setAttribute(attr, True)
         else:
             self.removeAttribute(attr)
 
-    def deleter(self):
+    def deleter(self: Node) -> None:
         self.removeAttribute(attr)
 
     return property(getter, setter, deleter, _bool_attr_doc.format(attr=attr))
 
 
 class ElementMeta(type):
-    def __new__(cls, name, bases, namespace, **kwargs):
+    def __new__(cls: type, name: str, bases: Tuple[type],
+                namespace: Dict[str, Any], **kwargs: Any) -> type:
         for attr in namespace.get('_special_attr_string', []):
             namespace[attr] = _string_properties(attr)
         for attr in namespace.get('_special_attr_boolean', []):
@@ -302,15 +335,15 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
               ChildNode, metaclass=ElementMeta):
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
-    _parser_class = ElementParser
-    _elements = WeakSet()
-    _elements_with_id = WeakValueDictionary()
+    _parser_class = ElementParser  # type: Type[ElementParser]
+    _elements = WeakSet()  # type: WeakSet[Node]
+    _elements_with_id = WeakValueDictionary()  # type: MutableMapping
     _should_escape_text = True
     _special_attr_string = ['id']
-    _special_attr_boolean = []
+    _special_attr_boolean = []  # type: List[str]
 
     def __init__(self, tag: str='', parent: Node = None,
-                 _registered: bool = True, **kwargs):
+                 _registered: bool = True, **kwargs: Any) -> None:
         self._registered = _registered
         self.tag = tag
         self._elements.add(self)  # used to suport custom elements
@@ -347,7 +380,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             tag = ' '.join((tag, attrs))
         return tag + '>'
 
-    def _parse_html(self, html: str) -> 'DocumentFragment':
+    def _parse_html(self, html: str) -> DocumentFragment:
         parser = self._parser_class()
         parser.feed(html)
         return parser.root
@@ -355,7 +388,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def _get_inner_html(self) -> str:
         return ''.join(child.html for child in self._children)
 
-    def _set_inner_html(self, html: str):
+    def _set_inner_html(self, html: str) -> None:
         self._empty()
         self._append_child(self._parse_html(html))
 
@@ -364,7 +397,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         return self._get_inner_html()
 
     @innerHTML.setter
-    def innerHTML(self, html: str):
+    def innerHTML(self, html: str) -> None:
         self._set_inner_html(html)
 
     @property
@@ -375,7 +408,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def html(self) -> str:
         return self.start_tag + self.innerHTML + self.end_tag
 
-    def insertAdjacentHTML(self, position: str, html: str):
+    def insertAdjacentHTML(self, position: str, html: str) -> None:
         '''Parse ``html`` to DOM and insert to ``position``. ``position`` is a
         case-insensive string, and must be one of "beforeBegin", "afterBegin",
         "beforeEnd", or "afterEnd".
@@ -401,7 +434,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         return self.html
 
     @property
-    def nodeName(self) -> str:
+    def nodeName(self) -> str:  # type: ignore
         return self.tag.upper()
 
     @property
@@ -412,7 +445,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def localName(self) -> str:
         return self.tag.lower()
 
-    def getAttribute(self, attr: str) -> str:
+    def getAttribute(self, attr: str) -> _AttrValueType:
         if attr == 'class':
             if self.classList:
                 return self.classList.toString()
@@ -424,7 +457,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         else:
             return attr_node.value
 
-    def getAttributeNode(self, attr: str) -> Attr:
+    def getAttributeNode(self, attr: str) -> Optional[Attr]:
         return self.attributes.getNamedItem(attr)
 
     def hasAttribute(self, attr: str) -> bool:
@@ -436,30 +469,49 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def hasAttributes(self) -> bool:
         return bool(self.attributes) or bool(self.classList)
 
-    def _set_attribute(self, attr: str, value: Union[str, bool]):
-        if attr == 'class':
+    def _set_attribute_class(self, value: _AttrValueType) -> None:
+        if isinstance(value, str):
             self.classList = DOMTokenList(self, value)
+        elif isinstance(value, Iterable):
+            self.classList = DOMTokenList(self, *value)
+        else:
+            raise TypeError(
+                'class attribute must be str, '
+                'but got {}'.format(type(value))
+            )
+
+    def _change_id(self, value: _AttrValueType) -> None:
+        if 'id' in self.attributes:
+            # remove old reference to self
+            self._elements_with_id.pop(self.id, None)
+        # register this elements with new id
+        if isinstance(value, (int, str)):
+            self._elements_with_id[value] = self
+        else:
+            raise TypeError(
+                'id attribute must be int or integer-string.'
+            )
+
+    def _set_attribute(self, attr: str, value: _AttrValueType) -> None:
+        if attr == 'class':
+            self._set_attribute_class(value)
         else:
             if attr == 'id':
-                if 'id' in self.attributes:
-                    # remove old reference to self
-                    self._elements_with_id.pop(self.id, None)
-                # register this elements with new id
-                self._elements_with_id[value] = self
-            if attr == 'draggable':
-                attr_cls = DraggableAttr
-            else:
+                self._change_id(value)
+            if not attr == 'draggable':
                 attr_cls = Attr
+            else:
+                attr_cls = DraggableAttr
             new_attr_node = attr_cls(attr, value)
             self.setAttributeNode(new_attr_node)
 
-    def setAttribute(self, attr: str, value: Union[str, bool]):
+    def setAttribute(self, attr: str, value: _AttrValueType) -> None:
         self._set_attribute(attr, value)
 
-    def setAttributeNode(self, attr: Attr):
+    def setAttributeNode(self, attr: Attr) -> None:
         self.attributes.setNamedItem(attr)
 
-    def _remove_attribute(self, attr: str):
+    def _remove_attribute(self, attr: str) -> None:
         if attr == 'class':
             self.classList = DOMTokenList(self)
         else:
@@ -469,10 +521,10 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             if _attr:
                 self.attributes.removeNamedItem(_attr)
 
-    def removeAttribute(self, attr: str):
+    def removeAttribute(self, attr: str) -> None:
         self._remove_attribute(attr)
 
-    def removeAttributeNode(self, attr: Attr) -> Attr:
+    def removeAttributeNode(self, attr: Attr) -> Optional[Attr]:
         return self.attributes.removeNamedItem(attr)
 
     def getElementsBy(self, cond: Callable[['Element'], bool]) -> NodeList:
@@ -489,11 +541,11 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             elements.extend(child.getElementsBy(cond))
         return NodeList(elements)
 
-    def getElementsByTagName(self, tag: str):
+    def getElementsByTagName(self, tag: str) -> NodeList:
         _tag = tag.upper()
         return self.getElementsBy(lambda n: getattr(n, 'tagName') == _tag)
 
-    def getElementsByClassName(self, class_name: str):
+    def getElementsByClassName(self, class_name: str) -> NodeList:
         return self.getElementsBy(
             lambda node: class_name in getattr(node, 'classList'))
 
@@ -501,9 +553,9 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 class HTMLElement(Element):
     _special_attr_string = ['title', 'type']
     _special_attr_boolean = ['hidden']
-    _parser_class = HTMLElementParser
+    _parser_class = HTMLElementParser  # type: Type[ElementParser]
 
-    def __init__(self, *args, style: str=None, **kwargs):
+    def __init__(self, *args: Any, style: str=None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._style = CSSStyleDeclaration(style, owner=self)
 
@@ -531,34 +583,34 @@ class HTMLElement(Element):
         return self._style
 
     @style.setter
-    def style(self, style: str):
+    def style(self, style: _AttrValueType) -> None:
         if isinstance(style, str):
             self._style._parse_str(style)
         elif style is None:
             self._style._parse_str('')
         elif isinstance(style, CSSStyleDeclaration):
             self._style._owner = None
-            style._owner = self
+            style._owner = self  # type: ignore
             self._style = style
-            self._style.update()
+            self._style.update()  # type: ignore
         else:
             raise TypeError('Invalid type for style: {}'.format(type(style)))
 
     @property
-    def draggable(self) -> bool:
+    def draggable(self) -> Union[bool, str]:
         if not self.hasAttribute('draggable'):
             return False
         else:
-            return self.getAttribute('draggable')
+            return self.getAttribute('draggable')  # type: ignore
 
     @draggable.setter
-    def draggable(self, val: bool):
+    def draggable(self, val: Union[bool, str]) -> None:
         if val is False:
             self.removeAttribute('draggable')
         else:
             self.setAttribute('draggable', val)
 
-    def getAttribute(self, attr: str) -> str:
+    def getAttribute(self, attr: str) -> _AttrValueType:
         if attr == 'style':
             # if style is neither None nor empty, return None
             # otherwise, return style.cssText
@@ -569,23 +621,28 @@ class HTMLElement(Element):
         else:
             return super().getAttribute(attr)
 
-    def _set_attribute(self, attr: str, value: str):
+    def _set_attribute(self, attr: str, value: _AttrValueType) -> None:
         if attr == 'style':
-            self.style = value
+            self.style = value  # type: ignore
         else:
-            super()._set_attribute(attr, value)
+            super()._set_attribute(attr, value)  # type: ignore
 
-    def _remove_attribute(self, attr: str):
+    def _remove_attribute(self, attr: str) -> None:
         if attr == 'style':
-            self.style = None
+            self.style = None  # type: ignore
         else:
-            super()._remove_attribute(attr)
+            super()._remove_attribute(attr)  # type: ignore
 
 
 class FormControlMixin:
-    def __init__(self, *args, form=None, **kwargs):
+    @property
+    def parentNode(self) -> Optional[Node]: ...  # for type check
+
+    def __init__(self, *args: Any,
+                 form: Optional[Union[str, int, 'HTMLFormElement']] = None,
+                 **kwargs: Any) -> None:
         self._form = None
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)  # type: ignore
         from wdom.document import getElementById
         if isinstance(form, (str, int)):
             form = getElementById(form)
@@ -598,7 +655,7 @@ class FormControlMixin:
             )
 
     @property
-    def form(self) -> HTMLElement:
+    def form(self) -> Optional['HTMLFormElement']:
         if self._form:
             return self._form
         else:
@@ -628,12 +685,12 @@ class HTMLIFrameElement(HTMLElement):
     _special_attr_string = ['height', 'name', 'src', 'target', 'width']
 
 
-class HTMLInputElement(FormControlMixin, HTMLElement):
+class HTMLInputElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['checked', 'disabled', 'multiple', 'readonly',
                              'required']
 
-    def on_event_pre(self, e: Event):
+    def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
             # Update user inputs
@@ -652,7 +709,7 @@ class HTMLInputElement(FormControlMixin, HTMLElement):
         return bool(self.getAttribute('defaultChecked'))
 
     @defaultChecked.setter
-    def defaultChecked(self, value: bool):
+    def defaultChecked(self, value: bool) -> None:
         if value:
             self.setAttribute('defaultChecked', True)
             self.checked = True
@@ -661,11 +718,11 @@ class HTMLInputElement(FormControlMixin, HTMLElement):
             self.checked = False
 
     @property
-    def defaultValue(self) -> str:
+    def defaultValue(self) -> _AttrValueType:
         return self.getAttribute('defaultValue')
 
     @defaultValue.setter
-    def defaultValue(self, value: str):
+    def defaultValue(self, value: str) -> None:
         self.setAttribute('defaultValue', value)
         self.value = value
 
@@ -682,22 +739,25 @@ class HTMLInputElement(FormControlMixin, HTMLElement):
 
 class HTMLLabelElement(HTMLElement, FormControlMixin):
     @property
-    def htmlFor(self) -> str:
+    def htmlFor(self) -> _AttrValueType:
         return self.getAttribute('for')
 
     @htmlFor.setter
-    def htmlFor(self, value: str):
+    def htmlFor(self, value: str) -> None:
         self.setAttribute('for', value)
 
     @property
-    def control(self) -> HTMLElement:
+    def control(self) -> Optional[HTMLElement]:
         id = self.getAttribute('for')
         if id:
             if self.ownerDocument:
                 return self.ownerDocument.getElementById(id)
-            else:
+            elif isinstance(id, (str, int)):
                 from wdom.document import getElementById
                 return getElementById(id)
+            else:
+                raise TypeError
+        return None
 
 
 class HTMLOptGroupElement(HTMLElement, FormControlMixin):
@@ -720,11 +780,11 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['name', 'size', 'value']
     _special_attr_boolean = ['disabled', 'multiple', 'required']
 
-    def __init__(self, *args, **kwargs):
-        self._selected_options = []
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self._selected_options = []  # type: List[str]
         super().__init__(*args, **kwargs)
 
-    def on_event_pre(self, e: Event):
+    def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
             self._set_attribute('value', e.currentTarget.get('value'))
@@ -760,7 +820,7 @@ class HTMLTextAreaElement(HTMLElement, FormControlMixin):
     _special_attr_boolean = ['disabled']
     defaultValue = HTMLElement.textContent
 
-    def on_event_pre(self, e: Event):
+    def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
         if e.type in ('input', 'change'):
             # Update user inputs

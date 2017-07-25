@@ -1,20 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from xml.etree.ElementTree import HTML_EMPTY
+from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 from html.parser import HTMLParser
+from typing import Any, List, Tuple, TYPE_CHECKING
+
+from wdom.node import Node  # noqa
+
+if TYPE_CHECKING:
+    from typing import Optional  # noqa
+    from wdom.document import Document  # noqa
 
 
 class FragmentParser(HTMLParser):
-    default_class = None
+    default_class = None  # type: Optional[type]
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)  # type: ignore
         from wdom.node import DocumentFragment
-        self.elm = DocumentFragment()
+        self.elm = DocumentFragment()  # type: Node
         self.root = self.elm
 
-    def handle_starttag(self, tag, attr):
+    def handle_starttag(self, tag: str, attr: List[Tuple[str, str]]) -> None:
         from wdom.document import create_element
         attrs = dict(attr)
         params = dict(parent=self.elm, **attrs)
@@ -24,32 +31,39 @@ class FragmentParser(HTMLParser):
         if tag not in HTML_EMPTY:
             self.elm = elm
 
-    def handle_endtag(self, tag):
-        self.elm = self.elm.parentNode
+    def handle_endtag(self, tag: str) -> None:
+        parent = self.elm.parentNode
+        if parent is None:
+            raise ValueError('Parse Failed')
+        else:
+            self.elm = parent
 
-    def handle_data(self, data):
+    def handle_data(self, data: str) -> None:
         if data and self.elm:
             self.elm.append(data)
 
-    def handle_comment(self, comment: str):
+    def handle_comment(self, comment: str) -> None:
         from wdom.node import Comment
         self.elm.append(Comment(comment))
 
 
 class DocumentParser(FragmentParser):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        from wdom.document import Document
-        self.root = Document()
-        self.elm = self.root.body
+        from wdom.document import Document  # noqa
+        doc = Document()
+        self.root = doc  # type: Document
+        self.elm = doc.body  # type: Node
 
-    def handle_decl(self, decl):
+    def handle_decl(self, decl: str) -> None:
         if decl.startswith('DOCTYPE'):
             self.root.doctype.name = decl.split()[-1]
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
         if tag == 'html':
-            self.elm = self.root.html
+            # mypy ignores asignment in Document.__init__()
+            doc = self.root  # type: Document
+            self.elm = doc.html  # type: Node
         elif tag == 'head':
             self.elm = self.root.head
         elif tag == 'body':
@@ -58,13 +72,13 @@ class DocumentParser(FragmentParser):
             super().handle_starttag(tag, attrs)
 
 
-def parse_document(doc: str):
+def parse_document(doc: str) -> Node:
     parser = DocumentParser()
-    parser.feet(doc)
+    parser.feed(doc)
     return parser.root
 
 
-def parse_html(html: str):
+def parse_html(html: str) -> Node:
     parser = FragmentParser()
     parser.feed(html)
     return parser.root

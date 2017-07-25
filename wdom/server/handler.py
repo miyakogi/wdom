@@ -3,13 +3,14 @@
 
 import json
 import logging
+from typing import Dict, Any
 
 from wdom.interface import Event
 
 logger = logging.getLogger(__name__)
 
 
-def log_handler(level: str, message: str):
+def log_handler(level: str, message: str) -> None:
     """Handle logs from client (browser)."""
     message = 'JS: ' + str(message)
     if level == 'error':
@@ -22,10 +23,11 @@ def log_handler(level: str, message: str):
         logger.debug(message)
 
 
-def event_handler(msg: dict):
+def event_handler(msg: Dict[str, Any]) -> None:
     """Handle events emitted on browser."""
     from wdom.document import getElementByRimoId
-    e = Event(**msg.get('event'))
+    event_msg = msg['event']  # type: Dict[str, str]
+    e = Event(**event_msg)
     _id = e.currentTarget.get('id')
     currentTarget = getElementByRimoId(_id)
     if currentTarget is None:
@@ -39,10 +41,10 @@ def event_handler(msg: dict):
     e.currentTarget.dispatchEvent(e)
 
 
-def response_handler(msg: dict):
+def response_handler(msg: Dict[str, str]) -> None:
     """Handle response sent by browser."""
     from wdom.document import getElementByRimoId
-    id = msg.get('id')
+    id = msg['id']
     elm = getElementByRimoId(id)
     if elm:
         elm.on_response(msg)
@@ -50,7 +52,7 @@ def response_handler(msg: dict):
         logger.warning('No such element: rimo_id={}'.format(id))
 
 
-def on_websocket_message(message):
+def on_websocket_message(message: str) -> None:
     """Handle messages from browser."""
     msgs = json.loads(message)
     for msg in msgs:

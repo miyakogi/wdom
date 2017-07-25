@@ -388,7 +388,7 @@ class TestElement(TestCase):
         self.assertEqual(self.elm.getAttribute('id'), 'b')
         self.assertEqual(self.elm.id, 'b')
 
-    def test_class_list(self):
+    def test_class_list_str(self):
         self.assertIsNone(self.elm.getAttribute('class'))
         self.assertFalse(self.elm.hasAttribute('class'))
         self.assertFalse(self.elm.hasAttributes())
@@ -402,6 +402,12 @@ class TestElement(TestCase):
         self.assertIsNone(self.elm.getAttribute('class'))
         self.assertFalse(self.elm.hasAttribute('class'))
         self.assertFalse(self.elm.hasAttributes())
+
+    def test_class_list_list(self):
+        self.elm.setAttribute('class', ['a', 'b'])
+        self.assertEqual(self.elm.getAttribute('class'), 'a b')
+        self.assertTrue(self.elm.hasAttribute('class'))
+        self.assertTrue(self.elm.hasAttributes())
 
     def test_start_tag(self):
         self.assertEqual(self.elm.start_tag, '<tag>')
