@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Any, Iterable, Sized
+from typing import Any, Iterable, Iterator, Sized
 from xml.dom import Node  # type: ignore
 
 
@@ -33,7 +33,7 @@ class NodeList(Iterable, Sized):
     def __contains__(self, other: Node) -> bool:
         return other in self.ref
 
-    def __iter__(self) -> Node:
+    def __iter__(self) -> Iterator[Node]:
         for n in self.ref:
             yield n
 
