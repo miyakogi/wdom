@@ -24,16 +24,14 @@ def getElementById(id: Union[str, int]) -> Optional[Node]:
     elm = Element._elements_with_id.get(str(id))
     if elm and elm.ownerDocument:
         return elm
-    else:
-        return None
+    return None
 
 
 def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
     elm = WdomElement._elements_with_rimo_id.get(str(id))
     if elm and elm.ownerDocument:
         return elm
-    else:
-        return None
+    return None
 
 
 def _cleanup(path: str) -> None:
@@ -57,8 +55,7 @@ def create_element(tag: str, name: str = None, base: type = None,
         base_class = base or WdomElement
     if issubclass(base_class, Tag):
         return base_class(**attr)
-    else:
-        return base_class(tag, **attr)
+    return base_class(tag, **attr)
 
 
 class Document(Node):
@@ -121,15 +118,13 @@ class Document(Node):
         elm = getElementById(id)
         if elm and elm.ownerDocument is self:
             return elm
-        else:
-            return None
+        return None
 
     def getElementByRimoId(self, id: Union[str, int]) -> Optional[WdomElement]:
         elm = getElementByRimoId(id)
         if elm and elm.ownerDocument is self:
             return elm
-        else:
-            return None
+        return None
 
     def createElement(self, tag: str) -> Node:
         return create_element(tag, base=self._default_class)

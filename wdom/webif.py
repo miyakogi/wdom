@@ -64,10 +64,9 @@ class WebIF:
             self._tasks[self._reqid] = fut
             self._reqid += 1
             return fut
-        else:
-            f = Future()  # type: Future[None]
-            f.set_result(None)
-            return f
+        f = Future()  # type: Future[None]
+        f.set_result(None)
+        return f
 
     def ws_send(self, obj: Dict[str, Union[Iterable[_T_MsgItem], _T_MsgItem]]
                 ) -> None:

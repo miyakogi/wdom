@@ -408,8 +408,7 @@ class Controller:
             return res
         if attr in self.properties:
             return wrapper()
-        else:
-            return wrapper
+        return wrapper
 
 
 class ProcessController(Controller):

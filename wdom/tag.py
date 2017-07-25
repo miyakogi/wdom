@@ -91,8 +91,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
                     ) -> Union[Node, _AttrValueType]:
         if isinstance(attr, int):
             return self.childNodes[attr]
-        else:
-            return self.getAttribute(attr)
+        return self.getAttribute(attr)
 
     def __setitem__(self, attr: str, val: _AttrValueType) -> None:
         self.setAttribute(attr, val)
@@ -113,12 +112,8 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         if attr == 'class':
             cls = self.get_class_list()
             cls._append(self.classList)
-            if cls:
-                return cls.toString()
-            else:
-                return None
-        else:
-            return super().getAttribute(attr)
+            return cls.toString() if cls else None
+        return super().getAttribute(attr)
 
     def addClass(self, *classes: str) -> None:
         self.classList.add(*classes)
@@ -176,33 +171,28 @@ class NestedTag(Tag):
     def appendChild(self, child: Node) -> Node:
         if self._inner_element:
             return self._inner_element.appendChild(child)
-        else:
-            return super().appendChild(child)
+        return super().appendChild(child)
 
     def insertBefore(self, child: Node, ref_node: Node) -> Node:
         if self._inner_element:
             return self._inner_element.insertBefore(child, ref_node)
-        else:
-            return super().insertBefore(child, ref_node)
+        return super().insertBefore(child, ref_node)
 
     def removeChild(self, child: Node) -> Node:
         if self._inner_element:
             return self._inner_element.removeChild(child)
-        else:
-            return super().removeChild(child)
+        return super().removeChild(child)
 
     def replaceChild(self, new_child: Node, old_child: Node) -> Node:
         if self._inner_element:
             return self._inner_element.replaceChild(new_child, old_child)
-        else:
-            return super().replaceChild(new_child, old_child)
+        return super().replaceChild(new_child, old_child)
 
     @property
     def childNodes(self) -> NodeList:
         if self._inner_element:
             return self._inner_element.childNodes
-        else:
-            return super().childNodes
+        return super().childNodes
 
     def empty(self) -> None:
         if self._inner_element:
@@ -222,15 +212,13 @@ class NestedTag(Tag):
     def html(self) -> str:
         if self._inner_element:
             return self.start_tag + self._inner_element.html + self.end_tag
-        else:
-            return super().html
+        return super().html
 
     @property
     def innerHTML(self) -> str:
         if self._inner_element:
             return self._inner_element.innerHTML
-        else:
-            return super().innerHTML
+        return super().innerHTML
 
     @innerHTML.setter
     def innerHTML(self, html: str) -> None:

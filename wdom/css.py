@@ -28,8 +28,7 @@ def _lower_dash(m: Match) -> str:
 def _normalize_css_property(prop: str) -> str:
     if prop == 'cssFloat':  # Special case
         return 'float'
-    else:
-        return _css_norm_re.sub(_lower_dash, prop)
+    return _css_norm_re.sub(_lower_dash, prop)
 
 
 class CSSStyleDeclaration(_dict):
@@ -123,8 +122,7 @@ class CSSStyleDeclaration(_dict):
     def __getattr__(self, attr: str) -> str:
         if attr.startswith('_') or attr in dir(self):
             return super().__getattr__(attr)  # type: ignore
-        else:
-            return self.get(_normalize_css_property(attr), '')
+        return self.get(_normalize_css_property(attr), '')
 
     def __setattr__(self, attr: str, value: str) -> None:
         if attr.startswith('_') or attr in dir(self):
@@ -158,8 +156,7 @@ class CSSStyleRule(object):
         _style = self.style.cssText
         if _style:
             return '{0} {{{1}}}'.format(self.selectorText, _style)
-        else:
-            return ''
+        return ''
 
 
 class CSSRuleList(list):

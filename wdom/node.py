@@ -93,8 +93,7 @@ class Node(_Node):
         """
         if self.hasChildNodes():
             return self.childNodes[0]
-        else:
-            return None
+        return None
 
     @property
     def lastChild(self) -> Optional['Node']:
@@ -104,8 +103,7 @@ class Node(_Node):
         """
         if self.hasChildNodes():
             return self.childNodes[-1]
-        else:
-            return None
+        return None
 
     @property
     def previousSibling(self) -> Optional['Node']:
@@ -142,8 +140,7 @@ class Node(_Node):
             return self
         elif self.parentNode:
             return self.parentNode.ownerDocument
-        else:
-            return None
+        return None
 
     # Methods
     def _append_document_fragment(self, node: 'Node') -> 'Node':
@@ -166,8 +163,7 @@ class Node(_Node):
                 'use append() method instead.'.format(type(node)))
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             return self._append_document_fragment(node)
-        else:
-            return self._append_element(node)
+        return self._append_element(node)
 
     def appendChild(self, node: 'Node') -> 'Node':
         """Append the node at the last of this child nodes."""
@@ -208,8 +204,7 @@ class Node(_Node):
                 'use ref_node.before() instead.'.format(type(node)))
         if node.nodeType == Node.DOCUMENT_FRAGMENT_NODE:
             return self._insert_document_fragment_before(node, ref_node)
-        else:
-            return self._insert_element_before(node, ref_node)
+        return self._insert_element_before(node, ref_node)
 
     def insertBefore(self, node: 'Node', ref_node: 'Node') -> 'Node':
         """Insert a node just before the reference node."""
@@ -253,8 +248,7 @@ class Node(_Node):
         """
         if deep:
             return self.__deepcopy__()
-        else:
-            return self.__copy__()
+        return self.__copy__()
 
     def _empty(self) -> None:
         for child in tuple(self._children):
@@ -301,11 +295,10 @@ def _ensure_node(node: Union[str, 'Node']) -> 'Node':
 def _to_node_list(nodes: Sequence[Union[str, 'Node']]) -> 'Node':
     if len(nodes) == 1:
         return _ensure_node(nodes[0])
-    else:
-        df = DocumentFragment()
-        for n in nodes:
-            df.appendChild(_ensure_node(n))
-        return df
+    df = DocumentFragment()
+    for n in nodes:
+        df.appendChild(_ensure_node(n))
+    return df
 
 
 class ParentNode:
@@ -548,8 +541,7 @@ class Text(CharacterData):
     def html(self) -> str:
         if self.parentNode and self.parentNode._should_escape_text:
             return html.escape(self.data)
-        else:
-            return self.data
+        return self.data
 
 
 class RawHtml(Text):

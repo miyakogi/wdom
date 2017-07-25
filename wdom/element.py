@@ -213,8 +213,7 @@ class NamedNodeMap(UserDict):
     def __getitem__(self, index: Union[int, str]) -> Optional[Attr]:
         if isinstance(index, int):
             return tuple(self._dict.values())[index]
-        else:
-            return None
+        return None
 
     def __setitem__(self, attr: str, item: Attr) -> None:
         self._dict[attr] = item
@@ -254,8 +253,7 @@ class NamedNodeMap(UserDict):
     def item(self, index: int) -> Optional[Attr]:
         if 0 <= index < len(self):
             return self._dict[tuple(self._dict.keys())[index]]
-        else:
-            return None
+        return None
 
     def toString(self) -> str:
         return ' '.join(attr.html for attr in self._dict.values())
@@ -449,13 +447,11 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         if attr == 'class':
             if self.classList:
                 return self.classList.toString()
-            else:
-                return None
+            return None
         attr_node = self.getAttributeNode(attr)
         if attr_node is None:
             return None
-        else:
-            return attr_node.value
+        return attr_node.value
 
     def getAttributeNode(self, attr: str) -> Optional[Attr]:
         return self.attributes.getNamedItem(attr)
@@ -463,8 +459,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def hasAttribute(self, attr: str) -> bool:
         if attr == 'class':
             return bool(self.classList)
-        else:
-            return attr in self.attributes
+        return attr in self.attributes
 
     def hasAttributes(self) -> bool:
         return bool(self.attributes) or bool(self.classList)
@@ -575,8 +570,7 @@ class HTMLElement(Element):
     def end_tag(self) -> str:
         if self.tag in HTML_EMPTY:
             return ''
-        else:
-            return super().end_tag
+        return super().end_tag
 
     @property
     def style(self) -> CSSStyleDeclaration:
@@ -600,8 +594,7 @@ class HTMLElement(Element):
     def draggable(self) -> Union[bool, str]:
         if not self.hasAttribute('draggable'):
             return False
-        else:
-            return self.getAttribute('draggable')  # type: ignore
+        return self.getAttribute('draggable')  # type: ignore
 
     @draggable.setter
     def draggable(self, val: Union[bool, str]) -> None:
@@ -616,10 +609,8 @@ class HTMLElement(Element):
             # otherwise, return style.cssText
             if self.style:
                 return self.style.cssText
-            else:
-                return None
-        else:
-            return super().getAttribute(attr)
+            return None
+        return super().getAttribute(attr)
 
     def _set_attribute(self, attr: str, value: _AttrValueType) -> None:
         if attr == 'style':
@@ -658,14 +649,13 @@ class FormControlMixin:
     def form(self) -> Optional['HTMLFormElement']:
         if self._form:
             return self._form
-        else:
-            parent = self.parentNode
-            while parent:
-                if isinstance(parent, HTMLFormElement):
-                    return parent
-                else:
-                    parent = parent.parentNode
-            return None
+        parent = self.parentNode
+        while parent:
+            if isinstance(parent, HTMLFormElement):
+                return parent
+            else:
+                parent = parent.parentNode
+        return None
 
 
 class HTMLAnchorElement(HTMLElement):
@@ -733,8 +723,7 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
                              if elm.tagName == 'INPUT' and
                              elm.type.lower() == 'radio' and
                              elm.name == self.name])
-        else:
-            return NodeList([])
+        return NodeList([])
 
 
 class HTMLLabelElement(HTMLElement, FormControlMixin):
