@@ -9,29 +9,25 @@ from types import ModuleType
 from typing import Optional, Union, Callable, Any
 import weakref
 
-from wdom.options import config
-from wdom.interface import Event
+from wdom.element import Element, Attr
+from wdom.event import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
-from wdom.element import Element, Attr
-from wdom.web_node import WdomElement
+from wdom.options import config
 from wdom.tag import HTMLElement, Tag
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
+from wdom.web_node import WdomElement
 from wdom.window import Window
 
 
 def getElementById(id: Union[str, int]) -> Optional[Node]:
     elm = Element._elements_with_id.get(str(id))
-    if elm and elm.ownerDocument:
-        return elm
-    return None
+    return elm
 
 
 def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
     elm = WdomElement._elements_with_rimo_id.get(str(id))
-    if elm and elm.ownerDocument:
-        return elm
-    return None
+    return elm
 
 
 def _cleanup(path: str) -> None:

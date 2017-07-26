@@ -6,8 +6,61 @@ from unittest.mock import MagicMock, call
 
 from syncer import sync
 
+from wdom.document import get_document
+from wdom.event import Event, EventListener, EventTarget, create_event
+from wdom.web_node import WdomElement
+from wdom.server.handler import create_event_from_msg
 from wdom.testing import TestCase
-from wdom.event import Event, EventListener, EventTarget
+
+
+class TestEvent(TestCase):
+    def setUp(self):
+        self.msg = {}
+        self.e = Event('event', init=self.msg)
+
+    def test_event(self):
+        self.assertEqual(self.e.type, 'event')
+        self.assertIs(self.e.init, self.msg)
+        self.assertIsNone(self.e.currentTarget)
+        self.assertIsNone(self.e.target)
+
+    def test_craete_event(self):
+        self.elm = WdomElement('tag')
+        msg = {}
+        e = create_event('event', currentTarget=self.elm, target=self.elm,
+                         init=msg)
+        self.assertEqual(e.type, 'event')
+        self.assertIs(e.currentTarget, self.elm)
+        self.assertIs(e.target, self.elm)
+        self.assertIs(e.init, msg)
+
+
+class TestCreateEventMsg(TestCase):
+    def setUp(self):
+        self.elm = WdomElement('tag')
+        self.doc = get_document()
+
+    def test_event_from_msg(self):
+        msg = {
+            'type': 'event',
+            'currentTarget': {'id': self.elm.rimo_id},
+            'target': {'id': self.elm.rimo_id},
+        }
+        e = create_event_from_msg(msg)
+        self.assertEqual(e.type, 'event')
+        self.assertIs(e.currentTarget, self.elm)
+        self.assertIs(e.target, self.elm)
+        self.assertIs(e.init, msg)
+
+    def test_event_from_msg_notarget(self):
+        msg = {
+            'type': 'event',
+        }
+        e = create_event_from_msg(msg)
+        self.assertEqual(e.type, 'event')
+        self.assertIsNone(e.currentTarget)
+        self.assertIsNone(e.target)
+        self.assertIs(e.init, msg)
 
 
 class TestEventListener(TestCase):

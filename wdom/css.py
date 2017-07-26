@@ -7,8 +7,7 @@ from collections import OrderedDict
 import logging
 from typing import Any, Match, Optional
 
-from wdom.interface import Node
-from wdom.webif import WebIF
+from wdom.node import AbstractNode
 
 logger = logging.getLogger(__name__)
 _css_norm_re = re.compile(r'([a-z])([A-Z])')
@@ -34,13 +33,14 @@ def _normalize_css_property(prop: str) -> str:
 class CSSStyleDeclaration(_dict):
     def __init__(self, style: Optional[str] = None,
                  parent: Optional['CSSStyleRule'] = None,
-                 owner: Optional['Node'] = None) -> None:
+                 owner: Optional[AbstractNode] = None) -> None:
         self.parentRule = parent
         self._owner = owner
         if style:
             self._parse_str(style)
 
     def _update(self) -> None:
+        from wdom.web_node import WebIF
         if isinstance(self._owner, WebIF):
             css = self.cssText
             if css:
@@ -137,7 +137,8 @@ class CSSStyleDeclaration(_dict):
             self.__delitem__(_normalize_css_property(attr))
 
 
-def parse_style_decl(style: str, owner: Node = None) -> CSSStyleDeclaration:
+def parse_style_decl(style: str, owner: AbstractNode = None
+                     ) -> CSSStyleDeclaration:
     _style = CSSStyleDeclaration(style, owner=owner)
     return _style
 

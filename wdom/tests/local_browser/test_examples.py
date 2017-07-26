@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 
 from wdom.tag import H1
 from wdom.document import get_document
-from wdom.misc import install_asyncio
+from wdom.util import install_asyncio
 from wdom.testing import WebDriverTestCase, TestCase
 from wdom.testing import close_webdriver
 

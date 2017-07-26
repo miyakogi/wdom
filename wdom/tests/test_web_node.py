@@ -5,10 +5,10 @@ from unittest.mock import MagicMock, call
 
 from syncer import sync
 
-from wdom.interface import Event
+from wdom.server import _tornado
+from wdom.event import create_event
 from wdom.testing import TestCase
 from wdom.web_node import WdomElement
-from wdom.server import _tornado
 
 
 class TestWdomElement(TestCase):
@@ -165,14 +165,7 @@ class TestEventMessage(TestCase):
         self.elm.js_exec = MagicMock()
         self.mock = MagicMock(_is_coroutine=False)
         self.elm.addEventListener('click', self.mock)
-        self.msg = {
-            'type': 'event',
-            'id': self.elm.rimo_id,
-            'event': {
-                'type': 'click',
-            },
-        }
-        self.event = Event(**self.msg.get('event'))
+        self.event = create_event('click', currentTarget=self, target=self)
 
     def test_handle_event(self):
         self.elm.js_exec.assert_called_once_with('addEventListener', 'click')

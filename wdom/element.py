@@ -2,19 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict, UserDict
-from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 import html as html_
 from typing import Union, Callable, Optional, Dict, Tuple
 from typing import Iterable, MutableSequence
 from typing import Any, Iterator, List, TYPE_CHECKING, Type
 from weakref import WeakSet, WeakValueDictionary
+from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 
-from wdom.interface import NodeList, Event
 from wdom.css import CSSStyleDeclaration
+from wdom.event import EventTarget, Event
 from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
-from wdom.node import DocumentFragment
-from wdom.event import EventTarget
-from wdom.webif import WebIF
+from wdom.node import DocumentFragment, NodeList
 from wdom.parser import FragmentParser
 
 if TYPE_CHECKING:
@@ -86,6 +84,7 @@ class DOMTokenList(MutableSequence[str]):
 
     def add(self, *tokens: str) -> None:
         """Add new tokens to list."""
+        from wdom.web_node import WebIF
         _new_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -97,6 +96,7 @@ class DOMTokenList(MutableSequence[str]):
 
     def remove(self, *tokens: str) -> None:
         """Remove tokens from list."""
+        from wdom.web_node import WebIF
         _removed_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -233,6 +233,7 @@ class NamedNodeMap(UserDict):
         return self._dict.get(name, None)
 
     def setNamedItem(self, item: Attr) -> None:
+        from wdom.web_node import WebIF
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
@@ -241,6 +242,7 @@ class NamedNodeMap(UserDict):
         item._owner = self._owner
 
     def removeNamedItem(self, item: Attr) -> Optional[Attr]:
+        from wdom.web_node import WebIF
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
@@ -682,17 +684,18 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
 
     def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
+        ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
             # Update user inputs
             if self.type.lower() == 'checkbox':
-                self._set_attribute('checked', e.currentTarget.get('checked'))
+                self._set_attribute('checked', ct_msg.get('checked'))
             elif self.type.lower() == 'radio':
-                self._set_attribute('checked', e.currentTarget.get('checked'))
+                self._set_attribute('checked', ct_msg.get('checked'))
                 for other in self._radio_group:
                     if other is not self:
                         other._remove_attribute('checked')
             else:
-                self._set_attribute('value', e.currentTarget.get('value'))
+                self._set_attribute('value', ct_msg.get('value'))
 
     @property
     def defaultChecked(self) -> bool:
@@ -775,9 +778,10 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
 
     def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
+        ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
-            self._set_attribute('value', e.currentTarget.get('value'))
-            _selected = e.currentTarget.get('selectedOptions', [])
+            self._set_attribute('value', ct_msg.get('value'))
+            _selected = ct_msg.get('selectedOptions', [])
             self._selected_options.clear()
             for opt in self.options:
                 if opt.rimo_id in _selected:
@@ -811,6 +815,7 @@ class HTMLTextAreaElement(HTMLElement, FormControlMixin):
 
     def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
+        ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
             # Update user inputs
-            self._set_text_content(e.currentTarget.get('value') or '')
+            self._set_text_content(ct_msg.get('value') or '')

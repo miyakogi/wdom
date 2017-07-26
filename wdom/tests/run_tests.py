@@ -3,7 +3,7 @@
 
 from os import path
 import unittest
-from wdom.misc import suppress_logging
+from wdom.util import suppress_logging
 
 
 def main():

@@ -6,7 +6,6 @@ from collections import Iterable
 from typing import Any, Dict, Optional, Tuple, Union, TYPE_CHECKING
 from types import new_class
 
-from wdom.node import Node, NodeList
 from wdom.element import DOMTokenList, ElementMeta, _AttrValueType
 from wdom.element import (
     HTMLAnchorElement,
@@ -22,6 +21,7 @@ from wdom.element import (
     HTMLStyleElement,
     HTMLTextAreaElement,
 )
+from wdom.node import Node, NodeList
 from wdom.web_node import WdomElement
 
 if TYPE_CHECKING:

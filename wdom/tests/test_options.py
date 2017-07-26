@@ -12,7 +12,7 @@ import subprocess
 
 from parameterized import parameterized
 
-from wdom.misc import root_dir
+from wdom.util import root_dir
 from wdom.options import parse_command_line, config, set_loglevel
 from wdom import tag
 from wdom.themes import default as default_theme

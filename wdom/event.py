@@ -1,15 +1,40 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.5
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction, Future
-from typing import Any, Awaitable, Callable, List, Union, TYPE_CHECKING
-
-from wdom.interface import Event
-from wdom.webif import WebIF
+from typing import Any, Awaitable, Callable, List, Optional, Union  # noqa
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa
+    from wdom.node import Node  # noqa
+
+
+class Event:
+    """Event interface class"""
+    currentTarget = None  # type: Optional[Node]
+    target = None  # type: Optional[Node]
+
+    def __init__(self, type_: str, init: Optional[dict] = None) -> None:
+        self.type = type_
+        self.init = dict() if init is None else init  # type: dict
+
+    def stopPrapagation(self) -> None:
+        raise NotImplementedError
+
+
+def create_event(type: str, *,
+                 currentTarget: Optional['Node'] = None,
+                 target: Optional['Node'] = None,
+                 init: Optional[dict] = None
+                 ) -> Event:
+    """Create Event and set targets."""
+    e = Event(type, init)
+    e.currentTarget = currentTarget
+    e.target = target
+    return e
+
 
 _EventListenerType = Union[Callable[[Event], None],
                            Callable[[Event], Awaitable[None]]]
@@ -54,6 +79,7 @@ class EventTarget:
         self._listeners[event].append(EventListener(listener))
 
     def _add_event_listener_web(self, event: str) -> None:
+        from wdom.web_node import WebIF
         if isinstance(self, WebIF):
             self.js_exec('addEventListener', event)  # type: ignore
 
@@ -81,6 +107,7 @@ class EventTarget:
             del self._listeners[event]
 
     def _remove_event_listener_web(self, event: str) -> None:
+        from wdom.web_node import WebIF
         if isinstance(self, WebIF) and event not in self._listeners:
             self.js_exec('removeEventListener', event)  # type: ignore
 

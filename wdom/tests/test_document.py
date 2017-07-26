@@ -6,15 +6,15 @@ import re
 from unittest.mock import MagicMock
 
 from wdom import options
-from wdom.interface import Event
-from wdom.node import DocumentFragment, Comment, Text
-from wdom.element import Attr, Element
 from wdom.document import Document
 from wdom.document import get_document, get_new_document, set_document
 from wdom.document import getElementById, getElementByRimoId
-from wdom.web_node import WdomElement
+from wdom.element import Attr, Element
+from wdom.event import Event
+from wdom.node import DocumentFragment, Comment, Text
 from wdom.tag import Tag, HTMLElement, A
 from wdom.testing import TestCase
+from wdom.web_node import WdomElement
 
 
 class TestGetElement(TestCase):
@@ -26,18 +26,23 @@ class TestGetElement(TestCase):
 
     def test_get_element_by_id(self):
         elm = Element(tag='a', id='a')
-        self.assertIsNone(getElementById('a'))
+        self.assertIs(getElementById('a'), elm)
+        self.assertIsNone(self.doc.getElementById('a'), elm)
         self.doc.appendChild(elm)
         self.assertIs(getElementById('a'), elm)
 
     def test_get_element_by_rimo_id(self):
         elm = WdomElement(tag='a', id='a', rimo_id='b')
-        self.assertIsNone(getElementById('a'))
-        self.assertIsNone(getElementByRimoId('b'))
+        self.assertIs(getElementById('a'), elm)
+        self.assertIs(getElementByRimoId('b'), elm)
+        self.assertIsNone(self.doc.getElementById('a'))
+        self.assertIsNone(self.doc.getElementByRimoId('b'), elm)
+
         self.doc.appendChild(elm)
         self.assertIs(getElementById('a'), elm)
-        self.assertIsNone(getElementByRimoId('a'))
         self.assertIs(getElementByRimoId('b'), elm)
+        self.assertIs(self.doc.getElementById('a'), elm)
+        self.assertIs(self.doc.getElementByRimoId('b'), elm)
 
 
 class TestMainDocument(TestCase):

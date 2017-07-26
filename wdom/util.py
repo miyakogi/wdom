@@ -22,7 +22,7 @@ Please include these directories when freeze your app by cx_freeze.
 Example:
 
     from cx_Freeze import setup
-    form wdom.misc import include_dirs
+    form wdom.util import include_dirs
     setup(..., options = {'build_exe': {'include_files': include_dirs}}, ...)
 
 '''

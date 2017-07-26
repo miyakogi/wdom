@@ -40,7 +40,7 @@ Test Utilities
 
         # in your test file
         from unittest import TestCase
-        from wdom.misc import install_asyncio
+        from wdom.util import install_asyncio
         form wdom.testing import WebDriverTestCase
 
         def setUpModule():
