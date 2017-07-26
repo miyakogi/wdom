@@ -2,20 +2,19 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict, UserDict
-from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 import html as html_
 from typing import Union, Callable, Optional, Dict, Tuple
 from typing import Iterable, MutableSequence
 from typing import Any, Iterator, List, TYPE_CHECKING, Type
 from weakref import WeakSet, WeakValueDictionary
+from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 
-from wdom.interface import NodeList, Event
 from wdom.css import CSSStyleDeclaration
+from wdom.event import EventTarget, Event
 from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
-from wdom.node import DocumentFragment
-from wdom.event import EventTarget
-from wdom.webif import WebIF
+from wdom.node import DocumentFragment, NodeList
 from wdom.parser import FragmentParser
+from wdom.webif import WebIF
 
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa

@@ -32,15 +32,14 @@ from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 from tornado.websocket import websocket_connect, WebSocketClientConnection
 
-from wdom.misc import install_asyncio
-from wdom import options
-from wdom.window import customElements
+from wdom import options, server
 from wdom.element import Element
-from wdom import server
+from wdom.misc import install_asyncio
+from wdom.window import customElements
 
 if TYPE_CHECKING:
-    from typing import List  # noqa
     from asyncio import AbstractEventLoop  # noqa
+    from typing import List  # noqa
 
 driver = webdriver.Chrome
 local_webdriver = None

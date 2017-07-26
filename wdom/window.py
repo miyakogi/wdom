@@ -3,8 +3,8 @@
 
 from typing import Any, Dict, Optional, Type
 
-from wdom.interface import Node
 from wdom.element import Element
+from wdom.node import Node
 from wdom.tag import Tag, default_classes
 
 

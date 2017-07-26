@@ -6,11 +6,10 @@ import re
 from typing import Any, Awaitable, Optional, Union, TYPE_CHECKING
 from weakref import WeakValueDictionary
 
-from wdom.interface import Event
+from wdom.event import Event
+from wdom.element import _AttrValueType, HTMLElement, ElementParser
 from wdom.node import Node
-from wdom.element import _AttrValueType
 from wdom.webif import WebIF
-from wdom.element import HTMLElement, ElementParser
 
 if TYPE_CHECKING:
     from typing import Type  # noqa

@@ -16,7 +16,6 @@ cases = [
     ('wdom', 'document'),
     ('wdom', 'element'),
     ('wdom', 'event'),
-    ('wdom', 'interface'),
     ('wdom', 'misc'),
     ('wdom', 'node'),
     ('wdom', 'options'),

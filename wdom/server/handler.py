@@ -3,9 +3,9 @@
 
 import json
 import logging
-from typing import Dict, Any
+from typing import Any, Dict
 
-from wdom.interface import Event
+from wdom.event import Event
 
 logger = logging.getLogger(__name__)
 

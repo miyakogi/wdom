@@ -6,12 +6,11 @@ import logging
 import socket
 from typing import Any, Optional, TYPE_CHECKING
 
-from tornado import web
-from tornado import websocket
+from tornado import web, websocket
 from tornado.httpserver import HTTPServer
 
-from wdom.options import config
 from wdom.misc import install_asyncio
+from wdom.options import config
 from wdom.server.handler import on_websocket_message
 
 if TYPE_CHECKING:

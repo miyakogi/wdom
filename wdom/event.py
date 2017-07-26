@@ -5,11 +5,23 @@ from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction, Future
 from typing import Any, Awaitable, Callable, List, Union, TYPE_CHECKING
 
-from wdom.interface import Event
-from wdom.webif import WebIF
 
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa
+    from wdom.node import Node  # noqa
+
+
+class Event:
+    currentTarget = None  # type: Node
+    target = None  # type: Node
+
+    def __init__(self, type: str, **kwargs: Any) -> None:
+        self.type = type.lower()
+        self.__dict__.update(kwargs)
+
+    def stopPrapagation(self) -> None:
+        raise NotImplementedError
+
 
 _EventListenerType = Union[Callable[[Event], None],
                            Callable[[Event], Awaitable[None]]]
@@ -54,6 +66,7 @@ class EventTarget:
         self._listeners[event].append(EventListener(listener))
 
     def _add_event_listener_web(self, event: str) -> None:
+        from wdom.webif import WebIF
         if isinstance(self, WebIF):
             self.js_exec('addEventListener', event)  # type: ignore
 
@@ -81,6 +94,7 @@ class EventTarget:
             del self._listeners[event]
 
     def _remove_event_listener_web(self, event: str) -> None:
+        from wdom.webif import WebIF
         if isinstance(self, WebIF) and event not in self._listeners:
             self.js_exec('removeEventListener', event)  # type: ignore
 

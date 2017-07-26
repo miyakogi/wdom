@@ -6,15 +6,15 @@ import re
 from unittest.mock import MagicMock
 
 from wdom import options
-from wdom.interface import Event
-from wdom.node import DocumentFragment, Comment, Text
-from wdom.element import Attr, Element
 from wdom.document import Document
 from wdom.document import get_document, get_new_document, set_document
 from wdom.document import getElementById, getElementByRimoId
-from wdom.web_node import WdomElement
+from wdom.element import Attr, Element
+from wdom.event import Event
+from wdom.node import DocumentFragment, Comment, Text
 from wdom.tag import Tag, HTMLElement, A
 from wdom.testing import TestCase
+from wdom.web_node import WdomElement
 
 
 class TestGetElement(TestCase):

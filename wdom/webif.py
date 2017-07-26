@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable, Optional, Union, Awaitable
 from xml.dom import Node
 
 from wdom import server
-from wdom.interface import Event
+from wdom.event import Event
 
 logger = logging.getLogger(__name__)
 _T_MsgItem = Union[int, str]

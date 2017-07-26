@@ -5,10 +5,10 @@ from unittest.mock import MagicMock, call
 
 from syncer import sync
 
-from wdom.interface import Event
+from wdom.server import _tornado
+from wdom.event import Event
 from wdom.testing import TestCase
 from wdom.web_node import WdomElement
-from wdom.server import _tornado
 
 
 class TestWdomElement(TestCase):
