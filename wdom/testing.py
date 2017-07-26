@@ -34,7 +34,7 @@ from tornado.websocket import websocket_connect, WebSocketClientConnection
 
 from wdom import options, server
 from wdom.element import Element
-from wdom.misc import install_asyncio
+from wdom.util import install_asyncio
 from wdom.window import customElements
 
 if TYPE_CHECKING:

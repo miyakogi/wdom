@@ -14,7 +14,7 @@ import unittest
 from selenium.webdriver.common.utils import free_port
 from syncer import sync
 
-from wdom.misc import install_asyncio
+from wdom.util import install_asyncio
 from wdom.document import get_document
 from wdom import server
 from wdom.testing import HTTPTestCase

@@ -9,7 +9,7 @@ from typing import Any, Optional
 
 from tornado import autoreload
 
-from wdom.misc import static_dir, install_asyncio
+from wdom.util import static_dir, install_asyncio
 from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
 from wdom.server import _tornado as module
