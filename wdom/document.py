@@ -22,16 +22,12 @@ from wdom.window import Window
 
 def getElementById(id: Union[str, int]) -> Optional[Node]:
     elm = Element._elements_with_id.get(str(id))
-    if elm and elm.ownerDocument:
-        return elm
-    return None
+    return elm
 
 
 def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
     elm = WdomElement._elements_with_rimo_id.get(str(id))
-    if elm and elm.ownerDocument:
-        return elm
-    return None
+    return elm
 
 
 def _cleanup(path: str) -> None:

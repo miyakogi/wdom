@@ -186,20 +186,23 @@ class Node(AbstractNode):
                     return i
         raise ValueError('node is not in this node')
 
-    def _insert_document_fragment_before(self, node: AbstractNode, ref_node: AbstractNode
+    def _insert_document_fragment_before(self, node: AbstractNode,
+                                         ref_node: AbstractNode
                                          ) -> AbstractNode:
         for c in tuple(node.childNodes):
             self._insert_before(c, ref_node)
         return node
 
-    def _insert_element_before(self, node: AbstractNode, ref_node: AbstractNode) -> AbstractNode:
+    def _insert_element_before(self, node: AbstractNode,
+                               ref_node: AbstractNode) -> AbstractNode:
         if node.parentNode:
             node.parentNode.removeChild(node)
         self._children.insert(self.index(ref_node), node)
         node._parent = self
         return node
 
-    def _insert_before(self, node: AbstractNode, ref_node: AbstractNode) -> AbstractNode:
+    def _insert_before(self, node: AbstractNode, ref_node:
+                       AbstractNode) -> AbstractNode:
         if not isinstance(node, Node):
             raise TypeError(
                 'insertBefore() only accepts a Node instance, but get {}.'
@@ -209,7 +212,8 @@ class Node(AbstractNode):
             return self._insert_document_fragment_before(node, ref_node)
         return self._insert_element_before(node, ref_node)
 
-    def insertBefore(self, node: AbstractNode, ref_node: AbstractNode) -> AbstractNode:
+    def insertBefore(self, node: AbstractNode,
+                     ref_node: AbstractNode) -> AbstractNode:
         """Insert a node just before the reference node."""
         return self._insert_before(node, ref_node)
 
@@ -231,11 +235,13 @@ class Node(AbstractNode):
         """
         return self._remove_child(node)
 
-    def _replace_child(self, new_child: AbstractNode, old_child: AbstractNode) -> AbstractNode:
+    def _replace_child(self, new_child: AbstractNode,
+                       old_child: AbstractNode) -> AbstractNode:
         self._insert_before(new_child, old_child)
         return self._remove_child(old_child)
 
-    def replaceChild(self, new_child: AbstractNode, old_child: AbstractNode) -> AbstractNode:
+    def replaceChild(self, new_child: AbstractNode,
+                     old_child: AbstractNode) -> AbstractNode:
         """Replace an old child with new child."""
         return self._replace_child(new_child, old_child)
 

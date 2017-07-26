@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.5
 # -*- coding: utf-8 -*-
 
 from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction, Future
-from typing import Any, Awaitable, Callable, List, Union, TYPE_CHECKING
-
+from typing import Any, Awaitable, Callable, List, Optional, Union  # noqa
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa
@@ -12,15 +12,28 @@ if TYPE_CHECKING:
 
 
 class Event:
-    currentTarget = None  # type: Node
-    target = None  # type: Node
+    """Event interface class"""
+    currentTarget = None  # type: Optional[Node]
+    target = None  # type: Optional[Node]
 
-    def __init__(self, type: str, **kwargs: Any) -> None:
-        self.type = type.lower()
-        self.__dict__.update(kwargs)
+    def __init__(self, type_: str, init: Optional[dict] = None) -> None:
+        self.type = type_
+        self.init = dict() if init is None else init  # type: dict
 
     def stopPrapagation(self) -> None:
         raise NotImplementedError
+
+
+def create_event(type: str, *,
+                 currentTarget: Optional['Node'] = None,
+                 target: Optional['Node'] = None,
+                 init: Optional[dict] = None
+                 ) -> Event:
+    """Create Event and set targets."""
+    e = Event(type, init)
+    e.currentTarget = currentTarget
+    e.target = target
+    return e
 
 
 _EventListenerType = Union[Callable[[Event], None],

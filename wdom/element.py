@@ -684,17 +684,18 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
 
     def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
+        ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
             # Update user inputs
             if self.type.lower() == 'checkbox':
-                self._set_attribute('checked', e.currentTarget.get('checked'))
+                self._set_attribute('checked', ct_msg.get('checked'))
             elif self.type.lower() == 'radio':
-                self._set_attribute('checked', e.currentTarget.get('checked'))
+                self._set_attribute('checked', ct_msg.get('checked'))
                 for other in self._radio_group:
                     if other is not self:
                         other._remove_attribute('checked')
             else:
-                self._set_attribute('value', e.currentTarget.get('value'))
+                self._set_attribute('value', ct_msg.get('value'))
 
     @property
     def defaultChecked(self) -> bool:
@@ -777,9 +778,10 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
 
     def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
+        ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
-            self._set_attribute('value', e.currentTarget.get('value'))
-            _selected = e.currentTarget.get('selectedOptions', [])
+            self._set_attribute('value', ct_msg.get('value'))
+            _selected = ct_msg.get('selectedOptions', [])
             self._selected_options.clear()
             for opt in self.options:
                 if opt.rimo_id in _selected:
@@ -813,6 +815,7 @@ class HTMLTextAreaElement(HTMLElement, FormControlMixin):
 
     def on_event_pre(self, e: Event) -> None:
         super().on_event_pre(e)
+        ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
             # Update user inputs
-            self._set_text_content(e.currentTarget.get('value') or '')
+            self._set_text_content(ct_msg.get('value') or '')

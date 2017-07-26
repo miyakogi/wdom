@@ -14,10 +14,10 @@ import unittest
 from selenium.webdriver.common.utils import free_port
 from syncer import sync
 
-from wdom.util import install_asyncio
-from wdom.document import get_document
 from wdom import server
+from wdom.document import get_document
 from wdom.testing import HTTPTestCase
+from wdom.util import install_asyncio
 
 curdir = path.dirname(__file__)
 root = path.dirname(path.dirname(curdir))

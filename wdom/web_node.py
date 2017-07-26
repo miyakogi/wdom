@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from weakref import WeakValueDictionary
 
 from wdom import server
-from wdom.event import Event
+from wdom.event import Event, create_event
 from wdom.element import _AttrValueType, HTMLElement, ElementParser
 from wdom.node import Node
 
@@ -248,7 +248,15 @@ class WdomElement(HTMLElement, WebIF):
         if self.connected:
             self.js_exec('click')
         else:
-            self._dispatch_event(Event('click'))
+            # Web上に表示されてれば勝手にブラウザ側からクリックイベント発生する
+            # のでローカルのクリックイベント不要
+            # e_msg = {
+            #     'type': 'click',
+            #     'currentTarget': {'id': self.rimo_id},
+            #     'target': {'id': self.rimo_id},
+            # }
+            e = create_event('click', currentTarget=self, target=self)
+            self._dispatch_event(e)
 
     def exec(self, script: str) -> None:
         self.js_exec('eval', script)
