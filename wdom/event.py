@@ -66,7 +66,7 @@ class EventTarget:
         self._listeners[event].append(EventListener(listener))
 
     def _add_event_listener_web(self, event: str) -> None:
-        from wdom.webif import WebIF
+        from wdom.web_node import WebIF
         if isinstance(self, WebIF):
             self.js_exec('addEventListener', event)  # type: ignore
 
@@ -94,7 +94,7 @@ class EventTarget:
             del self._listeners[event]
 
     def _remove_event_listener_web(self, event: str) -> None:
-        from wdom.webif import WebIF
+        from wdom.web_node import WebIF
         if isinstance(self, WebIF) and event not in self._listeners:
             self.js_exec('removeEventListener', event)  # type: ignore
 

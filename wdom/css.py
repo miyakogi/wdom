@@ -8,7 +8,6 @@ import logging
 from typing import Any, Match, Optional
 
 from wdom.node import AbstractNode
-from wdom.webif import WebIF
 
 logger = logging.getLogger(__name__)
 _css_norm_re = re.compile(r'([a-z])([A-Z])')
@@ -41,6 +40,7 @@ class CSSStyleDeclaration(_dict):
             self._parse_str(style)
 
     def _update(self) -> None:
+        from wdom.web_node import WebIF
         if isinstance(self._owner, WebIF):
             css = self.cssText
             if css:

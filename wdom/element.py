@@ -14,7 +14,6 @@ from wdom.event import EventTarget, Event
 from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
 from wdom.node import DocumentFragment, NodeList
 from wdom.parser import FragmentParser
-from wdom.webif import WebIF
 
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa
@@ -85,6 +84,7 @@ class DOMTokenList(MutableSequence[str]):
 
     def add(self, *tokens: str) -> None:
         """Add new tokens to list."""
+        from wdom.web_node import WebIF
         _new_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -96,6 +96,7 @@ class DOMTokenList(MutableSequence[str]):
 
     def remove(self, *tokens: str) -> None:
         """Remove tokens from list."""
+        from wdom.web_node import WebIF
         _removed_tokens = []
         for token in tokens:
             self._validate_token(token)
@@ -232,6 +233,7 @@ class NamedNodeMap(UserDict):
         return self._dict.get(name, None)
 
     def setNamedItem(self, item: Attr) -> None:
+        from wdom.web_node import WebIF
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):
@@ -240,6 +242,7 @@ class NamedNodeMap(UserDict):
         item._owner = self._owner
 
     def removeNamedItem(self, item: Attr) -> Optional[Attr]:
+        from wdom.web_node import WebIF
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
         if isinstance(self._owner, WebIF):

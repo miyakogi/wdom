@@ -23,7 +23,6 @@ cases = [
     ('wdom', 'tag'),
     ('wdom', 'testing'),
     ('wdom', 'web_node'),
-    ('wdom', 'webif'),
     ('wdom', 'window'),
     ('wdom', 'server'),
     ('wdom.server', 'base'),
