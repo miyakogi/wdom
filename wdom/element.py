@@ -30,7 +30,7 @@ class DOMTokenList(MutableSequence[str]):
     DOM token is a string which does not contain spases.
     """
 
-    def __init__(self, owner: Union[Node, Type['Tag']],
+    def __init__(self, owner: Union[Node, Type['HTMLElement']],
                  *args: Union[str, 'DOMTokenList']) -> None:
         """Initialize with owner node (maybe type of node) and initial values.
 

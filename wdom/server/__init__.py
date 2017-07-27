@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Web Server related classes/functions."""
+"""Web server control functions."""
 
 import os
 import json
@@ -41,7 +41,7 @@ def push_message(msg: dict) -> None:
 
 
 def send_message() -> None:
-    """Send message to all client connections."""
+    """Send message via WS to all client connections."""
     if not _msg_queue:
         return
     msg = json.dumps(_msg_queue)
@@ -64,7 +64,7 @@ def add_static_path(prefix: str, path: str, no_watch: bool = False) -> None:
 
 
 def get_app() -> module.Application:
-    """Get root Application object."""
+    """Get root web application object."""
     return module.get_app()
 
 
@@ -77,7 +77,10 @@ async def _message_loop() -> None:
 def start_server(browser: Optional[str] = None, address: Optional[str] = None,
                  check_time: Optional[int] = 500, **kwargs: Any
                  ) -> module.HTTPServer:
-    """Start web server."""
+    """Start web server.
+
+    Use wrapper function :func:`start` instead.
+    """
     # Add application's static files directory
     from wdom.document import get_document
     add_static_path('_static', STATIC_DIR)
@@ -111,7 +114,7 @@ def start(**kwargs: Any) -> None:
     """Start web server.
 
     Run until ``Ctrl-c`` pressed, or if auto-shutdown is enabled, until when
-    window is closed.
+    all browser windows are closed.
     """
     start_server(**kwargs)
     try:

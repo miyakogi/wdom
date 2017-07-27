@@ -8,9 +8,10 @@ from asyncio import ensure_future, iscoroutinefunction, Future
 from typing import Any, Awaitable, Callable, List, Optional, Union  # noqa
 from typing import TYPE_CHECKING
 
+from wdom.node import Node  # noqa
+
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa
-    from wdom.node import Node  # noqa
 
 
 class Event:
@@ -35,11 +36,16 @@ class Event:
 
 
 def create_event(type: str, *,
-                 currentTarget: Optional['Node'] = None,
-                 target: Optional['Node'] = None,
+                 currentTarget: Optional[Node] = None,
+                 target: Optional[Node] = None,
                  init: Optional[dict] = None
                  ) -> Event:
-    """Create Event and set target nodes."""
+    """Create Event and set target nodes.
+
+    :arg EventTarget currentTarget: Current event target node.
+    :arg EventTarget target: Node which emitted this event first.
+    :arg dict init: Event options.
+    """
     e = Event(type, init)
     e.currentTarget = currentTarget
     e.target = target
@@ -60,9 +66,9 @@ def _wrap_coro_func(coro: Callable[[Event], Awaitable]
 class EventListener:
     """Class to wrap an event listener function.
 
-    Acceptable listeners are function, coroutine, and coroutine-function. If
-    ``apply_data`` is True, ``data`` is applied as a keyword argument of
-    ``data`` when the registered event is triggered.
+    Acceptable listeners are function, coroutine, and coroutine-function.
+    If listener is a coroutine or coroutine-function, it will be executed
+    synchronously as if it is normal function.
     """
 
     # Should support generator?

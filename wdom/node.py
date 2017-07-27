@@ -42,7 +42,10 @@ class Node(AbstractNode):
     """Base Class for Node interface."""
 
     def __init__(self, parent: Optional[AbstractNode] = None) -> None:
-        """Initialize node object with parent node."""
+        """Initialize node object with parent node.
+
+        :param Node parent: parent node.
+        """
         super().__init__()  # Need to call init in multiple inheritce
         self._children = list()  # type: List[Node]
         self._parent = None
@@ -145,7 +148,7 @@ class Node(AbstractNode):
         (or node tree including this node) is not appended to any document
         node, this property returns ``None``.
 
-        :rtype: Document
+        :rtype: Document or None
         """
         if self.nodeType == Node.DOCUMENT_NODE:
             return self
@@ -377,7 +380,10 @@ def _to_node_list(nodes: Sequence[Union[str, AbstractNode]]) -> AbstractNode:
 
 
 class ParentNode(AbstractNode):
-    """[DOM Level 4] Mixin class for Document, DocumentFragment, and Element."""  # noqa: E501
+    """Mixin class for Node classes which can have child nodes.
+
+    This class is inherited by Document, DocumentFragment, and Element class.
+    """
 
     @property
     def children(self) -> NodeList:
@@ -475,7 +481,11 @@ class NonDocumentTypeChildNode(AbstractNode):
 
 
 class ChildNode(AbstractNode):
-    """[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData (Text, RawHTML, Comment)."""  # noqa: E501
+    """Mixin class for Node classes which can have parent node.
+
+    This class is inherited by DocumentType, Element, and CharacterData
+    (super class of Text, RawHTML, and Comment) classes.
+    """
 
     def before(self, *nodes: Union[AbstractNode, str]) -> None:
         """Insert nodes before this node.
@@ -619,7 +629,7 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
 
 
 class Text(CharacterData):
-    """Wraps text contents."""
+    """Node class to wrap text contents."""
 
     nodeType = Node.TEXT_NODE
     nodeName = '#text'

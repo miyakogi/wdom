@@ -3,8 +3,8 @@
 
 """Document class and its helper functions.
 
-This module also provides deafult documents object.
-"""
+{} module also provides a deafult root-document object.
+""".format(__name__)
 
 import os
 import tempfile
@@ -78,7 +78,7 @@ class Document(Node):
 
     @property
     def defaultView(self) -> Window:
-        """Return ``Window`` class of this document."""
+        """Return :class:`Window` class of this document."""
         return self._window
 
     @property
@@ -91,7 +91,11 @@ class Document(Node):
                  autoreload: Optional[bool] = None,
                  reload_wait: Optional[float] =None,
                  ) -> None:
-        """Make new document object.
+        """Create new document object.
+
+        .. caution::
+            Don't create new document from :class:`Document` class constructor.
+            Use :func:`get_new_document` function instead.
 
         :arg str doctype: doctype of the document (default: html).
         :arg str title: title of the document.
@@ -253,19 +257,40 @@ def get_new_document(  # noqa: C901
         include_skeleton: bool = False,
         include_normalizecss: bool = False,
         autoreload: Optional[bool] = None,
-        reload_wait: Optional[int] = None,
-        log_level: Optional[int] = None,
+        reload_wait: Optional[float] = None,
+        log_level: Optional[Union[int, str]] = None,
         log_prefix: Optional[str] = None,
         log_console: bool = False,
         ws_url: Optional[str] = None,
         message_wait: Optional[float] = None,
         document_factory: Callable[..., Document] = Document,
         **kwargs: Any) -> Document:
-    """Make and return new ``document`` object with options."""
+    """Create new :class:`Document` object with options.
+
+    :arg bool include_rimo: Include rimo.js file. Usually should be True.
+    :arg bool include_skeleton: Include skelton.css.
+    :arg bool include_normalizecss: Include normalize.css.
+    :arg bool autoreload: Enable autoreload flag. This flag overwrites
+        ``--debug`` flag, which automatically enables autoreload.
+    :arg float reload_wait: Seconds to wait until reload when autoreload is
+        enabled.
+    :arg str log_level: Log level string, chosen from DEBUG, INFO, WARN, ERROR.
+        Integer values are also acceptable like ``logging.INFO``. By default
+        use ``wdom.config.options.log_level``, which default is ``INFO``.
+    :arg str log_prefix: Prefix of log outputs.
+    :arg bool log_console: Flag to show wdom log on browser console.
+    :arg str ws_url: URL string to the ws url.
+        Default: ``ws://localhost:8888/rimo_ws``.
+    :arg float message_wait: Duration (seconds) to send WS messages.
+    :arg Callable document_factory: Factory function/class to create Document
+        object.
+    :rtype: Document
+    """
     document = document_factory(
         autoreload=autoreload,
         reload_wait=reload_wait,
-        **kwargs)
+        **kwargs
+    )
 
     if log_level is None:
         log_level = config.logging
@@ -298,12 +323,18 @@ def get_new_document(  # noqa: C901
 
 # get_document = get_new_document
 def get_document(*args: Any, **kwargs: Any) -> Document:
-    """Get current root document object."""
+    """Get current root document object.
+
+    :rtype: Document
+    """
     return rootDocument
 
 
 def set_document(new_document: Document) -> None:
-    """Set the document as current root."""
+    """Set a new document as a current root document.
+
+    :param Document new_document: New root document.
+    """
     global rootDocument
     rootDocument = new_document
 

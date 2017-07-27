@@ -1,15 +1,24 @@
 Test Utilities
 ==============
 
+Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>`_ directory.
+
 .. warning:: This document is incomplete and all APIs are not stable.
 
 .. automodule:: wdom.testing
 
-    .. autofunction:: reset
+   .. autofunction:: reset
 
-    .. autoclass:: TestCase
+   .. autoclass:: TestCase
+      :members:
 
-    .. autoclass:: HTTPTestCase
+   .. autoclass:: HTTPTestCase
+      :members:
+
+   .. autoclass:: WebDriverTestCase
+      :members:
+
+   .. autoclass:: RemoteBrowserTestCase
       :members:
 
 

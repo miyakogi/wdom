@@ -4,10 +4,13 @@ Version 0.2
 Version 0.2.0 (next version)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Drop python 3.4 support
+* **Python 3.4 is NOT Supported**
 * Use async/await
 * Enable ``python setup.py test``
 * Moved ``suppress_logging`` function from ``wdom.testing`` to ``wdom.misc``
+* Add type hints (pass mypy check)
+* Improve auto-reload sequence
+* Write docstrings (pass pydocstyle check)
 
 Version 0.1.8 (2017-07-23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
