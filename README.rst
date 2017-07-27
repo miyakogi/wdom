@@ -7,9 +7,9 @@ WDOM
 .. image:: https://img.shields.io/pypi/pyversions/wdom.svg
    :target: https://pypi.python.org/pypi/wdom
 
-.. image:: https://readthedocs.org/projects/wdom-py/badge/?version=latest
-   :target: http://wdom-py.readthedocs.io/en/latest/?badge=latest
-   :alt: Documentation Status
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
+   :target: https://miyakogi.github.io/wdom/
+   :alt: Documentation
 
 .. image:: https://travis-ci.org/miyakogi/wdom.svg?branch=dev
    :target: https://travis-ci.org/miyakogi/wdom
@@ -27,7 +27,7 @@ codes in python.
 This library includes web-server (`tornado`_), but is not intended to
 be used as a web framework, please use for **Desktop** GUI Applications.
 
-Document: `Read the Docs <http://wdom-py.readthedocs.io/en/latest/?badge=latest>`_
+Document: `WDOM Documentation <https://miyakogi.github.io/wdom/>`_
 
 Disclaimer
 ----------
@@ -207,7 +207,7 @@ or write its wrapper module and send `PR`_.
 
 Of course you can use your original css. See `Loading Static Contents -> Local
 Resource
-<http://wdom-py.readthedocs.io/en/latest/guide/load_resource.html#local-resources>`_
+<https://miyakogi.github.io/wdom/guide/load_resource.html#local-resources>`_
 section in the `User Guide`_.
 
 Contributing
@@ -227,6 +227,6 @@ Please see `User Guide`_.
 .. _DOM specification: https://dom.spec.whatwg.org/
 .. _Selenium: http://selenium-python.readthedocs.org/
 .. _tornado: http://www.tornadoweb.org/en/stable/
-.. _User Guide: http://wdom-py.readthedocs.io/en/latest/guide/index.html
+.. _User Guide: https://miyakogi.github.io/wdom/guide/index.html
 .. _Issues: https://github.com/miyakogi/wdom/issues
 .. _PR: https://github.com/miyakogi/wdom/pulls
