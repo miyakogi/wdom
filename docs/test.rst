@@ -5,6 +5,8 @@ Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>
 
 .. warning:: This document is incomplete and all APIs are not stable.
 
+.. currentmodule:: wdom.testing
+
 .. automodule:: wdom.testing
 
    .. autofunction:: reset

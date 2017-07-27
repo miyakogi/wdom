@@ -8,6 +8,8 @@ python and browser.
 Tag class
 ---------
 
+.. currentmodule:: wdom.tag
+
 .. automodule:: wdom.tag
 
    .. autoclass:: Tag
@@ -22,6 +24,8 @@ Tag class
 
 List of HTML Tag Classes
 ------------------------
+
+.. currentmodule:: wdom.tag
 
 .. autoclass:: A
 .. autoclass:: Body

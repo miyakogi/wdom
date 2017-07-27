@@ -7,6 +7,8 @@ WDOM applications consist of a single html document and a web server.
 HTML Document Object
 --------------------
 
+.. currentmodule:: wdom.document
+
 .. autofunction:: wdom.document.get_new_document
 
 .. autofunction:: wdom.document.get_document
@@ -16,6 +18,8 @@ HTML Document Object
 
 Web Server
 ----------
+
+.. currentmodule:: wdom.server
 
 .. automodule:: wdom.server
 

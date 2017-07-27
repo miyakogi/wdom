@@ -1,6 +1,8 @@
 Node interfaces/classes
 =======================
 
+.. currentmodule:: wdom.node
+
 .. autoclass:: wdom.node.AbstractNode
    :members:
 
@@ -22,8 +24,12 @@ Node interfaces/classes
 .. autoclass:: wdom.node.DocumentFragment
    :members:
 
+.. currentmodule:: wdom.document
+
 .. autoclass:: wdom.document.Document
    :members:
+
+.. currentmodule:: wdom.element
 
 .. autoclass:: wdom.element.Attr
    :members:
@@ -34,11 +40,15 @@ Node interfaces/classes
 .. autoclass:: wdom.element.HTMLElement
    :members:
 
+.. currentmodule:: wdom.window
+
 .. autoclass:: wdom.window.Window
    :members:
 
 Conclete HTML Elements
 ----------------------
+
+.. currentmodule:: wdom.element
 
 .. autoclass:: wdom.element.HTMLAnchorElement
    :members:
@@ -80,8 +90,12 @@ Conclete HTML Elements
 Node Collectoin Classes
 -----------------------
 
+.. currentmodule:: wdom.node
+
 .. autoclass:: wdom.node.NodeList
    :members:
+
+.. currentmodule:: wdom.element
 
 .. autoclass:: wdom.element.DOMTokenList
    :members:
@@ -92,6 +106,8 @@ Node Collectoin Classes
 
 Abstract classes
 ----------------
+
+.. currentmodule:: wdom.node
 
 .. autoclass:: wdom.node.ParentNode
    :members:
@@ -108,6 +124,8 @@ Abstract classes
 
 WdomElement class (base class of Tag)
 -------------------------------------
+
+.. currentmodule:: wdom.web_node
 
 .. autoclass:: wdom.web_node.WdomElement
    :members:

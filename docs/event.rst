@@ -1,6 +1,8 @@
 Event API
 =========
 
+.. currentmodule:: wdom.event
+
 .. autoclass:: wdom.event.Event
    :members:
 
