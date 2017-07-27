@@ -1,21 +1,24 @@
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>DOM API &#8212; WDOM 0.1.8 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    
+    <title>DOM API &mdash; WDOM 0.1.8 documentation</title>
+    
+    <link rel="stylesheet" href="_static/slex.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
         VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
+        HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -23,6 +26,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="WDOM 0.1.8 documentation" href="index.html" />
+    <link rel="up" title="API Reference" href="reference.html" />
     <link rel="next" title="HTML Tag Class" href="tag.html" />
     <link rel="prev" title="Application and Server" href="webserver.html" />
   <!-- font -->
@@ -33,22 +38,83 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
-   
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body>
+  <body role="document">
+  <div class="document"> 
+    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebarwrapper">
+
+  <h1 class="logo"><a href="index.html">WDOM</a></h1>
+
+
+
+  <p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+  
+    
+      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
+        <img class="github-mark" src="_static/GitHub-Mark-64px.png">
+      </a>
+    
   
 
-    <div class="document">
+
+
+
+
+<h3>Contents</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">DOM API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tag.html">HTML Tag Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="node.html">Node interfaces/classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="reference.html">API Reference</a><ul>
+      <li>Previous: <a href="webserver.html" title="previous chapter">Application and Server</a></li>
+      <li>Next: <a href="tag.html" title="next chapter">HTML Tag Class</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div class="searchbox" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div class="search-container">
+        <input class="form-control control search-input" type="text" name="q" />
+        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </div>
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+      </div>
+    </div> 
       <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
+        <div class="body" role="main">
+          
   <div class="section" id="dom-api">
 <h1>DOM API<a class="headerlink" href="#dom-api" title="Permalink to this headline">¶</a></h1>
 <p>(This section is not complete and not enough yet…)</p>
@@ -74,89 +140,27 @@
 </div>
 
 
-          </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">WDOM</a></h1>
-
-
-
-<p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">DOM API</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="tag.html">HTML Tag Class</a></li>
-<li class="toctree-l3"><a class="reference internal" href="node.html">Node interfaces/classes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="reference.html">API Reference</a><ul>
-      <li>Previous: <a href="webserver.html" title="previous chapter">Application and Server</a></li>
-      <li>Next: <a href="tag.html" title="next chapter">HTML Tag Class</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2016, Hiroyuki Takagi.
-      
+  </div>
+  <div class="footer">
+    &copy;2016, Hiroyuki Takagi.
+    
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
+    
       |
-      <a href="_sources/dom.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
+      <a href="_sources/dom.rst.txt" rel="nofollow">Page source</a>
+  </div>
 
-    
+  
     <a href="https://github.com/miyakogi/wdom" class="github">
-        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-    
+  
 
-    
+  
+
   </body>
 </html>
