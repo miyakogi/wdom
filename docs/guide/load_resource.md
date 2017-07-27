@@ -55,7 +55,7 @@ browser, `app.css` will be shown.
 It's not necessary to use the same name for the prefix as the directory name to
 be registered.
 For example, in case to use `my_static` as a prefix, change to
-`add_static_path('my_static', static_dir)` and then can be accessed to
+`add_static_path('my_static', STATIC_DIR)` and then can be accessed to
 `app.css` from `http://localhost:8888/my_static/css/app.css`.
 
 Not only css files but also any static files, like js files, html files, or

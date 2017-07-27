@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Event/Message handlers for web server."""
+
 import json
 import logging
 from typing import Any, Dict

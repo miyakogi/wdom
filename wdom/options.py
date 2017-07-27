@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-This module defines options for wdom and wraps ``tornado.options``.
+"""This module defines options for wdom and wraps ``tornado.options``.
+
 Do not use ``tornado.options`` directly.
+
+When this module is loaded, automatically parse command line options.
+If need to parse command line optionas again, call ``parse_command_line``
+function.
 """
 
 import sys
@@ -111,6 +115,11 @@ def level_to_int(level: Union[str, int]) -> int:
 
 
 def set_loglevel(level: Union[int, str, None] = None) -> None:
+    """Set proper log-level.
+
+    :arg Optional[int, str] level: Level to be set. If None, use proper log
+    level from command line option. Default value is ``logging.INFO``.
+    """
     if level is not None:
         lv = level_to_int(level)
     elif config.logging:
@@ -124,7 +133,7 @@ def set_loglevel(level: Union[int, str, None] = None) -> None:
 
 
 def parse_command_line() -> Namespace:
-    '''Parse command line options and set options in ``tornado.options``.'''
+    """Parse command line options and set options in ``tornado.options``."""
     import tornado.options
     _, unkown_args = parser.parse_known_args(namespace=config)
     set_loglevel()

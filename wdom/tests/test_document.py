@@ -12,7 +12,7 @@ from wdom.document import getElementById, getElementByRimoId
 from wdom.element import Attr, Element
 from wdom.event import Event
 from wdom.node import DocumentFragment, Comment, Text
-from wdom.tag import Tag, HTMLElement, A
+from wdom.tag import Tag, A
 from wdom.testing import TestCase
 from wdom.web_node import WdomElement
 
@@ -176,7 +176,7 @@ class TestMainDocument(TestCase):
 
     def test_create_element_unknown(self):
         elm = self.doc.createElement('aa')
-        self.assertEqual(type(elm), HTMLElement)
+        self.assertEqual(type(elm), WdomElement)
         self.assertRegex(elm.html, r'<aa rimo_id="\d+"></aa>')
 
     def test_create_element_defclass(self):
@@ -194,7 +194,7 @@ class TestMainDocument(TestCase):
         self.assertRegex(elm.html, '<aa></aa>')
 
     def test_create_custom_element(self):
-        class A(HTMLElement):
+        class A(WdomElement):
             pass
         self.doc.defaultView.customElements.define('a', A)
         elm = self.doc.createElement('a')
@@ -229,12 +229,12 @@ class TestMainDocument(TestCase):
         a.value = 'a'
         self.assertEqual(type(a), Attr)
         self.assertEqual(a.html, 'src="a"')
-        tag = HTMLElement('tag')
+        tag = WdomElement('tag')
         tag.setAttributeNode(a)
         self.assertRegex(tag.html, '<tag rimo_id="\d+" src="a"></tag>')
 
     def test_create_event(self):
-        tag = HTMLElement('tag')
+        tag = WdomElement('tag')
         mock = MagicMock(_is_coroutine=False)
         tag.addEventListener('a', mock)
         e = self.doc.createEvent('a')

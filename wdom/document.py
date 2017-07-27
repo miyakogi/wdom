@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Document class and its helper functions.
+
+This module also provides deafult documents object.
+"""
+
 import os
 import tempfile
 import shutil
@@ -14,18 +19,20 @@ from wdom.event import Event
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment
 from wdom.node import DocumentFragment
 from wdom.options import config
-from wdom.tag import HTMLElement, Tag
+from wdom.tag import Tag
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
 from wdom.web_node import WdomElement
 from wdom.window import Window
 
 
 def getElementById(id: Union[str, int]) -> Optional[Node]:
+    """Get element with ``id``."""
     elm = Element._elements_with_id.get(str(id))
     return elm
 
 
 def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
+    """Get element with ``rimo_id``."""
     elm = WdomElement._elements_with_rimo_id.get(str(id))
     return elm
 
@@ -37,6 +44,13 @@ def _cleanup(path: str) -> None:
 
 def create_element(tag: str, name: str = None, base: type = None,
                    attr: dict = None) -> Node:
+    """Create element with a tag of ``name``.
+
+    :arg str name: html tag.
+    :arg type base: Base class of the created element
+                       (defatlt: ``WdomElement``)
+    :arg dict attr: Attributes (key-value pairs dict) of the new element.
+    """
     from wdom.web_node import WdomElement
     from wdom.tag import Tag
     from wdom.window import customElements
@@ -55,6 +69,8 @@ def create_element(tag: str, name: str = None, base: type = None,
 
 
 class Document(Node):
+    """Document class."""
+
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
     body = None  # type: Node
@@ -62,17 +78,30 @@ class Document(Node):
 
     @property
     def defaultView(self) -> Window:
+        """Return ``Window`` class of this document."""
         return self._window
 
     @property
     def tempdir(self) -> str:
+        """Return temporary directory used by this document."""
         return self._tempdir
 
     def __init__(self, doctype: str = 'html', title: str = 'W-DOM',
-                 charset: str = 'utf-8', default_class: type = HTMLElement,
+                 charset: str = 'utf-8', default_class: type = WdomElement,
                  autoreload: Optional[bool] = None,
                  reload_wait: Optional[float] =None,
                  ) -> None:
+        """Make new document object.
+
+        :arg str doctype: doctype of the document (default: html).
+        :arg str title: title of the document.
+        :arg str charset: charset of the document.
+        :arg type default_class: Set default Node class of the document. This
+            class is used when make node by ``createElement`` method.
+        :arg bool autoreload: Enable/Disable autoreload (default: False).
+        :arg float reload_wait: How long (seconds) wait to reload. This
+            parameter is only used when ``autoreload`` is enabled.
+        """
         self._tempdir = _tempdir = tempfile.mkdtemp()
         self._finalizer = weakref.finalize(self,  # type: ignore
                                            partial(_cleanup, _tempdir))
@@ -111,72 +140,97 @@ class Document(Node):
                 '\n'.join(ar_script))
 
     def getElementById(self, id: Union[str, int]) -> Optional[Node]:
+        """Get element by ``id``.
+
+        If this document does not have the element with the id, return None.
+        """
         elm = getElementById(id)
         if elm and elm.ownerDocument is self:
             return elm
         return None
 
     def getElementByRimoId(self, id: Union[str, int]) -> Optional[WdomElement]:
+        """Get element by ``rimo_id``.
+
+        If this document does not have the element with the id, return None.
+        """
         elm = getElementByRimoId(id)
         if elm and elm.ownerDocument is self:
             return elm
         return None
 
     def createElement(self, tag: str) -> Node:
+        """Create new element."""
         return create_element(tag, base=self._default_class)
 
     def createDocumentFragment(self) -> DocumentFragment:
+        """Create empty document fragment."""
         return DocumentFragment()
 
     def createTextNode(self, text: str) -> Text:
+        """Create text node with ``text``."""
         return Text(text)
 
-    def createComment(self, text: str) -> Comment:
-        return Comment(text)
+    def createComment(self, comment: str) -> Comment:
+        """Create comment node with ``comment``."""
+        return Comment(comment)
 
     def createEvent(self, event: str) -> Event:
+        """Create Event object with ``event`` type."""
         return Event(event)
 
     def createAttribute(self, name: str) -> Attr:
+        """Create Attribute object with ``name``."""
         return Attr(name)
 
     @property
     def title(self) -> str:
+        """Return title of this document."""
         return self.title_element.textContent
 
     @title.setter
     def title(self, value: str) -> None:
+        """Set title of this document."""
         self.title_element.textContent = value
 
     @property
     def characterSet(self) -> str:
+        """Return character set of this document."""
         return self.charset_element.getAttribute('charset')
 
     @characterSet.setter
     def characterSet(self, value: str) -> None:
+        """Set character set of this document."""
         self.charset_element.setAttribute('charset', value)
 
     @property
     def charset(self) -> str:
+        """Return charset set of this document."""
         return self.characterSet
 
     @charset.setter
     def charset(self, value: str) -> None:
+        """Set charset set of this document."""
         self.characterSet = value
 
     def add_jsfile(self, src: str) -> None:
+        """Add JS file to load at this document's bottom."""
         self.body.appendChild(Script(src=src))
 
     def add_jsfile_head(self, src: str) -> None:
+        """Add JS file to load at this document's header."""
         self.head.appendChild(Script(src=src))
 
     def add_cssfile(self, src: str) -> None:
+        """Add CSS file to load at this document's bottom."""
         self.head.appendChild(Link(rel='stylesheet', href=src))
 
     def add_header(self, header: str) -> None:
+        """Add CSS file to load at this document's header."""
         self.head.appendChild(RawHtml(header))
 
     def register_theme(self, theme: ModuleType) -> None:
+        """Set theme."""
         if not hasattr(theme, 'css_files'):
             raise ValueError('theme module must include `css_files`.')
         for css in getattr(theme, 'css_files', []):
@@ -189,6 +243,7 @@ class Document(Node):
             self.defaultView.customElements.define(cls)
 
     def build(self) -> str:
+        """Return HTML representation of this document."""
         self._set_autoreload()
         return ''.join(child.html for child in self.childNodes)
 
@@ -206,7 +261,7 @@ def get_new_document(  # noqa: C901
         message_wait: Optional[float] = None,
         document_factory: Callable[..., Document] = Document,
         **kwargs: Any) -> Document:
-    """Make and return new `document` object."""
+    """Make and return new ``document`` object with options."""
     document = document_factory(
         autoreload=autoreload,
         reload_wait=reload_wait,
@@ -243,16 +298,18 @@ def get_new_document(  # noqa: C901
 
 # get_document = get_new_document
 def get_document(*args: Any, **kwargs: Any) -> Document:
+    """Get current root document object."""
     return rootDocument
 
 
 def set_document(new_document: Document) -> None:
+    """Set the document as current root."""
     global rootDocument
     rootDocument = new_document
 
 
 def set_app(app: Tag) -> None:
-    """Set root ``Tag`` as applicaion."""
+    """Set root ``Tag`` as applicaion to the current root document."""
     document = get_document()
     document.body.prepend(app)
 

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Wrapper module of tornado web server to use WDOM."""
+
 import asyncio
 import logging
 import socket
@@ -29,6 +31,7 @@ def is_connected() -> bool:
 
 class MainHandler(web.RequestHandler):
     """Main handler to serve document of the application."""
+
     def get(self) -> None:
         """Return whole html representation of the root document."""
         from wdom.document import get_document
@@ -38,13 +41,14 @@ class MainHandler(web.RequestHandler):
 
 class WSHandler(websocket.WebSocketHandler):
     """Handler class of web socket connection."""
+
     def open(self) -> None:
-        """Called when connection open."""
+        """Execute when connection open."""
         logger.info('WS OPEN')
         connections.append(self)
 
     def on_message(self, message: str) -> None:
-        """Called when get message from client."""
+        """Execute when get message from client."""
         on_websocket_message(message)
 
     async def terminate(self) -> None:
@@ -56,7 +60,7 @@ class WSHandler(websocket.WebSocketHandler):
             self.application.server.io_loop.stop()
 
     def on_close(self) -> None:
-        """Called when connection closed."""
+        """Execute when connection closed."""
         logger.info('RootWS CLOSED')
         if self in connections:
             # Remove this connection from connection-list
@@ -67,7 +71,13 @@ class WSHandler(websocket.WebSocketHandler):
 
 
 class StaticFileHandlerNoCache(web.StaticFileHandler):
+    """Provides static files without browser cache.
+
+    Usefull for debug purpose.
+    """
+
     def set_extra_headers(self, path: str) -> None:
+        """Set no-cache header."""
         self.set_header('Cache-control', 'no-cache')
 
 
@@ -84,6 +94,7 @@ class Application(web.Application):
     """
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize application."""
         super().__init__(
             [(r'/', MainHandler), (r'/rimo_ws', WSHandler)],
             *args,

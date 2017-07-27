@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Conclete implemententions for Element node."""
+
 from collections import OrderedDict, UserDict
 import html as html_
 from typing import Union, Callable, Optional, Dict, Tuple
@@ -11,8 +13,8 @@ from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 
 from wdom.css import CSSStyleDeclaration
 from wdom.event import EventTarget, Event
-from wdom.node import Node, ParentNode, NonDocumentTypeChildNode, ChildNode
-from wdom.node import DocumentFragment, NodeList
+from wdom.node import AbstractNode, Node, ParentNode, NonDocumentTypeChildNode
+from wdom.node import DocumentFragment, NodeList, ChildNode
 from wdom.parser import FragmentParser
 
 if TYPE_CHECKING:
@@ -23,12 +25,18 @@ _AttrValueType = Union[List[str], str, int, bool, CSSStyleDeclaration, None]
 
 
 class DOMTokenList(MutableSequence[str]):
-    """List of DOM token.
+    """Collection of DOM token.
 
     DOM token is a string which does not contain spases.
     """
+
     def __init__(self, owner: Union[Node, Type['Tag']],
                  *args: Union[str, 'DOMTokenList']) -> None:
+        """Initialize with owner node (maybe type of node) and initial values.
+
+        :arg owner: Node/Node-class which has this collection.
+        :arg args: space-separated string or iterable of tokens.
+        """
         self._list = list()  # type: List[str]
         self._owner = owner
         self._append(args)
@@ -79,7 +87,7 @@ class DOMTokenList(MutableSequence[str]):
 
     @property
     def length(self) -> int:
-        """Number of DOM token in this list."""
+        """Get number of DOM token in this list."""
         return self.__len__()
 
     def add(self, *tokens: str) -> None:
@@ -127,6 +135,7 @@ class DOMTokenList(MutableSequence[str]):
         return self[index]
 
     def insert(self, index: int, item: str) -> None:
+        """Not implemented."""
         raise NotImplementedError
 
     def contains(self, token: str) -> bool:
@@ -148,9 +157,16 @@ class Attr:
     In the latest DOM specification, Attr interface does not inherits ``Node``
     interface. (Previously, Attr inherited Node interface.)
     """
+
     def __init__(self, name: str,
                  value: _AttrValueType = None,
                  owner: Node = None) -> None:
+        """Initialize this attribute.
+
+        :arg str name: property name.
+        :arg _AttrValueType value: attribute value.
+        :arg Node owner: owner node of this attribute (optional).
+        """
         self._name = name.lower()
         self._value = value
         self._owner = owner
@@ -190,8 +206,11 @@ class Attr:
 
 
 class DraggableAttr(Attr):
+    """Attribute node class for draggable attribute."""
+
     @property
     def html(self) -> str:
+        """Return html representation."""
         if isinstance(self.value, bool):
             val = 'true' if self.value else 'false'
         else:
@@ -200,7 +219,13 @@ class DraggableAttr(Attr):
 
 
 class NamedNodeMap(UserDict):
+    """Collection of Attr objects."""
+
     def __init__(self, owner: Node) -> None:
+        """Initialize with owner node.
+
+        :arg Node owner: owner node of this object.
+        """
         self._owner = owner
         self._dict = OrderedDict()  # type: OrderedDict[str, Attr]
 
@@ -227,12 +252,18 @@ class NamedNodeMap(UserDict):
 
     @property
     def length(self) -> int:
+        """Return number of Attrs in this collection."""
         return len(self)
 
     def getNamedItem(self, name: str) -> Optional[Attr]:
+        """Get ``Attr`` object which has ``name``.
+
+        If does not have ``name`` attr, return None.
+        """
         return self._dict.get(name, None)
 
     def setNamedItem(self, item: Attr) -> None:
+        """Set ``Attr`` object in this collection."""
         from wdom.web_node import WebIF
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
@@ -242,6 +273,7 @@ class NamedNodeMap(UserDict):
         item._owner = self._owner
 
     def removeNamedItem(self, item: Attr) -> Optional[Attr]:
+        """Set ``Attr`` object and return it (if exists)."""
         from wdom.web_node import WebIF
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
@@ -253,23 +285,28 @@ class NamedNodeMap(UserDict):
         return removed_item
 
     def item(self, index: int) -> Optional[Attr]:
+        """Return ``index``-th attr node."""
         if 0 <= index < len(self):
             return self._dict[tuple(self._dict.keys())[index]]
         return None
 
     def toString(self) -> str:
+        """Return string representation of collections."""
         return ' '.join(attr.html for attr in self._dict.values())
 
 
 class ElementParser(FragmentParser):
-    def __init__(self, *args: Any, default_class: type = None,
-                 **kwargs: Any) -> None:
+    """HTML Parser class whose default nodes are ``Element``."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         super().__init__(*args, **kwargs)
         self.default_class = Element
 
 
 class HTMLElementParser(ElementParser):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    """HTML Parser class whose default nodes are ``HTMLElement``."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         super().__init__(*args, **kwargs)
         self.default_class = HTMLElement
 
@@ -321,8 +358,10 @@ def _boolean_properties(attr: str) -> property:
 
 
 class ElementMeta(type):
+    """Metaclass for Element class."""
+
     def __new__(cls: type, name: str, bases: Tuple[type],
-                namespace: Dict[str, Any], **kwargs: Any) -> type:
+                namespace: Dict[str, Any], **kwargs: Any) -> type:  # noqa: D102,E501
         for attr in namespace.get('_special_attr_string', []):
             namespace[attr] = _string_properties(attr)
         for attr in namespace.get('_special_attr_boolean', []):
@@ -333,6 +372,8 @@ class ElementMeta(type):
 
 class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
               ChildNode, metaclass=ElementMeta):
+    """Element base class."""
+
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
     _parser_class = ElementParser  # type: Type[ElementParser]
@@ -344,6 +385,13 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
     def __init__(self, tag: str='', parent: Node = None,
                  _registered: bool = True, **kwargs: Any) -> None:
+        """Initialize.
+
+        :arg str tag: HTML tag of this node.
+        :arg Node parent: Parent node of this node.
+        :arg bool _registered: Is registered to CustomElementRegistry.
+        :arg kwargs: key-value pair of attributes.
+        """
         self._registered = _registered
         self.tag = tag
         self._elements.add(self)  # used to suport custom elements
@@ -374,11 +422,17 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
     @property
     def start_tag(self) -> str:
+        """Return HTML start tag."""
         tag = '<' + self.tag
         attrs = self._get_attrs_by_string()
         if attrs:
             tag = ' '.join((tag, attrs))
         return tag + '>'
+
+    @property
+    def end_tag(self) -> str:
+        """Return HTML end tag."""
+        return '</{}>'.format(self.tag)
 
     def _parse_html(self, html: str) -> DocumentFragment:
         parser = self._parser_class()
@@ -394,25 +448,28 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
     @property
     def innerHTML(self) -> str:
+        """Return HTML representation of child nodes."""
         return self._get_inner_html()
 
     @innerHTML.setter
     def innerHTML(self, html: str) -> None:
+        """Remove all child nodes and set ``html`` as new contents.
+
+        ``html`` is parsed to ``Element`` nodes and set as child nodes.
+        """
         self._set_inner_html(html)
 
     @property
-    def end_tag(self) -> str:
-        return '</{}>'.format(self.tag)
-
-    @property
     def html(self) -> str:
+        """Return HTML representation of this node."""
         return self.start_tag + self.innerHTML + self.end_tag
 
     def insertAdjacentHTML(self, position: str, html: str) -> None:
-        '''Parse ``html`` to DOM and insert to ``position``. ``position`` is a
-        case-insensive string, and must be one of "beforeBegin", "afterBegin",
-        "beforeEnd", or "afterEnd".
-        '''
+        """Parse ``html`` to DOM and insert to ``position``.
+
+        ``position`` is a case-insensive string, and must be one of
+        "beforeBegin", "afterBegin", "beforeEnd", or "afterEnd".
+        """
         df = self._parse_html(html)
         pos = position.lower()
         if pos == 'beforebegin':
@@ -431,21 +488,32 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
     @property
     def outerHTML(self) -> str:
+        """Return html representation of this node.
+
+        Equivalent to ``self.html``.
+        """
         return self.html
 
     @property
     def nodeName(self) -> str:  # type: ignore
+        """Return tag name (capital case)."""
         return self.tag.upper()
 
     @property
     def tagName(self) -> str:
+        """Return tag name (capital case)."""
         return self.tag.upper()
 
     @property
     def localName(self) -> str:
+        """Return tag name (lower case)."""
         return self.tag.lower()
 
     def getAttribute(self, attr: str) -> _AttrValueType:
+        """Get attribute of this node as string format.
+
+        If this node does not have ``attr``, return None.
+        """
         if attr == 'class':
             if self.classList:
                 return self.classList.toString()
@@ -456,14 +524,20 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         return attr_node.value
 
     def getAttributeNode(self, attr: str) -> Optional[Attr]:
+        """Get attribute of this node as Attr format.
+
+        If this node does not have ``attr``, return None.
+        """
         return self.attributes.getNamedItem(attr)
 
     def hasAttribute(self, attr: str) -> bool:
+        """Return True if this node has ``attr``."""
         if attr == 'class':
             return bool(self.classList)
         return attr in self.attributes
 
     def hasAttributes(self) -> bool:
+        """Return True if this node has any attributes."""
         return bool(self.attributes) or bool(self.classList)
 
     def _set_attribute_class(self, value: _AttrValueType) -> None:
@@ -503,9 +577,11 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
             self.setAttributeNode(new_attr_node)
 
     def setAttribute(self, attr: str, value: _AttrValueType) -> None:
+        """Set ``attr`` and ``value`` in this node."""
         self._set_attribute(attr, value)
 
     def setAttributeNode(self, attr: Attr) -> None:
+        """Set ``Attr`` node as this node's attribute."""
         self.attributes.setNamedItem(attr)
 
     def _remove_attribute(self, attr: str) -> None:
@@ -519,18 +595,21 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
                 self.attributes.removeNamedItem(_attr)
 
     def removeAttribute(self, attr: str) -> None:
+        """Remove ``attr`` from this node."""
         self._remove_attribute(attr)
 
     def removeAttributeNode(self, attr: Attr) -> Optional[Attr]:
+        """Remove ``Attr`` node from this node."""
         return self.attributes.removeNamedItem(attr)
 
     def getElementsBy(self, cond: Callable[['Element'], bool]) -> NodeList:
-        '''Return list of child nodes which matches ``cond``.
+        """Return list of child nodes which matches ``cond``.
+
         ``cond`` must be a function which gets a single argument ``node``,
         and returns bool. If the node matches requested condition, ``cond``
         should return True.
         This searches all child nodes recursively.
-        '''
+        """
         elements = []
         for child in self.children:
             if cond(child):
@@ -539,20 +618,25 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         return NodeList(elements)
 
     def getElementsByTagName(self, tag: str) -> NodeList:
+        """Get child nodes which tag name is ``tag``."""
         _tag = tag.upper()
         return self.getElementsBy(lambda n: getattr(n, 'tagName') == _tag)
 
     def getElementsByClassName(self, class_name: str) -> NodeList:
+        """Get child nodes which has ``class_name`` class attribute."""
         return self.getElementsBy(
             lambda node: class_name in getattr(node, 'classList'))
 
 
 class HTMLElement(Element):
+    """Base class for HTMLElement."""
+
     _special_attr_string = ['title', 'type']
     _special_attr_boolean = ['hidden']
     _parser_class = HTMLElementParser  # type: Type[ElementParser]
 
-    def __init__(self, *args: Any, style: str=None, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, style: str=None, **kwargs: Any
+                 ) -> None:  # noqa: D102
         super().__init__(*args, **kwargs)
         self._style = CSSStyleDeclaration(style, owner=self)
 
@@ -570,16 +654,26 @@ class HTMLElement(Element):
 
     @property
     def end_tag(self) -> str:
+        """Retrun html end tag.
+
+        If tag is empty tag like <img> or <br>, return empty string.
+        """
         if self.tag in HTML_EMPTY:
             return ''
         return super().end_tag
 
     @property
     def style(self) -> CSSStyleDeclaration:
+        """Return style attribute of this node."""
         return self._style
 
     @style.setter
     def style(self, style: _AttrValueType) -> None:
+        """Set style attribute of this node.
+
+        If argument ``style`` is string, it will be parsed to
+        ``CSSStyleDeclaration``.
+        """
         if isinstance(style, str):
             self._style._parse_str(style)
         elif style is None:
@@ -594,18 +688,23 @@ class HTMLElement(Element):
 
     @property
     def draggable(self) -> Union[bool, str]:
+        """Get ``draggable`` property."""
         if not self.hasAttribute('draggable'):
             return False
         return self.getAttribute('draggable')  # type: ignore
 
     @draggable.setter
-    def draggable(self, val: Union[bool, str]) -> None:
-        if val is False:
+    def draggable(self, value: Union[bool, str]) -> None:
+        """Set ``draggable`` property.
+
+        ``value`` is boolean or string.
+        """
+        if value is False:
             self.removeAttribute('draggable')
         else:
-            self.setAttribute('draggable', val)
+            self.setAttribute('draggable', value)
 
-    def getAttribute(self, attr: str) -> _AttrValueType:
+    def getAttribute(self, attr: str) -> _AttrValueType:  # noqa: D102
         if attr == 'style':
             # if style is neither None nor empty, return None
             # otherwise, return style.cssText
@@ -627,13 +726,13 @@ class HTMLElement(Element):
             super()._remove_attribute(attr)  # type: ignore
 
 
-class FormControlMixin:
-    @property
-    def parentNode(self) -> Optional[Node]: ...  # for type check
+class FormControlMixin(AbstractNode):
+    """Mixin class for FormControl classes."""
 
     def __init__(self, *args: Any,
                  form: Optional[Union[str, int, 'HTMLFormElement']] = None,
                  **kwargs: Any) -> None:
+        """``form`` is a ``HTMLFormElement`` object or id of it."""
         self._form = None
         super().__init__(*args, **kwargs)  # type: ignore
         from wdom.document import getElementById
@@ -649,6 +748,7 @@ class FormControlMixin:
 
     @property
     def form(self) -> Optional['HTMLFormElement']:
+        """Get ``HTMLFormElement`` object related to this node."""
         if self._form:
             return self._form
         parent = self.parentNode
@@ -660,29 +760,35 @@ class FormControlMixin:
         return None
 
 
-class HTMLAnchorElement(HTMLElement):
+class HTMLAnchorElement(HTMLElement):  # noqa: D204
+    """HTMLAnchorElement class (<a></a> tag)."""
     _special_attr_string = ['href', 'name', 'rel', 'src', 'target']
 
 
-class HTMLButtonElement(HTMLElement):
+class HTMLButtonElement(HTMLElement):  # noqa: D204
+    """HTMLButtonElement class (<button></button> tag)."""
     _special_attr_string = ['name', 'value']
     _special_attr_boolean = ['disabled']
 
 
-class HTMLFormElement(HTMLElement):
+class HTMLFormElement(HTMLElement):  # noqa: D204
+    """HTMLFormElement class (<form></form> tag)."""
     _special_attr_string = ['name']
 
 
-class HTMLIFrameElement(HTMLElement):
+class HTMLIFrameElement(HTMLElement):  # noqa: D204
+    """HTMLIFrameElement class (<iframe></iframe> tag)."""
     _special_attr_string = ['height', 'name', 'src', 'target', 'width']
 
 
 class HTMLInputElement(HTMLElement, FormControlMixin):
+    """HTMLInputElement class (<input></input> tag)."""
+
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['checked', 'disabled', 'multiple', 'readonly',
                              'required']
 
-    def on_event_pre(self, e: Event) -> None:
+    def on_event_pre(self, e: Event) -> None:  # noqa: D102
         super().on_event_pre(e)
         ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
@@ -699,6 +805,7 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
 
     @property
     def defaultChecked(self) -> bool:
+        """Property is this control checked by default."""
         return bool(self.getAttribute('defaultChecked'))
 
     @defaultChecked.setter
@@ -712,6 +819,7 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
 
     @property
     def defaultValue(self) -> _AttrValueType:
+        """Defatul value of this node."""
         return self.getAttribute('defaultValue')
 
     @defaultValue.setter
@@ -730,8 +838,11 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
 
 
 class HTMLLabelElement(HTMLElement, FormControlMixin):
+    """HTMLLabelElement class (<label></label> tag)."""
+
     @property
     def htmlFor(self) -> _AttrValueType:
+        """Retrun ``for`` attribute value."""
         return self.getAttribute('for')
 
     @htmlFor.setter
@@ -740,6 +851,7 @@ class HTMLLabelElement(HTMLElement, FormControlMixin):
 
     @property
     def control(self) -> Optional[HTMLElement]:
+        """Return related HTMLElement object."""
         id = self.getAttribute('for')
         if id:
             if self.ownerDocument:
@@ -752,31 +864,39 @@ class HTMLLabelElement(HTMLElement, FormControlMixin):
         return None
 
 
-class HTMLOptGroupElement(HTMLElement, FormControlMixin):
+class HTMLOptGroupElement(HTMLElement, FormControlMixin):  # noqa: D204
+    """HTMLOptionElement class (<optgroup></optgroup> tag)."""
     _special_attr_string = ['label']
     _special_attr_boolean = ['disabled']
 
 
-class HTMLOptionElement(HTMLElement, FormControlMixin):
+class HTMLOptionElement(HTMLElement, FormControlMixin):  # noqa: D204
+    """HTMLOptionElement class (<option></option> tag)."""
     _special_attr_string = ['label', 'value']
     _special_attr_boolean = ['defaultSelected', 'disabled', 'selected']
 
 
-class HTMLScriptElement(HTMLElement):
+class HTMLScriptElement(HTMLElement):  # noqa: D204
+    """HTMLScriptElement class (<script></script> tag).
+
+    In this tag, all inner contents are not escaped.
+    """
     _special_attr_string = ['charset', 'src']
     _special_attr_boolean = ['async', 'defer']
     _should_escape_text = False
 
 
 class HTMLSelectElement(HTMLElement, FormControlMixin):
+    """HTMLSelectElement class (<select></select> tag)."""
+
     _special_attr_string = ['name', 'size', 'value']
     _special_attr_boolean = ['disabled', 'multiple', 'required']
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         self._selected_options = []  # type: List[str]
         super().__init__(*args, **kwargs)
 
-    def on_event_pre(self, e: Event) -> None:
+    def on_event_pre(self, e: Event) -> None:  # noqa: D102
         super().on_event_pre(e)
         ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
@@ -792,28 +912,36 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
 
     @property
     def length(self) -> int:
+        """Return number of options in this node."""
         return len(self.options)
 
     @property
     def options(self) -> NodeList:
+        """Return all option nodes in this node."""
         return self.getElementsByTagName('option')
 
     @property
     def selectedOptions(self) -> NodeList:
+        """Return all selected option nodes."""
         return NodeList(list(opt for opt in self.options if opt.selected))
 
 
-class HTMLStyleElement(HTMLElement):
+class HTMLStyleElement(HTMLElement):  # noqa: D204
+    """HTMLStyleElement class (<style></style> tag).
+
+    In this tag, all inner contents are not escaped.
+    """
     _special_attr_boolean = ['disabled', 'scoped']
     _should_escape_text = False
 
 
-class HTMLTextAreaElement(HTMLElement, FormControlMixin):
+class HTMLTextAreaElement(HTMLElement, FormControlMixin):  # noqa: D204
+    """HTMLTextAreaElement class (<textarea></textarea> tag)."""
     _special_attr_string = ['height', 'name', 'src', 'value', 'width']
     _special_attr_boolean = ['disabled']
     defaultValue = HTMLElement.textContent
 
-    def on_event_pre(self, e: Event) -> None:
+    def on_event_pre(self, e: Event) -> None:  # noqa: D102
         super().on_event_pre(e)
         ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):

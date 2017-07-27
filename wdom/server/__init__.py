@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Web Server related classes/functions."""
+
 import os
 import json
 import logging
@@ -9,7 +11,7 @@ from typing import Any, Optional
 
 from tornado import autoreload
 
-from wdom.util import static_dir, install_asyncio
+from wdom.util import STATIC_DIR, install_asyncio
 from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
 from wdom.server import _tornado as module
@@ -78,7 +80,7 @@ def start_server(browser: Optional[str] = None, address: Optional[str] = None,
     """Start web server."""
     # Add application's static files directory
     from wdom.document import get_document
-    add_static_path('_static', static_dir)
+    add_static_path('_static', STATIC_DIR)
     doc = get_document()
     if os.path.exists(doc.tempdir):
         add_static_path('tmp', doc.tempdir, no_watch=True)
@@ -107,6 +109,7 @@ def stop_server(server: Optional[module.HTTPServer] = None) -> None:
 
 def start(**kwargs: Any) -> None:
     """Start web server.
+
     Run until ``Ctrl-c`` pressed, or if auto-shutdown is enabled, until when
     window is closed.
     """

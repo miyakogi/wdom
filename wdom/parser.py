@@ -1,27 +1,36 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Parser base classes to parse HTML to Wdom objects."""
+
 from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 from html.parser import HTMLParser
-from typing import Any, List, Tuple, TYPE_CHECKING
+from typing import Any, List, Optional, Tuple, TYPE_CHECKING
 
 from wdom.node import Node  # noqa
 
 if TYPE_CHECKING:
-    from typing import Optional  # noqa
     from wdom.document import Document  # noqa
 
 
 class FragmentParser(HTMLParser):
+    """Parser class to parse HTML fragment strings.
+
+    Node class to be generated from parse result is defined by
+    ``default_class`` class attribute.
+    """
+
     default_class = None  # type: Optional[type]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize parser."""
         super().__init__(*args, **kwargs)  # type: ignore
         from wdom.node import DocumentFragment
         self.elm = DocumentFragment()  # type: Node
         self.root = self.elm
 
-    def handle_starttag(self, tag: str, attr: List[Tuple[str, str]]) -> None:
+    def handle_starttag(self, tag: str, attr: List[Tuple[str, str]]
+                        ) -> None:  # noqa: D102
         from wdom.document import create_element
         attrs = dict(attr)
         params = dict(parent=self.elm, **attrs)
@@ -31,35 +40,38 @@ class FragmentParser(HTMLParser):
         if tag not in HTML_EMPTY:
             self.elm = elm
 
-    def handle_endtag(self, tag: str) -> None:
+    def handle_endtag(self, tag: str) -> None:  # noqa: D102
         parent = self.elm.parentNode
         if parent is None:
             raise ValueError('Parse Failed')
         else:
             self.elm = parent
 
-    def handle_data(self, data: str) -> None:
+    def handle_data(self, data: str) -> None:  # noqa: D102
         if data and self.elm:
             self.elm.append(data)
 
-    def handle_comment(self, comment: str) -> None:
+    def handle_comment(self, comment: str) -> None:  # noqa: D102
         from wdom.node import Comment
         self.elm.append(Comment(comment))
 
 
 class DocumentParser(FragmentParser):
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    """Parser class to parse whole HTML document."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         super().__init__(*args, **kwargs)
         from wdom.document import Document  # noqa
         doc = Document()
         self.root = doc  # type: Document
         self.elm = doc.body  # type: Node
 
-    def handle_decl(self, decl: str) -> None:
+    def handle_decl(self, decl: str) -> None:  # noqa: D102
         if decl.startswith('DOCTYPE'):
             self.root.doctype.name = decl.split()[-1]
 
-    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]) -> None:
+    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]
+                        ) -> None:  # noqa: D102
         if tag == 'html':
             # mypy ignores asignment in Document.__init__()
             doc = self.root  # type: Document
@@ -72,13 +84,18 @@ class DocumentParser(FragmentParser):
             super().handle_starttag(tag, attrs)
 
 
-def parse_document(doc: str) -> Node:
+def parse_document(doc: str) -> 'Document':
+    """Parse HTML document and return Document object."""
     parser = DocumentParser()
     parser.feed(doc)
     return parser.root
 
 
-def parse_html(html: str) -> Node:
-    parser = FragmentParser()
+def parse_html(html: str, parser: Optional[FragmentParser] = None) -> Node:
+    """Parse HTML fragment and return DocumentFragment object.
+
+    DocumentFragment object has parsed Node objects as its child nodes.
+    """
+    parser = parser or FragmentParser()
     parser.feed(html)
     return parser.root

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""CSS related classes and functions."""
+
 import sys
 import re
 from collections import OrderedDict
@@ -31,9 +33,17 @@ def _normalize_css_property(prop: str) -> str:
 
 
 class CSSStyleDeclaration(_dict):
+    """Represents a CSS property-value pairs."""
+
     def __init__(self, style: Optional[str] = None,
                  parent: Optional['CSSStyleRule'] = None,
                  owner: Optional[AbstractNode] = None) -> None:
+        """Initialize with styles.
+
+        :arg str style: style strings.
+        :arg CSSStyleRule parent: css style rule including this decl.
+        :arg AbstractNode owner: owner node of this decl.
+        """
         self.parentRule = parent
         self._owner = owner
         if style:
@@ -77,6 +87,7 @@ class CSSStyleDeclaration(_dict):
 
     @property
     def cssText(self) -> str:
+        """String-representation."""
         text = '; '.join('{0}: {1}'.format(k, v) for k, v in self.items())
         if text:
             text += ';'
@@ -84,10 +95,12 @@ class CSSStyleDeclaration(_dict):
 
     @property
     def length(self) -> int:
+        """Retrun number of included styles."""
         return len(self)
 
     @property
     def parentRule(self) -> 'CSSStyleRule':
+        """Parent CSSStyleRule."""
         return self._parent
 
     @parentRule.setter
@@ -95,9 +108,14 @@ class CSSStyleDeclaration(_dict):
         self._parent = parent
 
     def getPropertyValue(self, prop: str) -> str:
+        """Return value of the css property.
+
+        If the property is not included, return empty string.
+        """
         return self.get(prop, '')
 
     def removeProperty(self, prop: str) -> str:
+        """Remove the css property."""
         removed_prop = self.get(prop)
         # removed_prop may be False or '', so need to check it is None
         if removed_prop is not None:
@@ -106,6 +124,10 @@ class CSSStyleDeclaration(_dict):
 
     def setProperty(self, prop: str, value: str, priority: Optional[str] = None
                     ) -> None:
+        """Set property as the value.
+
+        The third argument ``priority`` is not implemented yet.
+        """
         self[prop] = value
 
     def __getitem__(self, attr: str) -> str:
@@ -139,13 +161,20 @@ class CSSStyleDeclaration(_dict):
 
 def parse_style_decl(style: str, owner: AbstractNode = None
                      ) -> CSSStyleDeclaration:
+    """Make CSSStyleDeclaration from style string.
+
+    :arg AbstractNode owner: Owner of the style.
+    """
     _style = CSSStyleDeclaration(style, owner=owner)
     return _style
 
 
 class CSSStyleRule(object):
+    """A single CSS style rule."""
+
     def __init__(self, selector: str = '', style: CSSStyleDeclaration = None
                  ) -> None:
+        """Set selector text and related declaration."""
         self.selectorText = selector
         if style is None:
             self.style = CSSStyleDeclaration()
@@ -154,6 +183,7 @@ class CSSStyleRule(object):
 
     @property
     def cssText(self) -> str:
+        """Return string representation of this rule."""
         _style = self.style.cssText
         if _style:
             return '{0} {{{1}}}'.format(self.selectorText, _style)
@@ -161,22 +191,29 @@ class CSSStyleRule(object):
 
 
 class CSSRuleList(list):
+    """List of CSSRule objects."""
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Make CSS rule list from css rules."""
         super().__init__(*args, **kwargs)
 
     @property
     def length(self) -> int:
+        """Return Number of css rules included in this list."""
         return len(self)
 
     def item(self, index: int) -> CSSStyleRule:
+        """Return the ``index``-th rule."""
         return self[index]
 
     @property
     def cssText(self) -> str:
+        """Return string representation of this rule list."""
         return '\n'.join(rule.cssText for rule in self)
 
 
 def parse_style_rules(styles: str) -> CSSRuleList:
+    """Make CSSRuleList object from style string."""
     rules = CSSRuleList()
     for m in _style_rule_re.finditer(styles):
         rules.append(CSSStyleRule(m.group(1), parse_style_decl(m.group(2))))

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Window and CustomElementsRegistry classes."""
+
 from typing import Any, Dict, Optional, Type
 
 from wdom.element import Element
@@ -9,9 +11,12 @@ from wdom.tag import Tag, default_classes
 
 
 class CustomElementsRegistry(dict):
-    '''Keep elements by (name (custom-tag or is-attr), extended-tag (or None))
-    pair.
-    '''
+    """Registry of registered custom elements.
+
+    Keep custom elements by name (custom-tag or is-attr) and extended-tag
+    (or None) pair.
+    """
+
     def _upgrage_to_tag_class(self, elm: Node) -> None:
         if elm.type_ and 'type' not in elm.attributes:
             elm.setAttribute('type', elm.type_)
@@ -64,6 +69,7 @@ class CustomElementsRegistry(dict):
         self._define(name, constructor, options)
 
     def define(self, *args: Any, **kwargs: Any) -> None:
+        """Add new custom element."""
         if isinstance(args[0], str):
             self._define_orig(*args, **kwargs)
         elif isinstance(args[0], type):
@@ -77,6 +83,7 @@ class CustomElementsRegistry(dict):
             self.define(cls)
 
     def reset(self) -> None:
+        """Clear all registered custom elements."""
         self.clear()
         self._define_default()
 
@@ -86,14 +93,22 @@ customElements._define_default()
 
 
 class Window:
+    """Window base class."""
+
     @property
     def document(self) -> Node:
+        """Return document object of this window."""
         return self._document
 
     @property
     def customElements(self) -> CustomElementsRegistry:
+        """Return customElementsRegistry object."""
         return self._custom_elements
 
     def __init__(self, document: Node) -> None:
+        """Make new window object.
+
+        :arg Document document: root document of the window.
+        """
         self._document = document
         self._custom_elements = customElements

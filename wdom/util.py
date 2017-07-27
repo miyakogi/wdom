@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Utility functions and constants."""
+
 import sys
 from os import path
 import logging
@@ -13,26 +15,26 @@ if getattr(sys, 'frozen', False):
 else:
     root_dir = path.dirname(path.abspath(__file__))
 
-static_dir = path.join(root_dir, '_static')
-template_dir = path.join(root_dir, '_template')
+STATIC_DIR = path.join(root_dir, '_static')
+TEMPLATE_DIR = path.join(root_dir, '_template')
 
-'''
-Please include these directories when freeze your app by cx_freeze.
+"""
+Include these directories when freeze your app by cx_freeze.
 
 Example:
 
     from cx_Freeze import setup
-    form wdom.util import include_dirs
-    setup(..., options = {'build_exe': {'include_files': include_dirs}}, ...)
+    form wdom.util import INCLUDE_DIRS
+    setup(..., options = {'build_exe': {'include_files': INCLUDE_DIRS}}, ...)
 
-'''
-include_dirs = [static_dir, template_dir]
+"""
+INCLUDE_DIRS = [STATIC_DIR, TEMPLATE_DIR]
 
 
 def install_asyncio() -> None:
+    """Ensure that asyncio's io-loop is installed to tornado."""
     from tornado.ioloop import IOLoop
     from tornado.platform.asyncio import AsyncIOMainLoop
-    '''Ensure that asyncio's io-loop is installed to tornado.'''
     if not IOLoop.initialized():
         AsyncIOMainLoop().install()
 

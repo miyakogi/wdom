@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Provides utility functions/classes for tests.
+"""Utility test-functions/classes to test WDOM on browser.
 
 This module depend on selenium webdriver, so please install selenium before
 use this module::
@@ -50,7 +50,11 @@ root_logger = logging.getLogger('wdom')
 server_config = server.server_config
 
 
-def get_chromedriver_path() -> str:
+def _get_chromedriver_path() -> str:
+    """Get path to chromedriver executable.
+
+    Usually it is on the project root.
+    """
     if 'TRAVIS' in os.environ:
         chromedriver_path = os.path.join(
             os.environ['TRAVIS_BUILD_DIR'], 'chromedriver')
@@ -64,6 +68,7 @@ def get_chromedriver_path() -> str:
 
 # see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/  # noqa: E501
 def get_chrome_options() -> webdriver.ChromeOptions:
+    """Get default chrome options."""
     chrome_options = webdriver.ChromeOptions()
     if 'TRAVIS'in os.environ:
         chrome_options.add_argument('--no-sandbox')
@@ -109,7 +114,7 @@ class TestCase(unittest.TestCase):
             set_application(self.your_app)
     """
 
-    def tearDown(self) -> None:
+    def tearDown(self) -> None:  # noqa: D102
         reset()
         super().tearDown()
 
@@ -207,7 +212,7 @@ def start_webdriver() -> None:
     global local_webdriver
     if local_webdriver is None:
         local_webdriver = driver(
-            executable_path=get_chromedriver_path(),
+            executable_path=_get_chromedriver_path(),
             chrome_options=get_chrome_options(),
         )
         if browser_implict_wait:
@@ -277,7 +282,7 @@ def get_remote_browser() -> WebDriver:
     global remote_webdriver
     if remote_webdriver is None:
         remote_webdriver = driver(
-            executable_path=get_chromedriver_path(),
+            executable_path=_get_chromedriver_path(),
             chrome_options=get_chrome_options(),
         )
         if browser_implict_wait:
@@ -288,8 +293,8 @@ def get_remote_browser() -> WebDriver:
 
 
 class BrowserController:
-    """Class to run and wrap webdriver in different proceess.
-    """
+    """Class to run and wrap webdriver in different proceess."""
+
     _select_methods = [s for s in dir(Select) if not s.startswith('_')]
 
     def __init__(self, conn: Connection) -> None:
@@ -389,6 +394,7 @@ def _get_properties(cls: type) -> Set[str]:
 
 class Controller:
     """Base class for remote browser controller."""
+
     target = None  # type: Optional[str]
     properties = set()  # type: Set[str]
 
@@ -412,17 +418,20 @@ class Controller:
 
 class ProcessController(Controller):
     """Controller of remote browser process."""
+
     target = 'process'
 
 
 class RemoteBrowserController(Controller):
     """Controller of remote web driver."""
+
     target = 'browser'
     properties = _get_properties(WebDriver)
 
 
 class RemoteElementController(Controller):
     """Controller of remote web driver element."""
+
     target = 'element'
     properties = _get_properties(WebElement)
 
@@ -440,6 +449,7 @@ class RemoteBrowserTestCase:
 
     After seting up your document, call ``start`` method in setup sequence.
     """
+
     #: seconds to wait for by ``wait`` method.
     wait_time = 0.01
     #: secondes for deault timeout for ``wait_until`` method
@@ -463,6 +473,10 @@ class RemoteBrowserTestCase:
         self.wait_until(lambda: server.is_connected())
 
     def tearDown(self) -> None:
+        """Run tear down process.
+
+        Reset log-level, stop web server, and flush stdout.
+        """
         options.config.logging = self._prev_logging
         server.stop_server()
         sys.stdout.flush()
@@ -528,6 +542,7 @@ class WebDriverTestCase:
     document after server started, please use ``RemoteBrowserTestCase`` class
     instead.
     """
+
     #: seconds to wait for by ``wait`` method.
     wait_time = 0.01
     #: secondes for deault timeout for ``wait_until`` method
@@ -535,7 +550,7 @@ class WebDriverTestCase:
     _orig_loop = None  # type: AbstractEventLoop
 
     @classmethod
-    def setUpClass(cls) -> None:
+    def setUpClass(cls) -> None:  # noqa: D102
         # Keep original loop
         cls._orig_loop = asyncio.get_event_loop()
         # When change default loop, tornado's ioloop needs to be reinstalled
@@ -545,7 +560,7 @@ class WebDriverTestCase:
         reset()
 
     @classmethod
-    def tearDownClass(cls) -> None:
+    def tearDownClass(cls) -> None:  # noqa: D102
         # Set original loop and reinstall to tornado
         asyncio.set_event_loop(cls._orig_loop)
         AsyncIOMainLoop().clear_current()

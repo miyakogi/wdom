@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Node related basic interface/classes."""
+
 import html
 from typing import TYPE_CHECKING
 from typing import Union, Any, Optional, Sequence
@@ -11,9 +13,12 @@ from xml.dom import Node as _Node
 if TYPE_CHECKING:
     from typing import List, Mapping, Any, Iterable, Callable  # noqa
     from wdom.element import NamedNodeMap  # noqa
+    from wdom.document import Document  # noqa
 
 
 class AbstractNode(_Node):
+    """Abstract Base Class for Node classes."""
+
     # DOM Level 1
     nodeType = None
     nodeName = ''
@@ -34,9 +39,10 @@ class AbstractNode(_Node):
 
 
 class Node(AbstractNode):
-    """Base Abstract Class for Node interface."""
+    """Base Class for Node interface."""
 
     def __init__(self, parent: Optional[AbstractNode] = None) -> None:
+        """Initialize node object with parent node."""
         super().__init__()  # Need to call init in multiple inheritce
         self._children = list()  # type: List[Node]
         self._parent = None
@@ -138,6 +144,8 @@ class Node(AbstractNode):
         Owner document is an ancestor document node of this node. If this node
         (or node tree including this node) is not appended to any document
         node, this property returns ``None``.
+
+        :rtype: Document
         """
         if self.nodeType == Node.DOCUMENT_NODE:
             return self
@@ -280,10 +288,11 @@ class Node(AbstractNode):
 
     @property
     def textContent(self) -> str:
-        '''Return text contents of this node and all chid nodes. When any value
-        is set to this property, all child nodes are removed and new value is
-        set as a text node.
-        '''
+        """Return text contents of this node and all chid nodes.
+
+        When any value is set to this property, all child nodes are removed and
+        new value is set as a text node.
+        """
         return self._get_text_content()
 
     @textContent.setter
@@ -293,7 +302,9 @@ class Node(AbstractNode):
 
 
 class NodeList(Iterable, Sized):
-    def __init__(self, ref: list) -> None:
+    """Collection of Node objects."""
+
+    def __init__(self, ref: list) -> None:  # noqa: D102
         self._nodes = ref
 
     def __getitem__(self, index: int) -> AbstractNode:
@@ -311,24 +322,29 @@ class NodeList(Iterable, Sized):
 
     @property
     def length(self) -> int:
+        """Return number of nodes in this list."""
         return len(self)
 
     def item(self, index: int) -> AbstractNode:
-        '''Return item with the index. If the index is negative number or out
-        of the list, return None.
-        '''
+        """Return item with the index.
+
+        If the index is negative number or out of the list, return None.
+        """
         if not isinstance(index, int):
             raise TypeError(
                 'Indeces must be integer, not {}'.format(type(index)))
         return self._nodes[index] if 0 <= index < self.length else None
 
     def index(self, node: AbstractNode) -> int:
-        '''Get index of the node.'''
+        """Get index of the node."""
         return self._nodes.index(node)
 
 
 class HTMLCollection(NodeList):
+    """Collection of HTML elements."""
+
     def namedItem(self, name: str) -> Optional[Node]:
+        """TODO."""
         for n in self:
             if n.getAttribute('id') == name:
                 return n
@@ -339,6 +355,10 @@ class HTMLCollection(NodeList):
 
 
 def _ensure_node(node: Union[str, AbstractNode]) -> AbstractNode:
+    """Ensure to be node.
+
+    If ``node`` is string, convert it to ``Text`` node.
+    """
     if isinstance(node, str):
         return Text(node)
     elif isinstance(node, Node):
@@ -357,11 +377,14 @@ def _to_node_list(nodes: Sequence[Union[str, AbstractNode]]) -> AbstractNode:
 
 
 class ParentNode(AbstractNode):
-    """[DOM Level 4] Mixin class for Document, DocumentFragment, and Element.
-    """
+    """[DOM Level 4] Mixin class for Document, DocumentFragment, and Element."""  # noqa: E501
+
     @property
     def children(self) -> NodeList:
-        """Currently this is not a live object"""
+        """Return list of child nodes.
+
+        Currently this is not a live object.
+        """
         return NodeList([e for e in self.childNodes
                          if e.nodeType == Node.ELEMENT_NODE])
 
@@ -401,19 +424,25 @@ class ParentNode(AbstractNode):
         self.appendChild(node)
 
     def query(self, relativeSelectors: str) -> AbstractNode:
+        """Not Implemented."""
         raise NotImplementedError
 
     def queryAll(self, relativeSelectors: str) -> NodeList:
+        """Not Implemented."""
         raise NotImplementedError
 
     def querySelector(self, selectors: str) -> AbstractNode:
+        """Not Implemented."""
         raise NotImplementedError
 
     def querySelectorAll(self, selectors: str) -> NodeList:
+        """Not Implemented."""
         raise NotImplementedError
 
 
 class NonDocumentTypeChildNode(AbstractNode):
+    """Mixin class for ``CharacterData`` and ``DocumentType`` class."""
+
     @property
     def previousElementSibling(self) -> Optional[AbstractNode]:
         """Previous Element Node.
@@ -446,9 +475,8 @@ class NonDocumentTypeChildNode(AbstractNode):
 
 
 class ChildNode(AbstractNode):
-    """[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData
-    (Text, RawHTML, Comment).
-    """
+    """[DOM Level 4] Mixin class for DocumentType, Element, and CharacterData (Text, RawHTML, Comment)."""  # noqa: E501
+
     def before(self, *nodes: Union[AbstractNode, str]) -> None:
         """Insert nodes before this node.
 
@@ -490,12 +518,17 @@ class ChildNode(AbstractNode):
 
 
 class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
+    """Abstract class for classes which wraps text data.
+
+    This class is a super class of ``Text`` and ``Comment``.
+    """
+
     # DOM Level 1
     firstChild = None
     lastChild = None
     specified = False
 
-    def __init__(self, text: str='', parent: Node = None) -> None:
+    def __init__(self, text: str='', parent: Node = None) -> None:  # noqa
         super().__init__(parent=parent)
         self.data = text
 
@@ -505,6 +538,7 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
 
     @property
     def html(self) -> str:
+        """Return html representation of this node."""
         return self.textContent
 
     def _get_text_content(self) -> str:
@@ -518,24 +552,28 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
 
     @property
     def length(self) -> int:
+        """Return length of content."""
         return len(self)
 
     def _append_data(self, string: str) -> None:
         self.data += string
 
     def appendData(self, string: str) -> None:
+        """Add ``string`` to end of this node."""
         self._append_data(string)
 
     def _insert_data(self, offset: int, string: str) -> None:
         self.data = ''.join((self.data[:offset], string, self.data[offset:]))
 
     def insertData(self, offset: int, string: str) -> None:
+        """Insert ``string`` at offset on this node."""
         self._insert_data(offset, string)
 
     def _delete_data(self, offset: int, count: int) -> None:
         self.data = ''.join((self.data[:offset], self.data[offset+count:]))
 
     def deleteData(self, offset: int, count: int) -> None:
+        """Delete data by offset to count letters."""
         self._delete_data(offset, count)
 
     def _replace_data(self, offset: int, count: int, string: str) -> None:
@@ -543,38 +581,52 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
             self.data[:offset], string, self.data[offset+count:]))
 
     def replaceData(self, offset: int, count: int, string: str) -> None:
+        """Replace data from offset to count by string."""
         self._replace_data(offset, count, string)
 
     @property
     def childNodes(self) -> NodeList:
+        """Return child nodes.
+
+        This node can't have child, so return empty ``NodeList`` object.
+        """
         return NodeList([])
 
     # Methods
     def appendChild(self, node: Node) -> Node:
+        """Not supported."""
         raise NotImplementedError('This node does not support this method.')
 
     def insertBefore(self, node: Node, ref_node: Node) -> Node:
+        """Not supported."""
         raise NotImplementedError('This node does not support this method.')
 
     def hasChildNodes(self) -> bool:
+        """Return false."""
         return False
 
     def removeChild(self, node: Node) -> Node:
+        """Not supported."""
         raise NotImplementedError('This node does not support this method.')
 
     def replaceChild(self, new_child: Node, old_child: Node) -> Node:
+        """Not supported."""
         raise NotImplementedError('This node does not support this method.')
 
     def hasAttributes(self) -> bool:
+        """Return false."""
         return False
 
 
 class Text(CharacterData):
+    """Wraps text contents."""
+
     nodeType = Node.TEXT_NODE
     nodeName = '#text'
 
     @property
     def html(self) -> str:
+        """Return html-escaped string representation of this node."""
         if self.parentNode and self.parentNode._should_escape_text:
             return html.escape(self.data)
         return self.data
@@ -585,21 +637,28 @@ class RawHtml(Text):
 
     Used for inner contents of ``<script>`` element or ``<style>`` element.
     """
+
     @property
     def html(self) -> str:
+        """Return html representation."""
         return self.data
 
 
 class Comment(CharacterData):
+    """Comment node class."""
+
     nodeType = Node.COMMENT_NODE
     nodeName = '#comment'
 
     @property
     def html(self) -> str:
+        """Return html representation."""
         return ''.join(('<!--', self.data, '-->'))
 
 
 class DocumentType(Node, NonDocumentTypeChildNode):
+    """DocumentType node class."""
+
     nodeType = Node.DOCUMENT_TYPE_NODE
     nodeValue = None
     textContent = None  # type: ignore
@@ -607,15 +666,17 @@ class DocumentType(Node, NonDocumentTypeChildNode):
 
     @property
     def nodeName(self) -> str:  # type: ignore
+        """Return node name (=type)."""
         return self.name
 
     def __init__(self, type: str = 'html', parent: Optional[Node] = None
-                 ) -> None:
+                 ) -> None:  # noqa: D102
         super().__init__(parent=parent)
         self._type = type
 
     @property
     def name(self) -> str:
+        """Return node type."""
         return self._type
 
     @name.setter
@@ -624,10 +685,13 @@ class DocumentType(Node, NonDocumentTypeChildNode):
 
     @property
     def html(self) -> str:
+        """Return html representation."""
         return '<!DOCTYPE {}>'.format(self.name)
 
 
 class DocumentFragment(Node, ParentNode):
+    """DocumentFragument node class."""
+
     nodeType = Node.DOCUMENT_FRAGMENT_NODE
     nodeName = '#document-fragment'
     parentNode = None
@@ -637,4 +701,5 @@ class DocumentFragment(Node, ParentNode):
 
     @property
     def html(self) -> str:
+        """Return html representation."""
         return ''.join(child.html for child in self.childNodes)

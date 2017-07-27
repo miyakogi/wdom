@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Web-connected HTML tag classes."""
+
 import logging
 from collections import Iterable
 from typing import Any, Dict, Optional, Tuple, Union, TYPE_CHECKING
@@ -25,31 +27,31 @@ from wdom.node import Node, NodeList
 from wdom.web_node import WdomElement
 
 if TYPE_CHECKING:
-    from typing import List  # noqa
+    from typing import List, Type # noqa
 
 logger = logging.getLogger(__name__)
 
 
-class HTMLElement(WdomElement):
-    pass
-
-
 class TagBaseMeta(ElementMeta):
-    '''Meta class to set default class variable of HtmlDom'''
+    """Meta class to set default class variable of HTMLElement."""
+
     @classmethod
     def __prepare__(metacls, name: str, bases: Tuple[type], **kwargs: Any
                     ) -> Dict[str, bool]:
         return {'inherit_class': True}
 
 
-class Tag(HTMLElement, metaclass=TagBaseMeta):
-    '''Base class for html tags. ``HTMLElement`` requires to specify tag name
-    when instanciate it, but this class and sublasses have default tag name and
-    not need to specify it for each thier instances.
+class Tag(WdomElement, metaclass=TagBaseMeta):
+    """Base class for html tags.
+
+    ``HTMLElement`` requires to specify tag name when instanciate it, but this
+    class and sublasses have default tag name and not need to specify it for
+    each thier instances.
 
     Additionally, this class provides shortcut properties to handle some
     special attributes (class, type, is).
-    '''
+    """
+
     #: Tag name used for this node.
     tag = 'tag'
     #: str and list of strs are acceptale.
@@ -63,7 +65,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
     is_ = ''
 
     def __init__(self, *args: Any, attrs: Dict[str, _AttrValueType] = None,
-                 **kwargs: Any) -> None:
+                 **kwargs: Any) -> None:  # noqa: D102
         if attrs:
             kwargs.update(attrs)
         if self.type_ and 'type' not in kwargs:
@@ -75,8 +77,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
 
     @classmethod
     def get_class_list(cls) -> DOMTokenList:
-        '''Return class-level class list, including all super class's.
-        '''
+        """Get class-level class list, including all super class's."""
         l = []
         l.append(DOMTokenList(cls, cls.class_))
         if cls.inherit_class:
@@ -108,7 +109,7 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         clone.style.update(self.style)
         return clone
 
-    def getAttribute(self, attr: str) -> _AttrValueType:
+    def getAttribute(self, attr: str) -> _AttrValueType:  # noqa: D102
         if attr == 'class':
             cls = self.get_class_list()
             cls._append(self.classList)
@@ -116,15 +117,19 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         return super().getAttribute(attr)
 
     def addClass(self, *classes: str) -> None:
+        """[Not Standard] Add classes to this node."""
         self.classList.add(*classes)
 
-    def hasClass(self, class_: str) -> bool:
+    def hasClass(self, class_: str) -> bool:  # noqa: D102
+        """[Not Standard] Return if this node has ``class_`` class or not."""
         return class_ in self.classList
 
-    def hasClasses(self) -> bool:
+    def hasClasses(self) -> bool:  # noqa: D102
+        """[Not Standard] Return if this node has any classes or not."""
         return len(self.classList) > 0
 
     def removeClass(self, *classes: str) -> None:
+        """[Not Standard] Remove classes from this node."""
         _remove_cl = []
         for class_ in classes:
             if class_ not in self.classList:
@@ -142,25 +147,32 @@ class Tag(HTMLElement, metaclass=TagBaseMeta):
         self.classList.remove(*_remove_cl)
 
     def show(self) -> None:
+        """[Not Standard] Show this node on browser."""
         self.hidden = False
 
     def hide(self) -> None:
+        """[Not Standard] Hide this node on browser."""
         self.hidden = True
 
     @property
-    def type(self) -> _AttrValueType:
+    def type(self) -> _AttrValueType:  # noqa: D102
         return self.getAttribute('type') or self.type_
 
     @type.setter
-    def type(self, val: str) -> None:
+    def type(self, val: str) -> None:  # noqa: D102
         self.setAttribute('type', val)
 
 
 class NestedTag(Tag):
-    #: Inner nested tag class
-    inner_tag_class = None
+    """NestedTag class.
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    Useful to make component made by nested, multiple tags.
+    """
+
+    #: Inner nested tag class
+    inner_tag_class = None  # type: Type[Node]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         self._inner_element = None
         super().__init__(**kwargs)
         if self.inner_tag_class:
@@ -168,33 +180,34 @@ class NestedTag(Tag):
             super().appendChild(self._inner_element)
         self.append(*args)
 
-    def appendChild(self, child: Node) -> Node:
+    def appendChild(self, child: Node) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.appendChild(child)
         return super().appendChild(child)
 
-    def insertBefore(self, child: Node, ref_node: Node) -> Node:
+    def insertBefore(self, child: Node, ref_node: Node) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.insertBefore(child, ref_node)
         return super().insertBefore(child, ref_node)
 
-    def removeChild(self, child: Node) -> Node:
+    def removeChild(self, child: Node) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.removeChild(child)
         return super().removeChild(child)
 
-    def replaceChild(self, new_child: Node, old_child: Node) -> Node:
+    def replaceChild(self, new_child: Node, old_child: Node
+                     ) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.replaceChild(new_child, old_child)
         return super().replaceChild(new_child, old_child)
 
     @property
-    def childNodes(self) -> NodeList:
+    def childNodes(self) -> NodeList:  # noqa: D102
         if self._inner_element:
             return self._inner_element.childNodes
         return super().childNodes
 
-    def empty(self) -> None:
+    def empty(self) -> None:  # noqa: D102
         if self._inner_element:
             self._inner_element.empty()
         else:
@@ -202,6 +215,7 @@ class NestedTag(Tag):
 
     @Tag.textContent.setter
     def textContent(self, text: str) -> None:  # type: ignore
+        """Set text content to inner node."""
         if self._inner_element:
             self._inner_element.textContent = text
         else:
@@ -210,18 +224,21 @@ class NestedTag(Tag):
 
     @property
     def html(self) -> str:
+        """Get whole html representation of this node."""
         if self._inner_element:
             return self.start_tag + self._inner_element.html + self.end_tag
         return super().html
 
     @property
     def innerHTML(self) -> str:
+        """Get innerHTML of the inner node."""
         if self._inner_element:
             return self._inner_element.innerHTML
         return super().innerHTML
 
     @innerHTML.setter
     def innerHTML(self, html: str) -> None:
+        """Set html to inner node."""
         if self._inner_element:
             self._inner_element.innerHTML = html
         else:
@@ -231,11 +248,12 @@ class NestedTag(Tag):
 def NewTagClass(class_name: str, tag: Optional[str] = None,
                 bases: Union[type, Iterable] = (Tag, ),
                 **kwargs: Any) -> type:
-    '''Generate and return new ``Tag`` class. If ``tag`` is empty, lower case
-    of ``class_name`` is used for a tag name of the new class. ``bases`` should
-    be a tuple of base classes. If it is empty, use ``Tag`` class for a base
-    class. Other keyword arguments are used for class variables of the new
-    class.
+    """Generate and return new ``Tag`` class.
+
+    If ``tag`` is empty, lower case of ``class_name`` is used for a tag name of
+    the new class. ``bases`` should be a tuple of base classes. If it is empty,
+    use ``Tag`` class for a base class. Other keyword arguments are used for
+    class variables of the new class.
 
     Example::
 
@@ -245,7 +263,7 @@ def NewTagClass(class_name: str, tag: Optional[str] = None,
         print(my_button.html)
 
         >>> <button class="btn" id="111111111">Click!</button>
-    '''
+    """
     if tag is None:
         tag = class_name.lower()
     if not isinstance(type, tuple):
@@ -264,27 +282,28 @@ def NewTagClass(class_name: str, tag: Optional[str] = None,
 
 
 class Input(Tag, HTMLInputElement):
-    '''Base class for ``<input>`` element.
-    '''
+    """Base class for ``<input>`` element."""
+
     tag = 'input'
     #: type attribute; text, button, checkbox, or radio... and so on.
     type_ = ''
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         super().__init__(*args, **kwargs)
 
 
-class Textarea(Tag, HTMLTextAreaElement):
-    '''Base class for ``<textarea>`` element.'''
+class Textarea(Tag, HTMLTextAreaElement):  # noqa: D204
+    """Base class for ``<textarea>`` element."""
     tag = 'textarea'
 
     @property
     def value(self) -> str:
-        '''Get input value of this node. This value is used as a default value
-        of this element.
-        '''
+        """Get input value of this node.
+
+        This value is used as a default value of this element.
+        """
         return self.textContent
 
     @value.setter
@@ -292,11 +311,15 @@ class Textarea(Tag, HTMLTextAreaElement):
         self.textContent = value
 
 
-class Script(Tag, HTMLScriptElement):
+class Script(Tag, HTMLScriptElement):  # noqa: D204
+    """Base class for <script> tag.
+
+    Inner contents of this node is not escaped.
+    """
     tag = 'script'
 
     def __init__(self, *args: Any, type: str = 'text/javascript',
-                 **kwargs: Any) -> None:
+                 **kwargs: Any) -> None:  # noqa: D102
         super().__init__(*args, type=type, **kwargs)
 
 

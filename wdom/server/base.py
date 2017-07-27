@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Base/Utility functions for server module."""
+
 import sys
 import re
 import copy
