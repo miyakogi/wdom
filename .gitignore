@@ -12,6 +12,7 @@ chromedriver
 # Python files
 __pycache__/
 *.py[cod]
+.mypy_cache/
 
 # Sphinx build dir
 _build/
