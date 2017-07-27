@@ -1,0 +1,1822 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>HTML Tag Class &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Node interfaces/classes" href="node.html" />
+    <link rel="prev" title="DOM API" href="dom.html" />
+  <!-- font -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- Style -->
+  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
+  
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="html-tag-class">
+<h1>HTML Tag Class<a class="headerlink" href="#html-tag-class" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">wdom.dom.Tag</span></code> class provides DOM implementation synchronized both on
+python and browser.</p>
+<div class="section" id="module-wdom.tag">
+<span id="tag-class"></span><h2>Tag class<a class="headerlink" href="#module-wdom.tag" title="Permalink to this headline">¶</a></h2>
+<p>Web-connected HTML tag classes.</p>
+<dl class="class">
+<dt id="wdom.tag.Tag">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tag</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="node.html#wdom.web_node.WdomElement" title="wdom.web_node.WdomElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.web_node.WdomElement</span></code></a></p>
+<p>Base class for html tags.</p>
+<p><code class="docutils literal"><span class="pre">HTMLElement</span></code> requires to specify tag name when instanciate it, but this
+class and sublasses have default tag name and not need to specify it for
+each thier instances.</p>
+<p>Additionally, this class provides shortcut properties to handle some
+special attributes (class, type, is).</p>
+<dl class="attribute">
+<dt id="wdom.tag.Tag.tag">
+<code class="descname">tag</code><em class="property"> = 'tag'</em><a class="headerlink" href="#wdom.tag.Tag.tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tag name used for this node.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.class_">
+<code class="descname">class_</code><em class="property"> = ''</em><a class="headerlink" href="#wdom.tag.Tag.class_" title="Permalink to this definition">¶</a></dt>
+<dd><p>str and list of strs are acceptale.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.inherit_class">
+<code class="descname">inherit_class</code><em class="property"> = True</em><a class="headerlink" href="#wdom.tag.Tag.inherit_class" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inherit classes defined in super class or not.
+By default, this variable is True.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.type_">
+<code class="descname">type_</code><em class="property"> = ''</em><a class="headerlink" href="#wdom.tag.Tag.type_" title="Permalink to this definition">¶</a></dt>
+<dd><p>use for &lt;input&gt; tag’s type</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.is_">
+<code class="descname">is_</code><em class="property"> = ''</em><a class="headerlink" href="#wdom.tag.Tag.is_" title="Permalink to this definition">¶</a></dt>
+<dd><p>custom element which extends built-in tag (like &lt;table is=”your-tag”&gt;)</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="wdom.tag.Tag.get_class_list">
+<em class="property">classmethod </em><code class="descname">get_class_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag.get_class_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag.get_class_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get class-level class list, including all super class’s.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.element.DOMTokenList" title="wdom.element.DOMTokenList"><code class="xref py py-class docutils literal"><span class="pre">DOMTokenList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.addClass">
+<code class="descname">addClass</code><span class="sig-paren">(</span><em>*classes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag.addClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag.addClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Not Standard] Add classes to this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.hasClass">
+<code class="descname">hasClass</code><span class="sig-paren">(</span><em>class_</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag.hasClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag.hasClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Not Standard] Return if this node has <code class="docutils literal"><span class="pre">class_</span></code> class or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.hasClasses">
+<code class="descname">hasClasses</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag.hasClasses"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag.hasClasses" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Not Standard] Return if this node has any classes or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.removeClass">
+<code class="descname">removeClass</code><span class="sig-paren">(</span><em>*classes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag.removeClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag.removeClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Not Standard] Remove classes from this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.show">
+<code class="descname">show</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Not Standard] Show this node on browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.hide">
+<code class="descname">hide</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag.hide"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag.hide" title="Permalink to this definition">¶</a></dt>
+<dd><p>[Not Standard] Hide this node on browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.addEventListener">
+<code class="descname">addEventListener</code><span class="sig-paren">(</span><em>event</em>, <em>listener</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.addEventListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add event listener to this node.</p>
+<p><code class="docutils literal"><span class="pre">event</span></code> is a string which determines the event type when the new
+listener called. Acceptable events are same as JavaScript, without
+<code class="docutils literal"><span class="pre">on</span></code>. For example, to add a listener which is called when this node
+is clicked, event is <code class="docutils literal"><span class="pre">'click</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.after">
+<code class="descname">after</code><span class="sig-paren">(</span><em>*nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.after" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append nodes after this node.</p>
+<p>If nodes contains <code class="docutils literal"><span class="pre">str</span></code>, it will be converted to Text node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.append">
+<code class="descname">append</code><span class="sig-paren">(</span><em>*nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.append" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append new nodes after last child node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.appendChild">
+<code class="descname">appendChild</code><span class="sig-paren">(</span><em>child</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.appendChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append child node at the last of child nodes.</p>
+<p>If this instance is connected to the node on browser, the child node is
+also added to it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">Node</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.before">
+<code class="descname">before</code><span class="sig-paren">(</span><em>*nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.before" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert nodes before this node.</p>
+<p>If nodes contains <code class="docutils literal"><span class="pre">str</span></code>, it will be converted to Text node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.childNodes">
+<code class="descname">childNodes</code><a class="headerlink" href="#wdom.tag.Tag.childNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return child nodes of this node.</p>
+<p>Returned object is an instance of NodeList, which is a list like object
+but not support any modification. NodeList is a <strong>live object</strong>, which
+means that changes on this node is reflected to the object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.NodeList" title="wdom.node.NodeList"><code class="xref py py-class docutils literal"><span class="pre">NodeList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.children">
+<code class="descname">children</code><a class="headerlink" href="#wdom.tag.Tag.children" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return list of child nodes.</p>
+<p>Currently this is not a live object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.NodeList" title="wdom.node.NodeList"><code class="xref py py-class docutils literal"><span class="pre">NodeList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.click">
+<code class="descname">click</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.click" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send click event.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.cloneNode">
+<code class="descname">cloneNode</code><span class="sig-paren">(</span><em>deep=False</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.cloneNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return new copy of this node.</p>
+<p>If optional argument <code class="docutils literal"><span class="pre">deep</span></code> is specified and is True, new node has
+clones of child nodes of this node (if presents).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.connected">
+<code class="descname">connected</code><a class="headerlink" href="#wdom.tag.Tag.connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>When this instance has any connection, return True.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.dispatchEvent">
+<code class="descname">dispatchEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.dispatchEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emit events.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal"><span class="pre">Awaitable</span></code>[<code class="docutils literal"><span class="pre">None</span></code>]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.draggable">
+<code class="descname">draggable</code><a class="headerlink" href="#wdom.tag.Tag.draggable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get <code class="docutils literal"><span class="pre">draggable</span></code> property.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal"><span class="pre">str</span></code>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.empty">
+<code class="descname">empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all child nodes from this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.end_tag">
+<code class="descname">end_tag</code><a class="headerlink" href="#wdom.tag.Tag.end_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrun html end tag.</p>
+<p>If tag is empty tag like &lt;img&gt; or &lt;br&gt;, return empty string.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.exec">
+<code class="descname">exec</code><span class="sig-paren">(</span><em>script</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.exec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute JavaScript on the related browser node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.firstChild">
+<code class="descname">firstChild</code><a class="headerlink" href="#wdom.tag.Tag.firstChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the first child node.</p>
+<p>If this node does not have any child, return <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.firstElementChild">
+<code class="descname">firstElementChild</code><a class="headerlink" href="#wdom.tag.Tag.firstElementChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>First Element child node.</p>
+<p>If this node has no element child, return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.getAttributeNode">
+<code class="descname">getAttributeNode</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.getAttributeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get attribute of this node as Attr format.</p>
+<p>If this node does not have <code class="docutils literal"><span class="pre">attr</span></code>, return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.element.Attr" title="wdom.element.Attr"><code class="xref py py-class docutils literal"><span class="pre">Attr</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.getBoundingClientRect">
+<code class="descname">getBoundingClientRect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.getBoundingClientRect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get size of this node on browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.getElementsBy">
+<code class="descname">getElementsBy</code><span class="sig-paren">(</span><em>cond</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.getElementsBy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return list of child nodes which matches <code class="docutils literal"><span class="pre">cond</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">cond</span></code> must be a function which gets a single argument <code class="docutils literal"><span class="pre">node</span></code>,
+and returns bool. If the node matches requested condition, <code class="docutils literal"><span class="pre">cond</span></code>
+should return True.
+This searches all child nodes recursively.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.NodeList" title="wdom.node.NodeList"><code class="xref py py-class docutils literal"><span class="pre">NodeList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.getElementsByClassName">
+<code class="descname">getElementsByClassName</code><span class="sig-paren">(</span><em>class_name</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.getElementsByClassName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get child nodes which has <code class="docutils literal"><span class="pre">class_name</span></code> class attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.NodeList" title="wdom.node.NodeList"><code class="xref py py-class docutils literal"><span class="pre">NodeList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.getElementsByTagName">
+<code class="descname">getElementsByTagName</code><span class="sig-paren">(</span><em>tag</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.getElementsByTagName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get child nodes which tag name is <code class="docutils literal"><span class="pre">tag</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.NodeList" title="wdom.node.NodeList"><code class="xref py py-class docutils literal"><span class="pre">NodeList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.hasAttribute">
+<code class="descname">hasAttribute</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.hasAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this node has <code class="docutils literal"><span class="pre">attr</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.hasAttributes">
+<code class="descname">hasAttributes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.hasAttributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this node has any attributes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.hasChildNodes">
+<code class="descname">hasChildNodes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.hasChildNodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return True if this node has child nodes, otherwise return False.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.hidden">
+<code class="descname">hidden</code><a class="headerlink" href="#wdom.tag.Tag.hidden" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter: Return True if this element has <code class="docutils literal"><span class="pre">hidden</span></code> attribute. Otherwise return
+False.
+Setter: If True, add <code class="docutils literal"><span class="pre">hidden</span></code> attribute to this element. Otherwise remove
+<code class="docutils literal"><span class="pre">hidden</span></code>.
+Deleter: Remove <code class="docutils literal"><span class="pre">hidden</span></code> attribute from this element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.html">
+<code class="descname">html</code><a class="headerlink" href="#wdom.tag.Tag.html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return HTML representation of this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.html_noid">
+<code class="descname">html_noid</code><a class="headerlink" href="#wdom.tag.Tag.html_noid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get html representation of this node without rimo_id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.id">
+<code class="descname">id</code><a class="headerlink" href="#wdom.tag.Tag.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter: Get value of <code class="docutils literal"><span class="pre">id</span></code> attribute of this element, as string. If
+<cite>id</cite> is not defined, return empty string.
+Setter: Set the value of
+<code class="docutils literal"><span class="pre">id</span></code> attribute of this element.
+Deleter: Remove <code class="docutils literal"><span class="pre">id</span></code> attribute from this element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.index">
+<code class="descname">index</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return index of the node.</p>
+<p>If the node is not a child of this node, raise <code class="docutils literal"><span class="pre">ValueError</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.innerHTML">
+<code class="descname">innerHTML</code><a class="headerlink" href="#wdom.tag.Tag.innerHTML" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return HTML representation of child nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.insertAdjacentHTML">
+<code class="descname">insertAdjacentHTML</code><span class="sig-paren">(</span><em>position</em>, <em>html</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.insertAdjacentHTML" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse <code class="docutils literal"><span class="pre">html</span></code> to DOM and insert to <code class="docutils literal"><span class="pre">position</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">position</span></code> is a case-insensive string, and must be one of
+“beforeBegin”, “afterBegin”, “beforeEnd”, or “afterEnd”.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.insertBefore">
+<code class="descname">insertBefore</code><span class="sig-paren">(</span><em>child</em>, <em>ref_node</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.insertBefore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert new child node before the reference child node.</p>
+<p>If the reference node is not a child of this node, raise ValueError. If
+this instance is connected to the node on browser, the child node is
+also added to it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">Node</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.js_exec">
+<code class="descname">js_exec</code><span class="sig-paren">(</span><em>method</em>, <em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.js_exec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute <code class="docutils literal"><span class="pre">method</span></code> in the related node on browser.</p>
+<p>Other keyword arguments are passed to <code class="docutils literal"><span class="pre">params</span></code> attribute.
+If this node is not in any document tree (namely, this node does not
+have parent node), the <code class="docutils literal"><span class="pre">method</span></code> is not executed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.js_query">
+<code class="descname">js_query</code><span class="sig-paren">(</span><em>query</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.js_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send query to related DOM on browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>query</strong> (<em>str</em>) – single string which indicates query type.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">Awaitable</span></code>[+T_co]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.lastChild">
+<code class="descname">lastChild</code><a class="headerlink" href="#wdom.tag.Tag.lastChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the last child node.</p>
+<p>If this node does not have any child, return <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.lastElementChild">
+<code class="descname">lastElementChild</code><a class="headerlink" href="#wdom.tag.Tag.lastElementChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Last Element child node.</p>
+<p>If this node has no element child, return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.length">
+<code class="descname">length</code><a class="headerlink" href="#wdom.tag.Tag.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return number of child nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.localName">
+<code class="descname">localName</code><a class="headerlink" href="#wdom.tag.Tag.localName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tag name (lower case).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.nextElementSibling">
+<code class="descname">nextElementSibling</code><a class="headerlink" href="#wdom.tag.Tag.nextElementSibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Next Element Node.</p>
+<p>If this node has no next element node, return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.nextSibling">
+<code class="descname">nextSibling</code><a class="headerlink" href="#wdom.tag.Tag.nextSibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the next sibling of this node.</p>
+<p>If there is no next sibling, return <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.nodeName">
+<code class="descname">nodeName</code><a class="headerlink" href="#wdom.tag.Tag.nodeName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tag name (capital case).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.on_event_pre">
+<code class="descname">on_event_pre</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.on_event_pre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run before dispatching events.</p>
+<p>Used for seting values changed by user input, in some elements like
+input, textarea, or select. In this method, event.currentTarget is a
+dict sent from browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.on_response">
+<code class="descname">on_response</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.on_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run when get response from browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.outerHTML">
+<code class="descname">outerHTML</code><a class="headerlink" href="#wdom.tag.Tag.outerHTML" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return html representation of this node.</p>
+<p>Equivalent to <code class="docutils literal"><span class="pre">self.html</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.ownerDocument">
+<code class="descname">ownerDocument</code><a class="headerlink" href="#wdom.tag.Tag.ownerDocument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the owner document of this node.</p>
+<p>Owner document is an ancestor document node of this node. If this node
+(or node tree including this node) is not appended to any document
+node, this property returns <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document">Document</a> or None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.parentNode">
+<code class="descname">parentNode</code><a class="headerlink" href="#wdom.tag.Tag.parentNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return parent node.</p>
+<p>If this node does not have a parent, return <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.prepend">
+<code class="descname">prepend</code><span class="sig-paren">(</span><em>*nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.prepend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert new nodes before first child node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.previousElementSibling">
+<code class="descname">previousElementSibling</code><a class="headerlink" href="#wdom.tag.Tag.previousElementSibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Previous Element Node.</p>
+<p>If this node has no previous element node, return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.previousSibling">
+<code class="descname">previousSibling</code><a class="headerlink" href="#wdom.tag.Tag.previousSibling" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the previous sibling of this node.</p>
+<p>If there is no previous sibling, return <code class="docutils literal"><span class="pre">None</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.query">
+<code class="descname">query</code><span class="sig-paren">(</span><em>relativeSelectors</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.queryAll">
+<code class="descname">queryAll</code><span class="sig-paren">(</span><em>relativeSelectors</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.queryAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.NodeList" title="wdom.node.NodeList"><code class="xref py py-class docutils literal"><span class="pre">NodeList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.querySelector">
+<code class="descname">querySelector</code><span class="sig-paren">(</span><em>selectors</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.querySelector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">AbstractNode</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.querySelectorAll">
+<code class="descname">querySelectorAll</code><span class="sig-paren">(</span><em>selectors</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.querySelectorAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not Implemented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.NodeList" title="wdom.node.NodeList"><code class="xref py py-class docutils literal"><span class="pre">NodeList</span></code></a>[]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.remove">
+<code class="descname">remove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.remove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove this node from parent’s DOM tree.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.removeAttribute">
+<code class="descname">removeAttribute</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.removeAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove <code class="docutils literal"><span class="pre">attr</span></code> from this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.removeAttributeNode">
+<code class="descname">removeAttributeNode</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.removeAttributeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove <code class="docutils literal"><span class="pre">Attr</span></code> node from this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.element.Attr" title="wdom.element.Attr"><code class="xref py py-class docutils literal"><span class="pre">Attr</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.removeChild">
+<code class="descname">removeChild</code><span class="sig-paren">(</span><em>child</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.removeChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove the child node from this node.</p>
+<p>If the node is not a child of this node, raise ValueError.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">Node</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.removeEventListener">
+<code class="descname">removeEventListener</code><span class="sig-paren">(</span><em>event</em>, <em>listener</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.removeEventListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an event listener of this node.</p>
+<p>The listener is removed only when both event type and listener is
+matched.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.replaceChild">
+<code class="descname">replaceChild</code><span class="sig-paren">(</span><em>new_child</em>, <em>old_child</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.replaceChild" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace child nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">Node</span></code></a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.replaceWith">
+<code class="descname">replaceWith</code><span class="sig-paren">(</span><em>*nodes</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.replaceWith" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replace this node with nodes.</p>
+<p>If nodes contains <code class="docutils literal"><span class="pre">str</span></code>, it will be converted to Text node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.rimo_id">
+<code class="descname">rimo_id</code><a class="headerlink" href="#wdom.tag.Tag.rimo_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get rimo_id attribute.</p>
+<p>This attribute is used to relate python node and browser DOM node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal"><span class="pre">str</span></code>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.setAttribute">
+<code class="descname">setAttribute</code><span class="sig-paren">(</span><em>attr</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.setAttribute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <code class="docutils literal"><span class="pre">attr</span></code> and <code class="docutils literal"><span class="pre">value</span></code> in this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.setAttributeNode">
+<code class="descname">setAttributeNode</code><span class="sig-paren">(</span><em>attr</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.setAttributeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <code class="docutils literal"><span class="pre">Attr</span></code> node as this node’s attribute.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.start_tag">
+<code class="descname">start_tag</code><a class="headerlink" href="#wdom.tag.Tag.start_tag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return HTML start tag.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.style">
+<code class="descname">style</code><a class="headerlink" href="#wdom.tag.Tag.style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return style attribute of this node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">CSSStyleDeclaration</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.tagName">
+<code class="descname">tagName</code><a class="headerlink" href="#wdom.tag.Tag.tagName" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return tag name (capital case).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.textContent">
+<code class="descname">textContent</code><a class="headerlink" href="#wdom.tag.Tag.textContent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return text contents of this node and all chid nodes.</p>
+<p>When any value is set to this property, all child nodes are removed and
+new value is set as a text node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.tag.Tag.title">
+<code class="descname">title</code><a class="headerlink" href="#wdom.tag.Tag.title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Getter: Get value of <code class="docutils literal"><span class="pre">title</span></code> attribute of this element, as string. If
+<cite>title</cite> is not defined, return empty string.
+Setter: Set the value of
+<code class="docutils literal"><span class="pre">title</span></code> attribute of this element.
+Deleter: Remove <code class="docutils literal"><span class="pre">title</span></code> attribute from this element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.tag.Tag.ws_send">
+<code class="descname">ws_send</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.ws_send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send <code class="docutils literal"><span class="pre">obj</span></code> as message to the related nodes on browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>obj</strong> (<em>dict</em>) – Message is serialized by JSON object and send via
+WebSocket connection.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wdom.tag.NewTagClass">
+<code class="descclassname">wdom.tag.</code><code class="descname">NewTagClass</code><span class="sig-paren">(</span><em>class_name</em>, <em>tag=None</em>, <em>bases=(&lt;class 'wdom.tag.Tag'&gt;</em>, <em>)</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#NewTagClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.NewTagClass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate and return new <code class="docutils literal"><span class="pre">Tag</span></code> class.</p>
+<p>If <code class="docutils literal"><span class="pre">tag</span></code> is empty, lower case of <code class="docutils literal"><span class="pre">class_name</span></code> is used for a tag name of
+the new class. <code class="docutils literal"><span class="pre">bases</span></code> should be a tuple of base classes. If it is empty,
+use <code class="docutils literal"><span class="pre">Tag</span></code> class for a base class. Other keyword arguments are used for
+class variables of the new class.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>MyButton = NewTagClass(&#39;MyButton&#39;, &#39;button&#39;, (Button,),
+                       class_=&#39;btn&#39;, is_=&#39;my-button&#39;)
+my_button = MyButton(&#39;Click!&#39;)
+print(my_button.html)
+
+&gt;&gt;&gt; &lt;button class=&quot;btn&quot; id=&quot;111111111&quot;&gt;Click!&lt;/button&gt;
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">type</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.TagBaseMeta">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">TagBaseMeta</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#TagBaseMeta"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.TagBaseMeta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.ElementMeta</span></code></p>
+<p>Meta class to set default class variable of HTMLElement.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="list-of-html-tag-classes">
+<h2>List of HTML Tag Classes<a class="headerlink" href="#list-of-html-tag-classes" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wdom.tag.A">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">A</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.A" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLAnchorElement" title="wdom.element.HTMLAnchorElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLAnchorElement</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Body">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Body</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Body" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Br">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Br</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Br" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Button">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Button</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Button" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLButtonElement" title="wdom.element.HTMLButtonElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLButtonElement</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Cite">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Cite</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Cite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Code">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Code</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Dd">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dd</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Dd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Div">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Div</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Div" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Dl">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dl</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Dl" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Dt">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dt</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Dt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Em">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Em</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Em" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Form">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Form</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Form" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLFormElement" title="wdom.element.HTMLFormElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLFormElement</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.H1">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H1</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.H2">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H2</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.H3">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H3</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.H4">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H4</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.H5">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H5</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.H6">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H6</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H6" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Head">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Head</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Hr">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Hr</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Hr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Html">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Html</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Html" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Img">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Img</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Img" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Input">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Input</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLInputElement" title="wdom.element.HTMLInputElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLInputElement</span></code></a></p>
+<p>Base class for <code class="docutils literal"><span class="pre">&lt;input&gt;</span></code> element.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Label">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Label</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLLabelElement" title="wdom.element.HTMLLabelElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLLabelElement</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Li">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Li</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Li" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Link">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Link</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Meta">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Meta</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Meta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Ol">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Ol</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Ol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Option">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Option</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Option" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLOptionElement" title="wdom.element.HTMLOptionElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLOptionElement</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.P">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">P</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.P" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Pre">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Pre</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Pre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Script">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Script</code><span class="sig-paren">(</span><em>*args</em>, <em>type='text/javascript'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLScriptElement" title="wdom.element.HTMLScriptElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLScriptElement</span></code></a></p>
+<p>Base class for &lt;script&gt; tag.</p>
+<p>Inner contents of this node is not escaped.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Select">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Select</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.tag.NestedTag</span></code>, <a class="reference internal" href="node.html#wdom.element.HTMLSelectElement" title="wdom.element.HTMLSelectElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLSelectElement</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Span">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Span</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Span" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Strong">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Strong</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Strong" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Style">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Style</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Style" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLStyleElement" title="wdom.element.HTMLStyleElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLStyleElement</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Table">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Tbody">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tbody</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tbody" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Td">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Td</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Td" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Textarea">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Textarea</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Textarea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Textarea" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLTextAreaElement" title="wdom.element.HTMLTextAreaElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLTextAreaElement</span></code></a></p>
+<p>Base class for <code class="docutils literal"><span class="pre">&lt;textarea&gt;</span></code> element.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Tfoot">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tfoot</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tfoot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Th">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Th</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Th" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Thead">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Thead</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Thead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Title">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Title</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Tr">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tr</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.U">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">U</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.U" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Ul">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Ul</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Ul" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
+</dd></dl>
+
+<div class="section" id="extended-html-tag-classes">
+<h3>Extended HTML Tag Classes<a class="headerlink" href="#extended-html-tag-classes" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="wdom.tag.Col">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col1">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col1</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col2">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col2</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col3">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col3</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col3" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col4">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col4</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col4" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col5">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col5</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col5" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col6">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col6</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col6" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col7">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col7</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col7" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col8">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col8</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col8" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col9">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col9</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col9" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col10">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col10</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col10" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col11">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col11</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col11" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Col12">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Col12</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Col12" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Container">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Container</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Container" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.DangerButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">DangerButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.DangerButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.DefaultButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">DefaultButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.DefaultButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.ErrorButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">ErrorButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.ErrorButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.FormGroup">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">FormGroup</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.FormGroup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.InfoButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">InfoButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.InfoButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.LinkButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">LinkButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.LinkButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.PrimaryButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">PrimaryButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.PrimaryButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Row">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Row</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.SecondaryButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">SecondaryButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.SecondaryButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.SuccessButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">SuccessButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.SuccessButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.WarningButton">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">WarningButton</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.WarningButton" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Button</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.tag.Wrapper">
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Wrapper</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.element.Div</span></code></p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="dom.html">DOM API</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">HTML Tag Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="node.html">Node interfaces/classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="reference.html">API Reference</a><ul>
+  <li><a href="dom.html">DOM API</a><ul>
+      <li>Previous: <a href="dom.html" title="previous chapter">DOM API</a></li>
+      <li>Next: <a href="node.html" title="next chapter">Node interfaces/classes</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/tag.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/miyakogi/wdom" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

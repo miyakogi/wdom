@@ -1,24 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>WDOM &mdash; WDOM 0.1.5 documentation</title>
-    
-    <link rel="stylesheet" href="_static/slex.css" type="text/css" />
+    <title>WDOM &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.5',
+        VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -26,7 +23,6 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="WDOM 0.1.5 documentation" href="#" />
     <link rel="next" title="User Guide" href="guide/index.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
@@ -36,70 +32,22 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
+   
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body role="document">
-  <div class="document"> 
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-
-  <h1 class="logo"><a href="#">WDOM</a></h1>
-
-
-
-  <p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-  
-    
-      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
-        <img class="github-mark" src="_static/GitHub-Mark-64px.png">
-      </a>
-    
+  <body>
   
 
-
-
-
-
-<h3>Contents</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
-</ul>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="guide/index.html" title="next chapter">User Guide</a></li>
-  </ul></li>
-</ul>
-</div>
-<div class="searchbox" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div class="search-container">
-        <input class="form-control control search-input" type="text" name="q" />
-        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </div>
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-      </div>
-    </div> 
+    <div class="document">
       <div class="documentwrapper">
-        <div class="body" role="main">
-          
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">This document is build by <a class="reference external" href="http://www.sphinx-doc.org/en/stable/">sphinx</a> with customized <a class="reference external" href="https://github.com/bitprophet/alabaster/">alabaster</a> theme.
@@ -122,6 +70,7 @@ APIs are same as DOM or browser JavaScript, but of course, you can write logic
 codes in python.</p>
 <p>This library includes web-server (<a class="reference external" href="http://www.tornadoweb.org/en/stable/">tornado</a>), but is not intended to
 be used as a web framework, please use for <strong>Desktop</strong> GUI Applications.</p>
+<p>Document: <a class="reference external" href="http://wdom-py.readthedocs.io/en/latest/?badge=latest">Read the Docs</a></p>
 <div class="section" id="disclaimer">
 <h2>Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h2>
 <p>WDOM is in the early development stage, and may contain many bugs. All APIs are
@@ -144,7 +93,7 @@ not stable, and may be changed in future release.</p>
 </div>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<p>Python 3.4.4+ and any modern-browsers are required.
+<p>Python 3.5.3+ and any modern-browsers are required.
 Also supports Electron and PyQt’s webkit browsers.
 IE is not supported, but most of features will work with IE11 (but not
 recomended).</p>
@@ -163,21 +112,15 @@ recomended).</p>
 <div class="section" id="example">
 <h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
 <p>Simple example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">get_document</span>
-<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
     <span class="n">h1</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">createElement</span><span class="p">(</span><span class="s1">&#39;h1&#39;</span><span class="p">)</span>
     <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;Hello, WDOM&#39;</span>
     <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
-
-    <span class="n">start_server</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="n">stop_server</span><span class="p">()</span>
+    <span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Execute this code and access <code class="docutils literal"><span class="pre">http://localhost:8888</span></code> by browser.
@@ -187,49 +130,36 @@ To stop process, press <code class="docutils literal"><span class="pre">CTRL+C</
 <code class="docutils literal"><span class="pre">document.body.appendChild</span></code>) are very similar to browser JavaScript.</p>
 <p>WDOM provides some new DOM APIs (e.g. <code class="docutils literal"><span class="pre">append</span></code> for appending child) and some
 tag classes to easily generate elements:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="kn">import</span> <span class="n">H1</span>
-<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">get_document</span>
-<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="kn">import</span> <span class="n">H1</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">set_app</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
     <span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">()</span>
     <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;Hello, WDOM&#39;</span>
-    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
-
-    <span class="n">start_server</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="n">stop_server</span><span class="p">()</span>
+    <span class="n">set_app</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span> <span class="c1"># equivalent to `wdom.document.get_document().body.appendChild(h1)`</span>
+    <span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Of course, WDOM can handle events:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="kn">import</span> <span class="n">H1</span>
-<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
-<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">get_document</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="kn">import</span> <span class="n">H1</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">set_app</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
-    <span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">(</span><span class="s1">&#39;Hello, WDOM&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
+    <span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">(</span><span class="s1">&#39;Hello, WDOM&#39;</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">rev_text</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
         <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">h1</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="n">rev_text</span><span class="p">)</span>
-    <span class="n">start_server</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="n">stop_server</span><span class="p">()</span>
+    <span class="n">set_app</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
+    <span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>When string <code class="docutils literal"><span class="pre">&quot;Hello,</span> <span class="pre">WDOM&quot;</span></code> is clicked, it will be flipped.</p>
 <p>Making components with python class:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="kn">import</span> <span class="n">Div</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">Input</span>
-<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
-<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">get_document</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="kn">import</span> <span class="n">Div</span><span class="p">,</span> <span class="n">H1</span><span class="p">,</span> <span class="n">Input</span>
+<span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">set_app</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start</span>
 
 <span class="k">class</span> <span class="nc">MyApp</span><span class="p">(</span><span class="n">Div</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -240,17 +170,12 @@ tag classes to easily generate elements:</p>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
-        <span class="c1"># or, you can write as below</span>
+        <span class="c1"># Or, you can write as below</span>
         <span class="c1"># self.text.textContent = self.textbox.value</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
-    <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MyApp</span><span class="p">())</span>
-    <span class="n">start_server</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="n">stop_server</span><span class="p">()</span>
+    <span class="n">set_app</span><span class="p">(</span><span class="n">MyApp</span><span class="p">())</span>
+    <span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>WDOM package includes some tiny examples. From command line, try:</p>
@@ -265,11 +190,10 @@ tag classes to easily generate elements:</p>
 <h2>Theming with CSS Frameworks<a class="headerlink" href="#theming-with-css-frameworks" title="Permalink to this headline">¶</a></h2>
 <p>WDOM is CSS friendly, and provides easy way to theme your app with CSS
 frameworks. For example, use bootstrap3:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">from</span> <span class="nn">wdom.themes</span> <span class="kn">import</span> <span class="n">bootstrap3</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">wdom.themes</span> <span class="kn">import</span> <span class="n">bootstrap3</span>
 <span class="kn">from</span> <span class="nn">wdom.themes.bootstrap3</span> <span class="kn">import</span> <span class="n">Button</span><span class="p">,</span> <span class="n">PrimaryButton</span><span class="p">,</span> <span class="n">DangerButton</span>
-<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start_server</span><span class="p">,</span> <span class="n">stop_server</span>
 <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">get_document</span>
+<span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start</span>
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
@@ -277,11 +201,7 @@ frameworks. For example, use bootstrap3:</p>
     <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
         <span class="n">Button</span><span class="p">(</span><span class="s1">&#39;Button&#39;</span><span class="p">),</span> <span class="n">PrimaryButton</span><span class="p">(</span><span class="s1">&#39;Primary&#39;</span><span class="p">),</span> <span class="n">DangerButton</span><span class="p">(</span><span class="s1">&#39;Danger&#39;</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="n">start_server</span><span class="p">()</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="n">stop_server</span><span class="p">()</span>
+    <span class="n">start</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Differences are:</p>
@@ -330,8 +250,13 @@ All your comments are welcome!</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tag.html">HTML Tag Class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="node.html">Node interfaces/classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
 </ul>
 </li>
@@ -350,27 +275,76 @@ All your comments are welcome!</p>
 </div>
 
 
+          </div>
         </div>
       </div>
-  </div>
-  <div class="footer">
-    &copy;2016, Hiroyuki Takagi.
-    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="guide/index.html" title="next chapter">User Guide</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
-    
       |
-      <a href="_sources/index.rst.txt" rel="nofollow">Page source</a>
-  </div>
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-  
+    
     <a href="https://github.com/miyakogi/wdom" class="github">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-  
+    
 
-  
-
+    
   </body>
 </html>

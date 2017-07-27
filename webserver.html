@@ -1,24 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Application and Server &mdash; WDOM 0.1.5 documentation</title>
-    
-    <link rel="stylesheet" href="_static/slex.css" type="text/css" />
+    <title>Application and Server &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.5',
+        VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -26,10 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="WDOM 0.1.5 documentation" href="index.html" />
-    <link rel="up" title="API Reference" href="reference.html" />
-    <link rel="next" title="Test Utilities" href="test.html" />
-    <link rel="prev" title="DOM API" href="dom.html" />
+    <link rel="next" title="DOM API" href="dom.html" />
+    <link rel="prev" title="API Reference" href="reference.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
@@ -38,80 +33,97 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
+   
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body role="document">
-  <div class="document"> 
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-
-  <h1 class="logo"><a href="index.html">WDOM</a></h1>
-
-
-
-  <p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-  
-    
-      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
-        <img class="github-mark" src="_static/GitHub-Mark-64px.png">
-      </a>
-    
+  <body>
   
 
-
-
-
-
-<h3>Contents</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Application and Server</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
-</ul>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="reference.html">API Reference</a><ul>
-      <li>Previous: <a href="dom.html" title="previous chapter">DOM API</a></li>
-      <li>Next: <a href="test.html" title="next chapter">Test Utilities</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div class="searchbox" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div class="search-container">
-        <input class="form-control control search-input" type="text" name="q" />
-        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </div>
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-      </div>
-    </div> 
+    <div class="document">
       <div class="documentwrapper">
-        <div class="body" role="main">
-          
-  <div class="section" id="module-wdom.server">
-<span id="application-and-server"></span><h1>Application and Server<a class="headerlink" href="#module-wdom.server" title="Permalink to this headline">¶</a></h1>
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="application-and-server">
+<h1>Application and Server<a class="headerlink" href="#application-and-server" title="Permalink to this headline">¶</a></h1>
+<p>WDOM applications consist of a single html document and a web server.</p>
+<div class="section" id="html-document-object">
+<h2>HTML Document Object<a class="headerlink" href="#html-document-object" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="wdom.document.get_new_document">
+<code class="descclassname">wdom.document.</code><code class="descname">get_new_document</code><span class="sig-paren">(</span><em>include_rimo=True</em>, <em>include_skeleton=False</em>, <em>include_normalizecss=False</em>, <em>autoreload=None</em>, <em>reload_wait=None</em>, <em>log_level=None</em>, <em>log_prefix=None</em>, <em>log_console=False</em>, <em>ws_url=None</em>, <em>message_wait=None</em>, <em>document_factory=&lt;class ‘wdom.document.Document’&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_new_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_new_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create new <a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document"><code class="xref py py-class docutils literal"><span class="pre">Document</span></code></a> object with options.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>include_rimo</strong> (<em>bool</em>) – Include rimo.js file. Usually should be True.</li>
+<li><strong>include_skeleton</strong> (<em>bool</em>) – Include skelton.css.</li>
+<li><strong>include_normalizecss</strong> (<em>bool</em>) – Include normalize.css.</li>
+<li><strong>autoreload</strong> (<em>bool</em>) – Enable autoreload flag. This flag overwrites
+<code class="docutils literal"><span class="pre">--debug</span></code> flag, which automatically enables autoreload.</li>
+<li><strong>reload_wait</strong> (<em>float</em>) – Seconds to wait until reload when autoreload is
+enabled.</li>
+<li><strong>log_level</strong> (<em>str</em>) – Log level string, chosen from DEBUG, INFO, WARN, ERROR.
+Integer values are also acceptable like <code class="docutils literal"><span class="pre">logging.INFO</span></code>. By default
+use <code class="docutils literal"><span class="pre">wdom.config.options.log_level</span></code>, which default is <code class="docutils literal"><span class="pre">INFO</span></code>.</li>
+<li><strong>log_prefix</strong> (<em>str</em>) – Prefix of log outputs.</li>
+<li><strong>log_console</strong> (<em>bool</em>) – Flag to show wdom log on browser console.</li>
+<li><strong>ws_url</strong> (<em>str</em>) – URL string to the ws url.
+Default: <code class="docutils literal"><span class="pre">ws://localhost:8888/rimo_ws</span></code>.</li>
+<li><strong>message_wait</strong> (<em>float</em>) – Duration (seconds) to send WS messages.</li>
+<li><strong>document_factory</strong> (<em>Callable</em>) – Factory function/class to create Document
+object.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document">Document</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wdom.document.get_document">
+<code class="descclassname">wdom.document.</code><code class="descname">get_document</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get current root document object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document">Document</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wdom.document.set_document">
+<code class="descclassname">wdom.document.</code><code class="descname">set_document</code><span class="sig-paren">(</span><em>new_document</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#set_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.set_document" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a new document as a current root document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_document</strong> (<a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document"><em>Document</em></a>) – New root document.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="module-wdom.server">
+<span id="web-server"></span><h2>Web Server<a class="headerlink" href="#module-wdom.server" title="Permalink to this headline">¶</a></h2>
+<p>Web server control functions.</p>
 <dl class="function">
 <dt id="wdom.server.add_static_path">
 <code class="descclassname">wdom.server.</code><code class="descname">add_static_path</code><span class="sig-paren">(</span><em>prefix</em>, <em>path</em>, <em>no_watch=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#add_static_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.add_static_path" title="Permalink to this definition">¶</a></dt>
@@ -119,44 +131,158 @@
 <p>First argument <code class="docutils literal"><span class="pre">prefix</span></code> is a URL prefix for the <code class="docutils literal"><span class="pre">path</span></code>. <code class="docutils literal"><span class="pre">path</span></code> must
 be a directory. If <code class="docutils literal"><span class="pre">no_watch</span></code> is True, any change of the files in the
 path do not trigger restart if <code class="docutils literal"><span class="pre">--autoreload</span></code> is enabled.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wdom.server.start">
+<code class="descclassname">wdom.server.</code><code class="descname">start</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start web server.</p>
+<p>Run until <code class="docutils literal"><span class="pre">Ctrl-c</span></code> pressed, or if auto-shutdown is enabled, until when
+all browser windows are closed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="wdom.server.get_app">
+<code class="descclassname">wdom.server.</code><code class="descname">get_app</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#get_app"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.get_app" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get root web application object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">Application</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="wdom.server.start_server">
-<code class="descclassname">wdom.server.</code><code class="descname">start_server</code><span class="sig-paren">(</span><em>app=None</em>, <em>browser=None</em>, <em>address=None</em>, <em>check_time=500</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.start_server" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">wdom.server.</code><code class="descname">start_server</code><span class="sig-paren">(</span><em>browser=None</em>, <em>address=None</em>, <em>check_time=500</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.start_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start web server.</p>
+<p>Use wrapper function <a class="reference internal" href="#wdom.server.start" title="wdom.server.start"><code class="xref py py-func docutils literal"><span class="pre">start()</span></code></a> instead.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">HTTPServer</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
 <dt id="wdom.server.stop_server">
 <code class="descclassname">wdom.server.</code><code class="descname">stop_server</code><span class="sig-paren">(</span><em>server=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#stop_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.stop_server" title="Permalink to this definition">¶</a></dt>
 <dd><p>Terminate web server.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
+</div>
 
 
+          </div>
         </div>
       </div>
-  </div>
-  <div class="footer">
-    &copy;2016, Hiroyuki Takagi.
-    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Application and Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="reference.html">API Reference</a><ul>
+      <li>Previous: <a href="reference.html" title="previous chapter">API Reference</a></li>
+      <li>Next: <a href="dom.html" title="next chapter">DOM API</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
-    
       |
-      <a href="_sources/webserver.md.txt" rel="nofollow">Page source</a>
-  </div>
+      <a href="_sources/webserver.md.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-  
+    
     <a href="https://github.com/miyakogi/wdom" class="github">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-  
+    
 
-  
-
+    
   </body>
 </html>

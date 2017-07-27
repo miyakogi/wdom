@@ -1,24 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>wdom.tag &mdash; WDOM 0.1.5 documentation</title>
-    
-    <link rel="stylesheet" href="../../_static/slex.css" type="text/css" />
+    <title>wdom.tag &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.5',
+        VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -26,8 +23,6 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="WDOM 0.1.5 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
@@ -36,82 +31,34 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
+   
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body role="document">
-  <div class="document"> 
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-
-  <h1 class="logo"><a href="../../index.html">WDOM</a></h1>
-
-
-
-  <p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-  
-    
-      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
-        <img class="github-mark" src="../../_static/GitHub-Mark-64px.png">
-      </a>
-    
+  <body>
   
 
-
-
-
-
-<h3>Contents</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
-</ul>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div class="searchbox" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div class="search-container">
-        <input class="form-control control search-input" type="text" name="q" />
-        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </div>
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-      </div>
-    </div> 
+    <div class="document">
       <div class="documentwrapper">
-        <div class="body" role="main">
-          
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <h1>Source code for wdom.tag</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
+<span class="sd">&quot;&quot;&quot;Web-connected HTML tag classes.&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Iterable</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">new_class</span>
 
-<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span>
-<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">DOMTokenList</span><span class="p">,</span> <span class="n">ElementMeta</span>
+<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">DOMTokenList</span><span class="p">,</span> <span class="n">ElementMeta</span><span class="p">,</span> <span class="n">_AttrValueType</span>
 <span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">HTMLAnchorElement</span><span class="p">,</span>
     <span class="n">HTMLButtonElement</span><span class="p">,</span>
@@ -126,29 +73,35 @@
     <span class="n">HTMLStyleElement</span><span class="p">,</span>
     <span class="n">HTMLTextAreaElement</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WebElement</span>
+<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">NodeList</span>
+<span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WdomElement</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span> <span class="c1"># noqa</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">HTMLElement</span><span class="p">(</span><span class="n">WebElement</span><span class="p">):</span>
-    <span class="k">pass</span>
+<div class="viewcode-block" id="TagBaseMeta"><a class="viewcode-back" href="../../tag.html#wdom.tag.TagBaseMeta">[docs]</a><span class="k">class</span> <span class="nc">TagBaseMeta</span><span class="p">(</span><span class="n">ElementMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Meta class to set default class variable of HTMLElement.&quot;&quot;&quot;</span>
 
-
-<div class="viewcode-block" id="TagBaseMeta"><a class="viewcode-back" href="../../dom.html#wdom.tag.TagBaseMeta">[docs]</a><span class="k">class</span> <span class="nc">TagBaseMeta</span><span class="p">(</span><span class="n">ElementMeta</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Meta class to set default class variable of HtmlDom&#39;&#39;&#39;</span>
-    <span class="k">def</span> <span class="nf">__prepare__</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">__prepare__</span><span class="p">(</span><span class="n">metacls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+                    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;inherit_class&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span></div>
 
 
-<div class="viewcode-block" id="Tag"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag">[docs]</a><span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TagBaseMeta</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Base class for html tags. ``HTMLElement`` requires to specify tag name</span>
-<span class="sd">    when instanciate it, but this class and sublasses have default tag name and</span>
-<span class="sd">    not need to specify it for each thier instances.</span>
+<div class="viewcode-block" id="Tag"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag">[docs]</a><span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">WdomElement</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TagBaseMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for html tags.</span>
+
+<span class="sd">    ``HTMLElement`` requires to specify tag name when instanciate it, but this</span>
+<span class="sd">    class and sublasses have default tag name and not need to specify it for</span>
+<span class="sd">    each thier instances.</span>
 
 <span class="sd">    Additionally, this class provides shortcut properties to handle some</span>
 <span class="sd">    special attributes (class, type, is).</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1">#: Tag name used for this node.</span>
     <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;tag&#39;</span>
     <span class="c1">#: str and list of strs are acceptale.</span>
@@ -161,20 +114,20 @@
     <span class="c1">#: custom element which extends built-in tag (like &lt;table is=&quot;your-tag&quot;&gt;)</span>
     <span class="n">is_</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">attrs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">attrs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">_AttrValueType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">attrs</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span> <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_</span> <span class="ow">and</span> <span class="s1">&#39;is&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span> <span class="ow">and</span> <span class="s1">&#39;is_&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;is&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tag.get_class_list"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.get_class_list">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Tag.get_class_list"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.get_class_list">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">get_class_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DOMTokenList</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Return class-level class list, including all super class&#39;s.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Get class-level class list, including all super class&#39;s.&quot;&quot;&quot;</span>
         <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">inherit_class</span><span class="p">:</span>
@@ -183,21 +136,21 @@
                     <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base_cls</span><span class="o">.</span><span class="n">get_class_list</span><span class="p">())</span>
         <span class="c1"># Reverse order so that parent&#39;s class comes to front</span>
         <span class="n">l</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+                    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="n">_AttrValueType</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">removeAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTMLElement</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tag&#39;</span><span class="p">:</span>
         <span class="n">clone</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
             <span class="n">clone</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
@@ -206,31 +159,31 @@
         <span class="n">clone</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">clone</span>
 
-<div class="viewcode-block" id="Tag.getAttribute"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.getAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_list</span><span class="p">()</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">cls</span><span class="p">:</span>
-                <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span> <span class="k">if</span> <span class="bp">cls</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tag.addClass"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.addClass">[docs]</a>    <span class="k">def</span> <span class="nf">addClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="Tag.addClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.addClass">[docs]</a>    <span class="k">def</span> <span class="nf">addClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[Not Standard] Add classes to this node.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">classes</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tag.hasClass"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.hasClass">[docs]</a>    <span class="k">def</span> <span class="nf">hasClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Tag.hasClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.hasClass">[docs]</a>    <span class="k">def</span> <span class="nf">hasClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="sd">&quot;&quot;&quot;[Not Standard] Return if this node has ``class_`` class or not.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">class_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span></div>
 
-<div class="viewcode-block" id="Tag.hasClasses"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.hasClasses">[docs]</a>    <span class="k">def</span> <span class="nf">hasClasses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="Tag.hasClasses"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.hasClasses">[docs]</a>    <span class="k">def</span> <span class="nf">hasClasses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="sd">&quot;&quot;&quot;[Not Standard] Return if this node has any classes or not.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
 
-<div class="viewcode-block" id="Tag.removeClass"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.removeClass">[docs]</a>    <span class="k">def</span> <span class="nf">removeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="Tag.removeClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.removeClass">[docs]</a>    <span class="k">def</span> <span class="nf">removeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[Not Standard] Remove classes from this node.&quot;&quot;&quot;</span>
         <span class="n">_remove_cl</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">class_</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">class_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">class_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">get_class_list</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">class_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_list</span><span class="p">():</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                         <span class="s1">&#39;tried to remove class-level class: &#39;</span>
                         <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
@@ -243,26 +196,33 @@
                 <span class="n">_remove_cl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="o">*</span><span class="n">_remove_cl</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Tag.show"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tag.show"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[Not Standard] Show this node on browser.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="kc">False</span></div>
 
-<div class="viewcode-block" id="Tag.hide"><a class="viewcode-back" href="../../dom.html#wdom.tag.Tag.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Tag.hide"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[Not Standard] Hide this node on browser.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="kc">True</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span>
 
     <span class="nd">@type</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">NestedTag</span><span class="p">(</span><span class="n">Tag</span><span class="p">):</span>
-    <span class="c1">#: Inner nested tag class</span>
-    <span class="n">inner_tag_class</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;NestedTag class.</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="sd">    Useful to make component made by nested, multiple tags.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1">#: Inner nested tag class</span>
+    <span class="n">inner_tag_class</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Type[Node]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">inner_tag_class</span><span class="p">:</span>
@@ -270,84 +230,80 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">insertBefore</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">removeChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">removeChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">removeChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">replaceChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">old_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">replaceChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">old_child</span><span class="p">:</span> <span class="n">Node</span>
+                     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">replaceChild</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">old_child</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">replaceChild</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">old_child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">replaceChild</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">old_child</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">childNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">childNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NodeList</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">childNodes</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">childNodes</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">childNodes</span>
 
-    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">textContent</span>
-
-    <span class="nd">@textContent</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="nd">@Tag</span><span class="o">.</span><span class="n">textContent</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="sd">&quot;&quot;&quot;Set text content to inner node.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">text</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Need a trick to call property of super-class</span>
-            <span class="n">Tag</span><span class="o">.</span><span class="n">textContent</span><span class="o">.</span><span class="n">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">text</span>  <span class="c1"># type: ignore</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">html</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get whole html representation of this node.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_tag</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">html</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_tag</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Tag</span><span class="o">.</span><span class="n">html</span><span class="o">.</span><span class="n">fget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">html</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get innerHTML of the inner node.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">innerHTML</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Tag</span><span class="o">.</span><span class="n">innerHTML</span><span class="o">.</span><span class="n">fget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">innerHTML</span>
 
     <span class="nd">@innerHTML</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set html to inner node.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_inner_element</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">html</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">Tag</span><span class="o">.</span><span class="n">innerHTML</span><span class="o">.</span><span class="n">fset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">html</span>  <span class="c1"># type: ignore</span>
 
 
-<div class="viewcode-block" id="NewTagClass"><a class="viewcode-back" href="../../dom.html#wdom.tag.NewTagClass">[docs]</a><span class="k">def</span> <span class="nf">NewTagClass</span><span class="p">(</span><span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span><span class="o">=</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="p">),</span>
-                <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
-    <span class="sd">&#39;&#39;&#39;Generate and return new ``Tag`` class. If ``tag`` is empty, lower case</span>
-<span class="sd">    of ``class_name`` is used for a tag name of the new class. ``bases`` should</span>
-<span class="sd">    be a tuple of base classes. If it is empty, use ``Tag`` class for a base</span>
-<span class="sd">    class. Other keyword arguments are used for class variables of the new</span>
-<span class="sd">    class.</span>
+<div class="viewcode-block" id="NewTagClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.NewTagClass">[docs]</a><span class="k">def</span> <span class="nf">NewTagClass</span><span class="p">(</span><span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                <span class="n">bases</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="p">),</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Generate and return new ``Tag`` class.</span>
+
+<span class="sd">    If ``tag`` is empty, lower case of ``class_name`` is used for a tag name of</span>
+<span class="sd">    the new class. ``bases`` should be a tuple of base classes. If it is empty,</span>
+<span class="sd">    use ``Tag`` class for a base class. Other keyword arguments are used for</span>
+<span class="sd">    class variables of the new class.</span>
 
 <span class="sd">    Example::</span>
 
@@ -357,7 +313,7 @@
 <span class="sd">        print(my_button.html)</span>
 
 <span class="sd">        &gt;&gt;&gt; &lt;button class=&quot;btn&quot; id=&quot;111111111&quot;&gt;Click!&lt;/button&gt;</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="n">class_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
@@ -370,44 +326,51 @@
     <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tag</span>
     <span class="c1"># Here not use type() function, since it does not support</span>
     <span class="c1"># metaclasss (__prepare__) properly.</span>
-    <span class="bp">cls</span> <span class="o">=</span> <span class="n">new_class</span><span class="p">(</span><span class="n">class_name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="p">{},</span> <span class="k">lambda</span> <span class="n">ns</span><span class="p">:</span> <span class="n">ns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">new_class</span><span class="p">(</span>  <span class="c1"># type: ignore</span>
+        <span class="n">class_name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="p">{},</span> <span class="k">lambda</span> <span class="n">ns</span><span class="p">:</span> <span class="n">ns</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">))</span>
     <span class="k">return</span> <span class="bp">cls</span></div>
 
 
-<span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLInputElement</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Base class for ``&lt;input&gt;`` element.</span>
-<span class="sd">    &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Input"><a class="viewcode-back" href="../../tag.html#wdom.tag.Input">[docs]</a><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLInputElement</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for ``&lt;input&gt;`` element.&quot;&quot;&quot;</span>
+
     <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;input&#39;</span>
     <span class="c1">#: type attribute; text, button, checkbox, or radio... and so on.</span>
     <span class="n">type_</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span> <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">type_</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">class</span> <span class="nc">Textarea</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLTextAreaElement</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Base class for ``&lt;textarea&gt;`` element.&#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Textarea"><a class="viewcode-back" href="../../tag.html#wdom.tag.Textarea">[docs]</a><span class="k">class</span> <span class="nc">Textarea</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLTextAreaElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;Base class for ``&lt;textarea&gt;`` element.&quot;&quot;&quot;</span>
     <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;textarea&#39;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Get input value of this node. This value is used as a default value</span>
-<span class="sd">        of this element.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="sd">&quot;&quot;&quot;Get input value of this node.</span>
+
+<span class="sd">        This value is used as a default value of this element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">textContent</span>
 
     <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">value</span></div>
 
 
-<span class="k">class</span> <span class="nc">Script</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLScriptElement</span><span class="p">):</span>
+<div class="viewcode-block" id="Script"><a class="viewcode-back" href="../../tag.html#wdom.tag.Script">[docs]</a><span class="k">class</span> <span class="nc">Script</span><span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLScriptElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;Base class for &lt;script&gt; tag.</span>
+
+<span class="sd">    Inner contents of this node is not escaped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;script&#39;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;text/javascript&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;text/javascript&#39;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 <span class="n">Html</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Html&#39;</span><span class="p">)</span>
@@ -505,9 +468,9 @@
 <span class="n">LinkButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;LinkButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;link-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
 
 <span class="c1"># css/js/headers</span>
-<span class="n">css_files</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">js_files</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="n">headers</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">css_files</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
+<span class="n">js_files</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
 
 <span class="n">default_classes</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Input</span><span class="p">,</span>
@@ -589,25 +552,74 @@
 <span class="p">]</span>
 </pre></div>
 
+          </div>
         </div>
       </div>
-  </div>
-  <div class="footer">
-    &copy;2016, Hiroyuki Takagi.
-    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
+    </div>
+
     
-  </div>
-
-  
     <a href="https://github.com/miyakogi/wdom" class="github">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-  
+    
 
-  
-
+    
   </body>
 </html>

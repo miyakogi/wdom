@@ -79,17 +79,17 @@ to an instance of `MyElement`, and `<button is="default-button">` to
 `DefaultButton`.
 
 .. caution::
-    It's highly recommended to register custom tags as early as possible.
+   It's highly recommended to register custom tags as early as possible.
 
-    If the instance was generated before registering it, it becomes different
-    class. When the ``customElements.define`` is called and registerd the custom
-    tag, WDOM will try to update the class of existing instances but
-    ``__init__`` will not be not called.
+   If the instance was generated before registering it, it becomes different
+   class. When the ``customElements.define`` is called and registerd the custom
+   tag, WDOM will try to update the class of existing instances but
+   ``__init__`` will not be not called.
 
-    Additionally, changing ``is`` attribute of the existing instances, e.g.
-    ``element.setAttribute('is', '...')``, do not change its class currently.
+   Additionally, changing ``is`` attribute of the existing instances, e.g.
+   ``element.setAttribute('is', '...')``, do not change its class currently.
 
-    In future, `Lifecycle callback methods
-    <http://www.html5rocks.com/en/tutorials/webcomponents/customelements/#lifecycle>`_
-    or silimar features will be implemented, but still it's safer to register
-    custom tags before instanciate it.
+   In future, `Lifecycle callback methods
+   <http://www.html5rocks.com/en/tutorials/webcomponents/customelements/#lifecycle>`_
+   or silimar features will be implemented, but still it's safer to register
+   custom tags before instanciate it.

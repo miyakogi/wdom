@@ -1,24 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>wdom.element &mdash; WDOM 0.1.5 documentation</title>
-    
-    <link rel="stylesheet" href="../../_static/slex.css" type="text/css" />
+    <title>wdom.element &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.5',
+        VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -26,8 +23,6 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="WDOM 0.1.5 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
@@ -36,111 +31,77 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
+   
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body role="document">
-  <div class="document"> 
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-
-  <h1 class="logo"><a href="../../index.html">WDOM</a></h1>
-
-
-
-  <p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-  
-    
-      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
-        <img class="github-mark" src="../../_static/GitHub-Mark-64px.png">
-      </a>
-    
+  <body>
   
 
-
-
-
-
-<h3>Contents</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
-</ul>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div class="searchbox" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div class="search-container">
-        <input class="form-control control search-input" type="text" name="q" />
-        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </div>
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-      </div>
-    </div> 
+    <div class="document">
       <div class="documentwrapper">
-        <div class="body" role="main">
-          
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <h1>Source code for wdom.element</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">OrderedDict</span>
-<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">import</span> <span class="n">HTML_EMPTY</span>
+<span class="sd">&quot;&quot;&quot;Conclete implemententions for Element node.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">UserDict</span>
 <span class="kn">import</span> <span class="nn">html</span> <span class="k">as</span> <span class="nn">html_</span>
-<span class="kn">from</span> <span class="nn">html.parser</span> <span class="k">import</span> <span class="n">HTMLParser</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">MutableSequence</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Type</span>
 <span class="kn">from</span> <span class="nn">weakref</span> <span class="k">import</span> <span class="n">WeakSet</span><span class="p">,</span> <span class="n">WeakValueDictionary</span>
+<span class="kn">from</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">import</span> <span class="n">HTML_EMPTY</span>  <span class="c1"># type: ignore</span>
 
-<span class="kn">from</span> <span class="nn">wdom.interface</span> <span class="k">import</span> <span class="n">NodeList</span><span class="p">,</span> <span class="n">Event</span>
 <span class="kn">from</span> <span class="nn">wdom.css</span> <span class="k">import</span> <span class="n">CSSStyleDeclaration</span>
-<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ParentNode</span><span class="p">,</span> <span class="n">NonDocumentTypeChildNode</span><span class="p">,</span> <span class="n">ChildNode</span>
-<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">DocumentFragment</span><span class="p">,</span> <span class="n">Comment</span>
-<span class="kn">from</span> <span class="nn">wdom.event</span> <span class="k">import</span> <span class="n">EventTarget</span>
-<span class="kn">from</span> <span class="nn">wdom.webif</span> <span class="k">import</span> <span class="n">WebIF</span>
+<span class="kn">from</span> <span class="nn">wdom.event</span> <span class="k">import</span> <span class="n">EventTarget</span><span class="p">,</span> <span class="n">Event</span>
+<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">AbstractNode</span><span class="p">,</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ParentNode</span><span class="p">,</span> <span class="n">NonDocumentTypeChildNode</span>
+<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">DocumentFragment</span><span class="p">,</span> <span class="n">NodeList</span><span class="p">,</span> <span class="n">ChildNode</span>
+<span class="kn">from</span> <span class="nn">wdom.parser</span> <span class="k">import</span> <span class="n">FragmentParser</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">MutableMapping</span>  <span class="c1"># noqa</span>
+    <span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Tag</span>  <span class="c1"># noqa</span>
+
+<span class="n">_AttrValueType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">CSSStyleDeclaration</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">DOMTokenList</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;List of DOM token.</span>
+<div class="viewcode-block" id="DOMTokenList"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList">[docs]</a><span class="k">class</span> <span class="nc">DOMTokenList</span><span class="p">(</span><span class="n">MutableSequence</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot;Collection of DOM token.</span>
 
 <span class="sd">    DOM token is a string which does not contain spases.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="n">Type</span><span class="p">[</span><span class="s1">&#39;HTMLElement&#39;</span><span class="p">]],</span>
+                 <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;DOMTokenList&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize with owner node (maybe type of node) and initial values.</span>
+
+<span class="sd">        :arg owner: Node/Node-class which has this collection.</span>
+<span class="sd">        :arg args: space-separated string or iterable of tokens.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>  <span class="c1"># type: List[str]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">token</span>
 
-    <span class="k">def</span> <span class="nf">_validate_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_validate_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s1">&#39;Token must be str, but </span><span class="si">{}</span><span class="s1"> passed.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">token</span><span class="p">)))</span>
@@ -148,7 +109,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">&#39;Token contains space characters, which are invalid.&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_append</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
@@ -160,13 +121,28 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span>
 
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">slice</span><span class="p">]</span>  <span class="c1"># type: ignore</span>
+                    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;slicing is not supported.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Number of DOM token in this list.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;Get number of DOM token in this list.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tokens</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="DOMTokenList.add"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tokens</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add new tokens to list.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WebIF</span>
         <span class="n">_new_tokens</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
@@ -174,10 +150,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
                 <span class="n">_new_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_new_tokens</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;addClass&#39;</span><span class="p">,</span> <span class="n">_new_tokens</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;addClass&#39;</span><span class="p">,</span> <span class="n">_new_tokens</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tokens</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="DOMTokenList.remove"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">tokens</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove tokens from list.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WebIF</span>
         <span class="n">_removed_tokens</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_validate_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
@@ -185,9 +162,9 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
                 <span class="n">_removed_tokens</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">)</span> <span class="ow">and</span> <span class="n">_removed_tokens</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeClass&#39;</span><span class="p">,</span> <span class="n">_removed_tokens</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeClass&#39;</span><span class="p">,</span> <span class="n">_removed_tokens</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="DOMTokenList.toggle"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList.toggle">[docs]</a>    <span class="k">def</span> <span class="nf">toggle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add or remove token to/from list.</span>
 
 <span class="sd">        If token is in this list, the token will be removed. Otherwise add it</span>
@@ -197,39 +174,49 @@
         <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="DOMTokenList.item"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Return the token of the ``index``.</span>
 
 <span class="sd">        ``index`` must be 0 or positive integer. If index is out of range,</span>
 <span class="sd">        return None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_list</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
-    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="DOMTokenList.insert"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList.insert">[docs]</a>    <span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Not implemented.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="DOMTokenList.contains"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return if the token is in the list or not.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="DOMTokenList.toString"><a class="viewcode-back" href="../../node.html#wdom.element.DOMTokenList.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return string representation of this list.</span>
 
 <span class="sd">        Actually it will be a spase-separated tokens.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">Attr</span><span class="p">:</span>
+<div class="viewcode-block" id="Attr"><a class="viewcode-back" href="../../node.html#wdom.element.Attr">[docs]</a><span class="k">class</span> <span class="nc">Attr</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Attribute node.</span>
 
 <span class="sd">    In the latest DOM specification, Attr interface does not inherits ``Node``</span>
 <span class="sd">    interface. (Previously, Attr inherited Node interface.)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">owner</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize this attribute.</span>
+
+<span class="sd">        :arg str name: property name.</span>
+<span class="sd">        :arg _AttrValueType value: attribute value.</span>
+<span class="sd">        :arg Node owner: owner node of this attribute (optional).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
@@ -243,10 +230,9 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="o">.</span><span class="n">_special_attr_boolean</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="n">html_</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">html_</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="k">return</span> <span class="s1">&#39;</span><span class="si">{name}</span><span class="s1">=&quot;</span><span class="si">{value}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -255,67 +241,90 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Value of this attr.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
 
     <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">isId</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return True if this Attr is an ID node (name is ``id``).&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;id&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;id&#39;</span></div>
 
 
 <span class="k">class</span> <span class="nc">DraggableAttr</span><span class="p">(</span><span class="n">Attr</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Attribute node class for draggable attribute.&quot;&quot;&quot;</span>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">html</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return html representation.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
             <span class="n">val</span> <span class="o">=</span> <span class="s1">&#39;true&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="k">else</span> <span class="s1">&#39;false&#39;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="s1">&#39;draggable=&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
 
-<span class="k">class</span> <span class="nc">NamedNodeMap</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">):</span>
+<div class="viewcode-block" id="NamedNodeMap"><a class="viewcode-back" href="../../node.html#wdom.element.NamedNodeMap">[docs]</a><span class="k">class</span> <span class="nc">NamedNodeMap</span><span class="p">(</span><span class="n">UserDict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Collection of Attr objects.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize with owner node.</span>
+
+<span class="sd">        :arg Node owner: owner node of this object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="n">owner</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># type: OrderedDict[str, Attr]</span>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Attr</span><span class="p">]:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="n">index</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
+
+    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="k">yield</span> <span class="n">attr</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return number of Attrs in this collection.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">getNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<div class="viewcode-block" id="NamedNodeMap.getNamedItem"><a class="viewcode-back" href="../../node.html#wdom.element.NamedNodeMap.getNamedItem">[docs]</a>    <span class="k">def</span> <span class="nf">getNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Attr</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get ``Attr`` object which has ``name``.</span>
 
-    <span class="k">def</span> <span class="nf">setNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Attr</span><span class="p">):</span>
+<span class="sd">        If does not have ``name`` attr, return None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NamedNodeMap.setNamedItem"><a class="viewcode-back" href="../../node.html#wdom.element.NamedNodeMap.setNamedItem">[docs]</a>    <span class="k">def</span> <span class="nf">setNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set ``Attr`` object in this collection.&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WebIF</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Attr</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;item must be an instance of Attr&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;setAttribute&#39;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">item</span>
-        <span class="n">item</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span></div>
 
-    <span class="k">def</span> <span class="nf">removeNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
+<div class="viewcode-block" id="NamedNodeMap.removeNamedItem"><a class="viewcode-back" href="../../node.html#wdom.element.NamedNodeMap.removeNamedItem">[docs]</a>    <span class="k">def</span> <span class="nf">removeNamedItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">:</span> <span class="n">Attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Attr</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Set ``Attr`` object and return it (if exists).&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WebIF</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">Attr</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;item must be an instance of Attr&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">):</span>
@@ -323,63 +332,33 @@
         <span class="n">removed_item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">removed_item</span><span class="p">:</span>
             <span class="n">removed_item</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span>
-        <span class="k">return</span> <span class="n">removed_item</span>
+        <span class="k">return</span> <span class="n">removed_item</span></div>
 
-    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
+<div class="viewcode-block" id="NamedNodeMap.item"><a class="viewcode-back" href="../../node.html#wdom.element.NamedNodeMap.item">[docs]</a>    <span class="k">def</span> <span class="nf">item</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Attr</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return ``index``-th attr node.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="n">index</span><span class="p">]]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">html</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-
-
-<span class="k">def</span> <span class="nf">_create_element</span><span class="p">(</span><span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                    <span class="n">attr</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-    <span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Tag</span>
-    <span class="kn">from</span> <span class="nn">wdom.window</span> <span class="k">import</span> <span class="n">customElements</span>
-    <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">attr</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
-        <span class="n">base_class</span> <span class="o">=</span> <span class="n">customElements</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">name</span><span class="p">,</span> <span class="n">tag</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">base_class</span> <span class="o">=</span> <span class="n">customElements</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">tag</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">base_class</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">attr</span><span class="p">[</span><span class="s1">&#39;_registered&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">base_class</span> <span class="o">=</span> <span class="n">base</span> <span class="ow">or</span> <span class="n">HTMLElement</span>
-    <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">base_class</span><span class="p">,</span> <span class="n">Tag</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">base_class</span><span class="p">(</span><span class="o">**</span><span class="n">attr</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">base_class</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
+<div class="viewcode-block" id="NamedNodeMap.toString"><a class="viewcode-back" href="../../node.html#wdom.element.NamedNodeMap.toString">[docs]</a>    <span class="k">def</span> <span class="nf">toString</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return string representation of collections.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">attr</span><span class="o">.</span><span class="n">html</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">Parser</span><span class="p">(</span><span class="n">HTMLParser</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">default_class</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="c1"># Import here</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_class</span> <span class="o">=</span> <span class="n">default_class</span> <span class="ow">or</span> <span class="n">HTMLElement</span>
+<span class="k">class</span> <span class="nc">ElementParser</span><span class="p">(</span><span class="n">FragmentParser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTML Parser class whose default nodes are ``Element``.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">elm</span> <span class="o">=</span> <span class="n">DocumentFragment</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_class</span> <span class="o">=</span> <span class="n">Element</span>
 
-    <span class="k">def</span> <span class="nf">handle_starttag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-        <span class="n">attrs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">elm</span><span class="p">,</span> <span class="o">**</span><span class="n">attrs</span><span class="p">)</span>
-        <span class="n">elm</span> <span class="o">=</span> <span class="n">_create_element</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;is&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_class</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">elm</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">elm</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">tag</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">HTML_EMPTY</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elm</span> <span class="o">=</span> <span class="n">elm</span>
 
-    <span class="k">def</span> <span class="nf">handle_endtag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">elm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">elm</span><span class="o">.</span><span class="n">parentNode</span>
+<span class="k">class</span> <span class="nc">HTMLElementParser</span><span class="p">(</span><span class="n">ElementParser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTML Parser class whose default nodes are ``HTMLElement``.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">handle_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">elm</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">elm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">handle_comment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">elm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Comment</span><span class="p">(</span><span class="n">comment</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_class</span> <span class="o">=</span> <span class="n">HTMLElement</span>
 
 
 <span class="n">_str_attr_doc</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
@@ -399,37 +378,40 @@
 <span class="s1">&#39;&#39;&#39;</span>
 
 
-<span class="k">def</span> <span class="nf">_string_properties</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_string_properties</span><span class="p">(</span><span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
 
-    <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">deleter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">deleter</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">removeAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">,</span> <span class="n">deleter</span><span class="p">,</span> <span class="n">_str_attr_doc</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="o">=</span><span class="n">attr</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">_boolean_properties</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_boolean_properties</span><span class="p">(</span><span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">property</span><span class="p">:</span>
     <span class="k">def</span> <span class="nf">getter</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">setter</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">removeAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">deleter</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">deleter</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">removeAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="nb">property</span><span class="p">(</span><span class="n">getter</span><span class="p">,</span> <span class="n">setter</span><span class="p">,</span> <span class="n">deleter</span><span class="p">,</span> <span class="n">_bool_attr_doc</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">attr</span><span class="o">=</span><span class="n">attr</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">ElementMeta</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Metaclass for Element class.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">],</span>
+                <span class="n">namespace</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>  <span class="c1"># noqa: D102,E501</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">namespace</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_special_attr_string&#39;</span><span class="p">,</span> <span class="p">[]):</span>
             <span class="n">namespace</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span> <span class="o">=</span> <span class="n">_string_properties</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">namespace</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;_special_attr_boolean&#39;</span><span class="p">,</span> <span class="p">[]):</span>
@@ -438,19 +420,28 @@
         <span class="k">return</span> <span class="n">new_cls</span>
 
 
-<span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span> <span class="n">EventTarget</span><span class="p">,</span> <span class="n">ParentNode</span><span class="p">,</span> <span class="n">NonDocumentTypeChildNode</span><span class="p">,</span>
+<div class="viewcode-block" id="Element"><a class="viewcode-back" href="../../node.html#wdom.element.Element">[docs]</a><span class="k">class</span> <span class="nc">Element</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span> <span class="n">EventTarget</span><span class="p">,</span> <span class="n">ParentNode</span><span class="p">,</span> <span class="n">NonDocumentTypeChildNode</span><span class="p">,</span>
               <span class="n">ChildNode</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ElementMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element base class.&quot;&quot;&quot;</span>
+
     <span class="n">nodeType</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">ELEMENT_NODE</span>
     <span class="n">nodeValue</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">_parser_default_class</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">_elements</span> <span class="o">=</span> <span class="n">WeakSet</span><span class="p">()</span>
-    <span class="n">_elements_with_id</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>
+    <span class="n">_parser_class</span> <span class="o">=</span> <span class="n">ElementParser</span>  <span class="c1"># type: Type[ElementParser]</span>
+    <span class="n">_elements</span> <span class="o">=</span> <span class="n">WeakSet</span><span class="p">()</span>  <span class="c1"># type: WeakSet[Node]</span>
+    <span class="n">_elements_with_id</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>  <span class="c1"># type: MutableMapping</span>
     <span class="n">_should_escape_text</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
-    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Node</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">_registered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                 <span class="n">_registered</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize.</span>
+
+<span class="sd">        :arg str tag: HTML tag of this node.</span>
+<span class="sd">        :arg Node parent: Parent node of this node.</span>
+<span class="sd">        :arg bool _registered: Is registered to CustomElementRegistry.</span>
+<span class="sd">        :arg kwargs: key-value pair of attributes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="n">_registered</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="o">=</span> <span class="n">tag</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_elements</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># used to suport custom elements</span>
@@ -481,45 +472,54 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">start_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return HTML start tag.&quot;&quot;&quot;</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;&lt;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
         <span class="n">attrs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_attrs_by_string</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
             <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">tag</span><span class="p">,</span> <span class="n">attrs</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">tag</span> <span class="o">+</span> <span class="s1">&#39;&gt;&#39;</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">end_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return HTML end tag.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;&lt;/</span><span class="si">{}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_parse_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentFragment</span><span class="p">:</span>
-        <span class="n">parser</span> <span class="o">=</span> <span class="n">Parser</span><span class="p">(</span><span class="n">default_class</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_parser_default_class</span><span class="p">)</span>
+        <span class="n">parser</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parser_class</span><span class="p">()</span>
         <span class="n">parser</span><span class="o">.</span><span class="n">feed</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">root</span>
 
     <span class="k">def</span> <span class="nf">_get_inner_html</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">html</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_children</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_inner_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_inner_html</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_append_child</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parse_html</span><span class="p">(</span><span class="n">html</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return HTML representation of child nodes.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inner_html</span><span class="p">()</span>
 
     <span class="nd">@innerHTML</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove all child nodes and set ``html`` as new contents.</span>
+
+<span class="sd">        ``html`` is parsed to ``Element`` nodes and set as child nodes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_inner_html</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">end_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s1">&#39;&lt;/</span><span class="si">{}</span><span class="s1">&gt;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">html</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return HTML representation of this node.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_tag</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_tag</span>
 
-    <span class="k">def</span> <span class="nf">insertAdjacentHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Parse ``html`` to DOM and insert to ``position``. ``position`` is a</span>
-<span class="sd">        case-insensive string, and must be one of &quot;beforeBegin&quot;, &quot;afterBegin&quot;,</span>
-<span class="sd">        &quot;beforeEnd&quot;, or &quot;afterEnd&quot;.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="Element.insertAdjacentHTML"><a class="viewcode-back" href="../../node.html#wdom.element.Element.insertAdjacentHTML">[docs]</a>    <span class="k">def</span> <span class="nf">insertAdjacentHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Parse ``html`` to DOM and insert to ``position``.</span>
+
+<span class="sd">        ``position`` is a case-insensive string, and must be one of</span>
+<span class="sd">        &quot;beforeBegin&quot;, &quot;afterBegin&quot;, &quot;beforeEnd&quot;, or &quot;afterEnd&quot;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_html</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
         <span class="n">pos</span> <span class="o">=</span> <span class="n">position</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="s1">&#39;beforebegin&#39;</span><span class="p">:</span>
@@ -534,72 +534,107 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">&#39;The value provided (</span><span class="si">{}</span><span class="s1">) is not one of &quot;beforeBegin&quot;, &#39;</span>
                 <span class="s1">&#39;&quot;afterBegin&quot;, &quot;beforeEnd&quot;, or &quot;afterEnd&quot;.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">position</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">outerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return html representation of this node.</span>
+
+<span class="sd">        Equivalent to ``self.html``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">html</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">nodeName</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">nodeName</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="sd">&quot;&quot;&quot;Return tag name (capital case).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tagName</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return tag name (capital case).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">localName</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return tag name (lower case).&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="Element.getAttribute"><a class="viewcode-back" href="../../node.html#wdom.element.Element.getAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get attribute of this node as string format.</span>
+
+<span class="sd">        If this node does not have ``attr``, return None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="n">attr_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttributeNode</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr_node</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">attr_node</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">attr_node</span><span class="o">.</span><span class="n">value</span></div>
 
-    <span class="k">def</span> <span class="nf">getAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">getNamedItem</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+<div class="viewcode-block" id="Element.getAttributeNode"><a class="viewcode-back" href="../../node.html#wdom.element.Element.getAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">getAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Attr</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get attribute of this node as Attr format.</span>
 
-    <span class="k">def</span> <span class="nf">hasAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="sd">        If this node does not have ``attr``, return None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">getNamedItem</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Element.hasAttribute"><a class="viewcode-back" href="../../node.html#wdom.element.Element.hasAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return True if this node has ``attr``.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span>
+        <span class="k">return</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span></div>
 
-    <span class="k">def</span> <span class="nf">hasAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">)</span>
+<div class="viewcode-block" id="Element.hasAttributes"><a class="viewcode-back" href="../../node.html#wdom.element.Element.hasAttributes">[docs]</a>    <span class="k">def</span> <span class="nf">hasAttributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return True if this node has any attributes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_set_attribute_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">classList</span> <span class="o">=</span> <span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">classList</span> <span class="o">=</span> <span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;class attribute must be str, &#39;</span>
+                <span class="s1">&#39;but got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_change_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="c1"># remove old reference to self</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_id</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="c1"># register this elements with new id</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_id</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;id attribute must be int or integer-string.&#39;</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute_class</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;id&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s1">&#39;id&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
-                    <span class="c1"># remove old reference to self</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_id</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-                <span class="c1"># register this elements with new id</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_id</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
-            <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;draggable&#39;</span><span class="p">:</span>
-                <span class="n">attr_cls</span> <span class="o">=</span> <span class="n">DraggableAttr</span>
-            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_change_id</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;draggable&#39;</span><span class="p">:</span>
                 <span class="n">attr_cls</span> <span class="o">=</span> <span class="n">Attr</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">attr_cls</span> <span class="o">=</span> <span class="n">DraggableAttr</span>
             <span class="n">new_attr_node</span> <span class="o">=</span> <span class="n">attr_cls</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setAttributeNode</span><span class="p">(</span><span class="n">new_attr_node</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">setAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+<div class="viewcode-block" id="Element.setAttribute"><a class="viewcode-back" href="../../node.html#wdom.element.Element.setAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">setAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set ``attr`` and ``value`` in this node.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">setAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Attr</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">setNamedItem</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+<div class="viewcode-block" id="Element.setAttributeNode"><a class="viewcode-back" href="../../node.html#wdom.element.Element.setAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">setAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set ``Attr`` node as this node&#39;s attribute.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">setNamedItem</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_remove_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remove_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">classList</span> <span class="o">=</span> <span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -609,40 +644,49 @@
             <span class="k">if</span> <span class="n">_attr</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">removeNamedItem</span><span class="p">(</span><span class="n">_attr</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">removeAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+<div class="viewcode-block" id="Element.removeAttribute"><a class="viewcode-back" href="../../node.html#wdom.element.Element.removeAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove ``attr`` from this node.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">removeAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">removeNamedItem</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+<div class="viewcode-block" id="Element.removeAttributeNode"><a class="viewcode-back" href="../../node.html#wdom.element.Element.removeAttributeNode">[docs]</a>    <span class="k">def</span> <span class="nf">removeAttributeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Attr</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Attr</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Remove ``Attr`` node from this node.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">removeNamedItem</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">getElementsBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Element&#39;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NodeList</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Return list of child nodes which matches ``cond``.</span>
+<div class="viewcode-block" id="Element.getElementsBy"><a class="viewcode-back" href="../../node.html#wdom.element.Element.getElementsBy">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="s1">&#39;Element&#39;</span><span class="p">],</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">NodeList</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return list of child nodes which matches ``cond``.</span>
+
 <span class="sd">        ``cond`` must be a function which gets a single argument ``node``,</span>
 <span class="sd">        and returns bool. If the node matches requested condition, ``cond``</span>
 <span class="sd">        should return True.</span>
 <span class="sd">        This searches all child nodes recursively.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">cond</span><span class="p">(</span><span class="n">child</span><span class="p">):</span>
                 <span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
             <span class="n">elements</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">getElementsBy</span><span class="p">(</span><span class="n">cond</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">NodeList</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">NodeList</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">getElementsByTagName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.getElementsByTagName"><a class="viewcode-back" href="../../node.html#wdom.element.Element.getElementsByTagName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByTagName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NodeList</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get child nodes which tag name is ``tag``.&quot;&quot;&quot;</span>
         <span class="n">_tag</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElementsBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">&#39;tagName&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">_tag</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElementsBy</span><span class="p">(</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="s1">&#39;tagName&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">_tag</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">getElementsByClassName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="Element.getElementsByClassName"><a class="viewcode-back" href="../../node.html#wdom.element.Element.getElementsByClassName">[docs]</a>    <span class="k">def</span> <span class="nf">getElementsByClassName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NodeList</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get child nodes which has ``class_name`` class attribute.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElementsBy</span><span class="p">(</span>
-            <span class="k">lambda</span> <span class="n">node</span><span class="p">:</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;classList&#39;</span><span class="p">))</span>
+            <span class="k">lambda</span> <span class="n">node</span><span class="p">:</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="s1">&#39;classList&#39;</span><span class="p">))</span></div></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLElement</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLElement</span><span class="p">(</span><span class="n">Element</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for HTMLElement.&quot;&quot;&quot;</span>
+
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">]</span>
     <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;hidden&#39;</span><span class="p">]</span>
+    <span class="n">_parser_class</span> <span class="o">=</span> <span class="n">HTMLElementParser</span>  <span class="c1"># type: Type[ElementParser]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">CSSStyleDeclaration</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
@@ -660,71 +704,87 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">end_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrun html end tag.</span>
+
+<span class="sd">        If tag is empty tag like &lt;img&gt; or &lt;br&gt;, return empty string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span> <span class="ow">in</span> <span class="n">HTML_EMPTY</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39;&#39;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">end_tag</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">end_tag</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">style</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CSSStyleDeclaration</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return style attribute of this node.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_style</span>
 
     <span class="nd">@style</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">style</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">style</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set style attribute of this node.</span>
+
+<span class="sd">        If argument ``style`` is string, it will be parsed to</span>
+<span class="sd">        ``CSSStyleDeclaration``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">_parse_str</span><span class="p">(</span><span class="n">style</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">style</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">_parse_str</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">style</span><span class="p">,</span> <span class="n">CSSStyleDeclaration</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">style</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="n">style</span><span class="o">.</span><span class="n">_owner</span> <span class="o">=</span> <span class="bp">self</span>  <span class="c1"># type: ignore</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_style</span> <span class="o">=</span> <span class="n">style</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_style</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>  <span class="c1"># type: ignore</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid type for style: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">style</span><span class="p">)))</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get ``draggable`` property.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasAttribute</span><span class="p">(</span><span class="s1">&#39;draggable&#39;</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;draggable&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;draggable&#39;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
     <span class="nd">@draggable</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">draggable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set ``draggable`` property.</span>
+
+<span class="sd">        ``value`` is boolean or string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">removeAttribute</span><span class="p">(</span><span class="s1">&#39;draggable&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;draggable&#39;</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;draggable&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;style&#39;</span><span class="p">:</span>
             <span class="c1"># if style is neither None nor empty, return None</span>
             <span class="c1"># otherwise, return style.cssText</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">cssText</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;style&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="n">value</span>  <span class="c1"># type: ignore</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
 
-    <span class="k">def</span> <span class="nf">_remove_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remove_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;style&#39;</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: ignore</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_remove_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_remove_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>  <span class="c1"># type: ignore</span></div>
 
 
-<span class="k">class</span> <span class="nc">FormControlMixin</span><span class="p">:</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">form</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">FormControlMixin</span><span class="p">(</span><span class="n">AbstractNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mixin class for FormControl classes.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+                 <span class="n">form</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="s1">&#39;HTMLFormElement&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;``form`` is a ``HTMLFormElement`` object or id of it.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_form</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementById</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
             <span class="n">form</span> <span class="o">=</span> <span class="n">getElementById</span><span class="p">(</span><span class="n">form</span><span class="p">)</span>
@@ -737,61 +797,69 @@
             <span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTMLElement</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">form</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;HTMLFormElement&#39;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get ``HTMLFormElement`` object related to this node.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_form</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span>
-            <span class="k">while</span> <span class="n">parent</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">HTMLFormElement</span><span class="p">):</span>
-                    <span class="k">return</span> <span class="n">parent</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parentNode</span>
-            <span class="k">return</span> <span class="kc">None</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentNode</span>
+        <span class="k">while</span> <span class="n">parent</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">HTMLFormElement</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">parent</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">parentNode</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="k">class</span> <span class="nc">HTMLAnchorElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>
-    <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;rel&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="HTMLAnchorElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLAnchorElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLAnchorElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLAnchorElement class (&lt;a&gt;&lt;/a&gt; tag).&quot;&quot;&quot;</span>
+    <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;href&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;rel&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLButtonElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLButtonElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLButtonElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLButtonElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLButtonElement class (&lt;button&gt;&lt;/button&gt; tag).&quot;&quot;&quot;</span>
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>
-    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;disabled&#39;</span><span class="p">]</span>
+    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;disabled&#39;</span><span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLFormElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>
-    <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="HTMLFormElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLFormElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLFormElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLFormElement class (&lt;form&gt;&lt;/form&gt; tag).&quot;&quot;&quot;</span>
+    <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLIFrameElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>
-    <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">]</span>
+<div class="viewcode-block" id="HTMLIFrameElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLIFrameElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLIFrameElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLIFrameElement class (&lt;iframe&gt;&lt;/iframe&gt; tag).&quot;&quot;&quot;</span>
+    <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">,</span> <span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLInputElement</span><span class="p">(</span><span class="n">FormControlMixin</span><span class="p">,</span> <span class="n">HTMLElement</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLInputElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLInputElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLInputElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTMLInputElement class (&lt;input&gt;&lt;/input&gt; tag).&quot;&quot;&quot;</span>
+
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">]</span>
     <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;checked&#39;</span><span class="p">,</span> <span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="s1">&#39;multiple&#39;</span><span class="p">,</span> <span class="s1">&#39;readonly&#39;</span><span class="p">,</span>
                              <span class="s1">&#39;required&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_event_pre</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">ct_msg</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;currentTarget&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="s1">&#39;change&#39;</span><span class="p">):</span>
             <span class="c1"># Update user inputs</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;checkbox&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">currentTarget</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">,</span> <span class="n">ct_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">))</span>
             <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;radio&#39;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">currentTarget</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">,</span> <span class="n">ct_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">))</span>
                 <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_radio_group</span><span class="p">:</span>
                     <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
                         <span class="n">other</span><span class="o">.</span><span class="n">_remove_attribute</span><span class="p">(</span><span class="s1">&#39;checked&#39;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">currentTarget</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">ct_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">))</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">defaultChecked</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Property is this control checked by default.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;defaultChecked&#39;</span><span class="p">))</span>
 
     <span class="nd">@defaultChecked</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">defaultChecked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">defaultChecked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;defaultChecked&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">checked</span> <span class="o">=</span> <span class="kc">True</span>
@@ -800,11 +868,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">checked</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">defaultValue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">defaultValue</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Defatul value of this node.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;defaultValue&#39;</span><span class="p">)</span>
 
     <span class="nd">@defaultValue</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">defaultValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">defaultValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;defaultValue&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 
@@ -815,59 +884,74 @@
                              <span class="k">if</span> <span class="n">elm</span><span class="o">.</span><span class="n">tagName</span> <span class="o">==</span> <span class="s1">&#39;INPUT&#39;</span> <span class="ow">and</span>
                              <span class="n">elm</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;radio&#39;</span> <span class="ow">and</span>
                              <span class="n">elm</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">NodeList</span><span class="p">([])</span>
+        <span class="k">return</span> <span class="n">NodeList</span><span class="p">([])</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLLabelElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLLabelElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLLabelElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLLabelElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTMLLabelElement class (&lt;label&gt;&lt;/label&gt; tag).&quot;&quot;&quot;</span>
+
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">htmlFor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">htmlFor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Retrun ``for`` attribute value.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;for&#39;</span><span class="p">)</span>
 
     <span class="nd">@htmlFor</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">htmlFor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">htmlFor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;for&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">control</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HTMLElement</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">control</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HTMLElement</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return related HTMLElement object.&quot;&quot;&quot;</span>
         <span class="nb">id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;for&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">id</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
                 <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementById</span>
                 <span class="k">return</span> <span class="n">getElementById</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLOptGroupElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLOptGroupElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLOptGroupElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLOptGroupElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLOptionElement class (&lt;optgroup&gt;&lt;/optgroup&gt; tag).&quot;&quot;&quot;</span>
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">]</span>
-    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;disabled&#39;</span><span class="p">]</span>
+    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;disabled&#39;</span><span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLOptionElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLOptionElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLOptionElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLOptionElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLOptionElement class (&lt;option&gt;&lt;/option&gt; tag).&quot;&quot;&quot;</span>
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>
-    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;defaultSelected&#39;</span><span class="p">,</span> <span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="s1">&#39;selected&#39;</span><span class="p">]</span>
+    <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;defaultSelected&#39;</span><span class="p">,</span> <span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="s1">&#39;selected&#39;</span><span class="p">]</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLScriptElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLScriptElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLScriptElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLScriptElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLScriptElement class (&lt;script&gt;&lt;/script&gt; tag).</span>
+
+<span class="sd">    In this tag, all inner contents are not escaped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;charset&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">]</span>
     <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;async&#39;</span><span class="p">,</span> <span class="s1">&#39;defer&#39;</span><span class="p">]</span>
-    <span class="n">_should_escape_text</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_should_escape_text</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLSelectElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLSelectElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLSelectElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLSelectElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTMLSelectElement class (&lt;select&gt;&lt;/select&gt; tag).&quot;&quot;&quot;</span>
+
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;size&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">]</span>
     <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="s1">&#39;multiple&#39;</span><span class="p">,</span> <span class="s1">&#39;required&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_selected_options</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_selected_options</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_event_pre</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">ct_msg</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;currentTarget&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="s1">&#39;change&#39;</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">currentTarget</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">))</span>
-            <span class="n">_selected</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">currentTarget</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;selectedOptions&#39;</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">ct_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">))</span>
+            <span class="n">_selected</span> <span class="o">=</span> <span class="n">ct_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;selectedOptions&#39;</span><span class="p">,</span> <span class="p">[])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_selected_options</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">rimo_id</span> <span class="ow">in</span> <span class="n">_selected</span><span class="p">:</span>
@@ -878,53 +962,111 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return number of options in this node.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NodeList</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return all option nodes in this node.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;option&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">selectedOptions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NodeList</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">NodeList</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">opt</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">selected</span><span class="p">))</span>
+        <span class="sd">&quot;&quot;&quot;Return all selected option nodes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">NodeList</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">opt</span> <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">selected</span><span class="p">))</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLStyleElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLStyleElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLStyleElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLStyleElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLStyleElement class (&lt;style&gt;&lt;/style&gt; tag).</span>
+
+<span class="sd">    In this tag, all inner contents are not escaped.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;disabled&#39;</span><span class="p">,</span> <span class="s1">&#39;scoped&#39;</span><span class="p">]</span>
-    <span class="n">_should_escape_text</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_should_escape_text</span> <span class="o">=</span> <span class="kc">False</span></div>
 
 
-<span class="k">class</span> <span class="nc">HTMLTextAreaElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>
+<div class="viewcode-block" id="HTMLTextAreaElement"><a class="viewcode-back" href="../../node.html#wdom.element.HTMLTextAreaElement">[docs]</a><span class="k">class</span> <span class="nc">HTMLTextAreaElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">FormControlMixin</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;HTMLTextAreaElement class (&lt;textarea&gt;&lt;/textarea&gt; tag).&quot;&quot;&quot;</span>
     <span class="n">_special_attr_string</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;src&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">]</span>
     <span class="n">_special_attr_boolean</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;disabled&#39;</span><span class="p">]</span>
     <span class="n">defaultValue</span> <span class="o">=</span> <span class="n">HTMLElement</span><span class="o">.</span><span class="n">textContent</span>
 
-    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">on_event_pre</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">ct_msg</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;currentTarget&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="s1">&#39;change&#39;</span><span class="p">):</span>
             <span class="c1"># Update user inputs</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_set_text_content</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">currentTarget</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_text_content</span><span class="p">(</span><span class="n">ct_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div>
 </pre></div>
 
+          </div>
         </div>
       </div>
-  </div>
-  <div class="footer">
-    &copy;2016, Hiroyuki Takagi.
-    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
+    </div>
+
     
-  </div>
-
-  
     <a href="https://github.com/miyakogi/wdom" class="github">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-  
+    
 
-  
-
+    
   </body>
 </html>

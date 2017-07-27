@@ -1,0 +1,237 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>wdom.window &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <!-- font -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- Style -->
+  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
+  
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for wdom.window</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="sd">&quot;&quot;&quot;Window and CustomElementsRegistry classes.&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+
+<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Tag</span><span class="p">,</span> <span class="n">default_classes</span>
+
+
+<span class="k">class</span> <span class="nc">CustomElementsRegistry</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Registry of registered custom elements.</span>
+
+<span class="sd">    Keep custom elements by name (custom-tag or is-attr) and extended-tag</span>
+<span class="sd">    (or None) pair.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_upgrage_to_tag_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">elm</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">elm</span><span class="o">.</span><span class="n">type_</span> <span class="ow">and</span> <span class="s1">&#39;type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">elm</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="n">elm</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">elm</span><span class="o">.</span><span class="n">type_</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">elm</span><span class="o">.</span><span class="n">is_</span> <span class="ow">and</span> <span class="s1">&#39;is&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">elm</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
+            <span class="n">elm</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="n">elm</span><span class="o">.</span><span class="n">is_</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_upgrade_by_tag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">constructor</span><span class="p">:</span> <span class="nb">type</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">elm</span> <span class="ow">in</span> <span class="n">Element</span><span class="o">.</span><span class="n">_elements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">elm</span><span class="o">.</span><span class="n">_registered</span> <span class="ow">and</span> <span class="n">elm</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+                <span class="n">elm</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">constructor</span>
+                <span class="n">elm</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="n">Tag</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_upgrage_to_tag_class</span><span class="p">(</span><span class="n">elm</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_upgrade_by_is</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">constructor</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span> <span class="n">extends</span><span class="p">:</span> <span class="nb">str</span>
+                       <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">elm</span> <span class="ow">in</span> <span class="n">Element</span><span class="o">.</span><span class="n">_elements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">elm</span><span class="o">.</span><span class="n">_registered</span> <span class="ow">and</span> <span class="n">elm</span><span class="o">.</span><span class="n">tag</span> <span class="o">==</span> <span class="n">extends</span> <span class="ow">and</span>
+                    <span class="n">elm</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;is&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">name</span><span class="p">):</span>
+                <span class="n">elm</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">constructor</span>
+                <span class="n">elm</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">elm</span><span class="p">,</span> <span class="n">Tag</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_upgrage_to_tag_class</span><span class="p">(</span><span class="n">elm</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_define</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">constructor</span><span class="p">:</span> <span class="nb">type</span><span class="p">,</span>
+                <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extends</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Optional[str]</span>
+        <span class="k">if</span> <span class="n">options</span><span class="p">:</span>
+            <span class="n">extends</span> <span class="o">=</span> <span class="n">options</span><span class="p">[</span><span class="s1">&#39;extends&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="p">[(</span><span class="n">name</span><span class="p">,</span> <span class="n">extends</span><span class="p">)]</span> <span class="o">=</span> <span class="n">constructor</span>
+        <span class="k">if</span> <span class="n">extends</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_upgrade_by_is</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">extends</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_upgrade_by_tag</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">constructor</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_define_orig</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">constructor</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Tag</span><span class="p">],</span>
+                     <span class="n">options</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span>
+                     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_define_class</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">constructor</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Tag</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">is_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">constructor</span><span class="p">,</span> <span class="s1">&#39;is_&#39;</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">constructor</span><span class="p">,</span> <span class="s1">&#39;is&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">is_</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">is_</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;extends&#39;</span><span class="p">:</span> <span class="n">constructor</span><span class="o">.</span><span class="n">tag</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">constructor</span><span class="o">.</span><span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">constructor</span><span class="p">,</span> <span class="n">options</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">define</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add new custom element.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_define_orig</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">type</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_define_class</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s1">&#39;Invalid argument for define: </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_define_default</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">default_classes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Clear all registered custom elements.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_define_default</span><span class="p">()</span>
+
+
+<span class="n">customElements</span> <span class="o">=</span> <span class="n">CustomElementsRegistry</span><span class="p">()</span>
+<span class="n">customElements</span><span class="o">.</span><span class="n">_define_default</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Window"><a class="viewcode-back" href="../../node.html#wdom.window.Window">[docs]</a><span class="k">class</span> <span class="nc">Window</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Window base class.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">document</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return document object of this window.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_document</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">customElements</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CustomElementsRegistry</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return customElementsRegistry object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_custom_elements</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">document</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Make new window object.</span>
+
+<span class="sd">        :arg Document document: root document of the window.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_document</span> <span class="o">=</span> <span class="n">document</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_custom_elements</span> <span class="o">=</span> <span class="n">customElements</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+    <a href="https://github.com/miyakogi/wdom" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

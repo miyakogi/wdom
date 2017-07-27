@@ -1,24 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>Test Utilities &mdash; WDOM 0.1.5 documentation</title>
-    
-    <link rel="stylesheet" href="_static/slex.css" type="text/css" />
+    <title>Test Utilities &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.5',
+        VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
@@ -26,10 +23,8 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="top" title="WDOM 0.1.5 documentation" href="index.html" />
-    <link rel="up" title="API Reference" href="reference.html" />
     <link rel="next" title="Changes" href="changes.html" />
-    <link rel="prev" title="Application and Server" href="webserver.html" />
+    <link rel="prev" title="Event API" href="event.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
@@ -38,85 +33,30 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
+   
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body role="document">
-  <div class="document"> 
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-
-  <h1 class="logo"><a href="index.html">WDOM</a></h1>
-
-
-
-  <p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-  
-    
-      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
-        <img class="github-mark" src="_static/GitHub-Mark-64px.png">
-      </a>
-    
+  <body>
   
 
-
-
-
-
-<h3>Contents</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Test Utilities</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
-</ul>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  <li><a href="reference.html">API Reference</a><ul>
-      <li>Previous: <a href="webserver.html" title="previous chapter">Application and Server</a></li>
-      <li>Next: <a href="changes.html" title="next chapter">Changes</a></li>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div class="searchbox" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div class="search-container">
-        <input class="form-control control search-input" type="text" name="q" />
-        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </div>
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-      </div>
-    </div> 
+    <div class="document">
       <div class="documentwrapper">
-        <div class="body" role="main">
-          
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <div class="section" id="test-utilities">
 <h1>Test Utilities<a class="headerlink" href="#test-utilities" title="Permalink to this headline">¶</a></h1>
+<p>Examples see <a class="reference external" href="https://github.com/miyakogi/wdom/tree/dev/wdom/tests">WDOM’s test</a> directory.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">This document is incomplete and all APIs are not stable.</p>
 </div>
-<span class="target" id="module-wdom.testing"></span><p>Provides utility functions/classes for tests.</p>
+<span class="target" id="module-wdom.testing"></span><p>Utility test-functions/classes to test WDOM on browser.</p>
 <p>This module depend on selenium webdriver, so please install selenium before
 use this module:</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">selenium</span>
@@ -128,14 +68,14 @@ use this module:</p>
 <dd><p>Reset all wdom objects.</p>
 <p>This function clear all connections, elements, and resistered custom
 elements. This function also makes new document/application and set them.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="wdom.testing.suppress_logging">
-<code class="descclassname">wdom.testing.</code><code class="descname">suppress_logging</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#suppress_logging"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.suppress_logging" title="Permalink to this definition">¶</a></dt>
-<dd><p>Suppress log output to stdout.</p>
-<p>This function is intended to be used in test’s setup. This function removes
-log handler of <code class="docutils literal"><span class="pre">wdom</span></code> logger and set NullHandler to suppress log.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="class">
@@ -164,6 +104,34 @@ set them in each setup phase as follow:</p>
 <p>Create an instance of the class that will use the named test
 method when executed. Raises a ValueError if the instance does
 not have a method with the specified name.</p>
+<dl class="method">
+<dt id="wdom.testing.TestCase.assertIsTrue">
+<code class="descname">assertIsTrue</code><span class="sig-paren">(</span><em>bl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#TestCase.assertIsTrue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.TestCase.assertIsTrue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check arg is exactly True, not truthy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.TestCase.assertIsFalse">
+<code class="descname">assertIsFalse</code><span class="sig-paren">(</span><em>bl</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#TestCase.assertIsFalse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.TestCase.assertIsFalse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check arg is exactly False, not falsy.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -179,12 +147,28 @@ not have a method with the specified name.</p>
 <code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#HTTPTestCase.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.HTTPTestCase.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start web server.</p>
 <p>Please call this method after prepraring document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="wdom.testing.HTTPTestCase.tearDown">
 <code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#HTTPTestCase.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.HTTPTestCase.tearDown" title="Permalink to this definition">¶</a></dt>
 <dd><p>Terminate server and close all ws client connections.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -226,6 +210,225 @@ method are closed after each test method.</p>
 <p><code class="docutils literal"><span class="pre">timeout</span></code> is second to wait, and its default value is
 <code class="docutils literal"><span class="pre">self.wait_time</span></code>. If <code class="docutils literal"><span class="pre">times</span></code> are specified, wait for
 <code class="docutils literal"><span class="pre">timeout</span> <span class="pre">*</span> <span class="pre">times</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.testing.WebDriverTestCase">
+<em class="property">class </em><code class="descclassname">wdom.testing.</code><code class="descname">WebDriverTestCase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#WebDriverTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.WebDriverTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Base class for testing UI on browser.</p>
+<p>This class starts up an HTTP server on a new subprocess.</p>
+<p>Subclasses should call <code class="docutils literal"><span class="pre">start</span></code> method after seting up your document.
+After <code class="docutils literal"><span class="pre">start</span></code> method called, the web server is running on the other
+process so you cannot make change on the document. If you need to change
+document after server started, please use <code class="docutils literal"><span class="pre">RemoteBrowserTestCase</span></code> class
+instead.</p>
+<dl class="attribute">
+<dt id="wdom.testing.WebDriverTestCase.wait_time">
+<code class="descname">wait_time</code><em class="property"> = 0.01</em><a class="headerlink" href="#wdom.testing.WebDriverTestCase.wait_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>seconds to wait for by <code class="docutils literal"><span class="pre">wait</span></code> method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.testing.WebDriverTestCase.timeout">
+<code class="descname">timeout</code><em class="property"> = 1.0</em><a class="headerlink" href="#wdom.testing.WebDriverTestCase.timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>secondes for deault timeout for <code class="docutils literal"><span class="pre">wait_until</span></code> method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.WebDriverTestCase.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#WebDriverTestCase.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.WebDriverTestCase.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start server and web driver.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.WebDriverTestCase.tearDown">
+<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#WebDriverTestCase.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.WebDriverTestCase.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminate server subprocess.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.WebDriverTestCase.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><em>timeout=None</em>, <em>times=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#WebDriverTestCase.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.WebDriverTestCase.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for <code class="docutils literal"><span class="pre">timeout</span></code> or <code class="docutils literal"><span class="pre">self.wait_time</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.WebDriverTestCase.wait_until">
+<code class="descname">wait_until</code><span class="sig-paren">(</span><em>func</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#WebDriverTestCase.wait_until"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.WebDriverTestCase.wait_until" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait until <code class="docutils literal"><span class="pre">func</span></code> returns True or exceeds timeout.</p>
+<p><code class="docutils literal"><span class="pre">func</span></code> is called with no argument. Unit of <code class="docutils literal"><span class="pre">timeout</span></code> is second, and
+its default value is RemoteBrowserTestCase.timeout class variable
+(default: 1.0).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.WebDriverTestCase.send_keys">
+<code class="descname">send_keys</code><span class="sig-paren">(</span><em>element</em>, <em>keys</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#WebDriverTestCase.send_keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.WebDriverTestCase.send_keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send <code class="docutils literal"><span class="pre">keys</span></code> to <code class="docutils literal"><span class="pre">element</span></code> one-by-one.</p>
+<p>Safer than using <code class="docutils literal"><span class="pre">element.send_keys</span></code> method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.testing.RemoteBrowserTestCase">
+<em class="property">class </em><code class="descclassname">wdom.testing.</code><code class="descname">RemoteBrowserTestCase</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#RemoteBrowserTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>This class is <strong>Experimental</strong>.</p>
+<p>Utility class for testing apps with webdriver in another process. Mainly
+used for development and test of wdom library itself. This class does not
+support all methods provided by selenium.webdriver, but maybe enough.</p>
+<p>After seting up your document, call <code class="docutils literal"><span class="pre">start</span></code> method in setup sequence.</p>
+<dl class="attribute">
+<dt id="wdom.testing.RemoteBrowserTestCase.wait_time">
+<code class="descname">wait_time</code><em class="property"> = 0.01</em><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.wait_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>seconds to wait for by <code class="docutils literal"><span class="pre">wait</span></code> method.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.testing.RemoteBrowserTestCase.timeout">
+<code class="descname">timeout</code><em class="property"> = 1.0</em><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.timeout" title="Permalink to this definition">¶</a></dt>
+<dd><p>secondes for deault timeout for <code class="docutils literal"><span class="pre">wait_until</span></code> method</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.RemoteBrowserTestCase.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#RemoteBrowserTestCase.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start remote browser process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.RemoteBrowserTestCase.tearDown">
+<code class="descname">tearDown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#RemoteBrowserTestCase.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run tear down process.</p>
+<p>Reset log-level, stop web server, and flush stdout.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.testing.RemoteBrowserTestCase.port">
+<code class="descname">port</code><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.port" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get port of the server.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">str</span></code>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.RemoteBrowserTestCase.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><em>timeout=None</em>, <em>times=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#RemoteBrowserTestCase.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for <code class="docutils literal"><span class="pre">timeout</span></code> seconds.</p>
+<p>Default timeout is <code class="docutils literal"><span class="pre">RemoteBrowserTestCase.wait_time</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.RemoteBrowserTestCase.wait_until">
+<code class="descname">wait_until</code><span class="sig-paren">(</span><em>func</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#RemoteBrowserTestCase.wait_until"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.wait_until" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait until <code class="docutils literal"><span class="pre">func</span></code> returns True or exceeds timeout.</p>
+<p><code class="docutils literal"><span class="pre">func</span></code> is called with no argument. Unit of <code class="docutils literal"><span class="pre">timeout</span></code> is second, and
+its default value is RemoteBrowserTestCase.timeout class variable
+(default: 1.0).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.testing.RemoteBrowserTestCase.set_element">
+<code class="descname">set_element</code><span class="sig-paren">(</span><em>node</em>, <em>timeout=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/testing.html#RemoteBrowserTestCase.set_element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.testing.RemoteBrowserTestCase.set_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the <code class="docutils literal"><span class="pre">node</span></code> as a target node of the remote browser process.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">bool</span></code></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -233,27 +436,85 @@ method are closed after each test method.</p>
 </div>
 
 
+          </div>
         </div>
       </div>
-  </div>
-  <div class="footer">
-    &copy;2016, Hiroyuki Takagi.
-    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Test Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="reference.html">API Reference</a><ul>
+      <li>Previous: <a href="event.html" title="previous chapter">Event API</a></li>
+      <li>Next: <a href="changes.html" title="next chapter">Changes</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
-    
       |
-      <a href="_sources/test.rst.txt" rel="nofollow">Page source</a>
-  </div>
+      <a href="_sources/test.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
 
-  
+    
     <a href="https://github.com/miyakogi/wdom" class="github">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-  
+    
 
-  
-
+    
   </body>
 </html>

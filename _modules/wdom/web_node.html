@@ -1,24 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>wdom.web_node &mdash; WDOM 0.1.5 documentation</title>
-    
-    <link rel="stylesheet" href="../../_static/slex.css" type="text/css" />
+    <title>wdom.web_node &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.5',
+        VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -26,8 +23,6 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="WDOM 0.1.5 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
@@ -36,102 +31,166 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
+   
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body role="document">
-  <div class="document"> 
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-
-  <h1 class="logo"><a href="../../index.html">WDOM</a></h1>
-
-
-
-  <p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-  
-    
-      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
-        <img class="github-mark" src="../../_static/GitHub-Mark-64px.png">
-      </a>
-    
+  <body>
   
 
-
-
-
-
-<h3>Contents</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
-</ul>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div class="searchbox" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div class="search-container">
-        <input class="form-control control search-input" type="text" name="q" />
-        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </div>
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-      </div>
-    </div> 
+    <div class="document">
       <div class="documentwrapper">
-        <div class="body" role="main">
-          
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <h1>Source code for wdom.web_node</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
+<span class="sd">&quot;&quot;&quot;Base classes for web-synchronized Nodes.&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="k">import</span> <span class="n">coroutine</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="k">import</span> <span class="n">Future</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">weakref</span> <span class="k">import</span> <span class="n">WeakValueDictionary</span>
 
-<span class="kn">from</span> <span class="nn">wdom.interface</span> <span class="k">import</span> <span class="n">Event</span>
+<span class="kn">from</span> <span class="nn">wdom</span> <span class="k">import</span> <span class="n">server</span>
+<span class="kn">from</span> <span class="nn">wdom.event</span> <span class="k">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">create_event</span>
+<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">_AttrValueType</span><span class="p">,</span> <span class="n">HTMLElement</span><span class="p">,</span> <span class="n">ElementParser</span>
 <span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span>
-<span class="kn">from</span> <span class="nn">wdom.webif</span> <span class="k">import</span> <span class="n">WebIF</span>
-<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">HTMLElement</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Type</span>  <span class="c1"># noqa</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">remove_id_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39; rimo_id=&quot;\d+&quot;&#39;</span><span class="p">)</span>
+<span class="n">_RimoIdType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">_T_MsgItem</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">WebElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">):</span>
-    <span class="n">_elements_with_rimo_id</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">WebIF</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Web Interfase abstract class.&quot;&quot;&quot;</span>
+
+    <span class="n">tag</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: str</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;rimo_id&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_T_MsgItem</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="o">...</span>  <span class="c1"># for type check</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ownerDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>  <span class="c1"># noqa: D102</span>
+        <span class="c1"># for type check</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reqid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;When this instance has any connection, return True.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">server</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run before dispatching events.</span>
+
+<span class="sd">        Used for seting values changed by user input, in some elements like</span>
+<span class="sd">        input, textarea, or select. In this method, event.currentTarget is a</span>
+<span class="sd">        dict sent from browser.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">on_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run when get response from browser.&quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reqid&#39;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">cancelled</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">js_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Execute ``method`` in the related node on browser.</span>
+
+<span class="sd">        Other keyword arguments are passed to ``params`` attribute.</span>
+<span class="sd">        If this node is not in any document tree (namely, this node does not</span>
+<span class="sd">        have parent node), the ``method`` is not executed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws_send</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">args</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">js_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send query to related DOM on browser.</span>
+
+<span class="sd">        :param str query: single string which indicates query type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reqid</span><span class="p">)</span>
+            <span class="n">fut</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>  <span class="c1"># type: Future[str]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_reqid</span><span class="p">]</span> <span class="o">=</span> <span class="n">fut</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_reqid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">fut</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>  <span class="c1"># type: Future[None]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="k">def</span> <span class="nf">ws_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">_T_MsgItem</span><span class="p">],</span> <span class="n">_T_MsgItem</span><span class="p">]]</span>
+                <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send ``obj`` as message to the related nodes on browser.</span>
+
+<span class="sd">        :arg dict obj: Message is serialized by JSON object and send via</span>
+<span class="sd">            WebSocket connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;tag&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tag</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">push_message</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">WdomElementParser</span><span class="p">(</span><span class="n">ElementParser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parser class which generates WdomElement nodes.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_class</span> <span class="o">=</span> <span class="n">WdomElement</span>
+
+
+<div class="viewcode-block" id="WdomElement"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement">[docs]</a><span class="k">class</span> <span class="nc">WdomElement</span><span class="p">(</span><span class="n">HTMLElement</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;WdomElement class.</span>
+
+<span class="sd">    This class provides main features to synchronously control browser DOM</span>
+<span class="sd">    node.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_elements_with_rimo_id</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">(</span>
+    <span class="p">)</span>  <span class="c1"># type: WeakValueDictionary[_RimoIdType, WdomElement]</span>
+    <span class="n">_parser_class</span> <span class="o">=</span> <span class="n">WdomElementParser</span>  <span class="c1"># type: Type[ElementParser]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_RimoIdType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get rimo_id attribute.</span>
+
+<span class="sd">        This attribute is used to relate python node and browser DOM node.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;rimo_id&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_id</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid rimo_id type&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_id</span>
 
     <span class="nd">@rimo_id</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">_RimoIdType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;rimo_id&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rimo_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;WdomElement&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">rimo_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">_RimoIdType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span> <span class="o">=</span> <span class="n">rimo_id</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;mount&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_mount</span><span class="p">)</span>
@@ -146,172 +205,229 @@
             <span class="n">clone</span><span class="o">.</span><span class="n">rimo_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">clone</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">clone</span>
 
-    <span class="k">def</span> <span class="nf">_on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listeners</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener_web</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;rimo_id&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="s1">&#39;rimo_id&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
                 <span class="c1"># remove old reference to self</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_rimo_id</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1"># register this elements with new id</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_rimo_id</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_rimo_id</span><span class="p">[</span><span class="n">value</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Invalid rimo_id type&#39;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_remove_web</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_remove_web</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;remove&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Remove this node from parent&#39;s DOM tree.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<div class="viewcode-block" id="WdomElement.remove"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove this node from parent&#39;s DOM tree.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_remove_web</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">_empty_web</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_empty_web</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;empty&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WdomElement.empty"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.empty">[docs]</a>    <span class="k">def</span> <span class="nf">empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove all child nodes from this node.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_empty_web</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">_append_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="s1">&#39;WebElement&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_append_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="s1">&#39;WdomElement&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">html</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">html</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Node</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;insertAdjacentHTML&#39;</span><span class="p">,</span> <span class="s1">&#39;beforeend&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="s1">&#39;WebElement&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Append child node at the last of child nodes. If this instance is</span>
-<span class="sd">        connected to the node on browser, the child node is also added to it.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_append_child_web</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_append_child</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+<div class="viewcode-block" id="WdomElement.appendChild"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.appendChild">[docs]</a>    <span class="k">def</span> <span class="nf">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="s1">&#39;WdomElement&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Append child node at the last of child nodes.</span>
 
-    <span class="k">def</span> <span class="nf">_insert_before_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">:</span> <span class="n">Node</span><span class="p">):</span>
+<span class="sd">        If this instance is connected to the node on browser, the child node is</span>
+<span class="sd">        also added to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_child_web</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_append_child</span><span class="p">(</span><span class="n">child</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_insert_before_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">html</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">html</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">Node</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_node</span><span class="p">,</span> <span class="n">WebElement</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_node</span><span class="p">,</span> <span class="n">WdomElement</span><span class="p">):</span>
             <span class="n">ref_node</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;insertAdjacentHTML&#39;</span><span class="p">,</span> <span class="s1">&#39;beforebegin&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ref_node</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;insert&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Insert new child node before the reference child node. If the</span>
-<span class="sd">        reference node is not a child of this node, raise ValueError. If this</span>
-<span class="sd">        instance is connected to the node on browser, the child node is also</span>
-<span class="sd">        added to it.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_before_web</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_before</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">)</span>
+<div class="viewcode-block" id="WdomElement.insertBefore"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.insertBefore">[docs]</a>    <span class="k">def</span> <span class="nf">insertBefore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert new child node before the reference child node.</span>
 
-    <span class="k">def</span> <span class="nf">_remove_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">):</span>
+<span class="sd">        If the reference node is not a child of this node, raise ValueError. If</span>
+<span class="sd">        this instance is connected to the node on browser, the child node is</span>
+<span class="sd">        also added to it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_insert_before_web</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_insert_before</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">ref_node</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_remove_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">WebElement</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">WdomElement</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeChildById&#39;</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeChildByIndex&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Remove the child node from this node. If the node is not a child</span>
-<span class="sd">        of this node, raise ValueError.&#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_child_web</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_child</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+<div class="viewcode-block" id="WdomElement.removeChild"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.removeChild">[docs]</a>    <span class="k">def</span> <span class="nf">removeChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove the child node from this node.</span>
 
-    <span class="k">def</span> <span class="nf">_replace_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">old_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old_child</span><span class="p">,</span> <span class="n">WebElement</span><span class="p">):</span>
+<span class="sd">        If the node is not a child of this node, raise ValueError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_child_web</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_child</span><span class="p">(</span><span class="n">child</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_replace_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">old_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old_child</span><span class="p">,</span> <span class="n">WdomElement</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;replaceChildById&#39;</span><span class="p">,</span> <span class="n">new_child</span><span class="o">.</span><span class="n">html</span><span class="p">,</span> <span class="n">old_child</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">old_child</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># old_child will be Text Node</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">old_child</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">old_child</span><span class="p">)</span>
             <span class="c1"># Remove old_child before insert new child</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_remove_child_web</span><span class="p">(</span><span class="n">old_child</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;insert&#39;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">new_child</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">replaceChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">,</span> <span class="n">old_child</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+<div class="viewcode-block" id="WdomElement.replaceChild"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.replaceChild">[docs]</a>    <span class="k">def</span> <span class="nf">replaceChild</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">:</span> <span class="s1">&#39;WdomElement&#39;</span><span class="p">,</span> <span class="n">old_child</span><span class="p">:</span> <span class="s1">&#39;WdomElement&#39;</span>
+                     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Replace child nodes.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_replace_child_web</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">old_child</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replace_child</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">old_child</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_replace_child</span><span class="p">(</span><span class="n">new_child</span><span class="p">,</span> <span class="n">old_child</span><span class="p">)</span></div>
 
-    <span class="nd">@coroutine</span>
-    <span class="k">def</span> <span class="nf">getBoundingClientRect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">fut</span> <span class="o">=</span> <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_query</span><span class="p">(</span><span class="s1">&#39;getBoundingClientRect&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">fut</span>
+<div class="viewcode-block" id="WdomElement.getBoundingClientRect"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.getBoundingClientRect">[docs]</a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">getBoundingClientRect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get size of this node on browser.&quot;&quot;&quot;</span>
+        <span class="n">fut</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_query</span><span class="p">(</span><span class="s1">&#39;getBoundingClientRect&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">fut</span></div>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&#39;&#39;&#39;Return text contents of this node and all chid nodes. Any value is</span>
-<span class="sd">        set to this property, all child nodes are removed and new value is set</span>
-<span class="sd">        as a text node.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_text_content</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_set_text_content_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_text_content_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;textContent&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">textContent</span><span class="p">)</span>
 
-    <span class="nd">@textContent</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="nd">@HTMLElement</span><span class="o">.</span><span class="n">textContent</span><span class="o">.</span><span class="n">setter</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">textContent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="sd">&quot;&quot;&quot;Set textContent both on this node and related browser node.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_text_content</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_text_content_web</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_set_inner_html_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_inner_html_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;innerHTML&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_inner_html</span><span class="p">()</span>
-
-    <span class="nd">@innerHTML</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_inner_html_web</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_inner_html</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+    <span class="nd">@HTMLElement</span><span class="o">.</span><span class="n">innerHTML</span><span class="o">.</span><span class="n">setter</span>  <span class="c1"># type: ignore</span>
+    <span class="k">def</span> <span class="nf">innerHTML</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+        <span class="sd">&quot;&quot;&quot;Set innerHTML both on this node and related browser node.&quot;&quot;&quot;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_html</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_inner_html_web</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_empty</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_child</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">html_noid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get html representation of this node without rimo_id.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">remove_id_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">click</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="WdomElement.click"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.click">[docs]</a>    <span class="k">def</span> <span class="nf">click</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send click event.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_event</span><span class="p">(</span><span class="n">Event</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">))</span>
+            <span class="c1"># Web上に表示されてれば勝手にブラウザ側からクリックイベント発生する</span>
+            <span class="c1"># のでローカルのクリックイベント不要</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">create_event</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="n">currentTarget</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_event</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">script</span><span class="p">)</span>
+<div class="viewcode-block" id="WdomElement.exec"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.exec">[docs]</a>    <span class="k">def</span> <span class="nf">exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">script</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Execute JavaScript on the related browser node.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;eval&#39;</span><span class="p">,</span> <span class="n">script</span><span class="p">)</span></div>
 
     <span class="c1"># Window controll</span>
-    <span class="k">def</span> <span class="nf">scroll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">scroll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;scroll&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">scrollTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">scrollTo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;scrollTo&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">scrollBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">scrollBy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;scrollBy&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">scrollX</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">scrollX</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_query</span><span class="p">(</span><span class="s1">&#39;scrollX&#39;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">scrollY</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_query</span><span class="p">(</span><span class="s1">&#39;scrollY&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">scrollY</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">js_query</span><span class="p">(</span><span class="s1">&#39;scrollY&#39;</span><span class="p">)</span></div>
 </pre></div>
 
+          </div>
         </div>
       </div>
-  </div>
-  <div class="footer">
-    &copy;2016, Hiroyuki Takagi.
-    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
+    </div>
+
     
-  </div>
-
-  
     <a href="https://github.com/miyakogi/wdom" class="github">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-  
+    
 
-  
-
+    
   </body>
 </html>

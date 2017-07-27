@@ -1,0 +1,253 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Event API &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.8',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Test Utilities" href="test.html" />
+    <link rel="prev" title="Node interfaces/classes" href="node.html" />
+  <!-- font -->
+  <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+  <!-- Style -->
+  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
+  
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="event-api">
+<h1>Event API<a class="headerlink" href="#event-api" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="wdom.event.Event">
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">Event</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.Event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Event interface class.</p>
+<p>Create event object.</p>
+<p>First argument (type) is a string to represents type of this event.
+Second optional argument (init) is a dictionally, which has fields for
+this event’s status.</p>
+<dl class="method">
+<dt id="wdom.event.Event.stopPrapagation">
+<code class="descname">stopPrapagation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#Event.stopPrapagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.Event.stopPrapagation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not implemented yet.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="wdom.event.create_event">
+<code class="descclassname">wdom.event.</code><code class="descname">create_event</code><span class="sig-paren">(</span><em>type</em>, <em>*</em>, <em>currentTarget=None</em>, <em>target=None</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#create_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.create_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Event and set target nodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>currentTarget</strong> (<a class="reference internal" href="#wdom.event.EventTarget" title="wdom.event.EventTarget"><em>EventTarget</em></a>) – Current event target node.</li>
+<li><strong>target</strong> (<a class="reference internal" href="#wdom.event.EventTarget" title="wdom.event.EventTarget"><em>EventTarget</em></a>) – Node which emitted this event first.</li>
+<li><strong>init</strong> (<em>dict</em>) – Event options.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#wdom.event.Event" title="wdom.event.Event"><code class="xref py py-class docutils literal"><span class="pre">Event</span></code></a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.event.EventListener">
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">EventListener</code><span class="sig-paren">(</span><em>listener</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Class to wrap an event listener function.</p>
+<p>Acceptable listeners are function, coroutine, and coroutine-function.
+If listener is a coroutine or coroutine-function, it will be executed
+synchronously as if it is normal function.</p>
+<p>Wrap an event listener.</p>
+<p>Event listener should be function or coroutine-function.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.event.EventTarget">
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">EventTarget</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Base class for EventTargets.</p>
+<p>This class and subclasses can add/remove event listeners and emit events.</p>
+<dl class="method">
+<dt id="wdom.event.EventTarget.addEventListener">
+<code class="descname">addEventListener</code><span class="sig-paren">(</span><em>event</em>, <em>listener</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget.addEventListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget.addEventListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add event listener to this node.</p>
+<p><code class="docutils literal"><span class="pre">event</span></code> is a string which determines the event type when the new
+listener called. Acceptable events are same as JavaScript, without
+<code class="docutils literal"><span class="pre">on</span></code>. For example, to add a listener which is called when this node
+is clicked, event is <code class="docutils literal"><span class="pre">'click</span></code>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.event.EventTarget.removeEventListener">
+<code class="descname">removeEventListener</code><span class="sig-paren">(</span><em>event</em>, <em>listener</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget.removeEventListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget.removeEventListener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove an event listener of this node.</p>
+<p>The listener is removed only when both event type and listener is
+matched.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.event.EventTarget.dispatchEvent">
+<code class="descname">dispatchEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget.dispatchEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget.dispatchEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emit events.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal"><span class="pre">Awaitable</span></code>[<code class="docutils literal"><span class="pre">None</span></code>]]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="guide/index.html">User Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Event API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="reference.html">API Reference</a><ul>
+      <li>Previous: <a href="node.html" title="previous chapter">Node interfaces/classes</a></li>
+      <li>Next: <a href="test.html" title="next chapter">Test Utilities</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/event.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+    <a href="https://github.com/miyakogi/wdom" class="github">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+    </a>
+    
+
+    
+  </body>
+</html>

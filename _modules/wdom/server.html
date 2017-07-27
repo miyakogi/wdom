@@ -1,24 +1,21 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
-    <title>wdom.server &mdash; WDOM 0.1.5 documentation</title>
-    
-    <link rel="stylesheet" href="../../_static/slex.css" type="text/css" />
+    <title>wdom.server &#8212; WDOM 0.1.8 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.5',
+        VERSION:     '0.1.8',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
       };
     </script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
@@ -26,8 +23,6 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="top" title="WDOM 0.1.5 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Lato:400,400italic' rel='stylesheet' type='text/css'>
@@ -36,105 +31,76 @@
   <!-- Style -->
   <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
+   
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
   
   <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
 
 
   </head>
-  <body role="document">
-  <div class="document"> 
-    <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-      <div class="sphinxsidebarwrapper">
-
-  <h1 class="logo"><a href="../../index.html">WDOM</a></h1>
-
-
-
-  <p class="blurb">Browser-based GUI Library for Python</p>
-
-
-
-  
-    
-      <a class="github-mark" href="https://github.com/miyakogi/wdom/">
-        <img class="github-mark" src="../../_static/GitHub-Mark-64px.png">
-      </a>
-    
+  <body>
   
 
-
-
-
-
-<h3>Contents</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
-</ul>
-
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../../index.html">Documentation overview</a><ul>
-  <li><a href="../index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div class="searchbox" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../../search.html" method="get">
-      <div class="search-container">
-        <input class="form-control control search-input" type="text" name="q" />
-        <button class="btn button search-btn" type="submit" value="Go" />Go</button>
-        <input type="hidden" name="check_keywords" value="yes" />
-        <input type="hidden" name="area" value="default" />
-      </div>
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-      </div>
-    </div> 
+    <div class="document">
       <div class="documentwrapper">
-        <div class="body" role="main">
-          
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
   <h1>Source code for wdom.server</h1><div class="highlight"><pre>
 <span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
+<span class="sd">&quot;&quot;&quot;Web server control functions.&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">tornado</span> <span class="k">import</span> <span class="n">autoreload</span>
 
-<span class="kn">from</span> <span class="nn">wdom.misc</span> <span class="k">import</span> <span class="n">static_dir</span><span class="p">,</span> <span class="n">install_asyncio</span>
+<span class="kn">from</span> <span class="nn">wdom.util</span> <span class="k">import</span> <span class="n">STATIC_DIR</span><span class="p">,</span> <span class="n">install_asyncio</span>
 <span class="kn">from</span> <span class="nn">wdom.options</span> <span class="k">import</span> <span class="n">config</span>
 <span class="kn">from</span> <span class="nn">wdom.server.base</span> <span class="k">import</span> <span class="n">exclude_patterns</span><span class="p">,</span> <span class="n">open_browser</span><span class="p">,</span> <span class="n">watch_dir</span>
 <span class="kn">from</span> <span class="nn">wdom.server</span> <span class="k">import</span> <span class="n">_tornado</span> <span class="k">as</span> <span class="n">module</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;get_app&#39;</span><span class="p">,</span> <span class="s1">&#39;start_server&#39;</span><span class="p">,</span> <span class="s1">&#39;stop_server&#39;</span><span class="p">,</span> <span class="s1">&#39;exclude_patterns&#39;</span><span class="p">)</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;add_static_path&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;exclude_patterns&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;get_app&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;start&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;start_server&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;stop_server&#39;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">_server</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="n">server_config</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">server_config</span>
+<span class="n">_msg_queue</span> <span class="o">=</span> <span class="p">[]</span>
 
 
-<span class="k">def</span> <span class="nf">is_connected</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">is_connected</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Check if the current server has a client connection.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Send message to all client connections.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">push_message</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Push message on the message queue.&quot;&quot;&quot;</span>
+    <span class="n">_msg_queue</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">send_message</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Send message via WS to all client connections.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">_msg_queue</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">_msg_queue</span><span class="p">)</span>
+    <span class="n">_msg_queue</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">conn</span> <span class="ow">in</span> <span class="n">module</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
         <span class="n">conn</span><span class="o">.</span><span class="n">write_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="add_static_path"><a class="viewcode-back" href="../../webserver.html#wdom.server.add_static_path">[docs]</a><span class="k">def</span> <span class="nf">add_static_path</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">no_watch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="add_static_path"><a class="viewcode-back" href="../../webserver.html#wdom.server.add_static_path">[docs]</a><span class="k">def</span> <span class="nf">add_static_path</span><span class="p">(</span><span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">no_watch</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Add directory to serve static files.</span>
 
 <span class="sd">    First argument ``prefix`` is a URL prefix for the ``path``. ``path`` must</span>
@@ -147,38 +113,27 @@
         <span class="n">watch_dir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">get_app</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get root Application object.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span>
+<div class="viewcode-block" id="get_app"><a class="viewcode-back" href="../../webserver.html#wdom.server.get_app">[docs]</a><span class="k">def</span> <span class="nf">get_app</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">module</span><span class="o">.</span><span class="n">Application</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Get root web application object.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">get_app</span><span class="p">()</span></div>
 
 
-<span class="k">def</span> <span class="nf">set_server_type</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Set server type to document and handle websocket connection.</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_message_loop</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">send_message</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">message_wait</span><span class="p">)</span>
 
-<span class="sd">    By default, if aiohttp is available wdom uses aiohttp for server. Otherwise</span>
-<span class="sd">    use tornado.</span>
+
+<div class="viewcode-block" id="start_server"><a class="viewcode-back" href="../../webserver.html#wdom.server.start_server">[docs]</a><span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span><span class="n">browser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">check_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
+                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">module</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Start web server.</span>
+
+<span class="sd">    Use wrapper function :func:`start` instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">global</span> <span class="n">module</span>
-    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;aiohttp&#39;</span><span class="p">:</span>
-        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;wdom.server._aiohttp&#39;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;tornado&#39;</span><span class="p">:</span>
-        <span class="n">module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;wdom.server._tornado&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> is not supported now. Available server types are:&#39;</span>
-            <span class="s1">&#39; aiohttp, tornado&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
-        <span class="p">)</span>
-
-
-<div class="viewcode-block" id="start_server"><a class="viewcode-back" href="../../webserver.html#wdom.server.start_server">[docs]</a><span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">Application</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">browser</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">check_time</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">500</span><span class="p">,</span>
-                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Start web server.&quot;&quot;&quot;</span>
     <span class="c1"># Add application&#39;s static files directory</span>
     <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">get_document</span>
-    <span class="n">add_static_path</span><span class="p">(</span><span class="s1">&#39;_static&#39;</span><span class="p">,</span> <span class="n">static_dir</span><span class="p">)</span>
+    <span class="n">add_static_path</span><span class="p">(</span><span class="s1">&#39;_static&#39;</span><span class="p">,</span> <span class="n">STATIC_DIR</span><span class="p">)</span>
     <span class="n">doc</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">tempdir</span><span class="p">):</span>
         <span class="n">add_static_path</span><span class="p">(</span><span class="s1">&#39;tmp&#39;</span><span class="p">,</span> <span class="n">doc</span><span class="o">.</span><span class="n">tempdir</span><span class="p">,</span> <span class="n">no_watch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -190,6 +145,9 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start server on </span><span class="si">{0}</span><span class="s1">:</span><span class="si">{1:d}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">server_config</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">],</span> <span class="n">server_config</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]))</span>
 
+    <span class="c1"># start messaging loop</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">ensure_future</span><span class="p">(</span><span class="n">_message_loop</span><span class="p">())</span>
+
     <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">open_browser</span><span class="p">:</span>
         <span class="n">open_browser</span><span class="p">(</span><span class="s1">&#39;http://</span><span class="si">{}</span><span class="s1">:</span><span class="si">{}</span><span class="s1">/&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">server_config</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">],</span>
                                             <span class="n">server_config</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]),</span>
@@ -197,30 +155,92 @@
     <span class="k">return</span> <span class="n">_server</span></div>
 
 
-<div class="viewcode-block" id="stop_server"><a class="viewcode-back" href="../../webserver.html#wdom.server.stop_server">[docs]</a><span class="k">def</span> <span class="nf">stop_server</span><span class="p">(</span><span class="n">server</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="stop_server"><a class="viewcode-back" href="../../webserver.html#wdom.server.stop_server">[docs]</a><span class="k">def</span> <span class="nf">stop_server</span><span class="p">(</span><span class="n">server</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">module</span><span class="o">.</span><span class="n">HTTPServer</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Terminate web server.&quot;&quot;&quot;</span>
     <span class="n">module</span><span class="o">.</span><span class="n">stop_server</span><span class="p">(</span><span class="n">server</span> <span class="ow">or</span> <span class="n">_server</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="start"><a class="viewcode-back" href="../../webserver.html#wdom.server.start">[docs]</a><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Start web server.</span>
+
+<span class="sd">    Run until ``Ctrl-c`` pressed, or if auto-shutdown is enabled, until when</span>
+<span class="sd">    all browser windows are closed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start_server</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="n">stop_server</span><span class="p">()</span></div>
 </pre></div>
 
+          </div>
         </div>
       </div>
-  </div>
-  <div class="footer">
-    &copy;2016, Hiroyuki Takagi.
-    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">WDOM</a></h1>
+
+
+
+<p class="blurb">Browser-based GUI Library for Python</p>
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=miyakogi&repo=wdom&type=mark&count=False&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guide/index.html">User Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changes</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Hiroyuki Takagi.
+      
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.3</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
       
+    </div>
+
     
-  </div>
-
-  
     <a href="https://github.com/miyakogi/wdom" class="github">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"  class="github"/>
     </a>
-  
+    
 
-  
-
+    
   </body>
 </html>
