@@ -5,10 +5,10 @@
 
 import logging
 from collections import Iterable
-from typing import Any, Dict, Optional, Tuple, Union, TYPE_CHECKING
+from typing import Any, Dict, Optional, Union, TYPE_CHECKING
 from types import new_class
 
-from wdom.element import DOMTokenList, ElementMeta, _AttrValueType
+from wdom.element import _AttrValueType
 from wdom.element import (
     HTMLAnchorElement,
     HTMLButtonElement,
@@ -27,38 +27,21 @@ from wdom.node import Node, NodeList
 from wdom.web_node import WdomElement
 
 if TYPE_CHECKING:
-    from typing import List, Type # noqa
+    from typing import List, Type  # noqa
 
 logger = logging.getLogger(__name__)
 
 
-class TagBaseMeta(ElementMeta):
-    """Meta class to set default class variable of HTMLElement."""
-
-    @classmethod
-    def __prepare__(metacls, name: str, bases: Tuple[type], **kwargs: Any
-                    ) -> Dict[str, bool]:
-        return {'inherit_class': True}
-
-
-class Tag(WdomElement, metaclass=TagBaseMeta):
+class Tag(WdomElement):
     """Base class for html tags.
 
     ``HTMLElement`` requires to specify tag name when instanciate it, but this
     class and sublasses have default tag name and not need to specify it for
     each thier instances.
-
-    Additionally, this class provides shortcut properties to handle some
-    special attributes (class, type, is).
     """
 
     #: Tag name used for this node.
     tag = 'tag'
-    #: str and list of strs are acceptale.
-    class_ = ''
-    #: Inherit classes defined in super class or not.
-    #: By default, this variable is True.
-    inherit_class = True
     #: use for <input> tag's type
     type_ = ''
     #: custom element which extends built-in tag (like <table is="your-tag">)
@@ -75,32 +58,11 @@ class Tag(WdomElement, metaclass=TagBaseMeta):
         super().__init__(self.tag, **kwargs)  # type: ignore
         self.append(*args)
 
-    @classmethod
-    def get_class_list(cls) -> DOMTokenList:
-        """Get class-level class list, including all super class's."""
-        l = []
-        l.append(DOMTokenList(cls, cls.class_))
-        if cls.inherit_class:
-            for base_cls in cls.__bases__:
-                if issubclass(base_cls, Tag):
-                    l.append(base_cls.get_class_list())
-        # Reverse order so that parent's class comes to front
-        l.reverse()
-        return DOMTokenList(cls, *l)
-
-    def __getitem__(self, attr: Union[str, int]
-                    ) -> Union[Node, _AttrValueType]:
-        if isinstance(attr, int):
-            return self.childNodes[attr]
-        return self.getAttribute(attr)
-
-    def __setitem__(self, attr: str, val: _AttrValueType) -> None:
-        self.setAttribute(attr, val)
-
-    def __delitem__(self, attr: str) -> None:
-        self.removeAttribute(attr)
-
     def __copy__(self) -> 'Tag':
+        """Need to copy class, not tag.
+
+        So need to re-implement copy.
+        """
         clone = type(self)()
         for attr in self.attributes:
             clone.setAttribute(attr, self.getAttribute(attr))
@@ -108,51 +70,6 @@ class Tag(WdomElement, metaclass=TagBaseMeta):
             clone.addClass(c)
         clone.style.update(self.style)
         return clone
-
-    def getAttribute(self, attr: str) -> _AttrValueType:  # noqa: D102
-        if attr == 'class':
-            cls = self.get_class_list()
-            cls._append(self.classList)
-            return cls.toString() if cls else None
-        return super().getAttribute(attr)
-
-    def addClass(self, *classes: str) -> None:
-        """[Not Standard] Add classes to this node."""
-        self.classList.add(*classes)
-
-    def hasClass(self, class_: str) -> bool:  # noqa: D102
-        """[Not Standard] Return if this node has ``class_`` class or not."""
-        return class_ in self.classList
-
-    def hasClasses(self) -> bool:  # noqa: D102
-        """[Not Standard] Return if this node has any classes or not."""
-        return len(self.classList) > 0
-
-    def removeClass(self, *classes: str) -> None:
-        """[Not Standard] Remove classes from this node."""
-        _remove_cl = []
-        for class_ in classes:
-            if class_ not in self.classList:
-                if class_ in self.get_class_list():
-                    logger.warning(
-                        'tried to remove class-level class: '
-                        '{}'.format(class_)
-                    )
-                else:
-                    logger.warning(
-                        'tried to remove non-existing class: {}'.format(class_)
-                    )
-            else:
-                _remove_cl.append(class_)
-        self.classList.remove(*_remove_cl)
-
-    def show(self) -> None:
-        """[Not Standard] Show this node on browser."""
-        self.hidden = False
-
-    def hide(self) -> None:
-        """[Not Standard] Hide this node on browser."""
-        self.hidden = True
 
     @property
     def type(self) -> _AttrValueType:  # noqa: D102

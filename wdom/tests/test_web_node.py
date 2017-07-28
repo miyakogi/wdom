@@ -101,6 +101,16 @@ class TestWdomElement(TestCase):
         self.elm.removeAttribute('src')
         self.js_mock.assert_called_with('removeAttribute', 'src')
 
+    def test_attr_subscription(self):
+        # test add tag-attr
+        self.elm['a'] = 'b'
+        self.assertEqual(self.elm['a'], 'b')
+        self.assertIn('a="b"', self.elm.html)
+        self.assertRegex(self.elm.start_tag, '<tag rimo_id="\d+" a="b">')
+        self.assertRegex(self.elm.html, '<tag rimo_id="\d+" a="b"></tag>')
+        del self.elm['a']
+        self.assertRegex(self.elm.html, '<tag rimo_id="\d+"></tag>')
+
     def test_style(self):
         self.elm.style = 'color: red;'
         self.js_mock.assert_called_once_with(
@@ -157,6 +167,256 @@ class TestWdomElement(TestCase):
         self.elm.click()
         self.js_mock.assert_called_once_with('addEventListener', 'click')
         self.assertEqual(mock.call_count, 1)
+
+    def test_hidden(self):
+        self.elm.show()
+        self.assertRegex(self.elm.html, '<tag rimo_id="\d+"></tag>')
+        self.elm.hide()
+        self.assertRegex(self.elm.html, '<tag rimo_id="\d+" hidden></tag>')
+        self.elm.show()
+        self.assertRegex(self.elm.html, '<tag rimo_id="\d+"></tag>')
+
+    def test_clone_node_sharrow_hidden(self):
+        self.elm.hide()
+        clone = self.elm.cloneNode()
+        self.assertRegex(clone.html, '<tag rimo_id="\d+" hidden></tag>')
+        clone.show()
+        self.assertRegex(self.elm.html, '<tag rimo_id="\d+" hidden></tag>')
+        self.assertRegex(clone.html, '<tag rimo_id="\d+"></tag>')
+
+    def test_clone_node_deep_hidden(self):
+        self.elm.appendChild(self.c1)
+        self.c1.tag = 'tag'
+        self.c1.hide()
+        clone = self.elm.cloneNode(deep=True)
+        self.assertRegex(
+            self.elm.html,
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" hidden></tag></tag>',
+        )
+        self.assertRegex(
+            clone.html,
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" hidden></tag></tag>',
+        )
+
+        self.c1.show()
+        self.assertRegex(
+            self.elm.html,
+            '<tag rimo_id="\d+"><tag rimo_id="\d+"></tag></tag>',
+        )
+        self.assertRegex(
+            clone.html,
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" hidden></tag></tag>',
+        )
+
+
+class TestWdomElementClass(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.tag = WdomElement('tag')
+        self.c1 = WdomElement('tag')
+        self.c2 = WdomElement('tag')
+
+    def test_class_addremove(self):
+        self.assertIsFalse(self.tag.hasClasses())
+        self.assertIsFalse(self.tag.hasClass('a'))
+        self.assertRegex(self.tag.html, '<tag rimo_id="\d+"></tag>')
+        self.tag.addClass('a')
+        self.assertIsTrue(self.tag.hasClasses())
+        self.assertIsTrue(self.tag.hasClass('a'))
+        self.assertIsFalse(self.tag.hasClass('b'))
+        self.assertRegex(self.tag.html, '<tag rimo_id="\d+" class="a"></tag>')
+        self.tag.removeClass('a')
+        self.assertIsFalse(self.tag.hasClasses())
+        self.assertIsFalse(self.tag.hasClass('a'))
+        self.assertRegex(self.tag.html, '<tag rimo_id="\d+"></tag>')
+
+    def test_class_in_init(self) -> None:
+        tag = WdomElement('tag', class_='a')
+        self.assertIsTrue(tag.hasClass('a'))
+        self.assertIsTrue(tag.hasClasses())
+        self.assertRegex(tag.html, '<tag rimo_id="\d+" class="a"></tag>')
+        tag.removeClass('a')
+        self.assertIsFalse(tag.hasClass('a'))
+        self.assertIsFalse(tag.hasClasses())
+        self.assertRegex(tag.html, '<tag rimo_id="\d+"></tag>')
+
+    def test_class_addremove_multi(self):
+        self.tag.addClass('a', 'b', 'c')
+        self.assertIsTrue(self.tag.hasClasses())
+        self.assertIsTrue(self.tag.hasClass('a'))
+        self.assertIsTrue(self.tag.hasClass('b'))
+        self.assertIsTrue(self.tag.hasClass('c'))
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a b c"></tag>',
+        )
+        self.tag.removeClass('a', 'c')
+        self.assertIsTrue(self.tag.hasClasses())
+        self.assertIsFalse(self.tag.hasClass('a'))
+        self.assertIsTrue(self.tag.hasClass('b'))
+        self.assertIsFalse(self.tag.hasClass('c'))
+        self.assertRegex(self.tag.html, '<tag rimo_id="\d+" class="b"></tag>')
+
+    def test_class_addremove_multi_string(self):
+        with self.assertRaises(ValueError):
+            self.tag.addClass('a b')
+
+    def test_class_getset(self) -> None:
+        self.assertEqual(self.tag['class'], None)
+        self.tag.addClass('a')
+        self.assertEqual(self.tag['class'], 'a')
+        self.tag['class'] = 'b'
+        self.assertEqual(self.tag['class'], 'b')
+        self.assertIsFalse(self.tag.hasClass('a'))
+        self.assertIsTrue(self.tag.hasClass('b'))
+
+    def test_class_remove_error(self) -> None:
+        with self.assertLogs('wdom', 'WARNING'):
+            self.tag.removeClass('a')
+
+    def test_clone_node_sharrow_class(self):
+        self.tag.appendChild(self.c1)
+        self.tag.addClass('a')
+        clone = self.tag.cloneNode()
+        self.assertRegex(clone.html, '<tag rimo_id="\d+" class="a"></tag>')
+
+        clone.removeClass('a')
+        self.assertRegex(clone.html, '<tag rimo_id="\d+"></tag>')
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+        )
+
+        clone.addClass('b')
+        self.assertRegex(clone.html, '<tag rimo_id="\d+" class="b"></tag>')
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+        )
+
+    def test_clone_node_deep_class(self):
+        self.tag.appendChild(self.c1)
+        self.tag.addClass('a')
+        self.c1.addClass('b')
+        clone = self.tag.cloneNode(deep=True)
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+" class="b">'
+            '</tag></tag>',
+        )
+        self.assertRegex(
+            clone.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+" class="b">'
+            '</tag></tag>',
+        )
+
+        clone.childNodes[0].removeClass('b')
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+" class="b">'
+            '</tag></tag>',
+        )
+        self.assertRegex(
+            clone.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+        )
+
+        self.c1.removeClass('b')
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+        )
+        self.assertRegex(
+            clone.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+        )
+
+        clone.addClass('c')
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+        )
+        self.assertRegex(
+            clone.html,
+            '<tag rimo_id="\d+" class="a c"><tag rimo_id="\d+"></tag></tag>',
+        )
+
+        clone.removeClass('a')
+        self.assertRegex(
+            self.tag.html,
+            '<tag rimo_id="\d+" class="a"><tag rimo_id="\d+"></tag></tag>',
+        )
+        self.assertRegex(
+            clone.html,
+            '<tag rimo_id="\d+" class="c"><tag rimo_id="\d+"></tag></tag>',
+        )
+
+    def test_class_of_class(self):
+        class A(WdomElement):
+            class_ = 'a1'
+        self.assertEqual(A.get_class_list().toString(), 'a1')
+        a = A('a')
+        self.assertRegex(a.html, '<a rimo_id="\d+" class="a1"></a>')
+        a.addClass('a2')
+        self.assertRegex(a.html, '<a rimo_id="\d+" class="a1 a2"></a>')
+        with self.assertLogs('wdom', 'WARNING'):
+            a.removeClass('a1')
+        self.assertRegex(a.html, '<a rimo_id="\d+" class="a1 a2"></a>')
+
+    def test_classes_multiclass(self):
+        class A(WdomElement):
+            class_ = 'a1 a2'
+        self.assertEqual(A.get_class_list().toString(), 'a1 a2')
+        a = A('a')
+        a.addClass('a3', 'a4')
+        self.assertRegex(a.html, '<a rimo_id="\d+" class="a1 a2 a3 a4"></a>')
+
+    def test_classes_inherit_class(self):
+        class A(WdomElement):
+            class_ = 'a1 a2'
+
+        class B(A):
+            class_ = 'b1 b2'
+
+        self.assertEqual(B.get_class_list().toString(), 'a1 a2 b1 b2')
+        b = B('b')
+        b.addClass('b3')
+        self.assertRegex(
+            b.html,
+            '<b rimo_id="\d+" class="a1 a2 b1 b2 b3"></b>',
+        )
+
+    def test_classes_notinherit_class(self):
+        class A(WdomElement):
+            class_ = 'a1 a2'
+
+        class B(A):
+            class_ = 'b1 b2'
+            inherit_class = False
+
+        self.assertEqual(B.get_class_list().toString(), 'b1 b2')
+        b = B('b')
+        b.addClass('b3')
+        self.assertRegex(b.html, '<b rimo_id="\d+" class="b1 b2 b3"></b>')
+
+        class C(B):
+            class_ = 'c1 c2'
+        self.assertEqual(C.get_class_list().toString(), 'b1 b2 c1 c2')
+
+    def test_classes_inherit_diamond(self):
+        class A(WdomElement):
+            class_ = 'a'
+
+        class B(A):
+            class_ = 'b'
+
+        class C(A):
+            class_ = 'c'
+
+        class D(B, C):
+            class_ = 'd'
+
+        self.assertEqual(D.get_class_list().toString(), 'a c b d')
 
 
 class TestEventMessage(TestCase):

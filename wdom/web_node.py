@@ -6,13 +6,14 @@
 import logging
 import re
 from asyncio import Future
-from typing import Any, Awaitable, Dict, Iterable, Optional, Union
+from typing import Any, Awaitable, Dict, Iterable, Optional, Tuple, Union
 from typing import TYPE_CHECKING
 from weakref import WeakValueDictionary
 
 from wdom import server
 from wdom.event import Event, create_event
 from wdom.element import _AttrValueType, HTMLElement, ElementParser
+from wdom.element import ElementMeta, DOMTokenList
 from wdom.node import Node
 
 if TYPE_CHECKING:
@@ -117,16 +118,34 @@ class WdomElementParser(ElementParser):
         self.default_class = WdomElement
 
 
-class WdomElement(HTMLElement, WebIF):
+class WdomElementMeta(ElementMeta):
+    """Meta class to set default class variable of HTMLElement."""
+
+    @classmethod
+    def __prepare__(metacls, name: str, bases: Tuple[type], **kwargs: Any
+                    ) -> Dict[str, bool]:
+        return {'inherit_class': True}
+
+
+class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
     """WdomElement class.
 
     This class provides main features to synchronously control browser DOM
     node.
+
+    Additionally, this class provides shortcut properties to handle class
+    attributes.
     """
 
     _elements_with_rimo_id = WeakValueDictionary(
     )  # type: WeakValueDictionary[_RimoIdType, WdomElement]
     _parser_class = WdomElementParser  # type: Type[ElementParser]
+
+    #: str and list of strs are acceptale.
+    class_ = ''
+    #: Inherit classes defined in super class or not.
+    #: By default, this variable is True.
+    inherit_class = True
 
     @property
     def rimo_id(self) -> _RimoIdType:
@@ -158,6 +177,8 @@ class WdomElement(HTMLElement, WebIF):
             # change automatically added id
             # overhead in __init__...
             clone.rimo_id = str(id(clone))
+        for c in self.classList:
+            clone.addClass(c)
         return clone
 
     def _on_mount(self, e: Event) -> None:
@@ -175,6 +196,69 @@ class WdomElement(HTMLElement, WebIF):
             else:
                 raise TypeError('Invalid rimo_id type')
         super()._set_attribute(attr, value)
+
+    def __getitem__(self, attr: Union[str, int]
+                    ) -> Union[Node, _AttrValueType]:
+        """Get/Set/Remove access by subscription (node['attr'])."""
+        if isinstance(attr, int):
+            return self.childNodes[attr]
+        return self.getAttribute(attr)
+
+    def __setitem__(self, attr: str, val: _AttrValueType) -> None:
+        self.setAttribute(attr, val)
+
+    def __delitem__(self, attr: str) -> None:
+        self.removeAttribute(attr)
+
+    @classmethod
+    def get_class_list(cls) -> DOMTokenList:
+        """Get class-level class list, including all super class's."""
+        cl = []
+        cl.append(DOMTokenList(cls, cls.class_))
+        if cls.inherit_class:
+            for base_cls in cls.__bases__:
+                if issubclass(base_cls, WdomElement):
+                    cl.append(base_cls.get_class_list())
+        # Reverse order so that parent's class comes to front  <- why?
+        cl.reverse()
+        return DOMTokenList(cls, *cl)
+
+    def getAttribute(self, attr: str) -> _AttrValueType:  # noqa: D102
+        if attr == 'class':
+            cls = self.get_class_list()
+            cls._append(self.classList)
+            return cls.toString() if cls else None
+        return super().getAttribute(attr)
+
+    def addClass(self, *classes: str) -> None:
+        """[Not Standard] Add classes to this node."""
+        self.classList.add(*classes)
+
+    def hasClass(self, class_: str) -> bool:  # noqa: D102
+        """[Not Standard] Return if this node has ``class_`` class or not."""
+        return class_ in self.classList
+
+    def hasClasses(self) -> bool:  # noqa: D102
+        """[Not Standard] Return if this node has any classes or not."""
+        return len(self.classList) > 0
+
+    def removeClass(self, *classes: str) -> None:
+        """[Not Standard] Remove classes from this node."""
+        _remove_cl = []
+        for class_ in classes:
+            if class_ not in self.classList:
+                if class_ in self.get_class_list():
+                    logger.warning(
+                        'tried to remove class-level class: '
+                        '{}'.format(class_)
+                    )
+                else:
+                    logger.warning(
+                        'tried to remove non-existing class: {}'.format(class_)
+                    )
+            else:
+                _remove_cl.append(class_)
+        self.classList.remove(*_remove_cl)
 
     def _remove_web(self) -> None:
         self.js_exec('remove')
@@ -313,3 +397,11 @@ class WdomElement(HTMLElement, WebIF):
 
     def scrollY(self) -> Awaitable:  # noqa: D102
         return self.js_query('scrollY')
+
+    def show(self) -> None:
+        """[Not Standard] Show this node on browser."""
+        self.hidden = False
+
+    def hide(self) -> None:
+        """[Not Standard] Hide this node on browser."""
+        self.hidden = True

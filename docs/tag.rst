@@ -18,9 +18,6 @@ Tag class
 
    .. autofunction:: NewTagClass
 
-   .. autoclass:: TagBaseMeta
-      :members:
-
 
 List of HTML Tag Classes
 ------------------------
