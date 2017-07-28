@@ -3,39 +3,31 @@
 
 from wdom.testing import TestCase
 
-from wdom.node import Node
-from wdom.parser import DocumentParser, FragmentParser
+from wdom.node import Node, DocumentFragment
+from wdom.parser import FragmentParser, parse_html
+from wdom.web_node import WdomElement, remove_rimo_id
 
+style_css = '''
+    body > h1 {
+        font-family: arial;
+    }
+'''.strip()
+style_html = '<style>{}</style>'.format(style_css)
 
-class TestDocumentParser(TestCase):
-    def setUp(self):
-        self.parser = DocumentParser()
+script_js = '''
+    funciont a(e) {
+        if (1 > 2 && 3 < 4) {
+            retrun 0;
+        }
+    }
+'''.strip()
+script_html = '<script type="text/javascript">{}</script>'.format(script_js)
 
-    def test_empty(self):
-        self.parser.feed('')
-        doc = self.parser.root
-        self.assertEqual(doc.length, 2)
-        self.assertEqual(doc.nodeType, Node.DOCUMENT_NODE)
-        self.assertEqual(doc.doctype.nodeType, Node.DOCUMENT_TYPE_NODE)
-        self.assertEqual(doc.html.length, 2)
-
-    def test_single_tag(self):
-        self.parser.feed('<h1>title</h1>')
-        doc = self.parser.root
-        self.assertEqual(doc.html.length, 2)
-        self.assertEqual(doc.body.length, 2)
-        # first child is <script>
-        self.assertEqual(doc.body.lastChild.tagName, 'H1')
-
-    def test_full_docc(self):
-        self.parser.feed(
-            '<!DOCTYPE html><html><head><title>Title</title></head>'
-            '<body><h1>title</h1></body></html>')
-        doc = self.parser.root
-        self.assertEqual(doc.html.length, 2)
-        self.assertEqual(doc.body.length, 2)
-        # first child is <script>
-        self.assertEqual(doc.body.lastChild.tagName, 'H1')
+body_sample = '''
+<h1>WDOM</h1>
+<p>Hello, World</p>
+'''.strip()
+body_html = '<body>{}</body>'.format(body_sample)
 
 
 class TestFragmentParser(TestCase):
@@ -152,3 +144,38 @@ class TestFragmentParser(TestCase):
         c = self.parser.root.firstChild
         self.assertEqual(c.length, 7)
         self.assertEqual(c.html, '<!--comment-->')
+
+    def test_parse_func(self):
+        elm = WdomElement('tag')
+        df = parse_html(body_sample)
+        self.assertTrue(isinstance(df, DocumentFragment))
+        self.assertEqual(df.length, 3)  # h1, empty text, p
+        elm.appendChild(df)
+        self.assertEqual(body_sample, remove_rimo_id(elm.innerHTML))
+
+    def test_parse_script(self):
+        elm = WdomElement('tag')
+        df = parse_html(script_html)
+        self.assertTrue(isinstance(df, DocumentFragment))
+        self.assertEqual(df.length, 1)  # h1, empty text, p
+        elm.appendChild(df)
+        self.assertEqual(script_html, remove_rimo_id(elm.innerHTML))
+        self.assertEqual(script_js, elm.firstChild.innerHTML)
+
+    def test_parse_style(self):
+        elm = WdomElement('tag')
+        df = parse_html(style_html)
+        self.assertTrue(isinstance(df, DocumentFragment))
+        self.assertEqual(df.length, 1)  # h1, empty text, p
+        elm.appendChild(df)
+        self.assertEqual(style_html, remove_rimo_id(elm.innerHTML))
+        self.assertEqual(style_css, elm.firstChild.innerHTML)
+
+    def test_parsed_class1(self):
+        df = parse_html('<a></a>')
+        from wdom.tag import A
+        self.assertIs(type(df.firstChild), A)
+
+    def test_parsed_class_unknown(self):
+        df = parse_html('<new></new>')
+        self.assertIs(type(df.firstChild), WdomElement)

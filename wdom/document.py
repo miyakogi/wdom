@@ -14,9 +14,9 @@ from types import ModuleType
 from typing import Optional, Union, Callable, Any
 import weakref
 
-from wdom.element import Element, Attr
+from wdom.element import Element, Attr, HTMLElement
 from wdom.event import Event
-from wdom.node import Node, DocumentType, Text, RawHtml, Comment
+from wdom.node import Node, DocumentType, Text, RawHtml, Comment, ParentNode
 from wdom.node import DocumentFragment
 from wdom.options import config
 from wdom.tag import Tag
@@ -68,34 +68,154 @@ def create_element(tag: str, name: str = None, base: type = None,
     return base_class(tag, **attr)
 
 
-class Document(Node):
-    """Document class."""
+def _find_tag(elm: Node, tag: str) -> Optional[Node]:
+    _tag = tag.lower()
+    for child in elm.childNodes:
+        if child.nodeType == Element.nodeType and child.localName == _tag:
+            return child
+    return None
+
+
+class Document(Node, ParentNode):
+    """Base Document class."""
 
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
-    body = None  # type: Node
-    html = None  # type: Node
+
+    def __init__(self, *,
+                 doctype: str = 'html',
+                 default_class: type = HTMLElement,
+                 **kwargs: Any) -> None:
+        """Generate new Document node.
+
+        :arg str doctype: Document type of this document.
+        :arg type default_class: Default class created by
+            :py:meth:`createElement` method.
+        """
+        super().__init__()
+        self.__window = Window(self)
+        self._default_class = default_class
+
+        self.__doctype = DocumentType(doctype, parent=self)
+        self.__html = Html(parent=self)
+        self.__head = Head(parent=self.documentElement)
+        self.__body = Body(parent=self.documentElement)
 
     @property
     def defaultView(self) -> Window:
         """Return :class:`Window` class of this document."""
-        return self._window
+        return self.__window
+
+    @property
+    def doctype(self) -> DocumentType:
+        """Return DocumentType element of this document."""
+        return self.__doctype
+
+    @property
+    def documentElement(self) -> Element:
+        """Return <html> element of this document."""
+        return self.__html
+
+    @property
+    def head(self) -> Element:
+        """Return <head> element of this document."""
+        return self.__head
+
+    def _find_charset_node(self) -> Optional[Element]:
+        for child in self.head:
+            if child.localName == 'meta' and child.hasAttribute('charset'):
+                return child
+        return None
+
+    @property
+    def characterSet(self) -> str:
+        """Get/Set charset of this document."""
+        charset = self._find_charset_node()
+        if charset:
+            return charset.getAttribute('charset')  # type: ignore
+        return ''
+
+    @characterSet.setter
+    def characterSet(self, charset: str) -> None:
+        """Set character set of this document."""
+        charset_node = self._find_charset_node() or Meta(parent=self.head)
+        charset_node.setAttribute('charset', charset)
+
+    @property
+    def body(self) -> Element:
+        """Return <body> element of this document."""
+        return self.__body
+
+    @property
+    def title(self) -> str:
+        """Get/Set title string of this document."""
+        title_element = _find_tag(self.head, 'title')
+        if title_element:
+            return title_element.textContent
+        return ''
+
+    @title.setter
+    def title(self, new_title: str) -> None:
+        _title = _find_tag(self.head, 'title')
+        title_element = _title or Title(parent=self.head)
+        title_element.textContent = new_title
+
+    def getElementById(self, id: Union[str, int]) -> Optional[Node]:
+        """Get element by ``id``.
+
+        If this document does not have the element with the id, return None.
+        """
+        elm = getElementById(id)
+        if elm and elm.ownerDocument is self:
+            return elm
+        return None
+
+    def createDocumentFragment(self) -> DocumentFragment:
+        """Create empty document fragment."""
+        return DocumentFragment()
+
+    def createTextNode(self, text: str) -> Text:
+        """Create text node with ``text``."""
+        return Text(text)
+
+    def createComment(self, comment: str) -> Comment:
+        """Create comment node with ``comment``."""
+        return Comment(comment)
+
+    def createElement(self, tag: str) -> Node:
+        """Create new element whose tag name is ``tag``."""
+        return create_element(tag, base=self._default_class)
+
+    def createEvent(self, event: str) -> Event:
+        """Create Event object with ``event`` type."""
+        return Event(event)
+
+    def createAttribute(self, name: str) -> Attr:
+        """Create Attribute object with ``name``."""
+        return Attr(name)
+
+
+class WdomDocument(Document):
+    """Main document class for WDOM applications."""
 
     @property
     def tempdir(self) -> str:
         """Return temporary directory used by this document."""
-        return self._tempdir
+        return self.__tempdir
 
-    def __init__(self, doctype: str = 'html', title: str = 'W-DOM',
-                 charset: str = 'utf-8', default_class: type = WdomElement,
+    def __init__(self, *,
+                 doctype: str = 'html',
+                 title: str = 'W-DOM',
+                 charset: str = 'utf-8',
+                 default_class: type = WdomElement,
                  autoreload: Optional[bool] = None,
                  reload_wait: Optional[float] =None,
-                 ) -> None:
-        """Create new document object.
+                 **kwargs: Any) -> None:
+        """Create new document object for WDOM application.
 
         .. caution::
-            Don't create new document from :class:`Document` class constructor.
-            Use :func:`get_new_document` function instead.
+        Don't create new document from :class:`WdomDocument` class constructor.
+        Use :func:`get_new_document` function instead.
 
         :arg str doctype: doctype of the document (default: html).
         :arg str title: title of the document.
@@ -106,24 +226,15 @@ class Document(Node):
         :arg float reload_wait: How long (seconds) wait to reload. This
             parameter is only used when ``autoreload`` is enabled.
         """
-        self._tempdir = _tempdir = tempfile.mkdtemp()
+        self.__tempdir = _tempdir = tempfile.mkdtemp()
         self._finalizer = weakref.finalize(self,  # type: ignore
                                            partial(_cleanup, _tempdir))
-        super().__init__()
-        self._window = Window(self)
-        self._default_class = default_class
         self._autoreload = autoreload
         self._reload_wait = reload_wait
 
-        self.doctype = DocumentType(doctype, parent=self)
-        self.html = Html(parent=self)
-        self.head = Head(parent=self.html)
-        self.charset_element = Meta(parent=self.head)
+        super().__init__(doctype=doctype, default_class=default_class)
         self.characterSet = charset
-        self.title_element = Title(parent=self.head)
         self.title = title
-
-        self.body = Body(parent=self.html)
         self.script = Script(parent=self.body)
         self._autoreload_script = Script(parent=self.head)
 
@@ -143,16 +254,6 @@ class Document(Node):
             self._autoreload_script.textContent = '\n{}\n'.format(
                 '\n'.join(ar_script))
 
-    def getElementById(self, id: Union[str, int]) -> Optional[Node]:
-        """Get element by ``id``.
-
-        If this document does not have the element with the id, return None.
-        """
-        elm = getElementById(id)
-        if elm and elm.ownerDocument is self:
-            return elm
-        return None
-
     def getElementByRimoId(self, id: Union[str, int]) -> Optional[WdomElement]:
         """Get element by ``rimo_id``.
 
@@ -162,60 +263,6 @@ class Document(Node):
         if elm and elm.ownerDocument is self:
             return elm
         return None
-
-    def createElement(self, tag: str) -> Node:
-        """Create new element."""
-        return create_element(tag, base=self._default_class)
-
-    def createDocumentFragment(self) -> DocumentFragment:
-        """Create empty document fragment."""
-        return DocumentFragment()
-
-    def createTextNode(self, text: str) -> Text:
-        """Create text node with ``text``."""
-        return Text(text)
-
-    def createComment(self, comment: str) -> Comment:
-        """Create comment node with ``comment``."""
-        return Comment(comment)
-
-    def createEvent(self, event: str) -> Event:
-        """Create Event object with ``event`` type."""
-        return Event(event)
-
-    def createAttribute(self, name: str) -> Attr:
-        """Create Attribute object with ``name``."""
-        return Attr(name)
-
-    @property
-    def title(self) -> str:
-        """Return title of this document."""
-        return self.title_element.textContent
-
-    @title.setter
-    def title(self, value: str) -> None:
-        """Set title of this document."""
-        self.title_element.textContent = value
-
-    @property
-    def characterSet(self) -> str:
-        """Return character set of this document."""
-        return self.charset_element.getAttribute('charset')
-
-    @characterSet.setter
-    def characterSet(self, value: str) -> None:
-        """Set character set of this document."""
-        self.charset_element.setAttribute('charset', value)
-
-    @property
-    def charset(self) -> str:
-        """Return charset set of this document."""
-        return self.characterSet
-
-    @charset.setter
-    def charset(self, value: str) -> None:
-        """Set charset set of this document."""
-        self.characterSet = value
 
     def add_jsfile(self, src: str) -> None:
         """Add JS file to load at this document's bottom."""
@@ -263,7 +310,7 @@ def get_new_document(  # noqa: C901
         log_console: bool = False,
         ws_url: Optional[str] = None,
         message_wait: Optional[float] = None,
-        document_factory: Callable[..., Document] = Document,
+        document_factory: Callable[..., Document] = WdomDocument,
         **kwargs: Any) -> Document:
     """Create new :class:`Document` object with options.
 

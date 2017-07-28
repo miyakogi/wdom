@@ -19,9 +19,14 @@ if TYPE_CHECKING:
     from typing import Type  # noqa
 
 logger = logging.getLogger(__name__)
-remove_id_re = re.compile(r' rimo_id="\d+"')
+_remove_id_re = re.compile(r' rimo_id="\d+"')
 _RimoIdType = Union[int, str]
 _T_MsgItem = Union[int, str]
+
+
+def remove_rimo_id(html: str) -> str:
+    """Remove ``rimo_id`` attribute from html strings."""
+    return _remove_id_re.sub('', html)
 
 
 class WebIF:
@@ -277,7 +282,7 @@ class WdomElement(HTMLElement, WebIF):
     @property
     def html_noid(self) -> str:
         """Get html representation of this node without rimo_id."""
-        return remove_id_re.sub('', self.html)
+        return remove_rimo_id(self.html)
 
     def click(self) -> None:
         """Send click event."""

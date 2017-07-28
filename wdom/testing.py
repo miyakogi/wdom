@@ -88,7 +88,7 @@ def reset() -> None:
     _tornado.set_application(_tornado.Application())
     Element._elements_with_id.clear()
     Element._element_buffer.clear()
-    customElements.clear()
+    customElements.reset()
 
 
 class TestCase(unittest.TestCase):
@@ -114,7 +114,13 @@ class TestCase(unittest.TestCase):
             set_application(self.your_app)
     """
 
-    def tearDown(self) -> None:  # noqa: D102
+    def setUp(self) -> None:
+        """Reset WDOM states."""
+        super().setUp()
+        reset()
+
+    def tearDown(self) -> None:
+        """Reset WDOM states."""
         reset()
         super().tearDown()
 

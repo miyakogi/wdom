@@ -240,8 +240,8 @@ class TestStaticFileHandler(HTTPTestCase):
 class TestAddStaticPath(HTTPTestCase):
     def setUp(self) -> None:
         from os import path
-        server.add_static_path('a', path.abspath(path.dirname(__file__)))
         super().setUp()
+        server.add_static_path('a', path.abspath(path.dirname(__file__)))
         self.document = get_document()
         self.start()
 
