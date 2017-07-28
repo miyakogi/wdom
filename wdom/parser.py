@@ -64,41 +64,6 @@ class FragmentParser(HTMLParser):
         self.elm.appendChild(Comment(comment))
 
 
-class DocumentParser(FragmentParser):
-    """Parser class to parse whole HTML document."""
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
-        super().__init__(*args, **kwargs)
-        from wdom.document import Document  # noqa
-        doc = Document()
-        self.root = doc  # type: Document
-        self.elm = doc.body  # type: Node
-
-    def handle_decl(self, decl: str) -> None:  # noqa: D102
-        if decl.startswith('DOCTYPE'):
-            self.root.doctype.name = decl.split()[-1]
-
-    def handle_starttag(self, tag: str, attrs: List[Tuple[str, str]]
-                        ) -> None:  # noqa: D102
-        if tag == 'html':
-            # mypy ignores asignment in Document.__init__()
-            doc = self.root  # type: Document
-            self.elm = doc.html  # type: Node
-        elif tag == 'head':
-            self.elm = self.root.head
-        elif tag == 'body':
-            self.elm = self.root.body
-        else:
-            super().handle_starttag(tag, attrs)
-
-
-def parse_document(doc: str) -> 'Document':
-    """Parse HTML document and return Document object."""
-    parser = DocumentParser()
-    parser.feed(doc)
-    return parser.root
-
-
 def parse_html(html: str, parser: Optional[FragmentParser] = None) -> Node:
     """Parse HTML fragment and return DocumentFragment object.
 
