@@ -25,6 +25,7 @@ _T_MsgItem = Union[int, str]
 
 
 def remove_rimo_id(html: str) -> str:
+    """Remove ``rimo_id`` attribute from html strings."""
     return _remove_id_re.sub('', html)
 
 

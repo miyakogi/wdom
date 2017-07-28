@@ -114,7 +114,13 @@ class TestCase(unittest.TestCase):
             set_application(self.your_app)
     """
 
-    def tearDown(self) -> None:  # noqa: D102
+    def setUp(self) -> None:
+        """Reset WDOM states."""
+        super().setUp()
+        reset()
+
+    def tearDown(self) -> None:
+        """Reset WDOM states."""
         reset()
         super().tearDown()
 
