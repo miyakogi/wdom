@@ -88,7 +88,7 @@ def reset() -> None:
     _tornado.set_application(_tornado.Application())
     Element._elements_with_id.clear()
     Element._element_buffer.clear()
-    customElements.clear()
+    customElements.reset()
 
 
 class TestCase(unittest.TestCase):

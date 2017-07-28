@@ -7,21 +7,21 @@ from wdom.node import Node, DocumentFragment
 from wdom.parser import FragmentParser, parse_html
 from wdom.web_node import WdomElement, remove_rimo_id
 
-style_sample = '''
+style_css = '''
     body > h1 {
         font-family: arial;
     }
 '''.strip()
-style_html = '<style>{}</style>'.format(style_sample)
+style_html = '<style>{}</style>'.format(style_css)
 
-script_sample = '''
+script_js = '''
     funciont a(e) {
         if (1 > 2 && 3 < 4) {
             retrun 0;
         }
     }
 '''.strip()
-script_html = '<script>{}</script>'.format(script_sample)
+script_html = '<script type="text/javascript">{}</script>'.format(script_js)
 
 body_sample = '''
 <h1>WDOM</h1>
@@ -160,7 +160,7 @@ class TestFragmentParser(TestCase):
         self.assertEqual(df.length, 1)  # h1, empty text, p
         elm.appendChild(df)
         self.assertEqual(script_html, remove_rimo_id(elm.innerHTML))
-        self.assertEqual(script_sample, elm.firstChild.innerHTML)
+        self.assertEqual(script_js, elm.firstChild.innerHTML)
 
     def test_parse_style(self):
         elm = WdomElement('tag')
@@ -169,4 +169,13 @@ class TestFragmentParser(TestCase):
         self.assertEqual(df.length, 1)  # h1, empty text, p
         elm.appendChild(df)
         self.assertEqual(style_html, remove_rimo_id(elm.innerHTML))
-        self.assertEqual(style_sample, elm.firstChild.innerHTML)
+        self.assertEqual(style_css, elm.firstChild.innerHTML)
+
+    def test_parsed_class1(self):
+        df = parse_html('<a></a>')
+        from wdom.tag import A
+        self.assertIs(type(df.firstChild), A)
+
+    def test_parsed_class_unknown(self):
+        df = parse_html('<new></new>')
+        self.assertIs(type(df.firstChild), WdomElement)

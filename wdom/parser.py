@@ -5,7 +5,7 @@
 
 from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 from html.parser import HTMLParser
-from typing import Any, List, Optional, Tuple, TYPE_CHECKING
+from typing import Any, Callable, List, Optional, Tuple, TYPE_CHECKING
 
 from wdom.node import Node, Text, RawHtml
 
@@ -13,32 +13,37 @@ if TYPE_CHECKING:
     from wdom.document import Document  # noqa
 
 _NOESCAPE = ['script', 'style']
+_T_ElementFactory = Callable[[str, Optional[str], Optional[type], dict], Node]
 
 
 class FragmentParser(HTMLParser):
     """Parser class to parse HTML fragment strings.
 
-    Node class to be generated from parse result is defined by
-    ``default_class`` class attribute.
+    If unknown tag is found, ``default_class`` is used to generate noew.
     """
 
+    #: Class of unknown tag
     default_class = None  # type: Optional[type]
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any,
+                 element_factory:  _T_ElementFactory = None,
+                 **kwargs: Any) -> None:
         """Initialize parser."""
         super().__init__(*args, **kwargs)  # type: ignore
         from wdom.node import DocumentFragment
+        from wdom.document import create_element
         self.elm = DocumentFragment()  # type: Node
         self.root = self.elm
         self.current_tag = ''
+        self.element_factory = element_factory or create_element
 
     def handle_starttag(self, tag: str, attr: List[Tuple[str, str]]
                         ) -> None:  # noqa: D102
-        from wdom.document import create_element
         self.current_tag = tag
         attrs = dict(attr)
         params = dict(parent=self.elm, **attrs)
-        elm = create_element(tag, attrs.get('is'), self.default_class, params)
+        elm = self.element_factory(
+            tag, attrs.get('is'), self.default_class, params)
         if self.elm:
             self.elm.appendChild(elm)
         if tag not in HTML_EMPTY:
