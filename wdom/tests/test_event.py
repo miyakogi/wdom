@@ -99,7 +99,7 @@ class TestEventTarget(TestCase):
 
     def test_event_dispatch(self):
         self.target.addEventListener('click', self.mock)
-        self.assertEqual(len(self.target._listeners), 1)
+        self.assertEqual(len(self.target._event_listeners), 1)
         self.target.dispatchEvent(self.e)
         self.mock.assert_called_once_with(self.e)
 
@@ -123,7 +123,7 @@ class TestEventTarget(TestCase):
         e2 = Event('event')
         self.target.addEventListener('click', mock1)
         self.target.addEventListener('event', mock2)
-        self.assertEqual(len(self.target._listeners), 2)
+        self.assertEqual(len(self.target._event_listeners), 2)
         self.target.dispatchEvent(e1)
         mock1.assert_called_once_with(e1)
         mock2.assert_not_called()
@@ -140,8 +140,8 @@ class TestEventTarget(TestCase):
 
     def test_remove_event_multi(self):
         self.target.addEventListener('click', self.mock)
-        self.assertEqual(len(self.target._listeners), 1)
+        self.assertEqual(len(self.target._event_listeners), 1)
         self.target.removeEventListener('click', self.mock)
-        self.assertEqual(len(self.target._listeners), 0)
+        self.assertEqual(len(self.target._event_listeners), 0)
         self.target.dispatchEvent(self.e)
         self.mock.assert_not_called()

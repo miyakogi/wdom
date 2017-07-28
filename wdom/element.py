@@ -377,7 +377,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     nodeType = Node.ELEMENT_NODE
     nodeValue = None
     _parser_class = ElementParser  # type: Type[ElementParser]
-    _elements = WeakSet()  # type: WeakSet[Node]
+    _element_buffer = WeakSet()  # type: WeakSet[Node]
     _elements_with_id = WeakValueDictionary()  # type: MutableMapping
     _should_escape_text = True
     _special_attr_string = ['id']
@@ -394,7 +394,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         """
         self._registered = _registered
         self.tag = tag
-        self._elements.add(self)  # used to suport custom elements
+        self._element_buffer.add(self)  # used to suport custom elements
         self.attributes = NamedNodeMap(self)
         self.classList = DOMTokenList(self)
         super().__init__(parent=parent)
@@ -440,7 +440,7 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         return parser.root
 
     def _get_inner_html(self) -> str:
-        return ''.join(child.html for child in self._children)
+        return ''.join(child.html for child in self.childNodes)
 
     def _set_inner_html(self, html: str) -> None:
         self._empty()
@@ -638,7 +638,7 @@ class HTMLElement(Element):
     def __init__(self, *args: Any, style: str=None, **kwargs: Any
                  ) -> None:  # noqa: D102
         super().__init__(*args, **kwargs)
-        self._style = CSSStyleDeclaration(style, owner=self)
+        self.__style = CSSStyleDeclaration(style, owner=self)
 
     def _get_attrs_by_string(self) -> str:
         attrs = super()._get_attrs_by_string()
@@ -665,7 +665,7 @@ class HTMLElement(Element):
     @property
     def style(self) -> CSSStyleDeclaration:
         """Return style attribute of this node."""
-        return self._style
+        return self.__style
 
     @style.setter
     def style(self, style: _AttrValueType) -> None:
@@ -675,14 +675,14 @@ class HTMLElement(Element):
         ``CSSStyleDeclaration``.
         """
         if isinstance(style, str):
-            self._style._parse_str(style)
+            self.__style._parse_str(style)
         elif style is None:
-            self._style._parse_str('')
+            self.__style._parse_str('')
         elif isinstance(style, CSSStyleDeclaration):
-            self._style._owner = None
+            self.__style._owner = None
             style._owner = self  # type: ignore
-            self._style = style
-            self._style.update()  # type: ignore
+            self.__style = style
+            self.__style.update()  # type: ignore
         else:
             raise TypeError('Invalid type for style: {}'.format(type(style)))
 

@@ -101,11 +101,11 @@ class CSSStyleDeclaration(_dict):
     @property
     def parentRule(self) -> 'CSSStyleRule':
         """Parent CSSStyleRule."""
-        return self._parent
+        return self.__parent
 
     @parentRule.setter
     def parentRule(self, parent: 'CSSStyleRule') -> None:
-        self._parent = parent
+        self.__parent = parent
 
     def getPropertyValue(self, prop: str) -> str:
         """Return value of the css property.

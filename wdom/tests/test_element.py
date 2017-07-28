@@ -627,10 +627,10 @@ class TestElement(TestCase):
         gc.collect()
         elm = Element('a')
         _id = id(elm)
-        self.assertIn(elm, Element._elements)
+        self.assertIn(elm, Element._element_buffer)
         del elm
         gc.collect()  # run gc
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             assert id(elm) != _id
 
     def test_reference_with_id(self):
@@ -641,7 +641,7 @@ class TestElement(TestCase):
         del elm
         gc.collect()
         self.assertNotIn('a', Element._elements_with_id)
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             assert id(elm) != _id
 
     def test_reference_add_id(self):
@@ -663,7 +663,7 @@ class TestElement(TestCase):
         del elm
         gc.collect()
         self.assertNotIn('c', Element._elements_with_id)
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             assert id(elm) != _id
 
     def test_reference_del_id(self):

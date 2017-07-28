@@ -24,7 +24,7 @@ class CustomElementsRegistry(dict):
             elm.setAttribute('is', elm.is_)
 
     def _upgrade_by_tag(self, name: str, constructor: type) -> None:
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             if not elm._registered and elm.tag == name:
                 elm.__class__ = constructor
                 elm._registered = True
@@ -33,7 +33,7 @@ class CustomElementsRegistry(dict):
 
     def _upgrade_by_is(self, name: str, constructor: type, extends: str
                        ) -> None:
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             if (not elm._registered and elm.tag == extends and
                     elm.getAttribute('is') == name):
                 elm.__class__ = constructor

@@ -39,8 +39,8 @@ class WebIF:
         return None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
-        self._reqid = 0
-        self._tasks = {}  # type: Dict
+        self.__reqid = 0
+        self.__tasks = {}  # type: Dict
         super().__init__(*args, **kwargs)  # type: ignore
 
     @property
@@ -61,7 +61,7 @@ class WebIF:
         """Run when get response from browser."""
         response = msg.get('data', False)
         if response:
-            task = self._tasks.pop(msg.get('reqid'), False)
+            task = self.__tasks.pop(msg.get('reqid'), False)
             if task and not task.cancelled() and not task.done():
                 task.set_result(msg.get('data'))
 
@@ -81,10 +81,10 @@ class WebIF:
         :param str query: single string which indicates query type.
         """
         if self.connected:
-            self.js_exec(query, self._reqid)
+            self.js_exec(query, self.__reqid)
             fut = Future()  # type: Future[str]
-            self._tasks[self._reqid] = fut
-            self._reqid += 1
+            self.__tasks[self.__reqid] = fut
+            self.__reqid += 1
             return fut
         f = Future()  # type: Future[None]
         f.set_result(None)
@@ -156,7 +156,7 @@ class WdomElement(HTMLElement, WebIF):
         return clone
 
     def _on_mount(self, e: Event) -> None:
-        for event in self._listeners:
+        for event in self._event_listeners:
             self._add_event_listener_web(event=event)
 
     def _set_attribute(self, attr: str, value: _AttrValueType) -> None:

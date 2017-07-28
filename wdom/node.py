@@ -47,8 +47,8 @@ class Node(AbstractNode):
         :param Node parent: parent node.
         """
         super().__init__()  # Need to call init in multiple inheritce
-        self._children = list()  # type: List[Node]
-        self._parent = None
+        self.__children = list()  # type: List[Node]
+        self.__parent = None
         if parent:
             parent.appendChild(self)
 
@@ -61,7 +61,7 @@ class Node(AbstractNode):
         return self.length
 
     def __contains__(self, other: AbstractNode) -> bool:
-        return other in self._children
+        return other in self.__children
 
     def __copy__(self) -> AbstractNode:
         clone = type(self)()
@@ -85,7 +85,7 @@ class Node(AbstractNode):
 
         If this node does not have a parent, return ``None``.
         """
-        return self._parent
+        return self.__parent
 
     @property
     def childNodes(self) -> 'NodeList':
@@ -95,7 +95,7 @@ class Node(AbstractNode):
         but not support any modification. NodeList is a **live object**, which
         means that changes on this node is reflected to the object.
         """
-        return NodeList(self._children)
+        return NodeList(self.__children)
 
     @property
     def firstChild(self) -> Optional[AbstractNode]:
@@ -165,8 +165,8 @@ class Node(AbstractNode):
     def _append_element(self, node: AbstractNode) -> AbstractNode:
         if node.parentNode:
             node.parentNode.removeChild(node)
-        self._children.append(node)
-        node._parent = self
+        self.__children.append(node)
+        node.__parent = self
         return node
 
     def _append_child(self, node: AbstractNode) -> AbstractNode:
@@ -208,8 +208,8 @@ class Node(AbstractNode):
                                ref_node: AbstractNode) -> AbstractNode:
         if node.parentNode:
             node.parentNode.removeChild(node)
-        self._children.insert(self.index(ref_node), node)
-        node._parent = self
+        self.__children.insert(self.index(ref_node), node)
+        node.__parent = self
         return node
 
     def _insert_before(self, node: AbstractNode, ref_node:
@@ -233,10 +233,10 @@ class Node(AbstractNode):
         return bool(self.childNodes)
 
     def _remove_child(self, node: AbstractNode) -> AbstractNode:
-        if node not in self._children:
+        if node not in self.__children:
             raise ValueError('node to be removed is not a child of this node.')
-        self._children.remove(node)
-        node._parent = None
+        self.__children.remove(node)
+        node.__parent = None
         return node
 
     def removeChild(self, node: AbstractNode) -> AbstractNode:
@@ -271,7 +271,7 @@ class Node(AbstractNode):
         return self.__copy__()
 
     def _empty(self) -> None:
-        for child in tuple(self._children):
+        for child in tuple(self.__children):
             self._remove_child(child)
 
     def empty(self) -> None:
@@ -682,16 +682,16 @@ class DocumentType(Node, NonDocumentTypeChildNode):
     def __init__(self, type: str = 'html', parent: Optional[Node] = None
                  ) -> None:  # noqa: D102
         super().__init__(parent=parent)
-        self._type = type
+        self.__type = type
 
     @property
     def name(self) -> str:
         """Return node type."""
-        return self._type
+        return self.__type
 
     @name.setter
     def name(self, name: str) -> None:
-        self._type = name
+        self.__type = name
 
     @property
     def html(self) -> str:

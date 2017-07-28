@@ -87,7 +87,7 @@ def reset() -> None:
     _tornado.connections.clear()
     _tornado.set_application(_tornado.Application())
     Element._elements_with_id.clear()
-    Element._elements.clear()
+    Element._element_buffer.clear()
     customElements.clear()
 
 

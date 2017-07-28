@@ -99,15 +99,15 @@ class EventTarget:
     This class and subclasses can add/remove event listeners and emit events.
     """
 
-    _listeners = None  # type: MutableMapping[str, List[EventListener]]
+    _event_listeners = None  # type: MutableMapping[str, List[EventListener]]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
-        self._listeners = defaultdict(list)
+        self._event_listeners = defaultdict(list)
         super().__init__(*args, **kwargs)  # type: ignore
 
     def _add_event_listener(self, event: str, listener: _EventListenerType
                             ) -> None:
-        self._listeners[event].append(EventListener(listener))
+        self._event_listeners[event].append(EventListener(listener))
 
     def _add_event_listener_web(self, event: str) -> None:
         from wdom.web_node import WebIF
@@ -128,7 +128,7 @@ class EventTarget:
 
     def _remove_event_listener(self, event: str, listener: _EventListenerType
                                ) -> None:
-        listeners = self._listeners[event]
+        listeners = self._event_listeners[event]
         if not listeners:
             return
         for l in listeners:
@@ -136,11 +136,11 @@ class EventTarget:
                 listeners.remove(l)
                 break
         if not listeners:
-            del self._listeners[event]
+            del self._event_listeners[event]
 
     def _remove_event_listener_web(self, event: str) -> None:
         from wdom.web_node import WebIF
-        if isinstance(self, WebIF) and event not in self._listeners:
+        if isinstance(self, WebIF) and event not in self._event_listeners:
             self.js_exec('removeEventListener', event)  # type: ignore
 
     def removeEventListener(self, event: str, listener: _EventListenerType
@@ -155,7 +155,7 @@ class EventTarget:
 
     def _dispatch_event(self, event: Event) -> List[Awaitable[None]]:
         _tasks = []
-        for listener in self._listeners[event.type]:
+        for listener in self._event_listeners[event.type]:
             if listener._is_coroutine:
                 _tasks.append(listener(event))
             else:
