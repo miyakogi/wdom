@@ -322,7 +322,6 @@ class TestWdomElement(ElementTestCase, TestCase):
         self.set_element(self.tag)
         self.tag.innerHTML = '<div>a</div>'
         self.wait_until(lambda: self.element.text == 'a')
-        print(self.tag.firstChild)
         self.set_element(self.tag.firstChild)
         self.wait_until(lambda: self.element.text == 'a')
         self.assertEqual(self.element.text, 'a')

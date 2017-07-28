@@ -7,10 +7,12 @@ from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 from html.parser import HTMLParser
 from typing import Any, List, Optional, Tuple, TYPE_CHECKING
 
-from wdom.node import Node  # noqa
+from wdom.node import Node, Text, RawHtml
 
 if TYPE_CHECKING:
     from wdom.document import Document  # noqa
+
+_NOESCAPE = ['script', 'style']
 
 
 class FragmentParser(HTMLParser):
@@ -28,32 +30,38 @@ class FragmentParser(HTMLParser):
         from wdom.node import DocumentFragment
         self.elm = DocumentFragment()  # type: Node
         self.root = self.elm
+        self.current_tag = ''
 
     def handle_starttag(self, tag: str, attr: List[Tuple[str, str]]
                         ) -> None:  # noqa: D102
         from wdom.document import create_element
+        self.current_tag = tag
         attrs = dict(attr)
         params = dict(parent=self.elm, **attrs)
         elm = create_element(tag, attrs.get('is'), self.default_class, params)
         if self.elm:
-            self.elm.append(elm)
+            self.elm.appendChild(elm)
         if tag not in HTML_EMPTY:
             self.elm = elm
 
     def handle_endtag(self, tag: str) -> None:  # noqa: D102
         parent = self.elm.parentNode
         if parent is None:
-            raise ValueError('Parse Failed')
+            if self.elm is not self.root:
+                raise ValueError('Parse Failed')
         else:
             self.elm = parent
 
     def handle_data(self, data: str) -> None:  # noqa: D102
-        if data and self.elm:
-            self.elm.append(data)
+        if data:
+            if self.current_tag in _NOESCAPE:
+                self.elm.appendChild(RawHtml(data))
+            else:
+                self.elm.appendChild(Text(data))
 
     def handle_comment(self, comment: str) -> None:  # noqa: D102
         from wdom.node import Comment
-        self.elm.append(Comment(comment))
+        self.elm.appendChild(Comment(comment))
 
 
 class DocumentParser(FragmentParser):
