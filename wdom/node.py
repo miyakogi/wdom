@@ -4,16 +4,18 @@
 """Node related basic interface/classes."""
 
 import html
+import logging
 from typing import TYPE_CHECKING
-from typing import Union, Any, Optional, Sequence
+from typing import Any, Callable, Optional, Sequence, Union
 from typing import Iterable, Iterator, Sized
 
 from xml.dom import Node as _Node
 
 if TYPE_CHECKING:
-    from typing import List, Mapping, Any, Iterable, Callable  # noqa
-    from wdom.element import NamedNodeMap  # noqa
-    from wdom.document import Document  # noqa
+    from typing import List  # noqa
+    from wdom.element import Element  # noqa
+
+logger = logging.getLogger(__name__)
 
 
 class AbstractNode(_Node):
@@ -428,6 +430,34 @@ class ParentNode(AbstractNode):
         """Append new nodes after last child node."""
         node = _to_node_list(nodes)
         self.appendChild(node)
+
+    def getElementsBy(self, cond: Callable[[AbstractNode], bool]) -> NodeList:
+        """Return list of child nodes which matches ``cond``.
+
+        ``cond`` must be a function which gets a single argument ``Element``,
+        and returns bool. If the node matches requested condition, ``cond``
+        should return True.
+        This searches all child nodes recursively.
+
+        :arg cond: Callable[[Element], bool]
+        :rtype: NodeList[Element]
+        """
+        elements = []
+        for child in self.children:
+            if cond(child):
+                elements.append(child)
+            elements.extend(child.getElementsBy(cond))
+        return NodeList(elements)
+
+    def getElementsByTagName(self, tag: str) -> NodeList:
+        """Get child nodes which tag name is ``tag``."""
+        _tag = tag.upper()
+        return self.getElementsBy(lambda n: getattr(n, 'tagName') == _tag)
+
+    def getElementsByClassName(self, class_name: str) -> NodeList:
+        """Get child nodes which has ``class_name`` class attribute."""
+        return self.getElementsBy(
+            lambda node: class_name in getattr(node, 'classList'))
 
     def query(self, relativeSelectors: str) -> AbstractNode:
         """Not Implemented."""

@@ -5,9 +5,9 @@
 
 from collections import OrderedDict, UserDict
 import html as html_
-from typing import Union, Callable, Optional, Dict, Tuple
-from typing import Iterable, MutableSequence
-from typing import Any, Iterator, List, TYPE_CHECKING, Type
+from typing import Any, Dict, Iterable, Iterator, List, MutableSequence
+from typing import Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING
 from weakref import WeakSet, WeakValueDictionary
 from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 
@@ -602,31 +602,6 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         """Remove ``Attr`` node from this node."""
         return self.attributes.removeNamedItem(attr)
 
-    def getElementsBy(self, cond: Callable[['Element'], bool]) -> NodeList:
-        """Return list of child nodes which matches ``cond``.
-
-        ``cond`` must be a function which gets a single argument ``node``,
-        and returns bool. If the node matches requested condition, ``cond``
-        should return True.
-        This searches all child nodes recursively.
-        """
-        elements = []
-        for child in self.children:
-            if cond(child):
-                elements.append(child)
-            elements.extend(child.getElementsBy(cond))
-        return NodeList(elements)
-
-    def getElementsByTagName(self, tag: str) -> NodeList:
-        """Get child nodes which tag name is ``tag``."""
-        _tag = tag.upper()
-        return self.getElementsBy(lambda n: getattr(n, 'tagName') == _tag)
-
-    def getElementsByClassName(self, class_name: str) -> NodeList:
-        """Get child nodes which has ``class_name`` class attribute."""
-        return self.getElementsBy(
-            lambda node: class_name in getattr(node, 'classList'))
-
 
 class HTMLElement(Element):
     """Base class for HTMLElement."""
@@ -733,13 +708,13 @@ class FormControlMixin(AbstractNode):
                  form: Optional[Union[str, int, 'HTMLFormElement']] = None,
                  **kwargs: Any) -> None:
         """``form`` is a ``HTMLFormElement`` object or id of it."""
-        self._form = None
+        self.__form = None
         super().__init__(*args, **kwargs)  # type: ignore
         from wdom.document import getElementById
         if isinstance(form, (str, int)):
             form = getElementById(form)
         if isinstance(form, HTMLFormElement):
-            self._form = form
+            self.__form = form
         elif form is not None:
             raise TypeError(
                 '"form" attribute must be an HTMLFormElement or id of'
@@ -749,8 +724,8 @@ class FormControlMixin(AbstractNode):
     @property
     def form(self) -> Optional['HTMLFormElement']:
         """Get ``HTMLFormElement`` object related to this node."""
-        if self._form:
-            return self._form
+        if self.__form:
+            return self.__form
         parent = self.parentNode
         while parent:
             if isinstance(parent, HTMLFormElement):
