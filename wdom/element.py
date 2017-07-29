@@ -19,7 +19,6 @@ from wdom.parser import FragmentParser
 
 if TYPE_CHECKING:
     from typing import MutableMapping  # noqa
-    from wdom.tag import Tag  # noqa
 
 _AttrValueType = Union[List[str], str, int, bool, CSSStyleDeclaration, None]
 
@@ -361,7 +360,8 @@ class ElementMeta(type):
     """Metaclass for Element class."""
 
     def __new__(cls: type, name: str, bases: Tuple[type],
-                namespace: Dict[str, Any], **kwargs: Any) -> type:  # noqa: D102,E501
+                namespace: Dict[str, Any], **kwargs: Any) -> type:
+        """Add special properties to new class."""
         for attr in namespace.get('_special_attr_string', []):
             namespace[attr] = _string_properties(attr)
         for attr in namespace.get('_special_attr_boolean', []):
@@ -604,7 +604,10 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
 
 
 class HTMLElement(Element):
-    """Base class for HTMLElement."""
+    """Base class for HTMLElement.
+
+    This class extends `Element` class with some HTML specific features.
+    """
 
     _special_attr_string = ['title', 'type']
     _special_attr_boolean = ['hidden']
@@ -705,7 +708,7 @@ class FormControlMixin(AbstractNode):
     """Mixin class for FormControl classes."""
 
     def __init__(self, *args: Any,
-                 form: Optional[Union[str, int, 'HTMLFormElement']] = None,
+                 form: Union[str, int, 'HTMLFormElement'] = None,
                  **kwargs: Any) -> None:
         """``form`` is a ``HTMLFormElement`` object or id of it."""
         self.__form = None
@@ -763,7 +766,8 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
     _special_attr_boolean = ['checked', 'disabled', 'multiple', 'readonly',
                              'required']
 
-    def on_event_pre(self, e: Event) -> None:  # noqa: D102
+    def on_event_pre(self, e: Event) -> None:
+        """Set values set on browser before calling event listeners."""
         super().on_event_pre(e)
         ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
@@ -871,7 +875,8 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
         self._selected_options = []  # type: List[str]
         super().__init__(*args, **kwargs)
 
-    def on_event_pre(self, e: Event) -> None:  # noqa: D102
+    def on_event_pre(self, e: Event) -> None:
+        """Set values set on browser before calling event listeners."""
         super().on_event_pre(e)
         ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):
@@ -916,7 +921,8 @@ class HTMLTextAreaElement(HTMLElement, FormControlMixin):  # noqa: D204
     _special_attr_boolean = ['disabled']
     defaultValue = HTMLElement.textContent
 
-    def on_event_pre(self, e: Event) -> None:  # noqa: D102
+    def on_event_pre(self, e: Event) -> None:
+        """Set values set on browser before calling event listeners."""
         super().on_event_pre(e)
         ct_msg = e.init.get('currentTarget', dict())
         if e.type in ('input', 'change'):

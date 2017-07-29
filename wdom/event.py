@@ -5,13 +5,13 @@
 
 from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction, Future
-from typing import Any, Awaitable, Callable, List, Optional, Union  # noqa
+from typing import Any, Awaitable, Callable, List, Union
 from typing import TYPE_CHECKING
 
 from wdom.node import Node  # noqa
 
 if TYPE_CHECKING:
-    from typing import MutableMapping  # noqa
+    from typing import MutableMapping, Optional  # noqa
 
 
 class Event:
@@ -20,7 +20,7 @@ class Event:
     currentTarget = None  # type: Optional[Node]
     target = None  # type: Optional[Node]
 
-    def __init__(self, type: str, init: Optional[dict] = None) -> None:
+    def __init__(self, type: str, init: dict = None) -> None:
         """Create event object.
 
         First argument (type) is a string to represents type of this event.
@@ -35,11 +35,8 @@ class Event:
         raise NotImplementedError
 
 
-def create_event(type: str, *,
-                 currentTarget: Optional[Node] = None,
-                 target: Optional[Node] = None,
-                 init: Optional[dict] = None
-                 ) -> Event:
+def create_event(type: str, *, currentTarget: Node = None, target: Node = None,
+                 init: dict = None) -> Event:
     """Create Event and set target nodes.
 
     :arg EventTarget currentTarget: Current event target node.
@@ -103,6 +100,7 @@ class EventTarget:
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         self._event_listeners = defaultdict(list)
+        # need to call super().__init__ to use as mixin class
         super().__init__(*args, **kwargs)  # type: ignore
 
     def _add_event_listener(self, event: str, listener: _EventListenerType
@@ -112,7 +110,7 @@ class EventTarget:
     def _add_event_listener_web(self, event: str) -> None:
         from wdom.web_node import WebIF
         if isinstance(self, WebIF):
-            self.js_exec('addEventListener', event)  # type: ignore
+            self.js_exec('addEventListener', event)
 
     def addEventListener(self, event: str, listener: _EventListenerType
                          ) -> None:

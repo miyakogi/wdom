@@ -11,7 +11,7 @@ import tempfile
 import shutil
 from functools import partial
 from types import ModuleType
-from typing import Optional, Union, Callable, Any
+from typing import Any, Callable, Optional, Union
 import weakref
 
 from wdom.element import Element, Attr, HTMLElement
@@ -208,8 +208,8 @@ class WdomDocument(Document):
                  title: str = 'W-DOM',
                  charset: str = 'utf-8',
                  default_class: type = WdomElement,
-                 autoreload: Optional[bool] = None,
-                 reload_wait: Optional[float] =None,
+                 autoreload: bool = None,
+                 reload_wait: float =None,
                  **kwargs: Any) -> None:
         """Create new document object for WDOM application.
 
@@ -303,13 +303,13 @@ def get_new_document(  # noqa: C901
         include_rimo: bool = True,
         include_skeleton: bool = False,
         include_normalizecss: bool = False,
-        autoreload: Optional[bool] = None,
-        reload_wait: Optional[float] = None,
-        log_level: Optional[Union[int, str]] = None,
-        log_prefix: Optional[str] = None,
+        autoreload: bool = None,
+        reload_wait: float = None,
+        log_level: Union[int, str] = None,
+        log_prefix: str = None,
         log_console: bool = False,
-        ws_url: Optional[str] = None,
-        message_wait: Optional[float] = None,
+        ws_url: str = None,
+        message_wait: float = None,
         document_factory: Callable[..., Document] = WdomDocument,
         **kwargs: Any) -> Document:
     """Create new :class:`Document` object with options.

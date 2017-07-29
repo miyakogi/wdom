@@ -6,8 +6,7 @@
 import html
 import logging
 from typing import TYPE_CHECKING
-from typing import Any, Callable, Optional, Sequence, Union
-from typing import Iterable, Iterator, Sized
+from typing import Any, Callable, Iterator, Optional, Sequence, Union
 
 from xml.dom import Node as _Node
 
@@ -43,7 +42,7 @@ class AbstractNode(_Node):
 class Node(AbstractNode):
     """Base Class for Node interface."""
 
-    def __init__(self, parent: Optional[AbstractNode] = None) -> None:
+    def __init__(self, parent: AbstractNode = None) -> None:
         """Initialize node object with parent node.
 
         :param Node parent: parent node.
@@ -306,23 +305,25 @@ class Node(AbstractNode):
         self._set_text_content(value)
 
 
-class NodeList(Iterable, Sized):
+class NodeList(Sequence[Node]):
     """Collection of Node objects."""
 
-    def __init__(self, ref: list) -> None:  # noqa: D102
-        self._nodes = ref
+    def __init__(self, nodes: Sequence[Node]) -> None:
+        """Initialize NodeList by iterable `nodes`."""
+        self.__nodes = nodes
 
-    def __getitem__(self, index: int) -> AbstractNode:
-        return self._nodes[index]
+    def __getitem__(self, index: int) -> Node:  # type: ignore
+        """Get `index`-th node."""
+        return self.__nodes[index]
 
     def __len__(self) -> int:
-        return len(self._nodes)
+        return len(self.__nodes)
 
-    def __contains__(self, other: AbstractNode) -> bool:
-        return other in self._nodes
+    def __contains__(self, other: object) -> bool:
+        return other in self.__nodes
 
     def __iter__(self) -> Iterator[AbstractNode]:
-        for n in self._nodes:
+        for n in self.__nodes:
             yield n
 
     @property
@@ -330,7 +331,7 @@ class NodeList(Iterable, Sized):
         """Return number of nodes in this list."""
         return len(self)
 
-    def item(self, index: int) -> AbstractNode:
+    def item(self, index: int) -> Optional[Node]:
         """Return item with the index.
 
         If the index is negative number or out of the list, return None.
@@ -338,11 +339,11 @@ class NodeList(Iterable, Sized):
         if not isinstance(index, int):
             raise TypeError(
                 'Indeces must be integer, not {}'.format(type(index)))
-        return self._nodes[index] if 0 <= index < self.length else None
+        return self.__nodes[index] if 0 <= index < self.length else None
 
-    def index(self, node: AbstractNode) -> int:
+    def index(self, node: Node) -> int:  # type: ignore
         """Get index of the node."""
-        return self._nodes.index(node)
+        return self.__nodes.index(node)
 
 
 class HTMLCollection(NodeList):
@@ -709,8 +710,8 @@ class DocumentType(Node, NonDocumentTypeChildNode):
         """Return node name (=type)."""
         return self.name
 
-    def __init__(self, type: str = 'html', parent: Optional[Node] = None
-                 ) -> None:  # noqa: D102
+    def __init__(self, type: str = 'html', parent: Node = None) -> None:
+        """Initialize DocumentType node with `type` doctype."""
         super().__init__(parent=parent)
         self.__type = type
 
