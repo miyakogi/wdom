@@ -776,7 +776,7 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
                 self._set_attribute('checked', ct_msg.get('checked'))
             elif self.type.lower() == 'radio':
                 self._set_attribute('checked', ct_msg.get('checked'))
-                for other in self._radio_group:
+                for other in self._find_grouped_nodes():
                     if other is not self:
                         other._remove_attribute('checked')
             else:
@@ -806,14 +806,22 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
         self.setAttribute('defaultValue', value)
         self.value = value
 
-    @property
-    def _radio_group(self) -> NodeList:
-        if self.type.lower() == 'radio' and self.form and self.name:
-            return NodeList([elm for elm in self.form
-                             if elm.tagName == 'INPUT' and
-                             elm.type.lower() == 'radio' and
-                             elm.name == self.name])
-        return NodeList([])
+    def _is_same_group(self, node: Element) -> bool:
+        return (self.tagName == node.tagName and
+                self.getAttribute('name') == node.getAttribute('name'))
+
+    def _find_root(self) -> Node:
+        doc = self.ownerDocument
+        if doc is not None:
+            return doc
+        p = self
+        while p.parentNode is not None:
+            p = p.parentNode
+        return p
+
+    def _find_grouped_nodes(self) -> NodeList:
+        p = self._find_root()
+        return p.getElementsBy(self._is_same_group)
 
 
 class HTMLLabelElement(HTMLElement, FormControlMixin):
