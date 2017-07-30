@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.themes.default import H1, Div
+from wdom.themes import H1, Div
 
 
 class App(Div):

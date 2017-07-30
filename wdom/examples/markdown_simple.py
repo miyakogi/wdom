@@ -12,10 +12,13 @@ except ImportError:
           'by `pip install misaka pygments`.')
     exit()
 
-from wdom.document import get_document
-from wdom.themes.bootstrap3 import css_files, js_files
-from wdom.themes.bootstrap3 import Div, Textarea, Col6, Row, H1, Hr
-from wdom.themes.bootstrap3 import Select, Option, Style
+from wdom.options import config
+if config.theme is None:
+    config.theme = 'concise'  # fake command line `--theme` option
+from wdom.document import get_document  # noqa: E402
+from wdom import themes  # noqa: E402
+from wdom.themes import Div, Textarea, Col6, Row, H1, Hr  # noqa: E402
+from wdom.themes import Select, Option, Style  # noqa: E402
 
 
 src = '''
@@ -103,11 +106,7 @@ class Editor(Row):
 
 
 def sample_page(**kwargs):
-    doc = get_document(**kwargs)
-    for js in js_files:
-        doc.add_jsfile(js)
-    for css in css_files:
-        doc.add_cssfile(css)
+    get_document().register_theme(themes)
     app = Div(style='width: 90vw; margin: auto')
     title = H1('Simple Markdown Editor', class_='text-center')
     app.appendChild(title)
