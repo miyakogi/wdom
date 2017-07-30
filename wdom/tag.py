@@ -309,6 +309,9 @@ Container = NewTagClass('Container', 'div', Div, is_='container')
 Wrapper = NewTagClass('Wrapper', 'div', Div, is_='wrapper')
 Row = NewTagClass('Row', 'div', Div, is_='row')
 FormGroup = NewTagClass('FormGroup', 'div', Div, is_='formgroup')
+FormOuter = NewTagClass('FormOuter', 'div', Div, is_='form-outer')
+FormInner = NewTagClass('FormInner', 'div', Div, is_='form-inner')
+FormItem = NewTagClass('FormItem', 'div', Div, is_='form-item')
 Col = NewTagClass('Col', 'div', Div, is_='col')
 Col1 = NewTagClass('Col1', 'div', Div, is_='col1')
 Col2 = NewTagClass('Col2', 'div', Div, is_='col2')
@@ -394,6 +397,9 @@ extended_classes = [
     Wrapper,
     Row,
     FormGroup,
+    FormOuter,
+    FormInner,
+    FormItem,
     Col,
     Col1,
     Col2,

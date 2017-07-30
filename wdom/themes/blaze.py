@@ -11,7 +11,7 @@ license = 'MIT License'
 license_url = 'https://github.com/BlazeCSS/blaze/blob/master/LICENSE'
 
 css_files = [
-    '//cdn.jsdelivr.net/blazecss/2.1.1/blaze.min.css',
+    'https://unpkg.com/blaze',
 ]
 
 Button = NewTag('Button', bases=Button, class_='c-button')
