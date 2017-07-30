@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes._base import *
 
 name = 'Concise'
 project_url = 'http://http://concisecss.com/'
@@ -13,9 +13,7 @@ license_url = 'https://github.com/ConciseCSS/concise.css/blob/master/LICENSE'
 css_files = [
     '//cdn.concisecss.com/v3.4.0/concise.min.css',
 ]
-
 js_files = []
-
 headers = []
 
 DefaultButton = NewTag('DefaultButton', 'button', DefaultButton)

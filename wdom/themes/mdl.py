@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes._base import *
 
 name = 'Material Design Lite (MDL)'
 project_url = 'http://www.getmdl.io/'

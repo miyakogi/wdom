@@ -6,10 +6,10 @@ from wdom.options import config
 from wdom.themes import theme_list, logger
 
 theme = config.theme
+name = 'default'
 
 if theme:
-    if theme.endswith('.py'):
-        theme = re.sub(r'\.py[codx]?$', '', theme)
+    theme = re.sub(r'\.py[codx]?$', '', theme)
     if theme in theme_list:
         # import theme
         logger.info('Use theme: {}'.format(theme))
@@ -20,16 +20,8 @@ if theme:
         # Remove duplicated module name (*.py and *.pyc may exists)
         logger.warning(
             'Available themes: {}'.format(', '.join(theme_list)))
-        from wdom.tag import *
+        from wdom.themes._base import *
 else:
     # Use default
     logger.info('No theme specified. Use default theme.')
-    from wdom.tag import *
-    name = 'default'
-    project_url = ''
-    project_repository = ''
-    license = ''
-    license_url = ''
-    css_files = []
-    js_files = []
-    headers = []
+    from wdom.themes._base import *

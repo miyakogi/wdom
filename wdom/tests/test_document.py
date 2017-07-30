@@ -279,36 +279,36 @@ class TestWdomDocument(TestCase):
         self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
 
     def test_custom_tag_theme_tag(self):
-        from wdom import tag
-        self.doc.register_theme(tag)
+        from wdom.themes import _base
+        self.doc.register_theme(_base)
         elm = Tag(parent=self.doc.body)
         elm.innerHTML = '<div is="container"></div>'
-        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+        self.assertTrue(isinstance(elm.firstChild, _base.Container))
 
     def test_custom_tag_theme_default(self):
         from wdom.themes import default
-        from wdom import tag
+        from wdom.themes import _base
         self.doc.register_theme(default)
         elm = Tag(parent=self.doc.body)
         elm.innerHTML = '<div is="container"></div>'
         self.assertTrue(isinstance(elm.firstChild, default.Container))
-        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+        self.assertTrue(isinstance(elm.firstChild, _base.Container))
 
     def test_custom_tag_theme(self):
         from wdom.themes import bootstrap3
-        from wdom import tag
+        from wdom.themes import _base
         self.doc.register_theme(bootstrap3)
         elm = Tag(parent=self.doc.body)
         elm.innerHTML = '<div is="container"></div>'
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.Container))
-        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+        self.assertTrue(isinstance(elm.firstChild, _base.Container))
         self.assertIn('maxcdn.bootstrapcdn.com', self.doc.build())
 
         elm.innerHTML = '<button is="default-button"></button>'
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.DefaultButton))
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.Button))
-        self.assertFalse(isinstance(elm.firstChild, tag.DefaultButton))
-        self.assertTrue(isinstance(elm.firstChild, tag.Button))
+        self.assertFalse(isinstance(elm.firstChild, _base.DefaultButton))
+        self.assertTrue(isinstance(elm.firstChild, _base.Button))
 
     def test_tempdir(self):
         doc = WdomDocument()

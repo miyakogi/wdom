@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes._base import *
 
 name = 'Kube'
 project_url = 'https://imperavi.com/kube/'
