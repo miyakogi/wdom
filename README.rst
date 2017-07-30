@@ -185,9 +185,9 @@ Differences are:
 - register theme-module by ``document.register_theme(theme_module)``
 
 If you want to more easily change themes (or, css frameworks), try command-line option ``--theme``.
-``wdom.themes.default`` module is switched by ``--theme`` option.
+``wdom.themes`` module would be switched to ``--theme`` option.
 
-For example, in the above code, change ``bootstrap3`` to ``default``.
+For example, in the above code, change ``from wdom.themes import bootstrap3`` to ``from wdom import themes``.
 And execute the code with ``--theme theme_name`` option (see below).
 
 
