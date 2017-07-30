@@ -11,6 +11,10 @@ Version 0.2.0 (next version)
 * Add type hints (pass mypy check)
 * Improve auto-reload sequence
 * Write docstrings (pass pydocstyle check)
+* Parse html using custom elements
+  * Find elements from customElementsRegistory
+* Move non-standard tag classes from ``wdom.tag`` to ``wdom.themes``
+* Move ``wdom.themes.default`` into ``wdom.themes``
 
 Version 0.1.8 (2017-07-23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
