@@ -3,8 +3,8 @@
 # type: ignore
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.themes._base import Form as _Form
-from wdom.themes._base import *
+from wdom.themes import Form as _Form
+from wdom.themes import *
 
 name = 'Spark'
 project_url = 'http://codewithspark.com/'

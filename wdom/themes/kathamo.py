@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.themes._base import Button as _Button
-from wdom.themes._base import *
+from wdom.themes import Button as _Button
+from wdom.themes import *
 
 name = 'KATHAMO'
 project_url = 'http://kathamo.github.io/'

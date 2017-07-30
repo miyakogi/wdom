@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom import options, tag
-from wdom.themes import default
+from wdom import themes
 from wdom.document import Document, get_document
 
 
@@ -17,7 +17,7 @@ def _get_theme_name(theme) -> str:
     return theme_name
 
 
-def sample_app(theme=default) -> tag.Tag:
+def sample_app(theme=themes) -> tag.Tag:
     app = theme.Div()
     body = theme.Container(parent=app, style='width: 80vw; margin: 1em 10vw;')
     body.append(theme.Div(theme.H1(_get_theme_name(theme)),
@@ -210,7 +210,7 @@ def sample_app(theme=default) -> tag.Tag:
     return app
 
 
-def sample_page(theme=default) -> Document:
+def sample_page(theme=themes) -> Document:
     page = get_document()
     app = sample_app(theme)
     page.body.prepend(app)

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.themes._base import *
+from wdom.themes import *
 
 name = 'Furtive'
 project_url = 'http://furtive.co/'

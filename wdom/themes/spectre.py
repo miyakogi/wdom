@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.themes._base import *
+from wdom.themes import *
 
 name = 'Spectre'
 project_url = 'https://picturepan2.github.io/spectre'
