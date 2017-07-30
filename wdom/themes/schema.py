@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Schema'
 project_url = 'http://danmalarkey.github.io/schema/'

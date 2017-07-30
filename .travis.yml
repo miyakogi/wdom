@@ -18,7 +18,7 @@ before_script:
   - unzip chromedriver_linux64.zip -d ${TRAVIS_BUILD_DIR}
 
 install:
-  - pip install selenium parameterized syncer coverage green
+  - pip install selenium parameterized syncer xfail coverage green
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls flake8 mypy; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:

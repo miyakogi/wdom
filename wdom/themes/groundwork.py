@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Groundwork'
 project_url = 'https://groundworkcss.github.io/groundwork/'

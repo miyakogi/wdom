@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Bootstrap3'
 project_url = 'http://getbootstrap.com/'

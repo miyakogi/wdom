@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Semantic UI (Semantic)'
 project_url = 'http://semantic-ui.com/'

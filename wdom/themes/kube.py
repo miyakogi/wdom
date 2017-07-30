@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Kube'
 project_url = 'https://imperavi.com/kube/'
@@ -39,6 +39,7 @@ ErrorButton = NewTag('ErrorButton', 'button', TypedButton, is_='error-button')
 LinkButton = NewTag('LinkButton', 'button', TypedButton, outline=True, is_='link-button')
 
 Form = NewTag('Form', 'form', Form, class_='forms')
+FormItem = NewTag('FormItem', 'div', FormItem, class_='form-item')
 Select = NewTag('Select', 'select', Select, class_='select')
 
 Row = NewTag('Row', 'row', Row)
@@ -74,6 +75,7 @@ extended_classes = [
     ErrorButton,
     LinkButton,
     Form,
+    FormItem,
     Select,
     Row,
     Col1,

@@ -1,15 +1,14 @@
 Freezing Application
 ====================
 
-(to be written)
+(to be described)
 
-With cx_Freeze
+Using cx_Freeze
 --------------
 
-(to be written)
+(to be described)
 
-With Electron
+Using Electron
 -------------
 
-(to be written)
-
+(to be described)

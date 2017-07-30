@@ -10,7 +10,7 @@ with open(readme_file) as readme_file:
     readme = readme_file.read()
 
 install_requires = ['tornado']
-tests_require = ['parameterized', 'selenium', 'syncer']
+tests_require = ['parameterized', 'selenium', 'syncer', 'xfail']
 
 
 setup(
