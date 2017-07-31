@@ -301,6 +301,38 @@ Optgroup = NewTagClass('OptGroup', 'optgroup', (Tag, HTMLOptGroupElement))
 Option = NewTagClass('Option', 'option', (Tag, HTMLOptionElement))
 Select = NewTagClass('Select', 'select', (Tag, HTMLSelectElement))
 
+
+class RawHtmlDiv(Tag):
+    """Does not escape inner contents, similar to ``<script>`` tag.
+
+    This node wraps contents by ``<div style="display: inline">...</div>`` and
+    does not escape inner text. Similar to ``wdom.node.RawHtmlNode``, but the
+    difference is this class wraps text by div tag. This enables to treat
+    multi-tag html string as if it's single node.
+
+    Useful for showing generated HTML contents, like markdown conversion
+    result, graph plots, or HTML formatted reports.
+    Usually faster than ``Tag.innerHTML = html``, since this node skips html
+    parsing process to WdomElement.
+
+    Example::
+
+        doc.body.appnd(RawHtml('<h1>Title</h1>'))
+
+    .. note::
+
+        Inner html is not WdomElement, so you cant control them from python.
+    """
+
+    tag = 'div'
+    _should_escape_text = False
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        if 'display' not in self.style:
+            self.style.setProperty('display', 'inline')
+
+
 default_classes = (
     Input,
     Textarea,
@@ -350,4 +382,5 @@ default_classes = (
     Optgroup,
     Option,
     Select,
+    RawHtmlDiv,
 )
