@@ -18,6 +18,8 @@ Tag class
 
    .. autofunction:: NewTagClass
 
+    .. autoclass:: RawHtmlNode
+
 
 List of HTML Tag Classes
 ------------------------
