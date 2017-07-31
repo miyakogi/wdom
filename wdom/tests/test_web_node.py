@@ -5,8 +5,9 @@ from unittest.mock import MagicMock, call
 
 from syncer import sync
 
-from wdom.server import _tornado
 from wdom.event import create_event
+from wdom.node import Text
+from wdom.server import _tornado
 from wdom.testing import TestCase
 from wdom.web_node import WdomElement
 
@@ -94,6 +95,17 @@ class TestWdomElement(TestCase):
 
         with self.assertRaises(ValueError):
             self.elm.removeChild(self.c1)
+
+    def test_append_text(self):
+        from html import escape
+        t = '<a>'
+        t_node = Text(t)
+        self.assertEqual(t_node.textContent, t)
+        self.assertEqual(t_node.html, t)
+        self.elm.appendChild(t_node)
+        self.js_mock.assert_called_once_with(
+            'insertAdjacentHTML', 'beforeend', escape('<a>'))
+        self.assertEqual(t_node.html, escape(t))
 
     def test_addremove_attr(self):
         self.elm.setAttribute('src', 'a')

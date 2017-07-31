@@ -85,7 +85,6 @@ class Editor(Row):
         viewer_col.appendChild(self.viewer)
 
         self.editor.addEventListener('input', self.render)
-        self.editor.addEventListener('change', self.render)
 
         self.set_style('default')
         self.editor.textContent = src
