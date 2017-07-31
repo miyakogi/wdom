@@ -3,7 +3,6 @@
 
 """CSS related classes and functions."""
 
-import sys
 import re
 from collections import OrderedDict
 import logging
@@ -16,11 +15,6 @@ _css_norm_re = re.compile(r'([a-z])([A-Z])')
 _style_cleanup_re = re.compile(r'\s*([:;])\s*', re.S)
 _style_rule_re = re.compile(r'\s*(.*?)\s*{(.*?)}\s*', re.S)
 
-if sys.version_info >= (3, 5):
-    _dict = OrderedDict
-else:
-    _dict = dict
-
 
 def _lower_dash(m: Match) -> str:
     return m.group(1) + '-' + m.group(2).lower()
@@ -32,7 +26,7 @@ def _normalize_css_property(prop: str) -> str:
     return _css_norm_re.sub(_lower_dash, prop)
 
 
-class CSSStyleDeclaration(_dict):
+class CSSStyleDeclaration(OrderedDict):
     """Represents a CSS property-value pairs."""
 
     def __init__(self, style: Optional[str] = None,
