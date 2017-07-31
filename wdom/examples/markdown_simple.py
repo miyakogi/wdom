@@ -12,13 +12,14 @@ except ImportError:
           'by `pip install misaka pygments`.')
     exit()
 
+from wdom.node import RawHtml
 from wdom.options import config
 if config.theme is None:
     config.theme = 'concise'  # fake command line `--theme` option
 from wdom.document import get_document  # noqa: E402
-from wdom import themes  # noqa: E402
-from wdom.themes import Div, Textarea, Col6, Row, H1, Hr  # noqa: E402
-from wdom.themes import Select, Option, Style  # noqa: E402
+from wdom.themes import default  # noqa: E402
+from wdom.themes.default import Div, Textarea, Col6, Row, H1, Hr  # noqa: E402
+from wdom.themes.default import Select, Option, Style  # noqa: E402
 
 
 src = '''
@@ -88,25 +89,23 @@ class Editor(Row):
 
         self.set_style('default')
         self.editor.textContent = src
-        self.viewer.innerHTML = self.md(src)
-        # TIPS: Wen just showing HTML, `appendChild(RawHTML(html))` is better
+        # TIPS: Wen just showing HTML, `appendChild(RawHTML)` is better
         # than innerHTML on performance since it skips parse process.
-        # from wdom.node import RawHtml
-        # self.viewer.appendChild(RawHtml(self.md(src)))
+        self.viewer.appendChild(RawHtml(self.md(src)))
 
     def render(self, event):
         content = event.currentTarget.textContent
-        self.viewer.innerHTML = self.md(content)
+        # self.viewer.innerHTML = self.md(content)
         # TIPS: Same as above reason, RawHtml is also better here
-        # self.viewer.empty()
-        # self.viewer.appendChild(RawHtml(self.md(content)))
+        self.viewer.empty()
+        self.viewer.appendChild(RawHtml(self.md(content)))
 
     def set_style(self, style: str):
         self.css.innerHTML = HtmlFormatter(style=style).get_style_defs()
 
 
 def sample_page(**kwargs):
-    get_document().register_theme(themes)
+    get_document().register_theme(default)
     app = Div(style='width: 90vw; margin: auto')
     title = H1('Simple Markdown Editor', class_='text-center')
     app.appendChild(title)
