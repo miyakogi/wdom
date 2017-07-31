@@ -14,7 +14,7 @@ from wdom import server
 from wdom.event import Event, create_event
 from wdom.element import _AttrValueType, HTMLElement, ElementParser
 from wdom.element import ElementMeta, DOMTokenList
-from wdom.node import Node
+from wdom.node import Node, CharacterData
 
 if TYPE_CHECKING:
     from typing import Type  # noqa
@@ -276,8 +276,19 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
         self._empty_web()
         self._empty()
 
+    def _get_child_html(self, child: Node) -> str:
+        if isinstance(child, CharacterData):
+            # temparary become new parent
+            # text node needs to know its parent to escape or not its content
+            self._append_child(child)
+            html = child.html
+            self._remove_child(child)
+        else:
+            html = getattr(child, 'html', str(child))
+        return html
+
     def _append_child_web(self, child: 'WdomElement') -> Node:
-        html = child.html if isinstance(child, Node) else str(child)
+        html = self._get_child_html(child)
         self.js_exec('insertAdjacentHTML', 'beforeend', html)
         return child
 
@@ -287,11 +298,11 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
         If this instance is connected to the node on browser, the child node is
         also added to it.
         """
-        self._append_child(child)
-        return self._append_child_web(child)
+        self._append_child_web(child)
+        return self._append_child(child)
 
     def _insert_before_web(self, child: Node, ref_node: Node) -> Node:
-        html = child.html if isinstance(child, Node) else str(child)
+        html = self._get_child_html(child)
         if isinstance(ref_node, WdomElement):
             ref_node.js_exec('insertAdjacentHTML', 'beforebegin', html)
         else:
@@ -306,8 +317,8 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
         this instance is connected to the node on browser, the child node is
         also added to it.
         """
-        self._insert_before(child, ref_node)
-        return self._insert_before_web(child, ref_node)
+        self._insert_before_web(child, ref_node)
+        return self._insert_before(child, ref_node)
 
     def _remove_child_web(self, child: Node) -> Node:
         if child in self.childNodes:
@@ -322,24 +333,19 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
 
         If the node is not a child of this node, raise ValueError.
         """
-        self._remove_child_web(child)  # web before local
+        self._remove_child_web(child)
         return self._remove_child(child)
 
     def _replace_child_web(self, new_child: Node, old_child: Node) -> None:
-        # temparary become new parent
-        # text node needs to know its parent to escape or not its content
-        self._append_child(new_child)
+        html = self._get_child_html(new_child)
         if isinstance(old_child, WdomElement):
-            self.js_exec('replaceChildById', new_child.html, old_child.rimo_id)
+            self.js_exec('replaceChildById', html, old_child.rimo_id)
         elif old_child.parentNode is not None:
             # old_child will be Text Node
             index = old_child.parentNode.index(old_child)
             # Remove old_child before insert new child
             self._remove_child_web(old_child)
-            self.js_exec('insert', index, new_child.html)
-        # remove child once
-        # following process should append child correctly
-        self._remove_child(new_child)
+            self.js_exec('insert', index, html)
 
     def replaceChild(self, new_child: 'WdomElement', old_child: 'WdomElement'
                      ) -> Node:

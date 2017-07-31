@@ -515,7 +515,7 @@ class ChildNode(AbstractNode):
     """Mixin class for Node classes which can have parent node.
 
     This class is inherited by DocumentType, Element, and CharacterData
-    (super class of Text, RawHTML, and Comment) classes.
+    (super class of Text, Comment, and RawHtml) classes.
     """
 
     def before(self, *nodes: Union[AbstractNode, str]) -> None:
@@ -674,9 +674,9 @@ class Text(CharacterData):
 
 
 class RawHtml(Text):
-    """Very similar to ``Text`` class, but contents are not escaped.
+    """Very similar to ``Text`` class, but contents are always not escaped.
 
-    Used for inner contents of ``<script>`` element or ``<style>`` element.
+    This node is [NOT DOM Standard].
     """
 
     @property
