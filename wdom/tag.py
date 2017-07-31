@@ -23,7 +23,7 @@ from wdom.element import (
     HTMLStyleElement,
     HTMLTextAreaElement,
 )
-from wdom.node import Node, NodeList
+from wdom.node import Comment, RawHtml, Node, NodeList, Text
 from wdom.web_node import WdomElement
 
 if TYPE_CHECKING:
@@ -297,7 +297,7 @@ Dd = NewTagClass('Dd')
 Form = NewTagClass('Form', 'form', (Tag, HTMLFormElement))
 Button = NewTagClass('Button', 'button', (Tag, HTMLButtonElement))
 Label = NewTagClass('Label', 'label', (Tag, HTMLLabelElement))
-Optgroup = NewTagClass('OptGroup', 'optgroup', (Tag, HTMLOptGroupElement))
+Optgroup = NewTagClass('Optgroup', 'optgroup', (Tag, HTMLOptGroupElement))
 Option = NewTagClass('Option', 'option', (Tag, HTMLOptionElement))
 Select = NewTagClass('Select', 'select', (Tag, HTMLSelectElement))
 
@@ -383,5 +383,15 @@ default_classes = (
     Optgroup,
     Option,
     Select,
-    RawHtmlNode,
 )
+
+# alias
+OptGroup = Optgroup
+TextArea = Textarea
+
+# export classes
+__all__ = ['Tag', 'NestedTag', 'NewTagClass', 'RawHtmlNode',
+           'Comment', 'RawHtml', 'Text',  # defined in node module
+           'TextArea', 'OptGroup',  # alias
+           ]
+__all__.extend(cls.__name__ for cls in default_classes)
