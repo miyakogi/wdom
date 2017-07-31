@@ -184,11 +184,13 @@ Differences are:
 - import tag classes from ``wdom.themes.[theme_name]`` instead of ``wdom.tag``
 - register theme-module by ``document.register_theme(theme_module)``
 
-If you want to more easily change themes (or, css frameworks), try command-line option ``--theme``.
-``wdom.themes`` module would be switched to ``--theme`` option.
+If you want to more easily change themes (or, css frameworks), try command-line
+option ``--theme``. ``wdom.themes.default`` module would be switched to
+``--theme`` option.
 
-For example, in the above code, change ``from wdom.themes import bootstrap3`` to ``from wdom import themes``.
-And execute the code with ``--theme theme_name`` option (see below).
+For example, in the above code, change ``from wdom.themes import bootstrap3`` to
+``from wdom.themes import default``. And execute the code with ``--theme
+theme_name`` option (see below).
 
 
 .. image:: https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif
