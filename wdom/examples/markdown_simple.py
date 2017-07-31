@@ -16,7 +16,7 @@ from wdom.options import config
 if config.theme is None:
     config.theme = 'concise'  # fake command line `--theme` option
 from wdom.document import get_document  # noqa: E402
-from wdom.themes import default, RawHtmlDiv  # noqa: E402
+from wdom.themes import default, RawHtmlNode  # noqa: E402
 from wdom.themes.default import Div, Textarea, Col6, Row, H1, Hr  # noqa: E402
 from wdom.themes.default import Select, Option, Style  # noqa: E402
 
@@ -87,15 +87,15 @@ class Editor(Row):
 
         self.set_style('default')
         self.editor.textContent = src
-        # TIPS: Wen just showing HTML, `appendChild(RawHTMLDiv)` is better
+        # TIPS: Wen just showing HTML, `appendChild(RawHtmlNode)` is better
         # than innerHTML on performance since it skips parse process.
-        self.viewer.appendChild(RawHtmlDiv(self.md(src)))
+        self.viewer.appendChild(RawHtmlNode(self.md(src)))
 
     def render(self, event):
         content = event.currentTarget.textContent
         # self.viewer.innerHTML = self.md(content)
         # TIPS: Same as above reason, RawHtml node is also better here
-        self.viewer.replaceChild(RawHtmlDiv(self.md(content)),
+        self.viewer.replaceChild(RawHtmlNode(self.md(content)),
                                  self.viewer.firstChild)
 
     def set_style(self, style: str):

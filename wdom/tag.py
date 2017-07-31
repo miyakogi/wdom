@@ -302,7 +302,7 @@ Option = NewTagClass('Option', 'option', (Tag, HTMLOptionElement))
 Select = NewTagClass('Select', 'select', (Tag, HTMLSelectElement))
 
 
-class RawHtmlDiv(Tag):
+class RawHtmlNode(Tag):
     """Does not escape inner contents, similar to ``<script>`` tag.
 
     This node wraps contents by ``<div style="display: inline">...</div>`` and
@@ -328,6 +328,7 @@ class RawHtmlDiv(Tag):
     _should_escape_text = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Add ``display: inline`` style on div tag."""
         super().__init__(*args, **kwargs)
         if 'display' not in self.style:
             self.style.setProperty('display', 'inline')
@@ -382,5 +383,5 @@ default_classes = (
     Optgroup,
     Option,
     Select,
-    RawHtmlDiv,
+    RawHtmlNode,
 )

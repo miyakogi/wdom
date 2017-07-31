@@ -5,15 +5,16 @@ Version 0.2.0 (next version)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * **Python 3.4 is NOT Supported**
-* Use async/await
+    * Use async/await
+    * Add type hints (pass mypy check)
+* Write docstrings (pass pydocstyle check)
 * Enable ``python setup.py test``
 * Moved ``suppress_logging`` function from ``wdom.testing`` to ``wdom.misc``
-* Add type hints (pass mypy check)
 * Improve auto-reload sequence
-* Write docstrings (pass pydocstyle check)
 * Parse html using custom elements
   * Find elements from customElementsRegistory
 * Move non-standard tag classes from ``wdom.tag`` to ``wdom.themes``
+* Add ``RawHtmlNode`` class
 
 Version 0.1.8 (2017-07-23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

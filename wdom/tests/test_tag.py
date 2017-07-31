@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.web_node import WdomElement
 from wdom.element import DOMTokenList
-from wdom.tag import Tag, NewTagClass, NestedTag
-from wdom.window import customElements
+from wdom.tag import Tag, NewTagClass, NestedTag, RawHtmlNode
 from wdom.testing import TestCase
+from wdom.web_node import WdomElement
+from wdom.window import customElements
 
 
 class TestTag(TestCase):
@@ -518,3 +518,18 @@ class TestTagBase(TestCase):
         self.assertRegex(b.html, '<tag type="radio" rimo_id="\d+"></tag>')
         self.assertRegex(c.html, '<tag type="text" rimo_id="\d+"></tag>')
         self.assertRegex(d.html, '<tag type="checkbox" rimo_id="\d+"></tag>')
+
+
+class TestRawHtmlNode(TestCase):
+    def setUp(self):
+        self.tag = Tag()
+        self.html = '<a>link</a>'
+
+    def test_raw_html(self):
+        html_node = RawHtmlNode(self.html)
+        self.assertEqual(self.html, html_node.firstChild.html)
+        self.assertRegex(
+            html_node.html,
+            '<div rimo_id="\d+" style="display: inline;">{}</div>'.format(
+                self.html)  # no rimo_id in inner tag <a>
+        )
