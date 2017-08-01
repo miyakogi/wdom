@@ -23,7 +23,9 @@ from wdom.element import (
     HTMLStyleElement,
     HTMLTextAreaElement,
 )
-from wdom.node import Comment, RawHtml, Node, NodeList, Text
+from wdom.node import Node, NodeList
+# Just export Comment/RawHtml/Text
+from wdom.node import Comment, RawHtml, Text  # noqa: F401
 from wdom.web_node import WdomElement
 
 if TYPE_CHECKING:
@@ -388,10 +390,3 @@ default_classes = (
 # alias
 OptGroup = Optgroup
 TextArea = Textarea
-
-# export classes
-__all__ = ['Tag', 'NestedTag', 'NewTagClass', 'RawHtmlNode',
-           'Comment', 'RawHtml', 'Text',  # defined in node module
-           'TextArea', 'OptGroup',  # alias
-           ]
-__all__.extend(cls.__name__ for cls in default_classes)

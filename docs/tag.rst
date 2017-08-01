@@ -18,7 +18,7 @@ Tag class
 
    .. autofunction:: NewTagClass
 
-    .. autoclass:: RawHtmlNode
+   .. autoclass:: RawHtmlNode
 
 
 List of HTML Tag Classes
