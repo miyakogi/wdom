@@ -437,7 +437,8 @@ class TestEventMessage(TestCase):
         self.elm.js_exec = MagicMock()
         self.mock = MagicMock(_is_coroutine=False)
         self.elm.addEventListener('click', self.mock)
-        self.event = create_event('click', currentTarget=self, target=self)
+        msg = {'type': 'click', 'currentTarget': {'id': self.elm.rimo_id}}
+        self.event = create_event(msg)
 
     def test_handle_event(self):
         self.elm.js_exec.assert_called_once_with('addEventListener', 'click')

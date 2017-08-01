@@ -5,9 +5,9 @@
 
 import json
 import logging
-from typing import Any, Dict
+from typing import Dict
 
-from wdom.event import Event, create_event
+from wdom.event import Event, create_event, EventMsgDict
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +25,12 @@ def log_handler(level: str, message: str) -> None:
         logger.debug(message)
 
 
-def create_event_from_msg(msg: dict) -> Event:
+def create_event_from_msg(msg: EventMsgDict) -> Event:
     """Create Event from dictionally (JSON message).
 
     Message format:
         {
+            'proto': 'event.__proto__.toString()',
             'type': 'event type',
             'currentTarget': {
                 'id': 'rimo_id of target node',
@@ -39,19 +40,13 @@ def create_event_from_msg(msg: dict) -> Event:
                 'id': 'rimo_id of target node',
                 ... (additional information),
                 },
-            ...,
+            ...,  // event specific fields
             }
     """
-    from wdom.document import getElementByRimoId
-    _id = msg.get('currentTarget', {'id': None}).get('id')
-    ctarget = getElementByRimoId(_id)
-    _id = msg.get('target', {'id': None}).get('id')
-    target = getElementByRimoId(_id) or ctarget
-    return create_event(msg['type'], currentTarget=ctarget,
-                        target=target, init=msg)
+    return create_event(msg)
 
 
-def event_handler(msg: Dict[str, Any]) -> None:
+def event_handler(msg: EventMsgDict) -> None:
     """Handle events emitted on browser."""
     e = create_event_from_msg(msg)
     if e.currentTarget is None:

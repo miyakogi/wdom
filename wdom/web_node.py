@@ -390,7 +390,10 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
         else:
             # Web上に表示されてれば勝手にブラウザ側からクリックイベント発生する
             # のでローカルのクリックイベント不要
-            e = create_event('click', currentTarget=self, target=self)
+            msg = {'proto': '', 'type': 'click',
+                   'currentTarget': {'id': self.rimo_id},
+                   'target': {'id': self.rimo_id}}
+            e = create_event(msg)
             self._dispatch_event(e)
 
     def exec(self, script: str) -> None:

@@ -8,6 +8,7 @@ from syncer import sync
 
 from wdom.document import get_document
 from wdom.event import Event, EventListener, EventTarget, create_event
+from wdom.event import MouseEvent
 from wdom.web_node import WdomElement
 from wdom.server.handler import create_event_from_msg
 from wdom.testing import TestCase
@@ -15,7 +16,7 @@ from wdom.testing import TestCase
 
 class TestEvent(TestCase):
     def setUp(self):
-        self.msg = {}
+        self.msg = {'type': 'event'}
         self.e = Event('event', init=self.msg)
 
     def test_event(self):
@@ -26,9 +27,13 @@ class TestEvent(TestCase):
 
     def test_craete_event(self):
         self.elm = WdomElement('tag')
-        msg = {}
-        e = create_event('event', currentTarget=self.elm, target=self.elm,
-                         init=msg)
+        msg = {
+            'proto': 'event',
+            'type': 'event',
+            'currentTarget': {'id': self.elm.rimo_id},
+            'target': {'id': self.elm.rimo_id},
+        }
+        e = create_event(msg)
         self.assertEqual(e.type, 'event')
         self.assertIs(e.currentTarget, self.elm)
         self.assertIs(e.target, self.elm)
@@ -51,6 +56,22 @@ class TestCreateEventMsg(TestCase):
         self.assertIs(e.currentTarget, self.elm)
         self.assertIs(e.target, self.elm)
         self.assertIs(e.init, msg)
+        self.assertTrue(isinstance(e, Event))
+
+    def test_event_from_msg_proto(self):
+        msg = {
+            'proto': 'MouseEvent',
+            'type': 'event',
+            'currentTarget': {'id': self.elm.rimo_id},
+            'target': {'id': self.elm.rimo_id},
+        }
+        e = create_event_from_msg(msg)
+        self.assertEqual(e.type, 'event')
+        self.assertIs(e.currentTarget, self.elm)
+        self.assertIs(e.target, self.elm)
+        self.assertIs(e.init, msg)
+        self.assertTrue(isinstance(e, Event))
+        self.assertTrue(isinstance(e, MouseEvent))
 
     def test_event_from_msg_notarget(self):
         msg = {

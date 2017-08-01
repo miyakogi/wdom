@@ -5,47 +5,105 @@
 
 from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction, Future
-from typing import Any, Awaitable, Callable, List, Union
+from typing import Any, Awaitable, Callable, Dict, List, Optional, Union
 from typing import TYPE_CHECKING
 
-from wdom.node import Node  # noqa
+from wdom.node import Node
 
 if TYPE_CHECKING:
-    from typing import MutableMapping, Optional  # noqa
+    from typing import MutableMapping  # noqa: F401
+
+
+# EventMsgDict = TypedDict('EventMsgDict', {
+#     'proto': str,
+#     'type': str,
+#     'currentTarget': Dict[str, str],
+#     'target': Dict[str, str],
+# })
+EventMsgDict = Dict[str, Any]
 
 
 class Event:
     """Event interface class."""
 
-    currentTarget = None  # type: Optional[Node]
-    target = None  # type: Optional[Node]
+    @property
+    def currentTarget(self) -> Optional[Node]:
+        """Return current event target."""
+        return self.__currentTarget
 
-    def __init__(self, type: str, init: dict = None) -> None:
+    @property
+    def target(self) -> Optional[Node]:
+        """Return original event target, which emitted this event first."""
+        return self.__target
+
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:
         """Create event object.
 
         First argument (type) is a string to represents type of this event.
         Second optional argument (init) is a dictionally, which has fields for
         this event's status.
         """
+        from wdom.document import getElementByRimoId
         self.type = type
-        self.init = dict() if init is None else init  # type: dict
+        self.init = dict() if init is None else init
+        _id = self.init.get('currentTarget', {'id': None}).get('id')
+        ctarget = getElementByRimoId(_id)
+        self.__currentTarget = ctarget
+        _id = self.init.get('target', {'id': None}).get('id')
+        self.__target = getElementByRimoId(_id) or ctarget
 
     def stopPrapagation(self) -> None:
         """Not implemented yet."""
         raise NotImplementedError
 
 
-def create_event(type: str, *, currentTarget: Node = None, target: Node = None,
-                 init: dict = None) -> Event:
-    """Create Event and set target nodes.
+class UIEvent(Event):  # noqa: D204
+    """Super class of user input related events.
+
+    Mouse/Touch/Focus/Keyboard/Wheel/Input/Composition/...Events are
+    descendants of this class.
+    """
+    pass
+
+
+class MouseEvent(UIEvent):  # noqa: D204
+    """Mouse event class."""
+    pass
+
+
+class DragEvent(MouseEvent):  # noqa: D204
+    """Drag event class."""
+    pass
+
+
+class KeyboardEvent(UIEvent):  # noqa: D204
+    """Keyboard event class."""
+    pass
+
+
+class InputEvent(UIEvent):  # noqa: D204
+    """Input event class."""
+    pass
+
+
+proto_dict = {
+    'MouseEvent': MouseEvent,
+    'DragEvent': DragEvent,
+    'KeyboardEvent': KeyboardEvent,
+    'InputEvent': InputEvent,
+}
+
+
+def create_event(msg: EventMsgDict) -> Event:
+    """Create Event from JSOM msg and set target nodes.
 
     :arg EventTarget currentTarget: Current event target node.
     :arg EventTarget target: Node which emitted this event first.
     :arg dict init: Event options.
     """
-    e = Event(type, init)
-    e.currentTarget = currentTarget
-    e.target = target
+    proto = msg.get('proto', '')  # type: str
+    cls = proto_dict.get(proto, Event)
+    e = cls(msg['type'], msg)
     return e
 
 
