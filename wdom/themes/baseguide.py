@@ -15,7 +15,7 @@ css_files = [
     '_static/css/baseguide.min.css',
 ]
 
-Button = NewTag('Button', bases=Button, class_='btn')
+Button = NewTag('Button', bases=Button, class_='btn', is_='btn')
 DefaultButton = NewTag('DefaultButton', 'button', Button, class_='btn-default', is_='default-button')
 PrimaryButton = NewTag('PrimaryButton', 'button', Button, class_='btn-primary', is_='primary-button')
 SecondaryButton = NewTag('SecondaryButton', 'button', Button, class_='btn-secondary', is_='secondary-button')

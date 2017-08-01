@@ -5,6 +5,7 @@ import importlib
 
 from parameterized import parameterized
 
+from wdom.tag import Tag, NestedTag
 from wdom.themes import theme_list
 from wdom.testing import TestCase
 
@@ -22,3 +23,12 @@ class TestThemesImport(TestCase):
         self.assertIn('js_files', dir(a))
         self.assertIn('headers', dir(a))
         self.assertIn('extended_classes', dir(a))
+
+    @parameterized.expand(theme_list)
+    def test_extended_is(self, theme):
+        """Extended classes must have is_ attr or custom tag."""
+        a = importlib.import_module('wdom.themes.' + theme)
+        for obj in a.extended_classes:
+            self.assertTrue(issubclass(obj, (Tag, NestedTag)))
+            if obj.tag in ('div', 'span', 'pre', 'a'):
+                self.assertNotEqual(obj.is_, '')

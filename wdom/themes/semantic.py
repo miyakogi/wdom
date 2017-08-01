@@ -44,15 +44,15 @@ Select = NewTag('Select', 'select', Select, class_='ui dropdown')
 
 # List http://semantic-ui.com/elements/list.html
 # Nested list with ul.list fails...
-Ul = NewTag('Ul', 'div', Div, class_='ui bulleted list')
-Li = NewTag('Li', 'div', Div, class_='item')
-Ol = NewTag('Ol', 'div', Div, class_='ui ordered list')
+Ul = NewTag('Ul', 'div', Div, class_='ui bulleted list', is_='ul')
+Li = NewTag('Li', 'div', Div, class_='item', is_='li')
+Ol = NewTag('Ol', 'div', Div, class_='ui ordered list', is_='ol')
 
 # Table http://semantic-ui.com/collections/table.html
 Table = NewTag('Table', 'table', Table, class_='ui celled table')
 
 # Divider
-Hr = NewTag('Hr', 'div', Div, class_='ui divider')
+Hr = NewTag('Hr', 'div', Div, class_='ui divider', is_='hr')
 
 # Typography http://semantic-ui.com/elements/header.html
 H1 = NewTag('H1', 'h1', H1, class_='ui header')

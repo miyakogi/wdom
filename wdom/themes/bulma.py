@@ -39,6 +39,7 @@ class Select(NestedTag):
     tag = 'span'
     class_ = 'select'
     inner_tag_class = Select
+    is_ = 'select'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._inner_element.addEventListener('change', self.dispatchEvent)

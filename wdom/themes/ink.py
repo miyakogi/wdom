@@ -31,7 +31,7 @@ ErrorButton = NewTag('ErrorButton', 'button', Button, class_='red', is_='error-b
 LinkButton = NewTag('LinkButton', 'button', Button, is_='link-button')
 
 Form = NewTag('Form', 'form', Form, class_='ink-form')
-FormGroup = NewTag('FormGroup', 'div', Div, class_='control-group')
+FormGroup = NewTag('FormGroup', 'div', FormGroup, class_='control-group')
 Input = NewTag('Input', 'input', Input)
 TextInput = NewTag('TextInput', 'input', TextInput)
 Textarea = NewTag('Textarea', 'textarea', Textarea)

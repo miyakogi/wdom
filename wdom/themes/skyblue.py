@@ -16,7 +16,7 @@ css_files = [
 ]
 
 
-Button = NewTag('Button', 'a', bases=A, class_='btn')
+Button = NewTag('Button', 'a', bases=A, class_='btn', is_='button')
 DefaultButton = NewTag('DefaultButton', 'a', Button, class_='btn-dark', is_='default-button')
 PrimaryButton = NewTag('PrimaryButton', 'a', Button, is_='primary-button')
 SecondaryButton = NewTag('SecondaryButton', 'a', Button, class_='btn-light', is_='secondary-button')

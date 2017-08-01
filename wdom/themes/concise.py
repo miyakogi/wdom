@@ -33,6 +33,7 @@ Row = NewTag('Row', 'div', Row, class_='row')
 
 class Col(Div):
     column = None
+    is_ = 'col'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.column:
