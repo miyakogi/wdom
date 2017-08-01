@@ -2,17 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from os import path
-from tempfile import NamedTemporaryFile
 from copy import copy
 import logging
 import unittest
 from importlib import reload
-import subprocess
 
 from parameterized import parameterized
 
-from wdom.util import root_dir
 from wdom.options import parse_command_line, config, set_loglevel
 from wdom import tag
 from wdom.testing import TestCase
@@ -69,7 +65,6 @@ class TestOptions(TestCase):
         with self.assertRaises(AssertionError):
             with self.assertLogs('wdom'):
                 parse_command_line()
-
 
 
 class TestThemeOption(unittest.TestCase):

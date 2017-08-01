@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# type: ignore
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
 from wdom.themes import Form as _Form

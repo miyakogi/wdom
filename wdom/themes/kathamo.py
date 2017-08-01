@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
 from wdom.themes import Button as _Button
