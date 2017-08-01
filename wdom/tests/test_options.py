@@ -64,24 +64,12 @@ class TestOptions(TestCase):
         assert logger.getEffectiveLevel() == logging.WARN
 
     def test_unknown_args(self):
-        src = '\n'.join([
-            'import sys',
-            'sys.path.append(\'{}\')'.format(path.dirname(root_dir)),
-            'from wdom import options',
-        ])
-        with NamedTemporaryFile('w', dir=path.abspath(path.curdir)) as f:
-            f.write(src)
-            f.flush()  # save file
-            cmd = [sys.executable, f.name, '--test-arg']
-            proc = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                universal_newlines=True,
-            )
-            proc.wait()
-        result = proc.stdout.read()
-        self.assertIn('usage: WDOM', result)
-        self.assertIn('Unknown Argument', result)
-        self.assertIn('--test-arg', result)
+        sys.argv.extend(['--test-args', 'a'])
+        # no error/log when get unknown args
+        with self.assertRaises(AssertionError):
+            with self.assertLogs('wdom'):
+                parse_command_line()
+
 
 
 class TestThemeOption(unittest.TestCase):
