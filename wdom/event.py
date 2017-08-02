@@ -5,13 +5,13 @@
 
 from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction, Future
-from typing import Any, Awaitable, Callable, Dict, List, Optional, Union
+from typing import Any, Awaitable, Callable, Dict, Optional, Union
 from typing import TYPE_CHECKING
 
 from wdom.node import Node
 
 if TYPE_CHECKING:
-    from typing import MutableMapping  # noqa: F401
+    from typing import List, MutableMapping  # noqa: F401
 
 
 # EventMsgDict = TypedDict('EventMsgDict', {

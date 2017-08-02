@@ -105,7 +105,7 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
             if task and not task.cancelled() and not task.done():
                 task.set_result(msg.get('data'))
 
-    def js_exec(self, method: str, *args: Union[int, str]) -> None:
+    def js_exec(self, method: str, *args: Union[int, str, bool]) -> None:
         """Execute ``method`` in the related node on browser.
 
         Other keyword arguments are passed to ``params`` attribute.
@@ -358,7 +358,7 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
         self.js_exec('addEventListener', event)
 
     def addEventListener(self, event: str, listener: _EventListenerType
-                         ) -> None:
+                         ) -> None:  # noqa: D102
         super().addEventListener(event, listener)
         self._add_event_listener_web(event)
 
@@ -367,7 +367,7 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
             self.js_exec('removeEventListener', event)  # type: ignore
 
     def removeEventListener(self, event: str, listener: _EventListenerType
-                            ) -> None:
+                            ) -> None:  # noqa: D102
         super().removeEventListener(event, listener)
         self._remove_event_listener_web(event)
 
