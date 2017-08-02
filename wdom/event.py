@@ -157,9 +157,9 @@ class EventTarget:
     _event_listeners = None  # type: MutableMapping[str, List[EventListener]]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
-        self._event_listeners = defaultdict(list)
         # need to call super().__init__ to use as mixin class
         super().__init__(*args, **kwargs)  # type: ignore
+        self._event_listeners = defaultdict(list)
 
     def _add_event_listener(self, event: str, listener: _EventListenerType
                             ) -> None:

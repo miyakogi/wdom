@@ -392,12 +392,12 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         :arg bool _registered: Is registered to CustomElementRegistry.
         :arg kwargs: key-value pair of attributes.
         """
+        super().__init__(parent=parent)
         self._registered = _registered
         self.tag = tag
         self._element_buffer.add(self)  # used to suport custom elements
         self.attributes = NamedNodeMap(self)
         self.classList = DOMTokenList(self)
-        super().__init__(parent=parent)
 
         if 'class_' in kwargs:
             kwargs['class'] = kwargs.pop('class_')
@@ -712,8 +712,8 @@ class FormControlMixin(AbstractNode):
                  form: Union[str, int, 'HTMLFormElement'] = None,
                  **kwargs: Any) -> None:
         """``form`` is a ``HTMLFormElement`` object or id of it."""
-        self.__form = None
         super().__init__(*args, **kwargs)  # type: ignore
+        self.__form = None
         from wdom.document import getElementById
         if isinstance(form, (str, int)):
             form = getElementById(form)
