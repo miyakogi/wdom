@@ -64,16 +64,6 @@ class Node(AbstractNode):
     def __contains__(self, other: AbstractNode) -> bool:
         return other in self.__children
 
-    def __copy__(self) -> AbstractNode:
-        clone = type(self)()
-        return clone
-
-    def __deepcopy__(self, memo: Any = None) -> AbstractNode:
-        clone = self.__copy__()
-        for child in self.childNodes:
-            clone.appendChild(child.__deepcopy__(memo))
-        return clone
-
     # DOM Level 1
     @property
     def length(self) -> int:
@@ -261,6 +251,16 @@ class Node(AbstractNode):
         """Return True if this node has attributes."""
         return hasattr(self, 'attributes') and bool(self.attributes)
 
+    def _clone_node(self) -> 'Node':
+        clone = type(self)()
+        return clone
+
+    def _clone_node_deep(self) -> 'Node':
+        clone = self._clone_node()
+        for child in self.childNodes:
+            clone.appendChild(child._clone_node_deep())
+        return clone
+
     def cloneNode(self, deep: bool=False) -> AbstractNode:
         """Return new copy of this node.
 
@@ -268,8 +268,13 @@ class Node(AbstractNode):
         clones of child nodes of this node (if presents).
         """
         if deep:
-            return self.__deepcopy__()
-        return self.__copy__()
+            return self._clone_node_deep()
+        return self._clone_node()
+
+    __copy__ = _clone_node  # alias
+
+    def __deepcopy__(self, memo: Any) -> 'Node':
+        return self.cloneNode(True)
 
     def _empty(self) -> None:
         for child in tuple(self.__children):
@@ -573,7 +578,7 @@ class CharacterData(Node, ChildNode, NonDocumentTypeChildNode):
         super().__init__(parent=parent)
         self.data = text
 
-    def __copy__(self) -> 'CharacterData':
+    def _clone_node(self) -> 'CharacterData':
         clone = type(self)(self.data)
         return clone
 
@@ -704,6 +709,10 @@ class DocumentType(Node, NonDocumentTypeChildNode):
     nodeValue = None
     textContent = None  # type: ignore
     _should_escape_text = True
+
+    def _clone_node(self) -> 'CharacterData':
+        clone = type(self)(self.name)
+        return clone
 
     @property
     def nodeName(self) -> str:  # type: ignore

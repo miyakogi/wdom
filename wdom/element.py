@@ -406,10 +406,11 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         for k, v in kwargs.items():
             self.setAttribute(k, v)
 
-    def __copy__(self) -> 'Element':
+    def _clone_node(self) -> 'Element':
         clone = type(self)(self.tag)
         for attr in self.attributes:
             clone.setAttribute(attr, self.getAttribute(attr))
+        # TODO: should clone event listeners???
         return clone
 
     def _get_attrs_by_string(self) -> str:
@@ -625,8 +626,8 @@ class HTMLElement(Element):
             attrs += ' style="{}"'.format(style)
         return attrs.strip()
 
-    def __copy__(self) -> 'HTMLElement':
-        clone = super().__copy__()
+    def _clone_node(self) -> 'HTMLElement':
+        clone = super()._clone_node()
         clone.style.update(self.style)
         return clone
 

@@ -145,8 +145,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
             obj['tag'] = self.tag
             server.push_message(obj)
 
-    def __copy__(self) -> HTMLElement:
-        clone = super().__copy__()
+    def _clone_node(self) -> HTMLElement:
+        clone = super()._clone_node()
         if clone.rimo_id == str(id(self)):
             # change automatically added id
             # overhead in __init__...
