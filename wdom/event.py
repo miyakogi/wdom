@@ -165,11 +165,6 @@ class EventTarget:
                             ) -> None:
         self._event_listeners[event].append(EventListener(listener))
 
-    def _add_event_listener_web(self, event: str) -> None:
-        from wdom.web_node import WebIF
-        if isinstance(self, WebIF):
-            self.js_exec('addEventListener', event)
-
     def addEventListener(self, event: str, listener: _EventListenerType
                          ) -> None:
         """Add event listener to this node.
@@ -180,7 +175,6 @@ class EventTarget:
         is clicked, event is ``'click``.
         """
         self._add_event_listener(event, listener)
-        self._add_event_listener_web(event)
 
     def _remove_event_listener(self, event: str, listener: _EventListenerType
                                ) -> None:
@@ -194,11 +188,6 @@ class EventTarget:
         if not listeners:
             del self._event_listeners[event]
 
-    def _remove_event_listener_web(self, event: str) -> None:
-        from wdom.web_node import WebIF
-        if isinstance(self, WebIF) and event not in self._event_listeners:
-            self.js_exec('removeEventListener', event)  # type: ignore
-
     def removeEventListener(self, event: str, listener: _EventListenerType
                             ) -> None:
         """Remove an event listener of this node.
@@ -207,17 +196,11 @@ class EventTarget:
         matched.
         """
         self._remove_event_listener(event, listener)
-        self._remove_event_listener_web(event)
 
-    def _dispatch_event(self, event: Event) -> List[Awaitable[None]]:
-        _tasks = []
+    def _dispatch_event(self, event: Event) -> None:
         for listener in self._event_listeners[event.type]:
-            if listener._is_coroutine:
-                _tasks.append(listener(event))
-            else:
-                listener(event)
-        return _tasks
+            listener(event)
 
-    def dispatchEvent(self, event: Event) -> List[Awaitable[None]]:
+    def dispatchEvent(self, event: Event) -> None:
         """Emit events."""
-        return self._dispatch_event(event)
+        self._dispatch_event(event)

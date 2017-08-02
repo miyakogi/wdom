@@ -451,6 +451,17 @@ class TestEventMessage(TestCase):
         self.elm.dispatchEvent(self.event)
         self.mock.assert_not_called()
 
+    def test_remove_multi_event(self):
+        self.elm.addEventListener('click', self.mock)
+        self.elm.removeEventListener('click', self.mock)
+        with self.assertRaises(AssertionError):
+            self.elm.js_exec.assert_has_calls(
+                call('removeEventListener', 'click'))
+        self.elm.removeEventListener('click', self.mock)
+        self.elm.js_exec.assert_called_with('removeEventListener', 'click')
+        self.elm.dispatchEvent(self.event)
+        self.mock.assert_not_called()
+
 
 class TestQuery(TestCase):
     def setUp(self):

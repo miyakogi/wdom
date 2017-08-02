@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from weakref import WeakValueDictionary
 
 from wdom import server
-from wdom.event import Event, create_event
+from wdom.event import Event, create_event, _EventListenerType, EventTarget
 from wdom.element import _AttrValueType, HTMLElement, ElementParser
 from wdom.element import ElementMeta, DOMTokenList
 from wdom.node import Node, CharacterData
@@ -30,7 +30,7 @@ def remove_rimo_id(html: str) -> str:
     return _remove_id_re.sub('', html)
 
 
-class WebIF:
+class WebIF(EventTarget):
     """Web Interfase abstract class."""
 
     tag = None  # type: str
@@ -108,6 +108,24 @@ class WebIF:
             obj['id'] = self.rimo_id
             obj['tag'] = self.tag
             server.push_message(obj)
+
+    # Event Handling
+    def _add_event_listener_web(self, event: str) -> None:
+        self.js_exec('addEventListener', event)
+
+    def addEventListener(self, event: str, listener: _EventListenerType
+                         ) -> None:
+        super().addEventListener(event, listener)
+        self._add_event_listener_web(event)
+
+    def _remove_event_listener_web(self, event: str) -> None:
+        if event not in self._event_listeners:
+            self.js_exec('removeEventListener', event)  # type: ignore
+
+    def removeEventListener(self, event: str, listener: _EventListenerType
+                            ) -> None:
+        super().removeEventListener(event, listener)
+        self._remove_event_listener_web(event)
 
 
 class WdomElementParser(ElementParser):
