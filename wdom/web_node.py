@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from weakref import WeakValueDictionary
 
 from wdom import server
-from wdom.event import Event, create_event, _EventListenerType, EventTarget
+from wdom.event import Event, create_event, _EventListenerType
 from wdom.element import _AttrValueType, HTMLElement, ElementParser
 from wdom.element import ElementMeta, DOMTokenList
 from wdom.node import Node, CharacterData
@@ -30,38 +30,74 @@ def remove_rimo_id(html: str) -> str:
     return _remove_id_re.sub('', html)
 
 
-class WebIF(EventTarget):
-    """Web Interfase abstract class."""
-
-    tag = None  # type: str
-
-    @property
-    def rimo_id(self) -> _T_MsgItem:  # noqa: D102
-        ...  # for type check
-
-    @property
-    def ownerDocument(self) -> Optional[Node]:  # noqa: D102
-        # for type check
-        return None
+class WdomElementParser(ElementParser):
+    """Parser class which generates WdomElement nodes."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+        super().__init__(*args, **kwargs)
+        self.default_class = WdomElement
+
+
+class WdomElementMeta(ElementMeta):
+    """Meta class to set default class variable of HTMLElement."""
+
+    @classmethod
+    def __prepare__(metacls, name: str, bases: Tuple[type], **kwargs: Any
+                    ) -> Dict[str, bool]:
+        return {'inherit_class': True}
+
+
+class WdomElement(HTMLElement, metaclass=WdomElementMeta):
+    """WdomElement class.
+
+    This class provides main features to synchronously control browser DOM
+    node.
+
+    Additionally, this class provides shortcut properties to handle class
+    attributes.
+    """
+
+    _elements_with_rimo_id = WeakValueDictionary(
+    )  # type: WeakValueDictionary[_RimoIdType, WdomElement]
+    _parser_class = WdomElementParser  # type: Type[ElementParser]
+
+    #: str and list of strs are acceptale.
+    class_ = ''
+    #: Inherit classes defined in super class or not.
+    #: By default, this variable is True.
+    inherit_class = True
+
+    @property
+    def rimo_id(self) -> _RimoIdType:
+        """Get rimo_id attribute.
+
+        This attribute is used to relate python node and browser DOM node.
+        """
+        _id = self.getAttribute('rimo_id') or ''
+        if not isinstance(_id, (int, str)):
+            raise TypeError('Invalid rimo_id type')
+        return _id
+
+    @rimo_id.setter
+    def rimo_id(self, id: _RimoIdType) -> None:
+        self.setAttribute('rimo_id', id)
+
+    def __init__(self, *args: Any, parent: Optional['WdomElement'] = None,
+                 rimo_id: Optional[_RimoIdType] = None,
+                 **kwargs: Any) -> None:  # noqa: D102
+        super().__init__(*args, **kwargs)
         self.__reqid = 0
         self.__tasks = {}  # type: Dict
-        super().__init__(*args, **kwargs)  # type: ignore
+        self.rimo_id = rimo_id or str(id(self))
+        self.addEventListener('mount', self._on_mount)
+        if parent:
+            parent.appendChild(self)
 
+    # JS handling
     @property
     def connected(self) -> bool:
         """When this instance has any connection, return True."""
         return server.is_connected()
-
-    def on_event_pre(self, event: Event) -> None:
-        """Run before dispatching events.
-
-        Used for seting values changed by user input, in some elements like
-        input, textarea, or select. In this method, event.currentTarget is a
-        dict sent from browser.
-        """
-        pass
 
     def on_response(self, msg: Dict[str, str]) -> None:
         """Run when get response from browser."""
@@ -109,86 +145,6 @@ class WebIF(EventTarget):
             obj['tag'] = self.tag
             server.push_message(obj)
 
-    # Event Handling
-    def _add_event_listener_web(self, event: str) -> None:
-        self.js_exec('addEventListener', event)
-
-    def addEventListener(self, event: str, listener: _EventListenerType
-                         ) -> None:
-        super().addEventListener(event, listener)
-        self._add_event_listener_web(event)
-
-    def _remove_event_listener_web(self, event: str) -> None:
-        if event not in self._event_listeners:
-            self.js_exec('removeEventListener', event)  # type: ignore
-
-    def removeEventListener(self, event: str, listener: _EventListenerType
-                            ) -> None:
-        super().removeEventListener(event, listener)
-        self._remove_event_listener_web(event)
-
-
-class WdomElementParser(ElementParser):
-    """Parser class which generates WdomElement nodes."""
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
-        super().__init__(*args, **kwargs)
-        self.default_class = WdomElement
-
-
-class WdomElementMeta(ElementMeta):
-    """Meta class to set default class variable of HTMLElement."""
-
-    @classmethod
-    def __prepare__(metacls, name: str, bases: Tuple[type], **kwargs: Any
-                    ) -> Dict[str, bool]:
-        return {'inherit_class': True}
-
-
-class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
-    """WdomElement class.
-
-    This class provides main features to synchronously control browser DOM
-    node.
-
-    Additionally, this class provides shortcut properties to handle class
-    attributes.
-    """
-
-    _elements_with_rimo_id = WeakValueDictionary(
-    )  # type: WeakValueDictionary[_RimoIdType, WdomElement]
-    _parser_class = WdomElementParser  # type: Type[ElementParser]
-
-    #: str and list of strs are acceptale.
-    class_ = ''
-    #: Inherit classes defined in super class or not.
-    #: By default, this variable is True.
-    inherit_class = True
-
-    @property
-    def rimo_id(self) -> _RimoIdType:
-        """Get rimo_id attribute.
-
-        This attribute is used to relate python node and browser DOM node.
-        """
-        _id = self.getAttribute('rimo_id') or ''
-        if not isinstance(_id, (int, str)):
-            raise TypeError('Invalid rimo_id type')
-        return _id
-
-    @rimo_id.setter
-    def rimo_id(self, id: _RimoIdType) -> None:
-        self.setAttribute('rimo_id', id)
-
-    def __init__(self, *args: Any, parent: Optional['WdomElement'] = None,
-                 rimo_id: Optional[_RimoIdType] = None,
-                 **kwargs: Any) -> None:  # noqa: D102
-        super().__init__(*args, **kwargs)
-        self.rimo_id = rimo_id or str(id(self))
-        self.addEventListener('mount', self._on_mount)
-        if parent:
-            parent.appendChild(self)
-
     def __copy__(self) -> HTMLElement:
         clone = super().__copy__()
         if clone.rimo_id == str(id(self)):
@@ -203,6 +159,7 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
         for event in self._event_listeners:
             self._add_event_listener_web(event=event)
 
+    # Hanlde attributes
     def _set_attribute(self, attr: str, value: _AttrValueType) -> None:
         if attr == 'rimo_id':
             if 'rimo_id' in self.attributes:
@@ -278,6 +235,7 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
                 _remove_cl.append(class_)
         self.classList.remove(*_remove_cl)
 
+    # Handle child nodes
     def _remove_web(self) -> None:
         self.js_exec('remove')
 
@@ -400,6 +358,24 @@ class WdomElement(HTMLElement, WebIF, metaclass=WdomElementMeta):
     def html_noid(self) -> str:
         """Get html representation of this node without rimo_id."""
         return remove_rimo_id(self.html)
+
+    # Event Handling
+    def _add_event_listener_web(self, event: str) -> None:
+        self.js_exec('addEventListener', event)
+
+    def addEventListener(self, event: str, listener: _EventListenerType
+                         ) -> None:
+        super().addEventListener(event, listener)
+        self._add_event_listener_web(event)
+
+    def _remove_event_listener_web(self, event: str) -> None:
+        if event not in self._event_listeners:
+            self.js_exec('removeEventListener', event)  # type: ignore
+
+    def removeEventListener(self, event: str, listener: _EventListenerType
+                            ) -> None:
+        super().removeEventListener(event, listener)
+        self._remove_event_listener_web(event)
 
     def click(self) -> None:
         """Send click event."""

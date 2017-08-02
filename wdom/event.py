@@ -197,6 +197,15 @@ class EventTarget:
         """
         self._remove_event_listener(event, listener)
 
+    def on_event_pre(self, event: Event) -> None:
+        """Run before dispatching events.
+
+        Used for seting values changed by user input, in some elements like
+        input, textarea, or select. In this method, event.currentTarget is a
+        dict sent from browser.
+        """
+        pass
+
     def _dispatch_event(self, event: Event) -> None:
         for listener in self._event_listeners[event.type]:
             listener(event)

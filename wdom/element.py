@@ -91,26 +91,26 @@ class DOMTokenList(MutableSequence[str]):
 
     def add(self, *tokens: str) -> None:
         """Add new tokens to list."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         _new_tokens = []
         for token in tokens:
             self._validate_token(token)
             if token and token not in self:
                 self._list.append(token)
                 _new_tokens.append(token)
-        if isinstance(self._owner, WebIF) and _new_tokens:
+        if isinstance(self._owner, WdomElement) and _new_tokens:
             self._owner.js_exec('addClass', _new_tokens)
 
     def remove(self, *tokens: str) -> None:
         """Remove tokens from list."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         _removed_tokens = []
         for token in tokens:
             self._validate_token(token)
             if token in self:
                 self._list.remove(token)
                 _removed_tokens.append(token)
-        if isinstance(self._owner, WebIF) and _removed_tokens:
+        if isinstance(self._owner, WdomElement) and _removed_tokens:
             self._owner.js_exec('removeClass', _removed_tokens)
 
     def toggle(self, token: str) -> None:
@@ -263,20 +263,20 @@ class NamedNodeMap(UserDict):
 
     def setNamedItem(self, item: Attr) -> None:
         """Set ``Attr`` object in this collection."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
-        if isinstance(self._owner, WebIF):
+        if isinstance(self._owner, WdomElement):
             self._owner.js_exec('setAttribute', item.name, item.value)
         self._dict[item.name] = item
         item._owner = self._owner
 
     def removeNamedItem(self, item: Attr) -> Optional[Attr]:
         """Set ``Attr`` object and return it (if exists)."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
-        if isinstance(self._owner, WebIF):
+        if isinstance(self._owner, WdomElement):
             self._owner.js_exec('removeAttribute', item.name)
         removed_item = self._dict.pop(item.name, None)
         if removed_item:
