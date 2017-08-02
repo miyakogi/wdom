@@ -6,7 +6,7 @@
 import logging
 import re
 from asyncio import Future
-from typing import Any, Awaitable, Dict, Iterable, Optional, Tuple, Union
+from typing import Any, Awaitable, Dict, Iterable, Tuple, Union
 from typing import TYPE_CHECKING
 from weakref import WeakValueDictionary
 
@@ -68,27 +68,25 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
     inherit_class = True
 
     @property
-    def rimo_id(self) -> _RimoIdType:
+    def rimo_id(self) -> str:
         """Get rimo_id attribute.
 
         This attribute is used to relate python node and browser DOM node.
         """
-        _id = self.getAttribute('rimo_id') or ''
-        if not isinstance(_id, (int, str)):
-            raise TypeError('Invalid rimo_id type')
-        return _id
+        return self.__rimo_id
 
-    @rimo_id.setter
-    def rimo_id(self, id: _RimoIdType) -> None:
-        self.setAttribute('rimo_id', id)
-
-    def __init__(self, *args: Any, parent: Optional['WdomElement'] = None,
-                 rimo_id: Optional[_RimoIdType] = None,
+    def __init__(self, *args: Any, parent: 'WdomElement' = None,
+                 rimo_id: _RimoIdType = None,
                  **kwargs: Any) -> None:  # noqa: D102
         super().__init__(*args, **kwargs)
         self.__reqid = 0
         self.__tasks = {}  # type: Dict
-        self.rimo_id = rimo_id or str(id(self))
+        if rimo_id is None:
+            self.__rimo_id = str(id(self))
+        else:
+            self.__rimo_id = str(rimo_id)
+        # use super class to set rimo_id
+        self._elements_with_rimo_id[self.rimo_id] = self
         self.addEventListener('mount', self._on_mount)
         if parent:
             parent.appendChild(self)
@@ -147,10 +145,6 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
 
     def _clone_node(self) -> HTMLElement:
         clone = super()._clone_node()
-        if clone.rimo_id == str(id(self)):
-            # change automatically added id
-            # overhead in __init__...
-            clone.rimo_id = str(id(clone))
         for c in self.classList:
             clone.addClass(c)
         return clone
@@ -160,16 +154,16 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
             self._add_event_listener_web(event=event)
 
     # Hanlde attributes
+    def _get_attrs_by_string(self) -> str:
+        res = 'rimo_id="{}"'.format(self.rimo_id)
+        attrs = super()._get_attrs_by_string()
+        if attrs:
+            return ' '.join([res, attrs])
+        return res
+
     def _set_attribute(self, attr: str, value: _AttrValueType) -> None:
         if attr == 'rimo_id':
-            if 'rimo_id' in self.attributes:
-                # remove old reference to self
-                self._elements_with_rimo_id.pop(self.rimo_id, None)
-            # register this elements with new id
-            if isinstance(value, (int, str)):
-                self._elements_with_rimo_id[value] = self
-            else:
-                raise TypeError('Invalid rimo_id type')
+            raise ValueError('Cannot change rimo_id')
         super()._set_attribute(attr, value)
 
     def __getitem__(self, attr: Union[str, int]

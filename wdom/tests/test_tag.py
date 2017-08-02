@@ -33,12 +33,12 @@ class TestTag(TestCase):
 
     def test_attr_init(self):
         tag = Tag(attrs={'src': 'a'})
-        self.assertRegex(tag.html, '<tag src="a" rimo_id="\d+"></tag>')
+        self.assertRegex(tag.html, '<tag rimo_id="\d+" src="a"></tag>')
         tag.removeAttribute('src')
         self.assertRegex(tag.html, '<tag rimo_id="\d+"></tag>')
 
     def test_attr_addremove(self):
-        self.assertTrue(self.tag.hasAttributes())  # has id
+        self.assertFalse(self.tag.hasAttributes())  # rimo_id is not attribute
         self.assertFalse(self.tag.hasAttribute('a'))
         self.tag.setAttribute('a', 'b')
         self.assertTrue(self.tag.hasAttributes())
@@ -48,7 +48,7 @@ class TestTag(TestCase):
         self.assertRegex(self.tag.html, r'<tag rimo_id="\d+" a="b"></tag>')
         self.assertEqual(self.tag.getAttribute('a'), 'b')
         self.tag.removeAttribute('a')
-        self.assertTrue(self.tag.hasAttributes())
+        self.assertFalse(self.tag.hasAttributes())  # rimo_id is not attribute
         self.assertFalse(self.tag.hasAttribute('a'))
         self.assertRegex(self.tag.html, '<tag rimo_id="\d+"></tag>')
         self.assertIsNone(self.tag.getAttribute('aaaa'))
@@ -72,7 +72,7 @@ class TestTag(TestCase):
         self.assertIsTrue(self.tag.hasChildNodes())
         self.assertRegex(
             self.tag.html,
-            '<tag rimo_id="\d+"><tag c="1" rimo_id="\d+"></tag></tag>',
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" c="1"></tag></tag>',
         )
         self.assertIn(self.c1, self.tag)
         self.tag.removeChild(self.c1)
@@ -103,8 +103,8 @@ class TestTag(TestCase):
         self.assertIn(self.c2, self.c1)
         self.assertRegex(
             self.tag.html,
-            '<tag rimo_id="\d+"><tag c="1" rimo_id="\d+">'
-            '<tag c="2" rimo_id="\d+"></tag></tag></tag>',
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" c="1">'
+            '<tag rimo_id="\d+" c="2"></tag></tag></tag>',
         )
 
     def test_child_nodes(self):
@@ -120,7 +120,7 @@ class TestTag(TestCase):
         self.assertNotIn(self.c2, self.tag)
         self.assertRegex(
             self.tag.html,
-            '<tag rimo_id="\d+"><tag c="1" rimo_id="\d+"></tag></tag>',
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" c="1"></tag></tag>',
         )
 
         self.tag.replaceChild(self.c2, self.c1)
@@ -128,7 +128,7 @@ class TestTag(TestCase):
         self.assertIn(self.c2, self.tag)
         self.assertRegex(
             self.tag.html,
-            '<tag rimo_id="\d+"><tag c="2" rimo_id="\d+"></tag></tag>',
+            '<tag rimo_id="\d+"><tag rimo_id="\d+" c="2"></tag></tag>',
         )
 
     def test_text_addremove(self):
@@ -154,15 +154,10 @@ class TestTag(TestCase):
     def test_textcontent_child(self):
         self.tag.textContent = 'a'
         self.tag.appendChild(self.c1)
-        self.assertRegex(
-            self.tag.html,
-            '<tag rimo_id="\d+">a<tag c="1" rimo_id="\d+"></tag></tag>',
-        )
+        self.assertRegex(self.tag.html, 'rimo_id="\d+">a<tag .*rimo_id="\d+"')
+        self.assertEqual(self.tag.html_noid, '<tag>a<tag c="1"></tag></tag>')
         self.c1.textContent = 'c1'
-        self.assertRegex(
-            self.tag.html,
-            '<tag rimo_id="\d+">a<tag c="1" rimo_id="\d+">c1</tag></tag>',
-        )
+        self.assertRegex(self.tag.html_noid, '<tag>a<tag c="1">c1</tag></tag>')
         self.assertEqual('ac1', self.tag.textContent)
         self.tag.textContent = 'b'
         self.assertEqual(self.tag.length, 1)
@@ -175,16 +170,15 @@ class TestTag(TestCase):
         img = Img()
         self.assertRegex(img.html, '<img rimo_id="\d+">')
         img.setAttribute('src', 'a')
-        self.assertRegex(img.html, '<img rimo_id="\d+" src="a">')
+        self.assertRegex(img.html, 'rimo_id="\d+"')
+        self.assertEqual(img.html_noid, '<img src="a">')
 
     def _test_shallow_copy(self, clone):
         self.assertIsTrue(self.tag.hasChildNodes())
         self.assertIsFalse(clone.hasChildNodes())
         self.assertEqual(len(clone), 0)
-        self.assertRegex(
-            clone.html,
-            '<tag rimo_id="\d+" src="a" class="b"></tag>',
-        )
+        self.assertRegex(clone.html, 'rimo_id="\d+"')
+        self.assertEqual(clone.html_noid, '<tag src="a" class="b"></tag>')
 
         self.assertIsTrue(clone.hasAttributes())
         self.assertEqual(clone.getAttribute('src'), 'a')
@@ -257,7 +251,7 @@ class TestTag(TestCase):
     def test_clone_style(self):
         self.tag.style = 'color: red;'
         clone = self.tag.cloneNode()
-        self.assertEqual(clone.html, self.tag.html)
+        self.assertEqual(clone.html_noid, self.tag.html_noid)
 
     def test_siblings(self):
         self.tag.appendChild(self.c1)
@@ -494,11 +488,11 @@ class TestTagBase(TestCase):
             tag = 'input'
             type_ = 'button'
         a = A()
-        self.assertRegex(a.html, '<input type="button" rimo_id="\d+">')
+        self.assertRegex(a.html, '<input rimo_id="\d+" type="button">')
 
     def test_type_init(self) -> None:
         a = Tag(type='button')
-        self.assertRegex(a.html, '<tag type="button" rimo_id="\d+"></tag>')
+        self.assertRegex(a.html, '<tag rimo_id="\d+" type="button"></tag>')
 
     def test_type_attr(self) -> None:
         a = Tag()
@@ -514,10 +508,10 @@ class TestTagBase(TestCase):
         b['type'] = 'radio'
         c.setAttribute('type', 'text')
         d = Check()
-        self.assertRegex(a.html, '<tag type="checkbox" rimo_id="\d+"></tag>')
-        self.assertRegex(b.html, '<tag type="radio" rimo_id="\d+"></tag>')
-        self.assertRegex(c.html, '<tag type="text" rimo_id="\d+"></tag>')
-        self.assertRegex(d.html, '<tag type="checkbox" rimo_id="\d+"></tag>')
+        self.assertRegex(a.html, '<tag rimo_id="\d+" type="checkbox"></tag>')
+        self.assertRegex(b.html, '<tag rimo_id="\d+" type="radio"></tag>')
+        self.assertRegex(c.html, '<tag rimo_id="\d+" type="text"></tag>')
+        self.assertRegex(d.html, '<tag rimo_id="\d+" type="checkbox"></tag>')
 
 
 class TestRawHtmlNode(TestCase):
