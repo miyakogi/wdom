@@ -299,3 +299,44 @@ class TestSelect(RemoteBrowserTestCase, TestCase):
         self.assertFalse(self.opt1m.selected)
         self.assertFalse(self.opt2m.selected)
         self.assertFalse(self.opt3m.selected)
+
+
+class TestEvent(RemoteBrowserTestCase, TestCase):
+    if os.getenv('TRAVIS', False):
+        wait_time = 0.1
+
+    def setUp(self):
+        super().setUp()
+        self.doc = get_document()
+        self.doc.body.style = 'margin: 0; padding: 0;'
+        self.elm = Div()
+        self.elm.style = '''
+            background-color: blue;
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+        '''
+        self.elm.addEventListener('click', self.click_test)
+        self.test_done = False
+        self.doc.body.append(self.elm)
+        self.start()
+        self.set_element(self.elm)
+
+    def click_test(self, e):
+        self.assertFalse(e.altKey)
+        self.assertFalse(e.ctrlKey)
+        self.assertFalse(e.metaKey)
+        self.assertFalse(e.shiftKey)
+        self.assertLessEqual(e.clientX, 100)
+        self.assertLessEqual(e.clientY, 100)
+        self.assertLessEqual(e.offsetX, 100)
+        self.assertLessEqual(e.offsetY, 100)
+        self.assertLessEqual(e.pageX, 100)
+        self.assertLessEqual(e.pageY, 100)
+        self.assertLessEqual(e.x, 100)
+        self.assertLessEqual(e.y, 100)
+        self.test_done = True
+
+    def test_click(self):
+        self.element.click()
+        self.wait_until(lambda: self.test_done)

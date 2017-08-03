@@ -68,12 +68,28 @@ class UIEvent(Event):  # noqa: D204
 
 class MouseEvent(UIEvent):  # noqa: D204
     """Mouse event class."""
-    pass
+    attrs = ['altKey', 'button', 'clientX', 'clientY', 'ctrlKey', 'metaKey',
+             'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY',
+             'region', 'screenX', 'screenY', 'shiftKey', 'x', 'y']
+
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:
+        super().__init__(type, init)
+        for attr in self.attrs:
+            setattr(self, attr, self.init.get(attr))
+        rt = self.init.get('relatedTarget') or {'id': None}
+        rid = rt.get('id')
+        if rid is not None:
+            from wdom.document import getElementByRimoId
+            self.relatedTarget = getElementByRimoId(rid)
+        else:
+            self.relatedTarget = None
 
 
 class DragEvent(MouseEvent):  # noqa: D204
     """Drag event class."""
-    pass
+
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:
+        super().__init__(type, init)
 
 
 class KeyboardEvent(UIEvent):  # noqa: D204
