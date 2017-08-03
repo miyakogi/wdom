@@ -99,7 +99,7 @@ class DOMTokenList(MutableSequence[str]):
                 self._list.append(token)
                 _new_tokens.append(token)
         if isinstance(self._owner, WdomElement) and _new_tokens:
-            self._owner.js_exec('addClass', *_new_tokens)
+            self._owner.js_exec('addClass', _new_tokens)  # type: ignore
 
     def remove(self, *tokens: str) -> None:
         """Remove tokens from list."""
@@ -111,7 +111,7 @@ class DOMTokenList(MutableSequence[str]):
                 self._list.remove(token)
                 _removed_tokens.append(token)
         if isinstance(self._owner, WdomElement) and _removed_tokens:
-            self._owner.js_exec('removeClass', *_removed_tokens)
+            self._owner.js_exec('removeClass', _removed_tokens)  # type: ignore
 
     def toggle(self, token: str) -> None:
         """Add or remove token to/from list.
