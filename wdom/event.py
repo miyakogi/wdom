@@ -72,7 +72,7 @@ class MouseEvent(UIEvent):  # noqa: D204
              'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY',
              'region', 'screenX', 'screenY', 'shiftKey', 'x', 'y']
 
-    def __init__(self, type: str, init: EventMsgDict = None) -> None:
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
         super().__init__(type, init)
         for attr in self.attrs:
             setattr(self, attr, self.init.get(attr))
@@ -88,7 +88,7 @@ class MouseEvent(UIEvent):  # noqa: D204
 class DragEvent(MouseEvent):  # noqa: D204
     """Drag event class."""
 
-    def __init__(self, type: str, init: EventMsgDict = None) -> None:
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
         super().__init__(type, init)
 
 

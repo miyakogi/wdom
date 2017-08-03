@@ -644,6 +644,7 @@ class TestElement(TestCase):
         for elm in Element._element_buffer:
             assert id(elm) != _id
 
+    @skipIf(sys.implementation.name == 'pypy', 'GC not work in PyPy.')
     def test_reference_add_id(self):
         gc.collect()
         elm = Element('a')
@@ -804,7 +805,6 @@ class TestHTMLElement(TestCase):
         self.assertEqual(elm.getAttribute('style'), 'color: red;')
         self.assertEqual(elm.html, '<a style="color: red;"></a>')
 
-    @skipIf(sys.version_info < (3, 5), 'py34 does not keep style order')
     def test_style_setter(self):
         self.elm.style = 'color: red;'
         self.assertEqual(self.elm.style.cssText, 'color: red;')

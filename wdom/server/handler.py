@@ -73,12 +73,15 @@ def on_websocket_message(message: str) -> None:
     """Handle messages from browser."""
     msgs = json.loads(message)
     for msg in msgs:
+        if not isinstance(msg, dict):
+            logger.error('Invalid WS message format: {}'.format(message))
+            continue
         _type = msg.get('type')
         if _type == 'log':
-            log_handler(msg.get('level'), msg.get('message'))
+            log_handler(msg['level'], msg['message'])
         elif _type == 'event':
             event_handler(msg['event'])
         elif _type == 'response':
             response_handler(msg)
         else:
-            raise ValueError('unkown message type: {}'.format(message))
+            raise ValueError('Unkown message type: {}'.format(message))
