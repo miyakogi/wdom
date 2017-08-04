@@ -70,6 +70,8 @@ def _get_chromedriver_path() -> str:
 def get_chrome_options() -> webdriver.ChromeOptions:
     """Get default chrome options."""
     chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--disable-gpu')  # need for headless
     if 'TRAVIS'in os.environ:
         chrome_options.add_argument('--no-sandbox')
     return chrome_options

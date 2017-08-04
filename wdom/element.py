@@ -91,27 +91,27 @@ class DOMTokenList(MutableSequence[str]):
 
     def add(self, *tokens: str) -> None:
         """Add new tokens to list."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         _new_tokens = []
         for token in tokens:
             self._validate_token(token)
             if token and token not in self:
                 self._list.append(token)
                 _new_tokens.append(token)
-        if isinstance(self._owner, WebIF) and _new_tokens:
-            self._owner.js_exec('addClass', _new_tokens)
+        if isinstance(self._owner, WdomElement) and _new_tokens:
+            self._owner.js_exec('addClass', _new_tokens)  # type: ignore
 
     def remove(self, *tokens: str) -> None:
         """Remove tokens from list."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         _removed_tokens = []
         for token in tokens:
             self._validate_token(token)
             if token in self:
                 self._list.remove(token)
                 _removed_tokens.append(token)
-        if isinstance(self._owner, WebIF) and _removed_tokens:
-            self._owner.js_exec('removeClass', _removed_tokens)
+        if isinstance(self._owner, WdomElement) and _removed_tokens:
+            self._owner.js_exec('removeClass', _removed_tokens)  # type: ignore
 
     def toggle(self, token: str) -> None:
         """Add or remove token to/from list.
@@ -263,20 +263,21 @@ class NamedNodeMap(UserDict):
 
     def setNamedItem(self, item: Attr) -> None:
         """Set ``Attr`` object in this collection."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
-        if isinstance(self._owner, WebIF):
-            self._owner.js_exec('setAttribute', item.name, item.value)
+        if isinstance(self._owner, WdomElement):
+            self._owner.js_exec('setAttribute', item.name,  # type: ignore
+                                item.value)
         self._dict[item.name] = item
         item._owner = self._owner
 
     def removeNamedItem(self, item: Attr) -> Optional[Attr]:
         """Set ``Attr`` object and return it (if exists)."""
-        from wdom.web_node import WebIF
+        from wdom.web_node import WdomElement
         if not isinstance(item, Attr):
             raise TypeError('item must be an instance of Attr')
-        if isinstance(self._owner, WebIF):
+        if isinstance(self._owner, WdomElement):
             self._owner.js_exec('removeAttribute', item.name)
         removed_item = self._dict.pop(item.name, None)
         if removed_item:
@@ -392,12 +393,12 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         :arg bool _registered: Is registered to CustomElementRegistry.
         :arg kwargs: key-value pair of attributes.
         """
+        super().__init__(parent=parent)
         self._registered = _registered
         self.tag = tag
         self._element_buffer.add(self)  # used to suport custom elements
         self.attributes = NamedNodeMap(self)
         self.classList = DOMTokenList(self)
-        super().__init__(parent=parent)
 
         if 'class_' in kwargs:
             kwargs['class'] = kwargs.pop('class_')
@@ -406,10 +407,11 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         for k, v in kwargs.items():
             self.setAttribute(k, v)
 
-    def __copy__(self) -> 'Element':
+    def _clone_node(self) -> 'Element':
         clone = type(self)(self.tag)
         for attr in self.attributes:
             clone.setAttribute(attr, self.getAttribute(attr))
+        # TODO: should clone event listeners???
         return clone
 
     def _get_attrs_by_string(self) -> str:
@@ -625,8 +627,8 @@ class HTMLElement(Element):
             attrs += ' style="{}"'.format(style)
         return attrs.strip()
 
-    def __copy__(self) -> 'HTMLElement':
-        clone = super().__copy__()
+    def _clone_node(self) -> 'HTMLElement':
+        clone = super()._clone_node()
         clone.style.update(self.style)
         return clone
 
@@ -711,8 +713,8 @@ class FormControlMixin(AbstractNode):
                  form: Union[str, int, 'HTMLFormElement'] = None,
                  **kwargs: Any) -> None:
         """``form`` is a ``HTMLFormElement`` object or id of it."""
-        self.__form = None
         super().__init__(*args, **kwargs)  # type: ignore
+        self.__form = None
         from wdom.document import getElementById
         if isinstance(form, (str, int)):
             form = getElementById(form)

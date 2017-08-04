@@ -32,7 +32,7 @@ class BaseTestCase(object):
                                      stderr=subprocess.PIPE,
                                      )
         self.url = 'http://localhost:{}'.format(self.port)
-        time.sleep(0.5)
+        time.sleep(1)
         self.wd.get(self.url)
 
     def tearDown(self):

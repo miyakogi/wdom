@@ -44,8 +44,8 @@ class CSSStyleDeclaration(OrderedDict):
             self._parse_str(style)
 
     def _update(self) -> None:
-        from wdom.web_node import WebIF
-        if isinstance(self._owner, WebIF):
+        from wdom.web_node import WdomElement
+        if isinstance(self._owner, WdomElement):
             css = self.cssText
             if css:
                 self._owner.js_exec('setAttribute', 'style', css)

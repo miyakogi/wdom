@@ -60,7 +60,7 @@ class Tag(WdomElement):
         super().__init__(self.tag, **kwargs)  # type: ignore
         self.append(*args)
 
-    def __copy__(self) -> 'Tag':
+    def _clone_node(self) -> 'Tag':
         """Need to copy class, not tag.
 
         So need to re-implement copy.
@@ -71,7 +71,10 @@ class Tag(WdomElement):
         for c in self.classList:
             clone.addClass(c)
         clone.style.update(self.style)
+        # TODO: should clone event listeners???
         return clone
+
+    __copy__ = _clone_node  # need alias again
 
     @property
     def type(self) -> _AttrValueType:  # noqa: D102

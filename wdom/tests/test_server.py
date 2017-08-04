@@ -272,7 +272,7 @@ class TestRootWSHandler(HTTPTestCase):
     async def test_logging_error(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='error', message='test')
+                [dict(type='log', level='error', message='test')]
             ))
             await self.wait()
 
@@ -280,7 +280,7 @@ class TestRootWSHandler(HTTPTestCase):
     async def test_logging_warn(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='warn', message='test')
+                [dict(type='log', level='warn', message='test')]
             ))
             await self.wait()
 
@@ -288,7 +288,7 @@ class TestRootWSHandler(HTTPTestCase):
     async def test_logging_info(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='info', message='test')
+                [dict(type='log', level='info', message='test')]
             ))
             await self.wait()
 
@@ -296,6 +296,6 @@ class TestRootWSHandler(HTTPTestCase):
     async def test_logging_debug(self) -> None:
         with self.assertLogs('wdom.server', 'DEBUG'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='debug', message='test')
+                [dict(type='log', level='debug', message='test')]
             ))
             await self.wait()
