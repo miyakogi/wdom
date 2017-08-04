@@ -6,14 +6,9 @@ python:
   - "3.6"
 
 addons:
-  apt:
-    packages:
-      - google-chrome-stable
+  chrome: stable
 
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - sleep 3
   - wget https://chromedriver.storage.googleapis.com/2.29/chromedriver_linux64.zip
   - unzip chromedriver_linux64.zip -d ${TRAVIS_BUILD_DIR}
 
