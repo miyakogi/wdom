@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.color import Color
 
 from wdom.tag import H1
-from wdom.document import get_document
+from wdom.document import get_document, set_app
 from wdom.util import install_asyncio
 from wdom.testing import WebDriverTestCase, TestCase
 from wdom.testing import close_webdriver
@@ -55,6 +56,38 @@ class TestDataBinding(WebDriverTestCase, TestCase):
         self.send_keys(input, 'new')
         self.wait_until(lambda: view.text == 'new')
         self.assertEqual(view.text, 'new')
+
+
+class TestDragDrop(WebDriverTestCase, TestCase):
+    def setUp(self):
+        super().setUp()
+        from wdom.examples.drag import sample_app
+        set_app(sample_app())
+        self.start()
+
+    def test_app(self):
+        elm1 = self.wd.find_element_by_id('1')
+        elm2 = self.wd.find_element_by_id('2')
+        elm3 = self.wd.find_element_by_id('3')
+        self.assertEqual(Color.from_string('red').rgba,
+                         elm1.value_of_css_property('background-color'))
+        self.assertEqual(Color.from_string('green').rgba,
+                         elm2.value_of_css_property('background-color'))
+        self.assertEqual(Color.from_string('blue').rgba,
+                         elm3.value_of_css_property('background-color'))
+        # FIXME: not work selenium's drag/drop
+        # from selenium.webdriver import ActionChains
+        # from wdom.testing import get_webdriver
+        # action_chains = ActionChains(get_webdriver())
+        # action_chains.drag_and_drop(elm1, elm2).perform()
+        # action_chains.click_and_hold(elm1).move_to_element(elm2).release(elm2).perform()
+        # self.wait(times=300)
+        # self.assertEqual(Color.from_string('green').rgba,
+        #                  elm1.value_of_css_property('background-color'))
+        # self.assertEqual(Color.from_string('red').rgba,
+        #                  elm2.value_of_css_property('background-color'))
+        # self.assertEqual(Color.from_string('blue').rgba,
+        #                  elm3.value_of_css_property('background-color'))
 
 
 class TestRevText(WebDriverTestCase, TestCase):
