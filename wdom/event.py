@@ -23,8 +23,26 @@ if TYPE_CHECKING:
 EventMsgDict = Dict[str, Any]
 
 
+def normalize_type(type: str) -> str:
+    """Normalize DataTransfer's type strings.
+
+    https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-getdata
+    'text' -> 'text/plain'
+    'url' -> 'text/uri-list'
+    """
+    if type == 'text':
+        return 'text/plain'
+    elif type == 'url':
+        return 'text/uri-list'
+    return type
+
+
 class DataTransfer:
-    """DataTransfer object is used to transfer drag/drop data."""
+    """DataTransfer object is used to transfer drag/drop data.
+
+    TODO: Currently always read/write enabled.
+    https://html.spec.whatwg.org/multipage/dnd.html#drag-data-store-mode
+    """
 
     _store = dict()  # type: Dict[str, DataTransfer]
 
@@ -47,13 +65,14 @@ class DataTransfer:
         string.
         :arg str type: Data format of the data, like 'text/plain'.
         """
-        return self.__data.get(type, '')
+        return self.__data.get(normalize_type(type), '')
 
     def setData(self, type: str, data: str) -> None:
         """Set data of type format.
 
         :arg str type: Data format of the data, like 'text/plain'.
         """
+        type = normalize_type(type)
         if type in self.__data:
             del self.__data[type]
         self.__data[type] = data
@@ -63,6 +82,7 @@ class DataTransfer:
 
         If type argument is omitted, remove all data.
         """
+        type = normalize_type(type)
         if not type:
             self.__data.clear()
         elif type in self.__data:

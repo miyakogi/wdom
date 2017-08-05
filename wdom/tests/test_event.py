@@ -29,6 +29,18 @@ class TestDataTransfer(TestCase):
         dt.clearData('text/plain')
         self.assertEqual(dt.getData('text/plain'), '')
 
+    def test_normalize(self):
+        dt = DataTransfer()
+        dt.setData('text', 'test')
+        self.assertEqual(dt.getData('text'), 'test')
+        self.assertEqual(dt.getData('text/plain'), 'test')
+        self.assertEqual(dt.getData('text/html'), '')
+
+        dt.clearData('text')
+        self.assertEqual(dt.getData('text'), '')
+        self.assertEqual(dt.getData('text/plain'), '')
+        self.assertEqual(dt.getData('text/html'), '')
+
 
 class TestEvent(TestCase):
     def setUp(self):
