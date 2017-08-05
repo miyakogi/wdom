@@ -2,16 +2,32 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+from copy import deepcopy
 from unittest.mock import MagicMock, call
 
 from syncer import sync
 
 from wdom.document import get_document
 from wdom.event import Event, EventListener, EventTarget, create_event
-from wdom.event import MouseEvent
+from wdom.event import MouseEvent, DataTransfer, DragEvent
 from wdom.web_node import WdomElement
 from wdom.server.handler import create_event_from_msg
 from wdom.testing import TestCase
+
+
+class TestDataTransfer(TestCase):
+    def test_empty(self):
+        dt = DataTransfer()
+        self.assertEqual(dt.length, 0)
+        self.assertEqual(dt.getData('test'), '')
+
+    def test_set_data(self):
+        dt = DataTransfer()
+        dt.setData('text/plain', 'test')
+        self.assertEqual(dt.getData('text/plain'), 'test')
+        self.assertEqual(dt.getData('test'), '')
+        dt.clearData('text/plain')
+        self.assertEqual(dt.getData('text/plain'), '')
 
 
 class TestEvent(TestCase):
@@ -38,6 +54,67 @@ class TestEvent(TestCase):
         self.assertIs(e.currentTarget, self.elm)
         self.assertIs(e.target, self.elm)
         self.assertIs(e.init, msg)
+
+
+class TestDragEvent(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.msg = {
+            'type': 'drag',
+            'proto': 'DragEvent',
+            'dataTransfer': {'id': ''},
+        }
+        self.msg1 = deepcopy(self.msg)
+        self.msg2 = deepcopy(self.msg)
+        self.msg3 = deepcopy(self.msg)
+        self.msg4 = deepcopy(self.msg)
+        self.msg5 = deepcopy(self.msg)
+        self.msg1['type'] = 'dragstart'
+        self.msg2['type'] = 'dragend'
+        self.msg3['type'] = 'drop'
+        self.msg4['type'] = 'dragstart'
+        self.msg5['type'] = 'drop'
+        self.msg1['dataTransfer']['id'] = '1'
+        self.msg2['dataTransfer']['id'] = '1'
+        self.msg3['dataTransfer']['id'] = '1'
+        self.msg4['dataTransfer']['id'] = '2'
+        self.msg5['dataTransfer']['id'] = '2'
+
+    def tearDown(self):
+        DataTransfer._store.clear()
+        super().tearDown()
+
+    def test_init(self):
+        de = DragEvent('drag', self.msg)
+        self.assertEqual(de.type, 'drag')
+        self.assertEqual(de.dataTransfer.getData('test'), '')
+
+    def test_start_drop_end(self):
+        de1 = DragEvent('dragstart', self.msg1)
+        self.assertEqual(len(DataTransfer._store), 1)
+        de1.dataTransfer.setData('text/plain', 'test')
+        self.assertEqual(de1.dataTransfer.getData('text/plain'), 'test')
+
+        de3 = DragEvent('drop', self.msg3)
+        self.assertEqual(len(DataTransfer._store), 1)
+        self.assertEqual(de3.dataTransfer.getData('text/plain'), 'test')
+
+        de2 = DragEvent('dragend', self.msg2)
+        self.assertEqual(len(DataTransfer._store), 0)
+        self.assertEqual(de2.dataTransfer.getData('text/plain'), 'test')
+
+    def test_different_id(self):
+        de1 = DragEvent('dragstart', self.msg1)  # id = 1
+        self.assertEqual(len(DataTransfer._store), 1)
+        de1.dataTransfer.setData('text/plain', 'test')
+
+        de2 = DragEvent('drop', self.msg5)  # id = 2
+        self.assertEqual(len(DataTransfer._store), 2)
+        self.assertEqual(de2.dataTransfer.getData('text/plain'), '')
+
+        de3 = DragEvent('drop', self.msg3)  # id = 1
+        self.assertEqual(len(DataTransfer._store), 2)
+        self.assertEqual(de3.dataTransfer.getData('text/plain'), 'test')
 
 
 class TestCreateEventMsg(TestCase):

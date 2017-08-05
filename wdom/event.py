@@ -3,8 +3,8 @@
 
 """Event related classes."""
 
-from collections import defaultdict
 from asyncio import ensure_future, iscoroutinefunction, Future
+from collections import defaultdict, OrderedDict
 from typing import Any, Awaitable, Callable, Dict, Optional, Union
 from typing import TYPE_CHECKING
 
@@ -21,6 +21,52 @@ if TYPE_CHECKING:
 #     'target': Dict[str, str],
 # })
 EventMsgDict = Dict[str, Any]
+
+
+class DataTransfer:
+    """DataTransfer object is used to transfer drag/drop data."""
+
+    _store = dict()  # type: Dict[str, DataTransfer]
+
+    @property
+    def length(self) -> int:
+        """Return number of items in this DataTransfer object."""
+        return len(self.__data)
+
+    def __init__(self, id: str = '') -> None:
+        """Initialize a new empty DataTransfer object with id."""
+        self.id = id
+        self.__data = OrderedDict()  # type: Dict[str, str]
+        if self.id:
+            self._store[self.id] = self
+
+    def getData(self, type: str) -> str:
+        """Get data of type format.
+
+        If this DataTransfer object does not have `type` data, return empty
+        string.
+        :arg str type: Data format of the data, like 'text/plain'.
+        """
+        return self.__data.get(type, '')
+
+    def setData(self, type: str, data: str) -> None:
+        """Set data of type format.
+
+        :arg str type: Data format of the data, like 'text/plain'.
+        """
+        if type in self.__data:
+            del self.__data[type]
+        self.__data[type] = data
+
+    def clearData(self, type: str = '') -> None:
+        """Remove data of type foramt.
+
+        If type argument is omitted, remove all data.
+        """
+        if not type:
+            self.__data.clear()
+        elif type in self.__data:
+            del self.__data[type]
 
 
 class Event:
@@ -89,7 +135,19 @@ class DragEvent(MouseEvent):  # noqa: D204
     """Drag event class."""
 
     def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
+        """Initialize DragEvent.
+
+        Set DataTransfer with id, if exists.
+        """
         super().__init__(type, init)
+        dt_id = self.init.get('dataTransfer', {'id', ''}).get('id')
+        if not dt_id:
+            self.dataTransfer = DataTransfer()
+        else:
+            self.dataTransfer = DataTransfer._store.get(dt_id)\
+                or DataTransfer(dt_id)
+            if type == 'dragend':
+                DataTransfer._store.pop(dt_id, None)
 
 
 class KeyboardEvent(UIEvent):  # noqa: D204
