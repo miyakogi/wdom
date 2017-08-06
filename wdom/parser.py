@@ -82,15 +82,15 @@ def parse_html(html: str, parser: Optional[FragmentParser] = None) -> Node:
 if __name__ == '__main__':
     from cProfile import Profile
     from pstats import Stats
-    from functools import partial
     from pathlib import Path
+    from wdom.server import _tornado
+    _tornado.connections.append(1)  # type: ignore
     root = Path(__file__).absolute().parent.parent
-    html_file = root / 'DOM_Standard.html'
+    html_file = root / 'docs/_build/html/node.html'
     with open(html_file) as f:
         src = f.read()
-    test = partial(parse_html, src)
     profiler = Profile()
-    profiler.runcall(test)  # type: ignore
+    profiler.runcall(parse_html, src)
     stats = Stats(profiler)
     stats.strip_dirs()
     stats.sort_stats('cumulative')

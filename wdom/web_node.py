@@ -95,7 +95,7 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
     @property
     def connected(self) -> bool:
         """When this instance has any connection, return True."""
-        return server.is_connected()
+        return bool(server.is_connected() and self.ownerDocument)
 
     def on_response(self, msg: Dict[str, str]) -> None:
         """Run when get response from browser."""

@@ -5,6 +5,7 @@ from unittest.mock import MagicMock, call
 
 from syncer import sync
 
+from wdom.document import set_app
 from wdom.event import create_event
 from wdom.node import Text
 from wdom.server import _tornado
@@ -16,6 +17,7 @@ class TestWdomElement(TestCase):
     def setUp(self):
         super().setUp()
         self.elm = WdomElement('tag')
+        set_app(self.elm)
         self.c1 = WdomElement()
         self.c2 = WdomElement()
         self.js_mock = MagicMock()
@@ -51,7 +53,7 @@ class TestWdomElement(TestCase):
         self.assertTrue(self.elm.connected)
 
     def test_parent(self):
-        self.assertIsNone(self.elm.parentNode)
+        self.assertTrue(self.elm.parentNode)
         self.assertIsNone(self.c1.parentNode)
         self.elm.appendChild(self.c1)
         self.assertIs(self.elm, self.c1.parentNode)
@@ -440,6 +442,7 @@ class TestEventMessage(TestCase):
     def setUp(self):
         _tornado.connections.append(MagicMock())
         self.elm = WdomElement('tag')
+        set_app(self.elm)
         self.elm.js_exec = MagicMock()
         self.mock = MagicMock(_is_coroutine=False)
         self.elm.addEventListener('click', self.mock)
@@ -473,6 +476,7 @@ class TestQuery(TestCase):
     def setUp(self):
         super().setUp()
         self.elm = WdomElement('tag')
+        set_app(self.elm)
         self.elm.js_exec = MagicMock()
         self.msg = {
             'type': 'response',
