@@ -5,13 +5,14 @@ import os
 import re
 from unittest.mock import MagicMock
 
-from wdom import options
+from wdom import options, server
 from wdom.document import Document, WdomDocument
 from wdom.document import get_document, get_new_document, set_document
 from wdom.document import getElementById, getElementByRimoId
 from wdom.element import Attr, Element
 from wdom.event import Event
 from wdom.node import DocumentFragment, Comment, Text
+from wdom.server.handler import event_handler
 from wdom.tag import Tag, A
 from wdom.testing import TestCase
 from wdom.web_node import WdomElement, remove_rimo_id
@@ -37,6 +38,14 @@ class TestGetElement(TestCase):
         self.doc.appendChild(elm)
         self.assertIs(getElementByRimoId(rimo_id), elm)
         self.assertIs(self.doc.getElementByRimoId(rimo_id), elm)
+
+    def test_get_element_by_rimo_id_doc(self):
+        doc = getElementByRimoId('document')
+        self.assertIs(get_document(), doc)
+
+    def test_get_element_by_rimo_id_win(self):
+        win = getElementByRimoId('window')
+        self.assertIs(get_document().defaultView, win)
 
 
 class TestDocument(TestCase):
@@ -120,12 +129,25 @@ class TestDocument(TestCase):
         tag.dispatchEvent(e)
         mock.assert_called_once_with(e)
 
+    def test_add_eventlistener(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.doc.addEventListener('click', mock)
+        msg = {
+            'type': 'click',
+            'currentTarget': {'id': 'document'},
+            'target': {'id': 'document'},
+        }
+        e = Event('click', msg)
+        self.doc.dispatchEvent(e)
+        mock.assert_called_once_with(e)
+
 
 class TestWdomDocument(TestCase):
     def setUp(self) -> None:
         super().setUp()
         self.doc = WdomDocument()
         self.doc.defaultView.customElements.reset()
+        server._tornado.connections = [1]
 
     def test_blankpage(self) -> None:
         _re = re.compile(
@@ -329,6 +351,24 @@ class TestWdomDocument(TestCase):
         gc.collect()
         self.assertFalse(os.path.exists(testfile))
         self.assertFalse(os.path.exists(tempdir))
+
+    def test_add_eventlistener(self):
+        mock = MagicMock(_is_coroutine=False)
+        js_mock = MagicMock()
+        doc = get_document()
+        doc.js_exec = js_mock
+        doc.addEventListener('click', mock)
+        js_mock.assert_called_once_with('addEventListener', 'click')
+        msg = {
+            'type': 'click',
+            'currentTarget': {'id': 'document'},
+            'target': {'id': 'document'},
+        }
+        e = event_handler(msg)
+        mock.assert_called_once_with(e)
+
+    def test_rimo_id(self):
+        self.assertEqual(self.doc.rimo_id, 'document')
 
 
 class TestDocumentOptions(TestCase):

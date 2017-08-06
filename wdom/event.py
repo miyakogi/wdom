@@ -196,7 +196,7 @@ def create_event(msg: EventMsgDict) -> Event:
     :arg EventTarget target: Node which emitted this event first.
     :arg dict init: Event options.
     """
-    proto = msg.get('proto', '')  # type: str
+    proto = msg.get('proto', '')
     cls = proto_dict.get(proto, Event)
     e = cls(msg['type'], msg)
     return e

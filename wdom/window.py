@@ -103,6 +103,11 @@ class Window(WebEventTarget):
         return self._document
 
     @property
+    def ownerDocument(self) -> Node:
+        """Need for connection check."""
+        return self.document
+
+    @property
     def customElements(self) -> CustomElementsRegistry:
         """Return customElementsRegistry object."""
         return self._custom_elements

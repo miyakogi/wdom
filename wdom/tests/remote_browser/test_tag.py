@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from unittest.mock import MagicMock
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -340,3 +341,17 @@ class TestEvent(RemoteBrowserTestCase, TestCase):
     def test_click(self):
         self.element.click()
         self.wait_until(lambda: self.test_done)
+
+    def test_document_click(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.doc.addEventListener('click', mock)
+        self.wait()
+        self.element.click()
+        self.wait_until(lambda: mock.called)
+
+    def test_window_click(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.doc.defaultView.addEventListener('click', mock)
+        self.wait()
+        self.element.click()
+        self.wait_until(lambda: mock.called)

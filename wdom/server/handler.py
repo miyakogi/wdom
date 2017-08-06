@@ -46,16 +46,17 @@ def create_event_from_msg(msg: EventMsgDict) -> Event:
     return create_event(msg)
 
 
-def event_handler(msg: EventMsgDict) -> None:
+def event_handler(msg: EventMsgDict) -> Event:
     """Handle events emitted on browser."""
     e = create_event_from_msg(msg)
     if e.currentTarget is None:
         if e.type not in ['mount', 'unmount']:
             id = msg['currentTarget']['id']
             logger.warning('No such element: rimo_id={}'.format(id))
-        return
+        return e
     e.currentTarget.on_event_pre(e)
     e.currentTarget.dispatchEvent(e)
+    return e
 
 
 def response_handler(msg: Dict[str, str]) -> None:
