@@ -14,6 +14,7 @@ from wdom.web_node import WdomElement
 
 class TestWdomElement(TestCase):
     def setUp(self):
+        super().setUp()
         self.elm = WdomElement('tag')
         self.c1 = WdomElement()
         self.c2 = WdomElement()
@@ -23,6 +24,7 @@ class TestWdomElement(TestCase):
         self.elm.js_exec = self.js_mock
         self.c1.js_exec = self.js_mock1
         self.c2.js_exec = self.js_mock2
+        _tornado.connections.append(MagicMock())
 
     def test_id(self):
         self.assertRegex(self.elm.html, r'<tag rimo_id="\d+"></tag>')
@@ -45,8 +47,8 @@ class TestWdomElement(TestCase):
         elm = WdomElement('tag', rimo_id='myid')
         self.assertEqual('<tag rimo_id="myid"></tag>', elm.html)
 
-    def test_not_connected(self):
-        self.assertFalse(self.elm.connected)
+    def test_connected(self):
+        self.assertTrue(self.elm.connected)
 
     def test_parent(self):
         self.assertIsNone(self.elm.parentNode)
@@ -176,9 +178,11 @@ class TestWdomElement(TestCase):
     def test_click(self):
         mock = MagicMock(_is_coroutine=False)
         self.elm.addEventListener('click', mock)
-        self.elm.click()
         self.js_mock.assert_called_once_with('addEventListener', 'click')
-        self.assertEqual(mock.call_count, 1)
+        self.elm.click()
+        self.js_mock.assert_called_with('click')
+        # called only from browser's click event
+        self.assertEqual(mock.call_count, 0)
 
     def test_hidden(self):
         self.elm.show()
@@ -227,6 +231,7 @@ class TestWdomElementClass(TestCase):
         self.tag = WdomElement('tag')
         self.c1 = WdomElement('tag')
         self.c2 = WdomElement('tag')
+        _tornado.connections.append(MagicMock())
 
     def test_class_addremove(self):
         self.assertIsFalse(self.tag.hasClasses())
@@ -433,6 +438,7 @@ class TestWdomElementClass(TestCase):
 
 class TestEventMessage(TestCase):
     def setUp(self):
+        _tornado.connections.append(MagicMock())
         self.elm = WdomElement('tag')
         self.elm.js_exec = MagicMock()
         self.mock = MagicMock(_is_coroutine=False)
@@ -466,13 +472,13 @@ class TestEventMessage(TestCase):
 class TestQuery(TestCase):
     def setUp(self):
         super().setUp()
-        _tornado.connections.append(MagicMock())
         self.elm = WdomElement('tag')
         self.elm.js_exec = MagicMock()
         self.msg = {
             'type': 'response',
             'id': self.elm.rimo_id,
         }
+        _tornado.connections.append(MagicMock())
 
     def test_query(self):
         fut = self.elm.js_query('test')

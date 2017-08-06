@@ -42,6 +42,11 @@ class AbstractNode(_Node):
 class Node(AbstractNode):
     """Base Class for Node interface."""
 
+    @property
+    def connected(self) -> bool:
+        """When this instance has any connection, return True."""
+        return False
+
     def __init__(self, parent: AbstractNode = None) -> None:
         """Initialize node object with parent node.
 

@@ -235,7 +235,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
 
     def remove(self) -> None:
         """Remove this node from parent's DOM tree."""
-        self._remove_web()
+        if self.connected:
+            self._remove_web()
         self._remove()
 
     def _empty_web(self) -> None:
@@ -243,7 +244,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
 
     def empty(self) -> None:
         """Remove all child nodes from this node."""
-        self._empty_web()
+        if self.connected:
+            self._empty_web()
         self._empty()
 
     def _get_child_html(self, child: Node) -> str:
@@ -268,7 +270,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
         If this instance is connected to the node on browser, the child node is
         also added to it.
         """
-        self._append_child_web(child)
+        if self.connected:
+            self._append_child_web(child)
         return self._append_child(child)
 
     def _insert_before_web(self, child: Node, ref_node: Node) -> Node:
@@ -287,7 +290,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
         this instance is connected to the node on browser, the child node is
         also added to it.
         """
-        self._insert_before_web(child, ref_node)
+        if self.connected:
+            self._insert_before_web(child, ref_node)
         return self._insert_before(child, ref_node)
 
     def _remove_child_web(self, child: Node) -> Node:
@@ -303,7 +307,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
 
         If the node is not a child of this node, raise ValueError.
         """
-        self._remove_child_web(child)
+        if self.connected:
+            self._remove_child_web(child)
         return self._remove_child(child)
 
     def _replace_child_web(self, new_child: Node, old_child: Node) -> None:
@@ -320,7 +325,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
     def replaceChild(self, new_child: 'WdomElement', old_child: 'WdomElement'
                      ) -> Node:
         """Replace child nodes."""
-        self._replace_child_web(new_child, old_child)
+        if self.connected:
+            self._replace_child_web(new_child, old_child)
         return self._replace_child(new_child, old_child)
 
     async def getBoundingClientRect(self) -> None:
@@ -335,7 +341,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
     def textContent(self, text: str) -> None:  # type: ignore
         """Set textContent both on this node and related browser node."""
         self._set_text_content(text)
-        self._set_text_content_web(text)
+        if self.connected:
+            self._set_text_content_web(text)
 
     def _set_inner_html_web(self, html: str) -> None:
         self.js_exec('innerHTML', html)
@@ -344,7 +351,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
     def innerHTML(self, html: str) -> None:  # type: ignore
         """Set innerHTML both on this node and related browser node."""
         df = self._parse_html(html)
-        self._set_inner_html_web(df.html)
+        if self.connected:
+            self._set_inner_html_web(df.html)
         self._empty()
         self._append_child(df)
 
@@ -360,7 +368,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
     def addEventListener(self, event: str, listener: _EventListenerType
                          ) -> None:  # noqa: D102
         super().addEventListener(event, listener)
-        self._add_event_listener_web(event)
+        if self.connected:
+            self._add_event_listener_web(event)
 
     def _remove_event_listener_web(self, event: str) -> None:
         if event not in self._event_listeners:
@@ -369,7 +378,8 @@ class WdomElement(HTMLElement, metaclass=WdomElementMeta):
     def removeEventListener(self, event: str, listener: _EventListenerType
                             ) -> None:  # noqa: D102
         super().removeEventListener(event, listener)
-        self._remove_event_listener_web(event)
+        if self.connected:
+            self._remove_event_listener_web(event)
 
     def click(self) -> None:
         """Send click event."""
