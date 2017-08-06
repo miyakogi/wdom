@@ -14,14 +14,15 @@ from types import ModuleType
 from typing import Any, Callable, Optional, Union
 import weakref
 
+from wdom import server
 from wdom.element import Element, Attr, HTMLElement
-from wdom.event import Event
+from wdom.event import Event, EventTarget
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment, ParentNode
 from wdom.node import DocumentFragment
 from wdom.options import config
 from wdom.tag import Tag
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
-from wdom.web_node import WdomElement
+from wdom.web_node import WdomElement, WebEventTarget
 from wdom.window import Window
 
 
@@ -31,8 +32,12 @@ def getElementById(id: Union[str, int]) -> Optional[Node]:
     return elm
 
 
-def getElementByRimoId(id: Union[str, int]) -> Optional[WdomElement]:
+def getElementByRimoId(id: Union[str, int]) -> Optional[WebEventTarget]:
     """Get element with ``rimo_id``."""
+    if id == 'document':
+        return get_document()
+    elif id == 'window':
+        return get_document().defaultView
     elm = WdomElement._elements_with_rimo_id.get(str(id))
     return elm
 
@@ -76,7 +81,7 @@ def _find_tag(elm: Node, tag: str) -> Optional[Node]:
     return None
 
 
-class Document(Node, ParentNode):
+class Document(Node, ParentNode, EventTarget):
     """Base Document class."""
 
     nodeType = Node.DOCUMENT_NODE
@@ -195,8 +200,16 @@ class Document(Node, ParentNode):
         return Attr(name)
 
 
-class WdomDocument(Document):
+class WdomDocument(Document, WebEventTarget):
     """Main document class for WDOM applications."""
+
+    @property
+    def rimo_id(self) -> str:  # noqa: D102
+        return 'document'
+
+    @property
+    def connected(self) -> bool:  # noqa: D102
+        return server.is_connected()
 
     @property
     def tempdir(self) -> str:
@@ -237,6 +250,7 @@ class WdomDocument(Document):
         self.title = title
         self.script = Script(parent=self.body)
         self._autoreload_script = Script(parent=self.head)
+        self.addEventListener('mount', self._on_mount)
 
     def _set_autoreload(self) -> None:
         self._autoreload_script.textContent = ''
@@ -254,7 +268,8 @@ class WdomDocument(Document):
             self._autoreload_script.textContent = '\n{}\n'.format(
                 '\n'.join(ar_script))
 
-    def getElementByRimoId(self, id: Union[str, int]) -> Optional[WdomElement]:
+    def getElementByRimoId(self, id: Union[str, int]
+                           ) -> Optional[WebEventTarget]:
         """Get element by ``rimo_id``.
 
         If this document does not have the element with the id, return None.

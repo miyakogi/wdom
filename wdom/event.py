@@ -12,6 +12,7 @@ from wdom.node import Node
 
 if TYPE_CHECKING:
     from typing import List, MutableMapping  # noqa: F401
+    from wdom.web_node import WebEventTarget  # noqa: F401
 
 
 # EventMsgDict = TypedDict('EventMsgDict', {
@@ -93,12 +94,12 @@ class Event:
     """Event interface class."""
 
     @property
-    def currentTarget(self) -> Optional[Node]:
+    def currentTarget(self) -> Optional['WebEventTarget']:
         """Return current event target."""
         return self.__currentTarget
 
     @property
-    def target(self) -> Optional[Node]:
+    def target(self) -> Optional['WebEventTarget']:
         """Return original event target, which emitted this event first."""
         return self.__target
 
@@ -249,6 +250,11 @@ class EventTarget:
     """
 
     _event_listeners = None  # type: MutableMapping[str, List[EventListener]]
+
+    @property
+    def ownerDocument(self) -> Optional[Node]:
+        """Need to check the target is mounted on document or not."""
+        return None
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         # need to call super().__init__ to use as mixin class

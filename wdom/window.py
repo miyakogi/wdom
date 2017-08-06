@@ -5,9 +5,11 @@
 
 from typing import Any, Dict, Optional, Type
 
+from wdom import server
 from wdom.element import Element
 from wdom.node import Node
 from wdom.tag import Tag, default_classes
+from wdom.web_node import WebEventTarget
 
 
 class CustomElementsRegistry(dict):
@@ -92,7 +94,7 @@ customElements = CustomElementsRegistry()
 customElements._define_default()
 
 
-class Window:
+class Window(WebEventTarget):
     """Window base class."""
 
     @property
@@ -105,10 +107,20 @@ class Window:
         """Return customElementsRegistry object."""
         return self._custom_elements
 
+    @property
+    def rimo_id(self) -> str:  # noqa: D102
+        return 'window'
+
+    @property
+    def connected(self) -> bool:  # noqa: D102
+        return server.is_connected()
+
     def __init__(self, document: Node) -> None:
         """Make new window object.
 
         :arg Document document: root document of the window.
         """
+        super().__init__()
         self._document = document
         self._custom_elements = customElements
+        self.addEventListener('mount', self._on_mount)
