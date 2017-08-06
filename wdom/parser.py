@@ -77,3 +77,21 @@ def parse_html(html: str, parser: Optional[FragmentParser] = None) -> Node:
     parser = parser or FragmentParser()
     parser.feed(html)
     return parser.root
+
+
+if __name__ == '__main__':
+    from cProfile import Profile
+    from pstats import Stats
+    from functools import partial
+    from pathlib import Path
+    root = Path(__file__).absolute().parent.parent
+    html_file = root / 'DOM_Standard.html'
+    with open(html_file) as f:
+        src = f.read()
+    test = partial(parse_html, src)
+    profiler = Profile()
+    profiler.runcall(test)  # type: ignore
+    stats = Stats(profiler)
+    stats.strip_dirs()
+    stats.sort_stats('cumulative')
+    stats.print_stats()
