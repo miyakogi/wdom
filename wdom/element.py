@@ -709,14 +709,13 @@ class HTMLElement(Element):
 class FormControlMixin(AbstractNode):
     """Mixin class for FormControl classes."""
 
-    def __init__(self, *args: Any,
-                 form: Union[str, int, 'HTMLFormElement'] = None,
+    def __init__(self, *args: Any, form: Union[str, 'HTMLFormElement'] = None,
                  **kwargs: Any) -> None:
         """``form`` is a ``HTMLFormElement`` object or id of it."""
         super().__init__(*args, **kwargs)  # type: ignore
         self.__form = None
         from wdom.document import getElementById
-        if isinstance(form, (str, int)):
+        if isinstance(form, str):
             form = getElementById(form)
         if isinstance(form, HTMLFormElement):
             self.__form = form
@@ -845,7 +844,7 @@ class HTMLLabelElement(HTMLElement, FormControlMixin):
         if id:
             if self.ownerDocument:
                 return self.ownerDocument.getElementById(id)
-            elif isinstance(id, (str, int)):
+            elif isinstance(id, str):
                 from wdom.document import getElementById
                 return getElementById(id)
             else:

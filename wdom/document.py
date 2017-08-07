@@ -26,19 +26,21 @@ from wdom.web_node import WdomElement
 from wdom.window import Window
 
 
-def getElementById(id: Union[str, int]) -> Optional[Node]:
+def getElementById(id: str) -> Optional[Node]:
     """Get element with ``id``."""
-    elm = Element._elements_with_id.get(str(id))
+    elm = Element._elements_with_id.get(id)
     return elm
 
 
-def getElementByRimoId(id: Union[str, int]) -> Optional[WebEventTarget]:
+def getElementByRimoId(id: str) -> Optional[WebEventTarget]:
     """Get element with ``rimo_id``."""
-    if id == 'document':
+    if not id:
+        return None
+    elif id == 'document':
         return get_document()
     elif id == 'window':
         return get_document().defaultView
-    elm = WdomElement._elements_with_rimo_id.get(str(id))
+    elm = WdomElement._elements_with_rimo_id.get(id)
     return elm
 
 
@@ -165,7 +167,7 @@ class Document(Node, ParentNode, EventTarget):
         title_element = _title or Title(parent=self.head)
         title_element.textContent = new_title
 
-    def getElementById(self, id: Union[str, int]) -> Optional[Node]:
+    def getElementById(self, id: str) -> Optional[Node]:
         """Get element by ``id``.
 
         If this document does not have the element with the id, return None.
@@ -268,8 +270,7 @@ class WdomDocument(Document, WebEventTarget):
             self._autoreload_script.textContent = '\n{}\n'.format(
                 '\n'.join(ar_script))
 
-    def getElementByRimoId(self, id: Union[str, int]
-                           ) -> Optional[WebEventTarget]:
+    def getElementByRimoId(self, id: Union[str]) -> Optional[WebEventTarget]:
         """Get element by ``rimo_id``.
 
         If this document does not have the element with the id, return None.
