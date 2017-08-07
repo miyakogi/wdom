@@ -90,6 +90,27 @@ class TestDragDrop(WebDriverTestCase, TestCase):
         #                  elm3.value_of_css_property('background-color'))
 
 
+class TestGlobalEvent(WebDriverTestCase, TestCase):
+    def setUp(self):
+        super().setUp()
+        from wdom.examples.global_events import sample_page, set_app
+        set_app(sample_page())
+        self.start()
+
+    def test_keypress(self):
+        doc_h1 = self.wd.find_element_by_id('doc1')
+        win_h1 = self.wd.find_element_by_id('win1')
+        input = self.wd.find_element_by_id('input')
+        input.send_keys('a')
+        self.wait()
+        self.assertEqual(doc_h1.text, 'a')
+        self.assertEqual(win_h1.text, 'a')
+        input.send_keys('b')
+        self.wait()
+        self.assertEqual(doc_h1.text, 'ab')
+        self.assertEqual(win_h1.text, 'ab')
+
+
 class TestRevText(WebDriverTestCase, TestCase):
     def setUp(self):
         super().setUp()

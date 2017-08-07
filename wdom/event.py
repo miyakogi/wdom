@@ -173,7 +173,14 @@ class DragEvent(MouseEvent):  # noqa: D204
 
 class KeyboardEvent(UIEvent):  # noqa: D204
     """Keyboard event class."""
-    pass
+    attrs = ['altKey', 'code', 'ctrlKey', 'key', 'locale', 'metaKey', 'repeat',
+             'shiftKey']
+
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
+        """Initialize DragEvent and set attributes."""
+        super().__init__(type, init)
+        for attr in self.attrs:
+            setattr(self, attr, self.init.get(attr))
 
 
 class InputEvent(UIEvent):  # noqa: D204
