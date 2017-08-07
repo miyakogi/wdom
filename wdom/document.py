@@ -16,13 +16,13 @@ import weakref
 
 from wdom import server
 from wdom.element import Element, Attr, HTMLElement
-from wdom.event import Event, EventTarget
+from wdom.event import Event, EventTarget, WebEventTarget
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment, ParentNode
 from wdom.node import DocumentFragment
 from wdom.options import config
 from wdom.tag import Tag
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
-from wdom.web_node import WdomElement, WebEventTarget
+from wdom.web_node import WdomElement
 from wdom.window import Window
 
 

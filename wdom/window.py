@@ -7,9 +7,9 @@ from typing import Any, Dict, Optional, Type
 
 from wdom import server
 from wdom.element import Element
+from wdom.event import WebEventTarget
 from wdom.node import Node
 from wdom.tag import Tag, default_classes
-from wdom.web_node import WebEventTarget
 
 
 class CustomElementsRegistry(dict):
