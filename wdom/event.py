@@ -184,7 +184,11 @@ class KeyboardEvent(UIEvent):  # noqa: D204
 
 class InputEvent(UIEvent):  # noqa: D204
     """Input event class."""
-    pass
+
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
+        """Initialize DragEvent and set data attribute."""
+        super().__init__(type, init)
+        self.data = self.init.get('data') or ''
 
 
 proto_dict = {

@@ -136,10 +136,18 @@ class TestInput(RemoteBrowserTestCase, TestCase):
         self.start()
 
     def test_textinput(self):
+        inputs = []
+
+        def input_handler(e):
+            inputs.append(e.data)
+
+        self.input.addEventListener('input', input_handler)
         self.set_element(self.input)
         self.element.send_keys('a')
         self.wait_until(lambda: self.input.value == 'a')
         self.assertEqual(self.input.value, 'a')
+        self.assertEqual(len(inputs), 1)
+        self.assertEqual(inputs[0], 'a')
 
         self.browser.get(self.url)
         self.set_element(self.input)
@@ -150,6 +158,9 @@ class TestInput(RemoteBrowserTestCase, TestCase):
         self.wait_until(
             lambda: self.element.get_attribute('value') == 'ad')
         self.assertEqual(self.input.value, 'ad')
+        self.assertEqual(len(inputs), 2)
+        self.assertEqual(inputs[0], 'a')
+        self.assertEqual(inputs[1], 'd')
 
     def test_textarea(self):
         self.set_element(self.textarea)

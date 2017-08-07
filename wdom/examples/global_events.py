@@ -9,7 +9,8 @@ from wdom.tag import H1, Div, Input
 def sample_page(**kwargs):
     doc = get_document()
     win = doc.defaultView
-    app = Div(Input(id='input'))
+    app = Div()
+    inp = Input(id='input', parent=app)
     win1 = H1(id='win1', parent=app)
     doc1 = H1(id='doc1', parent=app)
 
@@ -19,8 +20,12 @@ def sample_page(**kwargs):
     def add_letter_win(e):
         win1.textContent = win1.textContent + e.key
 
+    def input_handler(e):
+        print(e.data)
+
     doc.addEventListener('keypress', add_letter_doc)
     win.addEventListener('keypress', add_letter_win)
+    inp.addEventListener('input', input_handler)
     return app
 
 
