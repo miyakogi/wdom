@@ -148,8 +148,10 @@ class HTTPTestCase(TestCase):
 
         Please call this method after prepraring document.
         """
+        time.sleep(0.1)
         with self.assertLogs(root_logger, 'INFO'):
             self.server = server.start_server(port=0)
+        time.sleep(0.1)
         self.port = server_config['port']
         self.url = 'http://localhost:{}'.format(self.port)
         self.ws_url = 'ws://localhost:{}'.format(self.port)

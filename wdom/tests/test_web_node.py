@@ -26,7 +26,11 @@ class TestWdomElement(TestCase):
         self.elm.js_exec = self.js_mock
         self.c1.js_exec = self.js_mock1
         self.c2.js_exec = self.js_mock2
-        _tornado.connections.append(MagicMock())
+        self.conn_mock = MagicMock()
+        _tornado.connections.append(self.conn_mock)
+
+    def tearDown(self):
+        _tornado.connections.remove(self.conn_mock)
 
     def test_id(self):
         self.assertRegex(self.elm.html, r'<tag rimo_id="\d+"></tag>')
@@ -233,7 +237,11 @@ class TestWdomElementClass(TestCase):
         self.tag = WdomElement('tag')
         self.c1 = WdomElement('tag')
         self.c2 = WdomElement('tag')
-        _tornado.connections.append(MagicMock())
+        self.conn_mock = MagicMock()
+        _tornado.connections.append(self.conn_mock)
+
+    def tearDown(self):
+        _tornado.connections.remove(self.conn_mock)
 
     def test_class_addremove(self):
         self.assertIsFalse(self.tag.hasClasses())
@@ -440,7 +448,8 @@ class TestWdomElementClass(TestCase):
 
 class TestEventMessage(TestCase):
     def setUp(self):
-        _tornado.connections.append(MagicMock())
+        self.conn_mock = MagicMock()
+        _tornado.connections.append(self.conn_mock)
         self.elm = WdomElement('tag')
         set_app(self.elm)
         self.elm.js_exec = MagicMock()
@@ -448,6 +457,9 @@ class TestEventMessage(TestCase):
         self.elm.addEventListener('click', self.mock)
         msg = {'type': 'click', 'currentTarget': {'id': self.elm.rimo_id}}
         self.event = create_event(msg)
+
+    def tearDown(self):
+        _tornado.connections.remove(self.conn_mock)
 
     def test_handle_event(self):
         self.elm.js_exec.assert_called_once_with('addEventListener', 'click')
@@ -482,7 +494,11 @@ class TestQuery(TestCase):
             'type': 'response',
             'id': self.elm.rimo_id,
         }
-        _tornado.connections.append(MagicMock())
+        self.conn_mock = MagicMock()
+        _tornado.connections.append(self.conn_mock)
+
+    def tearDown(self):
+        _tornado.connections.remove(self.conn_mock)
 
     def test_query(self):
         fut = self.elm.js_query('test')

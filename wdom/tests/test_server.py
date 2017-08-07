@@ -47,6 +47,7 @@ class TestServerBase(HTTPTestCase):
     def setUp(self):
         super().setUp()
         self.port = free_port()
+        sync(self.wait(times=3))
         env = os.environ.copy()
         env['PYTHONPATH'] = root
         _ = tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False)

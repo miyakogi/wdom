@@ -79,6 +79,7 @@ class TestAutoReload(TestCase):
         with open(css_path, 'w') as f:
             f.write(src_css)
         self.port = free_port()
+        self.wait()
         self.url = 'http://localhost:{}'.format(self.port)
         tmpfile = NamedTemporaryFile(mode='w+', dir=CURDIR, suffix='.py',
                                      delete=False)

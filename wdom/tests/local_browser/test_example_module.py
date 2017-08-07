@@ -26,6 +26,7 @@ class BaseTestCase(object):
     def setUp(self):
         self.wd = get_webdriver()
         self.port = free_port()
+        time.sleep(0.01)
         cmd = [sys.executable, '-m', self.module, '--port', str(self.port)]
         self.proc = subprocess.Popen(cmd, env=os.environ,
                                      stdout=subprocess.PIPE,
