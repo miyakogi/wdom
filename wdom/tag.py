@@ -184,7 +184,7 @@ def NewTagClass(class_name: str, tag: Optional[str] = None,
         my_button = MyButton('Click!')
         print(my_button.html)
 
-        >>> <button class="btn" id="111111111">Click!</button>
+        >>> <button class="btn" id="111111111" is="my-button">Click!</button>
     """
     if tag is None:
         tag = class_name.lower()
