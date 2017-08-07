@@ -15,6 +15,10 @@ Version 0.2.0 (next version)
   * Find elements from customElementsRegistory
 * Move non-standard tag classes from ``wdom.tag`` to ``wdom.themes``
 * Add ``RawHtmlNode`` class
+* Support more events
+    * Keyboard event support
+    * Document/Window level event support
+    * Drag and drop event support
 
 Version 0.1.8 (2017-07-23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
