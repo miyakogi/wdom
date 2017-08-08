@@ -20,20 +20,14 @@ from wdom.testing import HTTPTestCase
 from wdom.util import install_asyncio
 
 curdir = path.dirname(__file__)
-root = path.dirname(path.dirname(curdir))
+root = path.dirname(path.dirname(path.dirname(curdir)))
 script = '''
 import asyncio
-import atexit
 from wdom import document, server
 doc = document.get_document()
 with open(doc.tempdir + '/a.html', 'w') as f:
     f.write(doc.tempdir)
-server.start_server()
-atexit.register(server.stop_server)
-try:
-    asyncio.get_event_loop().run_forever()
-except:
-    server.stop_server()
+server.start()
 '''
 
 
