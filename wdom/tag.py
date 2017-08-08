@@ -5,7 +5,7 @@
 
 import logging
 from collections import Iterable
-from typing import Any, Dict, Optional, Union, TYPE_CHECKING
+from typing import Any, Dict, Union, TYPE_CHECKING
 from types import new_class
 
 from wdom.element import _AttrValueType
@@ -167,7 +167,7 @@ class NestedTag(Tag):
             super().innerHTML = html  # type: ignore
 
 
-def NewTagClass(class_name: str, tag: Optional[str] = None,
+def NewTagClass(class_name: str, tag: str = None,
                 bases: Union[type, Iterable] = (Tag, ),
                 **kwargs: Any) -> type:
     """Generate and return new ``Tag`` class.

@@ -3,13 +3,16 @@
 
 """Window and CustomElementsRegistry classes."""
 
-from typing import Any, Dict, Optional, Type
+from typing import Any, Dict, Type, TYPE_CHECKING
 
 from wdom import server
 from wdom.element import Element
 from wdom.event import WebEventTarget
 from wdom.node import Node
 from wdom.tag import Tag, default_classes
+
+if TYPE_CHECKING:
+    from typing import Optional  # noqa: F401
 
 
 class CustomElementsRegistry(dict):
@@ -44,8 +47,7 @@ class CustomElementsRegistry(dict):
                     self._upgrage_to_tag_class(elm)
 
     def _define(self, name: str, constructor: type,
-                options: Optional[Dict[str, str]] = None
-                ) -> None:
+                options: Dict[str, str] = None) -> None:
         extends = None  # Optional[str]
         if options:
             extends = options['extends'].lower()

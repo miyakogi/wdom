@@ -9,7 +9,7 @@ import copy
 import pathlib
 import webbrowser
 from webbrowser import _browsers  # type: ignore
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from tornado import autoreload
 
@@ -61,7 +61,7 @@ def watch_dir(path: str) -> None:
         _add_watch_path(p)
 
 
-def open_browser(url: str, browser: Optional[str] = None) -> None:
+def open_browser(url: str, browser: str = None) -> None:
     """Open web browser."""
     if '--open-browser' in sys.argv:
         # Remove open browser to prevent making new tab on autoreload

@@ -19,7 +19,7 @@ import unittest
 from multiprocessing import Process, Pipe  # type: ignore
 from multiprocessing.connection import Connection
 from types import FunctionType, MethodType
-from typing import Any, Callable, Iterable, Union, Optional, Set, TYPE_CHECKING
+from typing import Any, Callable, Iterable, Union, Set, Optional, TYPE_CHECKING
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -38,8 +38,8 @@ from wdom.util import install_asyncio
 from wdom.window import customElements
 
 if TYPE_CHECKING:
-    from asyncio import AbstractEventLoop  # noqa
-    from typing import List  # noqa
+    from asyncio import AbstractEventLoop  # noqa: F401
+    from typing import List  # noqa: F401
 
 driver = webdriver.Chrome
 local_webdriver = None
@@ -498,7 +498,7 @@ class RemoteBrowserTestCase:
         """Get port of the server."""
         return server_config['port']
 
-    def wait(self, timeout: Optional[float] = None, times: int = 1) -> None:
+    def wait(self, timeout: float = None, times: int = 1) -> None:
         """Wait for ``timeout`` seconds.
 
         Default timeout is ``RemoteBrowserTestCase.wait_time``.
@@ -508,7 +508,7 @@ class RemoteBrowserTestCase:
             loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
     def wait_until(self, func: Callable[[], Any],
-                   timeout: Optional[float] = None) -> None:
+                   timeout: float = None) -> None:
         """Wait until ``func`` returns True or exceeds timeout.
 
         ``func`` is called with no argument. Unit of ``timeout`` is second, and
@@ -530,8 +530,7 @@ class RemoteBrowserTestCase:
         except NoSuchElementException:
             return False
 
-    def set_element(self, node: Element, timeout: Optional[float] = None
-                    ) -> bool:
+    def set_element(self, node: Element, timeout: float = None) -> bool:
         """Set the ``node`` as a target node of the remote browser process."""
         try:
             self.wait_until(lambda: self._set_element(node), timeout)
@@ -608,14 +607,14 @@ class WebDriverTestCase:
         self.wait(times=10)
         super().tearDown()  # type: ignore
 
-    def wait(self, timeout: Optional[float] = None, times: int = 1) -> None:
+    def wait(self, timeout: float = None, times: int = 1) -> None:
         """Wait for ``timeout`` or ``self.wait_time``."""
         loop = asyncio.get_event_loop()
         for i in range(times):
             loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
     def wait_until(self, func: Callable[[], Any],
-                   timeout: Optional[float] = None) -> None:
+                   timeout: float = None) -> None:
         """Wait until ``func`` returns True or exceeds timeout.
 
         ``func`` is called with no argument. Unit of ``timeout`` is second, and

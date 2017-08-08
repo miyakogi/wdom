@@ -6,7 +6,7 @@
 import re
 from collections import OrderedDict
 import logging
-from typing import Any, Match, Optional
+from typing import Any, Match
 
 from wdom.node import AbstractNode
 
@@ -29,9 +29,8 @@ def _normalize_css_property(prop: str) -> str:
 class CSSStyleDeclaration(OrderedDict):
     """Represents a CSS property-value pairs."""
 
-    def __init__(self, style: Optional[str] = None,
-                 parent: Optional['CSSStyleRule'] = None,
-                 owner: Optional[AbstractNode] = None) -> None:
+    def __init__(self, style: str = None, parent: 'CSSStyleRule' = None,
+                 owner: AbstractNode = None) -> None:
         """Initialize with styles.
 
         :arg str style: style strings.
@@ -116,7 +115,7 @@ class CSSStyleDeclaration(OrderedDict):
             del self[prop]
         return removed_prop
 
-    def setProperty(self, prop: str, value: str, priority: Optional[str] = None
+    def setProperty(self, prop: str, value: str, priority: str = None
                     ) -> None:
         """Set property as the value.
 

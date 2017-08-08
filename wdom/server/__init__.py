@@ -7,7 +7,7 @@ import os
 import json
 import logging
 import asyncio
-from typing import Any, Optional
+from typing import Any
 
 from tornado import autoreload
 
@@ -74,8 +74,8 @@ async def _message_loop() -> None:
         await asyncio.sleep(config.message_wait)
 
 
-def start_server(browser: Optional[str] = None, address: Optional[str] = None,
-                 check_time: Optional[int] = 500, **kwargs: Any
+def start_server(browser: str = None, address: str = None,
+                 check_time: int = 500, **kwargs: Any
                  ) -> module.HTTPServer:
     """Start web server.
 
@@ -105,7 +105,7 @@ def start_server(browser: Optional[str] = None, address: Optional[str] = None,
     return _server
 
 
-def stop_server(server: Optional[module.HTTPServer] = None) -> None:
+def stop_server(server: module.HTTPServer = None) -> None:
     """Terminate web server."""
     module.stop_server(server or _server)
 

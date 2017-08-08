@@ -6,7 +6,7 @@
 import asyncio
 import logging
 import socket
-from typing import Any, Optional, TYPE_CHECKING
+from typing import Any, TYPE_CHECKING
 
 from tornado import web, websocket
 from tornado.httpserver import HTTPServer
@@ -170,12 +170,9 @@ def set_application(app: Application) -> None:
     main_application = app
 
 
-def start_server(app: Optional[web.Application] = None,
-                 port: Optional[int] = None,
-                 browser: Optional[str] = None,
-                 address: Optional[str] = None,
-                 check_time: Optional[int] = 500,
-                 **kwargs: Any) -> HTTPServer:
+def start_server(app: web.Application = None, port: int = None,
+                 browser: str = None, address: str = None,
+                 check_time: int = 500, **kwargs: Any) -> HTTPServer:
     """Start server with ``app`` on ``localhost:port``.
 
     If port is not specified, use command line option of ``--port``.

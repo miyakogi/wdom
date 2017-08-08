@@ -69,7 +69,7 @@ class FragmentParser(HTMLParser):
         self.elm.appendChild(Comment(comment))
 
 
-def parse_html(html: str, parser: Optional[FragmentParser] = None) -> Node:
+def parse_html(html: str, parser: FragmentParser = None) -> Node:
     """Parse HTML fragment and return DocumentFragment object.
 
     DocumentFragment object has parsed Node objects as its child nodes.
