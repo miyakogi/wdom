@@ -1,21 +1,81 @@
-wiki
-build
-tmp
-.bumpversion.cfg
-.cache
-.coverage
-.tox
-coverage.xml
-pytest.xml
-chromedriver
-
-# Python files
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
-.mypy_cache/
+*$py.class
 
-# Sphinx build dir
-_build/
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+.mypy_cache
+nosetests.xml
+coverage.xml
+*,cover
+.hypothesis/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# pyenv python configuration file
+.python-version
+
+###### direnv ######
+.direnv
+.envrc
+
+###### zsh-autoenv ######
+.autoenv.zsh
+.autoenv_leave.zsh
+
+### project specific ignore files
+wiki
+tmp
+.bumpversion.cfg
+pytest.xml
+chromedriver
 
 # node files
 node_modules
