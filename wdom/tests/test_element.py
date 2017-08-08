@@ -760,23 +760,27 @@ class TestHTMLElement(TestCase):
 
     def test_draggable(self):
         n = HTMLElement('img')
+        self.assertIs(n.draggable, False)
         n.draggable = True
-        self.assertEqual(n.start_tag, '<img draggable="true">')
+        self.assertEqual(n.html, '<img draggable="true">')
+        self.assertIs(n.draggable, True)
+        n.draggable = False
+        self.assertEqual(n.html, '<img>')
 
     def test_hidden(self):
         n = HTMLElement('img')
         n.hidden = True
-        self.assertEqual(n.start_tag, '<img hidden>')
+        self.assertEqual(n.html, '<img hidden>')
 
     def test_title(self):
         n = HTMLElement('img')
         n.title = 'Image'
-        self.assertEqual(n.start_tag, '<img title="Image">')
+        self.assertEqual(n.html, '<img title="Image">')
 
     def test_type(self):
         n = HTMLElement('input')
         n.type = 'text'
-        self.assertEqual(n.start_tag, '<input type="text">')
+        self.assertEqual(n.html, '<input type="text">')
 
     def test_init_attrs(self):
         elm = HTMLElement('a', src='b', hidden=True)
