@@ -100,17 +100,21 @@ class TestGlobalEvent(WebDriverTestCase, TestCase):
     def test_keypress(self):
         doc_h1 = self.wd.find_element_by_id('doc1')
         win_h1 = self.wd.find_element_by_id('win1')
-        input = self.wd.find_element_by_id('input')
-        input.send_keys('a')
+        input_view = self.wd.find_element_by_id('input_view')
+        input_ = self.wd.find_element_by_id('input')
+        input_.send_keys('a')
         self.wait_until(lambda: doc_h1.text == 'a')
         self.wait_until(lambda: win_h1.text == 'a')
+        self.wait_until(lambda: input_view.text == 'a')
         self.assertEqual(doc_h1.text, 'a')
         self.assertEqual(win_h1.text, 'a')
-        input.send_keys('b')
+        input_.send_keys('b')
         self.wait_until(lambda: doc_h1.text == 'ab')
         self.wait_until(lambda: win_h1.text == 'ab')
+        self.wait_until(lambda: input_view.text == 'b')
         self.assertEqual(doc_h1.text, 'ab')
         self.assertEqual(win_h1.text, 'ab')
+        self.assertEqual(input_view.text, 'b')
 
 
 class TestRevText(WebDriverTestCase, TestCase):
