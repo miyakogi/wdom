@@ -4,6 +4,7 @@
 tornado>=4
 doit
 green
+tox
 
 flake8
 mypy
