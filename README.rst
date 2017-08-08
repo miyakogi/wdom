@@ -54,8 +54,6 @@ Requirements
 
 Python 3.5.3+ and any modern-browsers are required.
 Also supports Electron and PyQt's webkit browsers.
-IE is not supported, but most of features will work with IE11 (but not
-recomended).
 
 Installation
 ------------
@@ -115,10 +113,12 @@ Of course, WDOM can handle events:
     from wdom.document import set_app
     from wdom.server import start
 
+    def rev_text(event):
+        elm = event.currentTarget
+        elm.textContent = elm.textContent[::-1]
+
     if __name__ == '__main__':
         h1 = H1('Hello, WDOM')
-        def rev_text(event):
-            h1.textContent = h1.textContent[::-1]
         h1.addEventListener('click', rev_text)
         set_app(h1)
         start()
@@ -141,7 +141,7 @@ Making components with python class:
             self.textbox.addEventListener('input', self.update)
 
         def update(self, event):
-            self.text.textContent = event.target.value
+            self.text.textContent = event.currentTarget.value
             # Or, you can write as below
             # self.text.textContent = self.textbox.value
 

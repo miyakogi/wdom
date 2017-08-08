@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.themes import H1, Div
+from wdom.event import Event
+from wdom.themes import H1
 
 
-class App(Div):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.text = H1('Click!', parent=self)
-        self.text.addEventListener('click', self.reverse)
-
-    def reverse(self, event):
-        self.text.textContent = self.text.textContent[::-1]
+def rev_text(event: Event) -> None:
+    elm = event.currentTarget
+    elm.textContent = elm.textContent[::-1]
 
 
-def sample_app(**kwargs) -> Div:
-    return App()
+def sample_app(**kwargs) -> H1:
+    h1 = H1('Click!')
+    h1.addEventListener('click', rev_text)
+    return h1
 
 
 if __name__ == '__main__':
