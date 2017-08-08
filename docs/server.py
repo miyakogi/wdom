@@ -4,41 +4,53 @@
 from os import path
 import subprocess
 
-from livereload import Server, shell
+from livereload import Server
 
 docsdir = path.dirname(path.abspath(__file__))
 builddir = path.join(docsdir, '_build')
+build_cmd = [
+    'sphinx-build', '-b', 'html', '-E', '-q',
+    '-d', path.join(builddir, 'doctrees'),
+    docsdir, path.join(builddir, 'html'),
+]
 
-subprocess.run(['make', 'clean'])
-subprocess.run(['make', 'html'])
 
+def cmd() -> None:
+    print('=== Sphinx Build Start ===')
+    subprocess.run(build_cmd, cwd=docsdir)
+    print('=== Sphinx Build done ===')
+
+
+def docs(p: str) -> str:
+    return path.join(docsdir, p)
+
+
+# subprocess.run(['make', 'clean'], cwd=docsdir)
+cmd()  # build once
 server = Server()
-cmd = shell(['sphinx-build', '-b', 'html', '-E',
-             '-d', path.join(builddir, 'doctrees'),
-             docsdir, path.join(builddir, 'html')])
 
 # Wtach documets
-server.watch('../*.rst', cmd, delay=1)
-server.watch('*.rst', cmd, delay=1)
-server.watch('*.md', cmd, delay=1)
-server.watch('./*/*.rst', cmd, delay=1)
-server.watch('./*/*.md', cmd, delay=1)
-server.watch('./*/*/*.rst', cmd, delay=1)
-server.watch('./*/*/*.md', cmd, delay=1)
+server.watch(docs('*.rst'), cmd, delay=1)
+server.watch(docs('../*.rst'), cmd, delay=1)
+server.watch(docs('*.md'), cmd, delay=1)
+server.watch(docs('*/*.rst'), cmd, delay=1)
+server.watch(docs('*/*.md'), cmd, delay=1)
+server.watch(docs('*/*/*.rst'), cmd, delay=1)
+server.watch(docs('*/*/*.md'), cmd, delay=1)
 
 # Watch template/style
-server.watch('./_templates/*.html', cmd, delay=1)
-server.watch('./_static/*.css', cmd, delay=1)
-server.watch('./_static/*.js', cmd, delay=1)
+server.watch(docs('_templates/*.html'), cmd, delay=1)
+server.watch(docs('_static/*.css'), cmd, delay=1)
+server.watch(docs('_static/*.js'), cmd, delay=1)
 
 # Watch theme
-server.watch('./themes/slex/static/*.css_t', cmd, delay=1)
-server.watch('./themes/slex/*.html', cmd, delay=1)
-server.watch('./themes/slex/theme.conf', cmd, delay=1)
+server.watch(docs('themes/slex/static/*.css_t'), cmd, delay=1)
+server.watch(docs('themes/slex/*.html'), cmd, delay=1)
+server.watch(docs('themes/slex/theme.conf'), cmd, delay=1)
 
 # Watch package
-server.watch('../*/*.py', cmd, delay=1)
-server.watch('../*/*/*.py', cmd, delay=1)
-server.watch('../*/*/*/*.py', cmd, delay=1)
+server.watch(docs('../wdom/*.py'), cmd, delay=1)
+server.watch(docs('../wdom/*/*.py'), cmd, delay=1)
+server.watch(docs('../wdom/*/*/*.py'), cmd, delay=1)
 
-server.serve(port=8889, root='_build/html', debug=True, restart_delay=1)
+server.serve(port=8889, root=docs('_build/html'), debug=True, restart_delay=1)
