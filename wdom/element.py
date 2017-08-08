@@ -660,9 +660,14 @@ class HTMLElement(Element):
             self.__style._parse_str('')
         elif isinstance(style, CSSStyleDeclaration):
             self.__style._owner = None
-            style._owner = self  # type: ignore
-            self.__style = style
-            self.__style.update()  # type: ignore
+            if style._owner is not None:
+                new_style = CSSStyleDeclaration(owner=self)
+                new_style.update(style)
+                self.__style = new_style
+            else:
+                # always making new decl may be better
+                style._owner = self
+                self.__style = style
         else:
             raise TypeError('Invalid type for style: {}'.format(type(style)))
 

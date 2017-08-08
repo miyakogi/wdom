@@ -42,7 +42,7 @@ class CSSStyleDeclaration(OrderedDict):
         if style:
             self._parse_str(style)
 
-    def _update(self) -> None:
+    def _update_web(self) -> None:
         from wdom.web_node import WdomElement
         if isinstance(self._owner, WdomElement):
             css = self.cssText
@@ -57,7 +57,7 @@ class CSSStyleDeclaration(OrderedDict):
         style_str = _style_cleanup_re.sub(r'\1', style.strip())
         if len(style_str) == 0:
             # do nothing, just clear and update
-            self._update()
+            self._update_web()
             return
 
         # temporary disable udpating browser for better performance
@@ -76,7 +76,7 @@ class CSSStyleDeclaration(OrderedDict):
             value = decl_list[1]
             self[prop] = value
         self._owner = _owner
-        self._update()
+        self._update_web()
 
     @property
     def cssText(self) -> str:
@@ -128,11 +128,11 @@ class CSSStyleDeclaration(OrderedDict):
 
     def __setitem__(self, attr: str, value: str) -> None:
         super().__setitem__(_normalize_css_property(attr), value)
-        self._update()
+        self._update_web()
 
     def __delitem__(self, attr: str) -> None:
         super().__delitem__(_normalize_css_property(attr))
-        self._update()
+        self._update_web()
 
     def __getattr__(self, attr: str) -> str:
         if attr.startswith('_') or attr in dir(self):

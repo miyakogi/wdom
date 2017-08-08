@@ -835,6 +835,30 @@ class TestHTMLElement(TestCase):
         self.assertEqual(clone.style.cssText, 'color: black;')
         self.assertEqual(self.elm.style.cssText, 'color: red;')
 
+    def test_style_new(self):
+        st = CSSStyleDeclaration()
+        self.assertEqual(self.elm.style.cssText, '')
+        self.assertEqual(st.cssText, '')
+        st.setProperty('color', 'red')
+        self.assertEqual(st.cssText, 'color: red;')
+        self.assertEqual(self.elm.style.cssText, '')
+        self.elm.style = st
+        self.assertEqual(self.elm.style.cssText, 'color: red;')
+        st.setProperty('color', 'blue')
+        self.assertEqual(st.cssText, 'color: blue;')
+        # shouldn't do this???
+        self.assertEqual(self.elm.style.cssText, 'color: blue;')
+
+    def test_style_copy(self):
+        self.elm.style = 'color: red;'
+        elm2 = HTMLElement('b')
+        elm2.style = self.elm.style
+        self.assertEqual(elm2.style.cssText, 'color: red;')
+
+        elm2.style.setProperty('color', 'blue')
+        self.assertEqual(elm2.style.cssText, 'color: blue;')
+        self.assertEqual(self.elm.style.cssText, 'color: red;')
+
     def test_attr_clone(self):
         self.elm.draggable = True
         self.elm.hidden = True
