@@ -511,6 +511,17 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         """Return tag name (lower case)."""
         return self.tag.lower()
 
+    @property
+    def className(self) -> str:
+        """Get/Set class name as/by string."""
+        return self.getAttribute('class') or ''  # type: ignore
+
+    @className.setter
+    def className(self, new_class: str) -> None:
+        if not isinstance(new_class, str):
+            raise TypeError('className must be str.')
+        self.setAttribute('class', new_class)
+
     def getAttribute(self, attr: str) -> _AttrValueType:
         """Get attribute of this node as string format.
 

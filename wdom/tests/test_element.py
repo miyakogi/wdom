@@ -409,6 +409,22 @@ class TestElement(TestCase):
         self.assertTrue(self.elm.hasAttribute('class'))
         self.assertTrue(self.elm.hasAttributes())
 
+    def test_class_name(self):
+        self.assertEqual(self.elm.className, '')
+        self.elm.className = 'a'
+        self.assertEqual(self.elm.className, 'a')
+        self.assertEqual(self.elm.getAttribute('class'), 'a')
+        self.elm.className = 'b c'
+        self.assertEqual(self.elm.className, 'b c')
+        self.assertEqual(self.elm.getAttribute('class'), 'b c')
+        self.assertEqual(self.elm.classList.length, 2)
+        self.elm.className = 'd'
+        self.assertEqual(self.elm.className, 'd')
+        self.assertEqual(self.elm.getAttribute('class'), 'd')
+        self.assertEqual(self.elm.classList.length, 1)
+        with self.assertRaises(TypeError):
+            self.elm.className = ['d']
+
     def test_start_tag(self):
         self.assertEqual(self.elm.start_tag, '<tag>')
         self.elm.setAttribute('src', 'a')
