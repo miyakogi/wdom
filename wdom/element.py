@@ -866,8 +866,11 @@ class HTMLInputElement(HTMLElement, FormControlMixin):
         self.value = value
 
     def _is_same_group(self, node: Element) -> bool:
-        return (self.tagName == node.tagName and
-                self.getAttribute('name') == node.getAttribute('name'))
+        tag = self.tagName
+        name = self.getAttribute('name')
+        return (tag == node.tagName and
+                node is not self and
+                name == node.getAttribute('name'))
 
     def _find_root(self) -> Node:
         doc = self.ownerDocument
@@ -906,7 +909,7 @@ class HTMLLabelElement(HTMLElement, FormControlMixin):
                 from wdom.document import getElementById
                 return getElementById(id)
             else:
-                raise TypeError
+                raise TypeError('"for" attribute must be string')
         return None
 
 
