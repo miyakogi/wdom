@@ -467,8 +467,9 @@ class ParentNode(AbstractNode):
 
     def getElementsByClassName(self, class_name: str) -> NodeList:
         """Get child nodes which has ``class_name`` class attribute."""
+        classes = set(class_name.split(' '))
         return self.getElementsBy(
-            lambda node: class_name in getattr(node, 'classList'))
+            lambda node: classes.issubset(set(getattr(node, 'classList'))))
 
     def query(self, relativeSelectors: str) -> AbstractNode:
         """Not Implemented."""

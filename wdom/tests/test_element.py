@@ -530,6 +530,29 @@ class TestElement(TestCase):
         self.assertIs(c1_classes[0], self.c1)
         self.assertIs(c2_classes[0], self.c2)
 
+    def test_get_elements_by_classname_multi1(self):
+        self.elm.appendChild(self.c1)
+        self.elm.appendChild(self.c2)
+        self.c2.classList.add('c1')
+        c1_classes = self.elm.getElementsByClassName('c1')
+        c2_classes = self.elm.getElementsByClassName('c2')
+        self.assertEqual(len(c1_classes), 2)
+        self.assertEqual(len(c2_classes), 1)
+
+    def test_get_elements_by_classname_multi2(self):
+        self.elm.appendChild(self.c1)
+        self.elm.appendChild(self.c2)
+        self.c1.classList.add('c3')
+        self.c2.classList.add('c1')
+        self.c2.classList.add('c3')
+        classes1 = self.elm.getElementsByClassName('c1')
+        classes2 = self.elm.getElementsByClassName('c1 c2')
+        classes3 = self.elm.getElementsByClassName('c1 c2 c4')
+        self.assertEqual(len(classes1), 2)
+        self.assertEqual(len(classes2), 1)
+        self.assertEqual(len(classes3), 0)
+        self.assertIs(classes2[0], self.c2)
+
     def test_get_elements_by_classname_nest(self):
         self.elm.appendChild(self.c1)
         self.c1.appendChild(self.c2)
