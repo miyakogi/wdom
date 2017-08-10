@@ -7,12 +7,12 @@ from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
 from html.parser import HTMLParser
 from typing import Any, Callable, List, Optional, Tuple, TYPE_CHECKING
 
-from wdom.node import Node, Text, RawHtml
+from wdom.node import Node, Text
 
 if TYPE_CHECKING:
-    from wdom.document import Document  # noqa
+    from wdom.document import Document  # noqa: F401
+    from wdom.node import ParentNode  # noqa: F401
 
-_NOESCAPE = ['script', 'style']
 _T_ElementFactory = Callable[[str, Optional[str], Optional[type], dict], Node]
 
 
@@ -32,7 +32,7 @@ class FragmentParser(HTMLParser):
         super().__init__(*args, **kwargs)  # type: ignore
         from wdom.node import DocumentFragment
         from wdom.document import create_element
-        self.elm = DocumentFragment()  # type: Node
+        self.elm = DocumentFragment()  # type: ParentNode
         self.root = self.elm
         self.current_tag = ''
         self.element_factory = element_factory or create_element
@@ -41,9 +41,8 @@ class FragmentParser(HTMLParser):
                         ) -> None:  # noqa: D102
         self.current_tag = tag
         attrs = dict(attr)
-        params = dict(parent=self.elm, **attrs)
         elm = self.element_factory(
-            tag, attrs.get('is'), self.default_class, params)
+            tag, attrs.get('is'), self.default_class, attrs)
         if self.elm:
             self.elm.appendChild(elm)
         if tag not in HTML_EMPTY:
@@ -59,10 +58,7 @@ class FragmentParser(HTMLParser):
 
     def handle_data(self, data: str) -> None:  # noqa: D102
         if data:
-            if self.current_tag in _NOESCAPE:
-                self.elm.appendChild(RawHtml(data))
-            else:
-                self.elm.appendChild(Text(data))
+            self.elm.appendChild(Text(data))
 
     def handle_comment(self, comment: str) -> None:  # noqa: D102
         from wdom.node import Comment
@@ -77,21 +73,3 @@ def parse_html(html: str, parser: FragmentParser = None) -> Node:
     parser = parser or FragmentParser()
     parser.feed(html)
     return parser.root
-
-
-if __name__ == '__main__':
-    from cProfile import Profile
-    from pstats import Stats
-    from pathlib import Path
-    from wdom.server import _tornado
-    _tornado.connections.append(1)  # type: ignore
-    root = Path(__file__).absolute().parent.parent
-    html_file = root / 'docs/_build/html/node.html'
-    with open(html_file) as f:
-        src = f.read()
-    profiler = Profile()
-    profiler.runcall(parse_html, src)
-    stats = Stats(profiler)
-    stats.strip_dirs()
-    stats.sort_stats('cumulative')
-    stats.print_stats()
