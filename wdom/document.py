@@ -15,7 +15,8 @@ from typing import Any, Callable, Optional, Union
 import weakref
 
 from wdom import server
-from wdom.element import Element, Attr, HTMLElement
+from wdom.element import Element, Attr, HTMLElement, getElementsBy
+from wdom.element import getElementsByClassName, getElementsByTagName
 from wdom.event import Event, EventTarget, WebEventTarget
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment, ParentNode
 from wdom.node import DocumentFragment
@@ -88,6 +89,10 @@ class Document(Node, ParentNode, EventTarget):
 
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
+
+    getElementsBy = getElementsBy
+    getElementsByTagName = getElementsByTagName
+    getElementsByClassName = getElementsByClassName
 
     def __init__(self, *,
                  doctype: str = 'html',

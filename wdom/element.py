@@ -5,8 +5,8 @@
 
 from collections import OrderedDict, UserDict
 import html as html_
-from typing import Any, Dict, Iterable, Iterator, List, MutableSequence
-from typing import Optional, Tuple, Type, Union
+from typing import Any, Callable, Dict, Iterable, Iterator, List
+from typing import MutableSequence, Optional, Tuple, Type, Union
 from typing import TYPE_CHECKING
 from weakref import WeakSet, WeakValueDictionary
 from xml.etree.ElementTree import HTML_EMPTY  # type: ignore
@@ -24,9 +24,10 @@ _AttrValueType = Union[List[str], str, int, bool, CSSStyleDeclaration, None]
 
 
 class DOMTokenList(MutableSequence[str]):
-    """Collection of DOM token.
+    """Collection of DOM token strings.
 
     DOM token is a string which does not contain spases.
+    This class is mainly used for class list.
     """
 
     def __init__(self, owner: Union[Node, Type['HTMLElement']],
@@ -371,6 +372,43 @@ class ElementMeta(type):
         return new_cls
 
 
+def getElementsBy(start_node: ParentNode,
+                  cond: Callable[['Element'], bool]) -> NodeList:
+    """Return list of child elements of start_node which matches ``cond``.
+
+    ``cond`` must be a function which gets a single argument ``Element``,
+    and returns boolean. If the node matches requested condition, ``cond``
+    should return True.
+    This searches all child elements recursively.
+
+    :arg ParentNode start_node:
+    :arg cond: Callable[[Element], bool]
+    :rtype: NodeList[Element]
+    """
+    elements = []
+    for child in start_node.children:
+        if cond(child):
+            elements.append(child)
+        elements.extend(child.getElementsBy(cond))
+    return NodeList(elements)
+
+
+def getElementsByTagName(start_node: ParentNode, tag: str) -> NodeList:
+    """Get child nodes which tag name is ``tag``."""
+    _tag = tag.upper()
+    return getElementsBy(start_node, lambda node: node.tagName == _tag)
+
+
+def getElementsByClassName(start_node: ParentNode, class_name: str
+                           ) -> NodeList:
+    """Get child nodes which has ``class_name`` class attribute."""
+    classes = set(class_name.split(' '))
+    return getElementsBy(
+        start_node,
+        lambda node: classes.issubset(set(node.classList))
+    )
+
+
 class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
               ChildNode, metaclass=ElementMeta):
     """Element base class."""
@@ -383,6 +421,10 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     _should_escape_text = True
     _special_attr_string = ['id']
     _special_attr_boolean = []  # type: List[str]
+
+    getElementsBy = getElementsBy
+    getElementsByTagName = getElementsByTagName
+    getElementsByClassName = getElementsByClassName
 
     def __init__(self, tag: str='', parent: Node = None,
                  _registered: bool = True, **kwargs: Any) -> None:

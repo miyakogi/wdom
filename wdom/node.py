@@ -6,7 +6,7 @@
 import html
 import logging
 from typing import TYPE_CHECKING
-from typing import Any, Callable, Iterator, Optional, Sequence, Union
+from typing import Any, Iterator, Optional, Sequence, Union
 
 from xml.dom import Node as _Node
 
@@ -441,35 +441,6 @@ class ParentNode(AbstractNode):
         """Append new nodes after last child node."""
         node = _to_node_list(nodes)
         self.appendChild(node)
-
-    def getElementsBy(self, cond: Callable[[AbstractNode], bool]) -> NodeList:
-        """Return list of child nodes which matches ``cond``.
-
-        ``cond`` must be a function which gets a single argument ``Element``,
-        and returns bool. If the node matches requested condition, ``cond``
-        should return True.
-        This searches all child nodes recursively.
-
-        :arg cond: Callable[[Element], bool]
-        :rtype: NodeList[Element]
-        """
-        elements = []
-        for child in self.children:
-            if cond(child):
-                elements.append(child)
-            elements.extend(child.getElementsBy(cond))
-        return NodeList(elements)
-
-    def getElementsByTagName(self, tag: str) -> NodeList:
-        """Get child nodes which tag name is ``tag``."""
-        _tag = tag.upper()
-        return self.getElementsBy(lambda n: getattr(n, 'tagName') == _tag)
-
-    def getElementsByClassName(self, class_name: str) -> NodeList:
-        """Get child nodes which has ``class_name`` class attribute."""
-        classes = set(class_name.split(' '))
-        return self.getElementsBy(
-            lambda node: classes.issubset(set(getattr(node, 'classList'))))
 
     def query(self, relativeSelectors: str) -> AbstractNode:
         """Not Implemented."""

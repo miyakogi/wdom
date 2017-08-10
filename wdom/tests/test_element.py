@@ -10,6 +10,7 @@ from wdom.node import Text
 from wdom.element import (
     DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement,
     HTMLSelectElement, HTMLOptionElement,
+    getElementsBy, getElementsByClassName, getElementsByTagName,
 )
 from wdom.window import customElements
 from wdom.testing import TestCase
@@ -322,6 +323,72 @@ class TestElementMeta(TestCase):
         self.check_noattr('d')
         self.assertFalse(self.tag.d)
         self.assertEqual(self.tag.html, '<a></a>')
+
+
+class TestGetElements(TestCase):
+    def setUp(self):
+        self.elm = Element('tag')
+        self.c1 = Element('c1')
+        self.c2 = Element('c1')
+        self.c3 = Element('c3')
+        self.c1.setAttribute('a', 'a')
+        self.c2.setAttribute('b', 'b')
+        self.elm.append(self.c1, self.c2, self.c3)
+
+    def test_get_elements_by_attr1(self):
+        attr_elms = getElementsBy(self.elm, lambda n: n.hasAttributes())
+        self.assertEqual(attr_elms.length, 2)
+        self.assertIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_attr2(self):
+        attr_elms = getElementsBy(self.elm, lambda n: n.hasAttribute('a'))
+        self.assertEqual(attr_elms.length, 1)
+        self.assertIs(attr_elms[0], self.c1)
+        self.assertNotIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_tagname1(self):
+        attr_elms = getElementsByTagName(self.elm, 'c1')
+        self.assertEqual(attr_elms.length, 2)
+        self.assertIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_tagname2(self):
+        attr_elms = getElementsByTagName(self.elm, 'c3')
+        self.assertEqual(attr_elms.length, 1)
+        self.assertNotIn(self.c1, attr_elms)
+        self.assertNotIn(self.c2, attr_elms)
+        self.assertIs(self.c3, attr_elms[0])
+
+    def test_get_elements_by_classname1(self):
+        self.c1.className = 'c1'
+        attr_elms = getElementsByClassName(self.elm, 'c1')
+        self.assertEqual(attr_elms.length, 1)
+        self.assertIn(self.c1, attr_elms)
+        self.assertNotIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_classname2(self):
+        self.c1.className = 'c1'
+        self.c2.className = 'c1'
+        attr_elms = getElementsByClassName(self.elm, 'c1')
+        self.assertEqual(attr_elms.length, 2)
+        self.assertIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_classname3(self):
+        self.c1.className = 'c1'
+        self.c2.className = 'c1 c2'
+        self.c3.className = 'c2 c1'
+        attr_elms = getElementsByClassName(self.elm, 'c2 c1')
+        self.assertEqual(attr_elms.length, 2)
+        self.assertNotIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertIn(self.c3, attr_elms)
 
 
 class TestElement(TestCase):
