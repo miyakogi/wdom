@@ -15,7 +15,7 @@ tests_require = ['parameterized', 'selenium', 'syncer']
 
 setup(
     name='wdom',
-    version='0.2.0',
+    version='0.2.1',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
