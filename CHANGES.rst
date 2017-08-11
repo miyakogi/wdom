@@ -1,7 +1,7 @@
 Version 0.2
 -----------
 
-Version 0.2.0 (next version)
+Version 0.2.0 (2017-08-11)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * **Python 3.4 is NOT Supported**
@@ -14,7 +14,7 @@ Version 0.2.0 (next version)
 * Parse html using custom elements
   * Find elements from customElementsRegistory
 * Move non-standard tag classes from ``wdom.tag`` to ``wdom.themes``
-* Add ``RawHtmlNode`` class
+* Add ``wdom.tag.RawHtmlNode`` class
 * Support more events
     * Keyboard event support
     * Document/Window level event support

@@ -15,7 +15,7 @@ tests_require = ['parameterized', 'selenium', 'syncer']
 
 setup(
     name='wdom',
-    version='0.1.8',
+    version='0.2.0',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
@@ -31,9 +31,9 @@ setup(
     include_package_data=True,
     license="MIT",
     zip_safe=False,
-    keywords='dom browser',
+    keywords='dom browser gui ui',
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
