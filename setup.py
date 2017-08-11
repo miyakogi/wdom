@@ -15,7 +15,7 @@ tests_require = ['parameterized', 'selenium', 'syncer']
 
 setup(
     name='wdom',
-    version='0.2.0',
+    version='0.2.1',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
@@ -37,10 +37,12 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Topic :: Software Development :: User Interfaces',
     ],
     python_requires='>=3.5.2',
     install_requires=install_requires,

@@ -4,6 +4,11 @@ Version 0.2
 Version 0.2.0 (2017-08-11)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+* Change metadata
+
+Version 0.2.0 (2017-08-11)
+--------------------------
+
 * **Python 3.4 is NOT Supported**
     * Use async/await
     * Add type hints (pass mypy check)
