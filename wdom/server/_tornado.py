@@ -44,7 +44,7 @@ class WSHandler(websocket.WebSocketHandler):
 
     def open(self) -> None:
         """Execute when connection open."""
-        logger.info('WS OPEN')
+        logger.info('WebSocket OPEN')
         connections.append(self)
 
     def on_message(self, message: str) -> None:
@@ -61,7 +61,7 @@ class WSHandler(websocket.WebSocketHandler):
 
     def on_close(self) -> None:
         """Execute when connection closed."""
-        logger.info('RootWS CLOSED')
+        logger.info('WebSocket CLOSED')
         if self in connections:
             # Remove this connection from connection-list
             connections.remove(self)
