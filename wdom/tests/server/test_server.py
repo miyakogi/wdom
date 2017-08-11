@@ -8,33 +8,26 @@ import re
 import json
 import time
 import subprocess
-import asyncio
 import tempfile
 import unittest
 
 from selenium.webdriver.common.utils import free_port
 from syncer import sync
 
-from wdom.misc import install_asyncio
-from wdom.document import get_document
 from wdom import server
+from wdom.document import get_document
 from wdom.testing import HTTPTestCase
+from wdom.util import install_asyncio
 
 curdir = path.dirname(__file__)
-root = path.dirname(path.dirname(curdir))
+root = path.dirname(path.dirname(path.dirname(curdir)))
 script = '''
 import asyncio
-import atexit
 from wdom import document, server
 doc = document.get_document()
 with open(doc.tempdir + '/a.html', 'w') as f:
     f.write(doc.tempdir)
-server.start_server()
-atexit.register(server.stop_server)
-try:
-    asyncio.get_event_loop().run_forever()
-except:
-    server.stop_server()
+server.start()
 '''
 
 
@@ -48,6 +41,7 @@ class TestServerBase(HTTPTestCase):
     def setUp(self):
         super().setUp()
         self.port = free_port()
+        sync(self.wait(times=3))
         env = os.environ.copy()
         env['PYTHONPATH'] = root
         _ = tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False)
@@ -79,48 +73,44 @@ class TestAutoShutdown(TestServerBase):
     cmd = ['--auto-shutdown', '--shutdown-wait', '0.1']
 
     @sync
-    @asyncio.coroutine
-    def test_autoshutdown(self):
-        yield from self.wait()
-        ws = yield from self.ws_connect(self.ws_url)
+    async def test_autoshutdown(self):
+        await self.wait()
+        ws = await self.ws_connect(self.ws_url)
         ws.close()
-        yield from self.wait(timeout=0.1, times=5)
+        await self.wait(timeout=0.1, times=5)
         self.assertIsNotNone(self.proc.poll())
 
     @sync
-    @asyncio.coroutine
-    def test_reload(self):
-        yield from self.wait()
-        ws = yield from self.ws_connect(self.ws_url)
+    async def test_reload(self):
+        await self.wait()
+        ws = await self.ws_connect(self.ws_url)
         ws.close()
-        ws = yield from self.ws_connect(self.ws_url)
-        yield from self.wait(timeout=0.1, times=5)
+        ws = await self.ws_connect(self.ws_url)
+        await self.wait(timeout=0.1, times=5)
         self.assertIsNone(self.proc.poll())
 
     @sync
-    @asyncio.coroutine
-    def test_multi_connection(self):
-        yield from self.wait()
-        ws1 = yield from self.ws_connect(self.ws_url)
-        ws2 = yield from self.ws_connect(self.ws_url)
+    async def test_multi_connection(self):
+        await self.wait()
+        ws1 = await self.ws_connect(self.ws_url)
+        ws2 = await self.ws_connect(self.ws_url)
         ws1.close()
-        yield from self.wait(timeout=0.1, times=5)
+        await self.wait(timeout=0.1, times=5)
         self.assertIsNone(self.proc.poll())
         ws2.close()
-        yield from self.wait(timeout=0.1, times=5)
+        await self.wait(timeout=0.1, times=5)
         self.assertIsNotNone(self.proc.poll())
 
     @sync
-    @asyncio.coroutine
-    def test_tempdir_cleanup(self):
-        yield from self.wait()
-        ws = yield from self.ws_connect(self.ws_url)
-        resp = yield from self.fetch(self.url + '/tmp/a.html')
+    async def test_tempdir_cleanup(self):
+        await self.wait()
+        ws = await self.ws_connect(self.ws_url)
+        resp = await self.fetch(self.url + '/tmp/a.html')
         content = resp.body
         self.assertTrue(path.exists(content.strip()))
         self.assertTrue(path.isdir(content.strip()))
         ws.close()
-        yield from self.wait(timeout=0.1, times=5)
+        await self.wait(timeout=0.1, times=5)
         self.assertIsNotNone(self.proc.poll())
         self.assertFalse(path.exists(content.strip()))
         self.assertFalse(path.isdir(content.strip()))
@@ -161,10 +151,9 @@ class TestMainHandlerBlank(HTTPTestCase):
         self.start()
 
     @sync
-    @asyncio.coroutine
-    def test_blank_mainpage(self) -> None:
+    async def test_blank_mainpage(self) -> None:
         with self.assertLogs('wdom', 'INFO'):
-            res = yield from self.fetch(self.url)
+            res = await self.fetch(self.url)
         self.assertEqual(res.code, 200)
         _re = re.compile(
             '<!DOCTYPE html>\s*<html rimo_id="\d+">\s*<head rimo_id="\d+">'
@@ -183,10 +172,9 @@ class TestMainHandler(HTTPTestCase):
         self.start()
 
     @sync
-    @asyncio.coroutine
-    def test_blank_mainpage(self) -> None:
+    async def test_blank_mainpage(self) -> None:
         with self.assertLogs('wdom', 'INFO'):
-            res = yield from self.fetch(self.url)
+            res = await self.fetch(self.url)
         self.assertEqual(res.code, 200)
         self.assertIn('testing', res.text)
 
@@ -198,21 +186,19 @@ class TestStaticFileHandler(HTTPTestCase):
         self.start()
 
     @sync
-    @asyncio.coroutine
-    def test_static_file(self) -> None:
+    async def test_static_file(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
-            res = yield from self.fetch(self.url + '/_static/js/rimo/rimo.js')
+            res = await self.fetch(self.url + '/_static/js/rimo/rimo.js')
         self.assertEqual(res.code, 200)
         self.assertIn('rimo', res.text)
         self.assertIn('rimo.log', res.text)
 
     @sync
-    @asyncio.coroutine
-    def test_tempdir(self):
+    async def test_tempdir(self):
         from os import path
         self.assertTrue(path.exists(self.document.tempdir))
         with self.assertLogs('wdom.server', 'INFO'):
-            res = yield from self.fetch(self.url + '/tmp/a.html')
+            res = await self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(res.code, 404)
         self.assertIn('404', res.text)
         self.assertIn('Not Found', res.text)
@@ -221,13 +207,12 @@ class TestStaticFileHandler(HTTPTestCase):
             f.write('test')
         self.assertTrue(path.exists(tmp))
         with self.assertLogs('wdom.server', 'INFO'):
-            res = yield from self.fetch(self.url + '/tmp/a.html')
+            res = await self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(res.code, 200)
         self.assertEqual('test', res.text)
 
     @sync
-    @asyncio.coroutine
-    def test_tempfile(self):
+    async def test_tempfile(self):
         doc = get_document()
         self.assertTrue(path.exists(doc.tempdir))
         tmp = path.join(doc.tempdir, 'a.html')
@@ -235,32 +220,30 @@ class TestStaticFileHandler(HTTPTestCase):
         with open(tmp, 'w') as f:
             f.write('test')
         self.assertTrue(path.exists(tmp))
-        response = yield from self.fetch(self.url + '/tmp/a.html')
+        response = await self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(response.code, 200)
         self.assertEqual(response.text, 'test')
 
     @sync
-    @asyncio.coroutine
-    def test_tempfile_404(self):
-        response = yield from self.fetch(self.url + '/tmp/b.html')
+    async def test_tempfile_404(self):
+        response = await self.fetch(self.url + '/tmp/b.html')
         self.assertEqual(response.code, 404)
-        response = yield from self.fetch(self.url + '/tmp/a.html')
+        response = await self.fetch(self.url + '/tmp/a.html')
         self.assertEqual(response.code, 404)
 
 
 class TestAddStaticPath(HTTPTestCase):
     def setUp(self) -> None:
         from os import path
-        server.add_static_path('a', path.abspath(path.dirname(__file__)))
         super().setUp()
+        server.add_static_path('a', path.abspath(path.dirname(__file__)))
         self.document = get_document()
         self.start()
 
     @sync
-    @asyncio.coroutine
-    def test_add_static_path(self) -> None:
+    async def test_add_static_path(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
-            res = yield from self.fetch(self.url + '/a/' + __file__)
+            res = await self.fetch(self.url + '/a/' + __file__)
         self.assertEqual(res.code, 200)
         self.assertIn('this text', res.text)
 
@@ -274,45 +257,40 @@ class TestRootWSHandler(HTTPTestCase):
         self.ws = sync(self.ws_connect(self.ws_url))
 
     @sync
-    @asyncio.coroutine
-    def test_ws_connection(self) -> None:
+    async def test_ws_connection(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
-            _ = yield from self.ws_connect(self.ws_url)
+            _ = await self.ws_connect(self.ws_url)
             del _
-            yield from self.wait()
+            await self.wait()
 
     @sync
-    @asyncio.coroutine
-    def test_logging_error(self) -> None:
+    async def test_logging_error(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='error', message='test')
+                [dict(type='log', level='error', message='test')]
             ))
-            yield from self.wait()
+            await self.wait()
 
     @sync
-    @asyncio.coroutine
-    def test_logging_warn(self) -> None:
+    async def test_logging_warn(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='warn', message='test')
+                [dict(type='log', level='warn', message='test')]
             ))
-            yield from self.wait()
+            await self.wait()
 
     @sync
-    @asyncio.coroutine
-    def test_logging_info(self) -> None:
+    async def test_logging_info(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='info', message='test')
+                [dict(type='log', level='info', message='test')]
             ))
-            yield from self.wait()
+            await self.wait()
 
     @sync
-    @asyncio.coroutine
-    def test_logging_debug(self) -> None:
+    async def test_logging_debug(self) -> None:
         with self.assertLogs('wdom.server', 'DEBUG'):
             self.ws.write_message(json.dumps(
-                dict(type='log', level='debug', message='test')
+                [dict(type='log', level='debug', message='test')]
             ))
-            yield from self.wait()
+            await self.wait()

@@ -3,8 +3,8 @@
 
 import asyncio
 
-from wdom.themes.default import Div, H1, Container
-from wdom.themes.default import PrimaryButton, DangerButton, DefaultButton
+from wdom.themes import Div, H1, Container
+from wdom.themes import PrimaryButton, DangerButton, DefaultButton
 
 
 class Timer(Container):

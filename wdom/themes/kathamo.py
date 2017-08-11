@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import Button as _Button
+from wdom.themes import *
 
 name = 'KATHAMO'
 project_url = 'http://kathamo.github.io/'
@@ -14,7 +16,7 @@ css_files = [
     '_static/css/kathamo.min.css',
 ]
 
-class Button(Button):
+class Button(_Button):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setAttribute('data-role', 'button')

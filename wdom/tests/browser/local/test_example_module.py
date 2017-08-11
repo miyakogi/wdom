@@ -26,13 +26,14 @@ class BaseTestCase(object):
     def setUp(self):
         self.wd = get_webdriver()
         self.port = free_port()
+        time.sleep(0.01)
         cmd = [sys.executable, '-m', self.module, '--port', str(self.port)]
         self.proc = subprocess.Popen(cmd, env=os.environ,
                                      stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE,
                                      )
         self.url = 'http://localhost:{}'.format(self.port)
-        time.sleep(0.5)
+        time.sleep(1)
         self.wd.get(self.url)
 
     def tearDown(self):

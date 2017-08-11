@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import os
+from unittest.mock import MagicMock
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.tag import Tag, Textarea, Input, CheckBox, Div, Select, Option, Form
-from wdom.tag import Label
+from wdom.tag import Tag, Textarea, Input, Label, Div, Select, Option, Form
+from wdom.themes import CheckBox
 from wdom.document import get_document
-from wdom.misc import install_asyncio
+from wdom.util import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
 from wdom.testing import start_remote_browser, close_remote_browser
 
@@ -128,17 +129,25 @@ class TestInput(RemoteBrowserTestCase, TestCase):
         self.radio1 = Input(parent=self.root, type='radio', name='radio_test', id='r1')  # noqa: E501
         self.radio2 = Input(parent=self.root, type='radio', name='radio_test', id='r2')  # noqa: E501
         self.radio3 = Input(parent=self.root, type='radio', name='radio_test2', id='r3')  # noqa: E501
-        self.radio1_l = Label('Radio 1', parent=self.root, **{'for': 'r1'})
-        self.radio2_l = Label('Radio 2', parent=self.root, **{'for': 'r2'})
-        self.radio3_l = Label('Radio 3', parent=self.root, **{'for': 'r3'})
+        self.radio1_l = Label(self.radio1, 'Radio 1', parent=self.root)
+        self.radio2_l = Label(self.radio2, 'Radio 2', parent=self.root)
+        self.radio3_l = Label(self.radio3, 'Radio 3', parent=self.root)
         self.document.body.prepend(self.root)
         self.start()
 
     def test_textinput(self):
+        inputs = []
+
+        def input_handler(e):
+            inputs.append(e.data)
+
+        self.input.addEventListener('input', input_handler)
         self.set_element(self.input)
         self.element.send_keys('a')
         self.wait_until(lambda: self.input.value == 'a')
         self.assertEqual(self.input.value, 'a')
+        self.assertEqual(len(inputs), 1)
+        self.assertEqual(inputs[0], 'a')
 
         self.browser.get(self.url)
         self.set_element(self.input)
@@ -149,6 +158,9 @@ class TestInput(RemoteBrowserTestCase, TestCase):
         self.wait_until(
             lambda: self.element.get_attribute('value') == 'ad')
         self.assertEqual(self.input.value, 'ad')
+        self.assertEqual(len(inputs), 2)
+        self.assertEqual(inputs[0], 'a')
+        self.assertEqual(inputs[1], 'd')
 
     def test_textarea(self):
         self.set_element(self.textarea)
@@ -299,3 +311,58 @@ class TestSelect(RemoteBrowserTestCase, TestCase):
         self.assertFalse(self.opt1m.selected)
         self.assertFalse(self.opt2m.selected)
         self.assertFalse(self.opt3m.selected)
+
+
+class TestEvent(RemoteBrowserTestCase, TestCase):
+    if os.getenv('TRAVIS', False):
+        wait_time = 0.1
+
+    def setUp(self):
+        super().setUp()
+        self.doc = get_document()
+        self.doc.body.style = 'margin: 0; padding: 0;'
+        self.elm = Div()
+        self.elm.style = '''
+            background-color: blue;
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+        '''
+        self.elm.addEventListener('click', self.click_test)
+        self.test_done = False
+        self.doc.body.append(self.elm)
+        self.start()
+        self.set_element(self.elm)
+
+    def click_test(self, e):
+        self.assertFalse(e.altKey)
+        self.assertFalse(e.ctrlKey)
+        self.assertFalse(e.metaKey)
+        self.assertFalse(e.shiftKey)
+        self.assertLessEqual(e.clientX, 100)
+        self.assertLessEqual(e.clientY, 100)
+        self.assertLessEqual(e.offsetX, 100)
+        self.assertLessEqual(e.offsetY, 100)
+        self.assertLessEqual(e.pageX, 100)
+        self.assertLessEqual(e.pageY, 100)
+        self.assertLessEqual(e.x, 100)
+        self.assertLessEqual(e.y, 100)
+        self.test_done = True
+
+    def test_click(self):
+        self.element.click()
+        self.wait_until(lambda: self.test_done)
+
+    def test_document_click(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.doc.addEventListener('click', mock)
+        self.wait()
+        self.element.click()
+        self.wait_until(lambda: mock.called)
+
+    def test_window_click(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.doc.defaultView.addEventListener('click', mock)
+        self.wait()
+        self.element.click()
+        self.wait_until(lambda: mock.called)

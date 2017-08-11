@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Furtive'
 project_url = 'http://furtive.co/'
@@ -14,7 +15,7 @@ css_files = [
     '//cdnjs.cloudflare.com/ajax/libs/furtive/2.2.3/furtive.css',
 ]
 
-Button = NewTag('Button', 'a', Button, class_='btn')
+Button = NewTag('Button', 'a', Button, class_='btn', is_='button')
 DefaultButton = NewTag('DefaultButton', 'a', Button, is_='default-button')
 PrimaryButton = NewTag('PrimaryButton', 'a', Button, class_='btn--blue', is_='primary-button')
 SecondaryButton = NewTag('SecondaryButton', 'a', Button, is_='secondary-button')

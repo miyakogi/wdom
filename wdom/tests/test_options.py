@@ -2,20 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from os import path
-from tempfile import NamedTemporaryFile
 from copy import copy
 import logging
 import unittest
 from importlib import reload
-import subprocess
 
 from parameterized import parameterized
 
-from wdom.misc import root_dir
 from wdom.options import parse_command_line, config, set_loglevel
 from wdom import tag
-from wdom.themes import default as default_theme
 from wdom.testing import TestCase
 
 _argv = copy(sys.argv)
@@ -65,61 +60,50 @@ class TestOptions(TestCase):
         assert logger.getEffectiveLevel() == logging.WARN
 
     def test_unknown_args(self):
-        src = '\n'.join([
-            'import sys',
-            'sys.path.append(\'{}\')'.format(path.dirname(root_dir)),
-            'from wdom import options',
-        ])
-        with NamedTemporaryFile('w', dir=path.abspath(path.curdir)) as f:
-            f.write(src)
-            f.flush()  # save file
-            cmd = [sys.executable, f.name, '--test-arg']
-            proc = subprocess.Popen(
-                cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                universal_newlines=True,
-            )
-            proc.wait()
-        result = proc.stdout.read()
-        self.assertIn('usage: WDOM', result)
-        self.assertIn('Unknown Argument', result)
-        self.assertIn('--test-arg', result)
+        sys.argv.extend(['--test-args', 'a'])
+        # no error/log when get unknown args
+        with self.assertRaises(AssertionError):
+            with self.assertLogs('wdom'):
+                parse_command_line()
 
 
 class TestThemeOption(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        from wdom.themes import default
+        self.theme_mod = default
+
     def tearDown(self):
         reset_options()
         super().tearDown()
 
     def test_no_theme(self):
         parse_command_line()
-        with self.assertLogs('wdom.themes', 'INFO') as log:
-            reload(default_theme)
-        self.assertEqual(len(log.output), 1)
-        self.assertTrue(log.records[0].msg.startswith('No theme'))
-        self.assertTrue(log.records[0].msg.endswith('Use default theme.'))
-        self.assertEqual(default_theme.Button, tag.Button)
+        with self.assertLogs('wdom.themes', 'INFO'):
+            # should be no log
+            reload(self.theme_mod)
 
     def test_bs(self):
         sys.argv.extend(['--theme', 'bootstrap3'])
         parse_command_line()
         with self.assertLogs('wdom.themes', 'INFO') as log:
-            reload(default_theme)
+            reload(self.theme_mod)
         self.assertEqual(len(log.output), 1)
         self.assertEqual(log.records[0].msg, 'Use theme: bootstrap3')
         from wdom.themes import bootstrap3
-        self.assertEqual(default_theme.Button, bootstrap3.Button)
+        self.assertEqual(self.theme_mod.Button, bootstrap3.Button)
 
     def test_unknown_theme(self):
         sys.argv.extend(['--theme', 'unknown'])
         parse_command_line()
         with self.assertLogs('wdom.themes', 'WARN') as log:
-            reload(default_theme)
+            reload(self.theme_mod)
         self.assertEqual(len(log.output), 2)
         self.assertTrue(log.records[0].msg.startswith('Unknown theme'))
         self.assertTrue(log.records[1].msg.startswith('Available themes:'))
         self.assertIn('unknown', log.records[0].msg)
         self.assertIn('skeleton', log.records[1].msg)
-        self.assertEqual(default_theme.Button, tag.Button)
+        self.assertEqual(self.theme_mod.Button, tag.Button)
 
 
 if __name__ == '__main__':

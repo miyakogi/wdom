@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
+
+
+"""Keep this module for backward compatibility."""
 
 import re
+
 from wdom.options import config
-from wdom.themes import theme_list, logger
+from wdom.themes import logger, theme_list
 
 theme = config.theme
 
 if theme:
-    if theme.endswith('.py'):
-        theme = re.sub(r'\.py[codx]?$', '', theme)
+    theme = re.sub(r'\.py[codx]?$', '', theme)
     if theme in theme_list:
         # import theme
         logger.info('Use theme: {}'.format(theme))
@@ -20,16 +24,9 @@ if theme:
         # Remove duplicated module name (*.py and *.pyc may exists)
         logger.warning(
             'Available themes: {}'.format(', '.join(theme_list)))
-        from wdom.tag import *
+        from wdom.themes import *
+        name = 'default'
 else:
-    # Use default
     logger.info('No theme specified. Use default theme.')
-    from wdom.tag import *
+    from wdom.themes import *
     name = 'default'
-    project_url = ''
-    project_repository = ''
-    license = ''
-    license_url = ''
-    css_files = []
-    js_files = []
-    headers = []

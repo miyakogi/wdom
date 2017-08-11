@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Concise'
 project_url = 'http://http://concisecss.com/'
@@ -13,9 +14,7 @@ license_url = 'https://github.com/ConciseCSS/concise.css/blob/master/LICENSE'
 css_files = [
     '//cdn.concisecss.com/v3.4.0/concise.min.css',
 ]
-
 js_files = []
-
 headers = []
 
 DefaultButton = NewTag('DefaultButton', 'button', DefaultButton)
@@ -34,6 +33,7 @@ Row = NewTag('Row', 'div', Row, class_='row')
 
 class Col(Div):
     column = None
+    is_ = 'col'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.column:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Provides utility functions/classes for tests.
+"""Utility test-functions/classes to test WDOM on browser.
 
 This module depend on selenium webdriver, so please install selenium before
 use this module::
@@ -16,8 +16,10 @@ import time
 import logging
 import asyncio
 import unittest
-from multiprocessing import Process, Pipe
+from multiprocessing import Process, Pipe  # type: ignore
+from multiprocessing.connection import Connection
 from types import FunctionType, MethodType
+from typing import Any, Callable, Iterable, Union, Set, Optional, TYPE_CHECKING
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -30,21 +32,29 @@ from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
 from tornado.websocket import websocket_connect, WebSocketClientConnection
 
-from wdom.misc import install_asyncio
-from wdom import options
-from wdom.window import customElements
+from wdom import options, server
 from wdom.element import Element
-from wdom import server
+from wdom.util import install_asyncio
+from wdom.window import customElements
+
+if TYPE_CHECKING:
+    from asyncio import AbstractEventLoop  # noqa: F401
+    from typing import List  # noqa: F401
 
 driver = webdriver.Chrome
 local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
 logger = logging.getLogger(__name__)
+root_logger = logging.getLogger('wdom')
 server_config = server.server_config
 
 
-def get_chromedriver_path():
+def _get_chromedriver_path() -> str:
+    """Get path to chromedriver executable.
+
+    Usually it is on the project root.
+    """
     if 'TRAVIS' in os.environ:
         chromedriver_path = os.path.join(
             os.environ['TRAVIS_BUILD_DIR'], 'chromedriver')
@@ -57,14 +67,17 @@ def get_chromedriver_path():
 
 
 # see https://www.spirulasystems.com/blog/2016/08/11/https-everywhere-unit-testing-for-chromium/  # noqa: E501
-def get_chrome_options():
+def get_chrome_options() -> webdriver.ChromeOptions:
+    """Get default chrome options."""
     chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--disable-gpu')  # need for headless
     if 'TRAVIS'in os.environ:
         chrome_options.add_argument('--no-sandbox')
     return chrome_options
 
 
-def reset():
+def reset() -> None:
     """Reset all wdom objects.
 
     This function clear all connections, elements, and resistered custom
@@ -76,18 +89,8 @@ def reset():
     _tornado.connections.clear()
     _tornado.set_application(_tornado.Application())
     Element._elements_with_id.clear()
-    Element._elements.clear()
-    customElements.clear()
-
-
-def suppress_logging():
-    """Suppress log output to stdout.
-
-    This function is intended to be used in test's setup. This function removes
-    log handler of ``wdom`` logger and set NullHandler to suppress log.
-    """
-    options.root_logger.removeHandler(options._log_handler)
-    options.root_logger.addHandler(logging.NullHandler())
+    Element._element_buffer.clear()
+    customElements.reset()
 
 
 class TestCase(unittest.TestCase):
@@ -113,15 +116,21 @@ class TestCase(unittest.TestCase):
             set_application(self.your_app)
     """
 
-    def tearDown(self):
+    def setUp(self) -> None:
+        """Reset WDOM states."""
+        super().setUp()
+        reset()
+
+    def tearDown(self) -> None:
+        """Reset WDOM states."""
         reset()
         super().tearDown()
 
-    def assertIsTrue(self, bl):
+    def assertIsTrue(self, bl: bool) -> None:
         """Check arg is exactly True, not truthy."""
         self.assertIs(bl, True)
 
-    def assertIsFalse(self, bl):
+    def assertIsFalse(self, bl: bool) -> None:
         """Check arg is exactly False, not falsy."""
         self.assertIs(bl, False)
 
@@ -132,24 +141,26 @@ class HTTPTestCase(TestCase):
     wait_time = 0.05 if os.getenv('TRAVIS') else 0.01
     timeout = 1.0
     _server_started = False
-    _ws_connections = []
+    _ws_connections = []  # type: List[Connection]
 
-    def start(self):
+    def start(self) -> None:
         """Start web server.
 
         Please call this method after prepraring document.
         """
-        with self.assertLogs('wdom', 'INFO'):
+        time.sleep(0.1)
+        with self.assertLogs(root_logger, 'INFO'):
             self.server = server.start_server(port=0)
+        time.sleep(0.1)
         self.port = server_config['port']
         self.url = 'http://localhost:{}'.format(self.port)
         self.ws_url = 'ws://localhost:{}'.format(self.port)
         self._server_started = True
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Terminate server and close all ws client connections."""
         if self._server_started:
-            with self.assertLogs('wdom', 'INFO'):
+            with self.assertLogs(root_logger, 'INFO'):
                 server.stop_server(self.server)
             self._server_started = False
         while self._ws_connections:
@@ -157,14 +168,13 @@ class HTTPTestCase(TestCase):
             ws.close()
         super().tearDown()
 
-    @asyncio.coroutine
-    def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
+    async def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
         """Fetch url and return ``tornado.httpclient.HTTPResponse`` object.
 
         Response body is decoded by ``encoding`` and set ``text`` property of
         the response. If failed to decode, ``text`` property will be ``None``.
         """
-        response = yield from to_asyncio_future(
+        response = await to_asyncio_future(
             AsyncHTTPClient().fetch(url, raise_error=False))
         if response.body:
             try:
@@ -175,9 +185,8 @@ class HTTPTestCase(TestCase):
             response.text = None
         return response
 
-    @asyncio.coroutine
-    def ws_connect(self, url: str, timeout: float = None
-                   ) -> WebSocketClientConnection:
+    async def ws_connect(self, url: str, timeout: float = None
+                         ) -> WebSocketClientConnection:
         """Make WebSocket connection to the url.
 
         Retries up to _max (default: 20) times. Client connections made by this
@@ -187,9 +196,9 @@ class HTTPTestCase(TestCase):
         timeout = timeout or self.timeout
         while (time.perf_counter() - st) < timeout:
             try:
-                ws = yield from to_asyncio_future(websocket_connect(url))
+                ws = await to_asyncio_future(websocket_connect(url))
             except ConnectionRefusedError:
-                yield from self.wait()
+                await self.wait()
                 continue
             else:
                 self._ws_connections.append(ws)
@@ -197,8 +206,7 @@ class HTTPTestCase(TestCase):
         raise ConnectionRefusedError(
             'WebSocket connection refused: {}'.format(url))
 
-    @asyncio.coroutine
-    def wait(self, timeout: float = None, times: int = 1):
+    async def wait(self, timeout: float = None, times: int = 1) -> None:
         """Coroutine to wait for ``timeout``.
 
         ``timeout`` is second to wait, and its default value is
@@ -206,22 +214,22 @@ class HTTPTestCase(TestCase):
         ``timeout * times``.
         """
         for i in range(times):
-            yield from asyncio.sleep(timeout or self.wait_time)
+            await asyncio.sleep(timeout or self.wait_time)
 
 
-def start_webdriver():
+def start_webdriver() -> None:
     """Start WebDriver and set implicit_wait if it is not started."""
     global local_webdriver
     if local_webdriver is None:
         local_webdriver = driver(
-            executable_path=get_chromedriver_path(),
+            executable_path=_get_chromedriver_path(),
             chrome_options=get_chrome_options(),
         )
         if browser_implict_wait:
             local_webdriver.implicitly_wait(browser_implict_wait)
 
 
-def close_webdriver():
+def close_webdriver() -> None:
     """Close WebDriver."""
     global local_webdriver
     if local_webdriver is not None:
@@ -229,7 +237,7 @@ def close_webdriver():
         local_webdriver = None
 
 
-def get_webdriver():
+def get_webdriver() -> WebDriver:
     """Return WebDriver of current process.
 
     If it is not started yet, start and return it.
@@ -239,7 +247,13 @@ def get_webdriver():
     return local_webdriver
 
 
-def _clear():
+conn = None  # type: Connection
+wd_conn = None  # type: Connection
+browser_manager = None
+remote_webdriver = None
+
+
+def _clear() -> None:
     global conn, wd_conn, browser_manager, remote_webdriver
     conn = None
     wd_conn = None
@@ -247,12 +261,12 @@ def _clear():
     remote_webdriver = None
 
 
-def start_remote_browser():
+def start_remote_browser() -> None:
     """Start remote browser process."""
     global browser_manager, conn, wd_conn
     conn, wd_conn = Pipe()
 
-    def start_browser():
+    def start_browser() -> None:
         global wd_conn
         bc = BrowserController(wd_conn)
         bc.run()
@@ -261,7 +275,7 @@ def start_remote_browser():
     browser_manager.start()
 
 
-def close_remote_browser():
+def close_remote_browser() -> None:
     """Terminate remote browser process."""
     global conn, browser_manager
     conn.send({'target': 'process', 'method': 'quit'})
@@ -273,12 +287,12 @@ def close_remote_browser():
     _clear()
 
 
-def get_remote_browser():
+def get_remote_browser() -> WebDriver:
     """Start new WebDriver for remote process."""
     global remote_webdriver
     if remote_webdriver is None:
         remote_webdriver = driver(
-            executable_path=get_chromedriver_path(),
+            executable_path=_get_chromedriver_path(),
             chrome_options=get_chrome_options(),
         )
         if browser_implict_wait:
@@ -289,11 +303,11 @@ def get_remote_browser():
 
 
 class BrowserController:
-    """Class to run and wrap webdriver in different proceess.
-    """
+    """Class to run and wrap webdriver in different proceess."""
+
     _select_methods = [s for s in dir(Select) if not s.startswith('_')]
 
-    def __init__(self, conn):
+    def __init__(self, conn: Connection) -> None:
         """Set up connection and start webdriver.
 
         ``conn`` is a one end of ``Pipe()``, which is used the inter-process
@@ -303,7 +317,7 @@ class BrowserController:
         self.wd = get_remote_browser()
         self.element = None
 
-    def set_element_by_id(self, id):
+    def set_element_by_id(self, id: int) -> Union[bool, str]:
         """Find element with ``id`` and set it to element property.
 
         When successfully find the element, send ``True``. If failed to find
@@ -314,26 +328,26 @@ class BrowserController:
                 '[rimo_id="{}"]'.format(id))
             return True
         except NoSuchElementException:
-            return 'Error NoSuchElement: ' + id
+            return 'Error NoSuchElement: {}'.format(id)
 
-    def quit(self, *args):
+    def quit(self) -> str:
         """Terminate WebDriver."""
         self.wd.quit()
         return 'closed'
 
-    def close(self, *args):
+    def close(self) -> str:
         """Close WebDriver."""
         self.wd.close()
         return 'closed'
 
-    def _execute_method(self, method, args):
+    def _execute_method(self, method: str, args: Iterable[str]) -> None:
         if isinstance(method, (FunctionType, MethodType)):
             self.conn.send(method(*args))
         else:
             # not callable, just send it back
             self.conn.send(method)
 
-    def run(self):  # noqa: C901
+    def run(self) -> None:  # noqa: C901
         """Wait message from the other end of the connection.
 
         When gat message, execute the method specified by the message. The
@@ -363,13 +377,12 @@ class BrowserController:
             self._execute_method(method, args)
 
 
-def wait_for():
+def wait_for() -> str:
     """Wait the response from the remote process and return it."""
     return asyncio.get_event_loop().run_until_complete(wait_coro())
 
 
-@asyncio.coroutine
-def wait_coro():
+async def wait_coro() -> str:
     """Wait response from the other process."""
     while True:
         state = conn.poll()
@@ -377,11 +390,11 @@ def wait_coro():
             res = conn.recv()
             return res
         else:
-            yield from asyncio.sleep(0)
+            await asyncio.sleep(0)
             continue
 
 
-def _get_properties(cls):
+def _get_properties(cls: type) -> Set[str]:
     props = set()
     for k, v in vars(cls).items():
         if not isinstance(v, (FunctionType, MethodType)):
@@ -391,14 +404,15 @@ def _get_properties(cls):
 
 class Controller:
     """Base class for remote browser controller."""
-    target = None
-    properties = set()
 
-    def __getattr__(self, attr: str):
+    target = None  # type: Optional[str]
+    properties = set()  # type: Set[str]
+
+    def __getattr__(self, attr: str) -> Connection:
         """Call methods related to this controller."""
         global conn
 
-        def wrapper(*args):
+        def wrapper(*args: str) -> str:
             conn.send({'target': self.target, 'method': attr, 'args': args})
             res = wait_for()
             if isinstance(res, str):
@@ -409,23 +423,25 @@ class Controller:
             return res
         if attr in self.properties:
             return wrapper()
-        else:
-            return wrapper
+        return wrapper
 
 
 class ProcessController(Controller):
     """Controller of remote browser process."""
+
     target = 'process'
 
 
 class RemoteBrowserController(Controller):
     """Controller of remote web driver."""
+
     target = 'browser'
     properties = _get_properties(WebDriver)
 
 
 class RemoteElementController(Controller):
     """Controller of remote web driver element."""
+
     target = 'element'
     properties = _get_properties(WebElement)
 
@@ -443,12 +459,13 @@ class RemoteBrowserTestCase:
 
     After seting up your document, call ``start`` method in setup sequence.
     """
+
     #: seconds to wait for by ``wait`` method.
     wait_time = 0.01
     #: secondes for deault timeout for ``wait_until`` method
     timeout = 1.0
 
-    def start(self):
+    def start(self) -> None:
         """Start remote browser process."""
         self._prev_logging = options.config.logging
         options.config.logging = 'warn'
@@ -465,19 +482,23 @@ class RemoteBrowserTestCase:
         self.browser.get(self.url)
         self.wait_until(lambda: server.is_connected())
 
-    def tearDown(self):
+    def tearDown(self) -> None:
+        """Run tear down process.
+
+        Reset log-level, stop web server, and flush stdout.
+        """
         options.config.logging = self._prev_logging
         server.stop_server()
         sys.stdout.flush()
         sys.stderr.flush()
-        super().tearDown()
+        super().tearDown()  # type: ignore
 
     @property
-    def port(self) -> int:
+    def port(self) -> Optional[str]:
         """Get port of the server."""
         return server_config['port']
 
-    def wait(self, timeout: float = None, times: int = 1):
+    def wait(self, timeout: float = None, times: int = 1) -> None:
         """Wait for ``timeout`` seconds.
 
         Default timeout is ``RemoteBrowserTestCase.wait_time``.
@@ -486,7 +507,8 @@ class RemoteBrowserTestCase:
         for i in range(times):
             loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
-    def wait_until(self, func, timeout=None):
+    def wait_until(self, func: Callable[[], Any],
+                   timeout: float = None) -> None:
         """Wait until ``func`` returns True or exceeds timeout.
 
         ``func`` is called with no argument. Unit of ``timeout`` is second, and
@@ -501,14 +523,14 @@ class RemoteBrowserTestCase:
             self.wait()
         raise TimeoutError('{} did not return True until timeout'.format(func))
 
-    def _set_element(self, node):
+    def _set_element(self, node: Element) -> Union[bool, str]:
         try:
             res = self.proc.set_element_by_id(node.rimo_id)
             return res
         except NoSuchElementException:
             return False
 
-    def set_element(self, node, timeout=None):
+    def set_element(self, node: Element, timeout: float = None) -> bool:
         """Set the ``node`` as a target node of the remote browser process."""
         try:
             self.wait_until(lambda: self._set_element(node), timeout)
@@ -529,13 +551,15 @@ class WebDriverTestCase:
     document after server started, please use ``RemoteBrowserTestCase`` class
     instead.
     """
+
     #: seconds to wait for by ``wait`` method.
     wait_time = 0.01
     #: secondes for deault timeout for ``wait_until`` method
     timeout = 1.0
+    _orig_loop = None  # type: AbstractEventLoop
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:  # noqa: D102
         # Keep original loop
         cls._orig_loop = asyncio.get_event_loop()
         # When change default loop, tornado's ioloop needs to be reinstalled
@@ -545,7 +569,7 @@ class WebDriverTestCase:
         reset()
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDownClass(cls) -> None:  # noqa: D102
         # Set original loop and reinstall to tornado
         asyncio.set_event_loop(cls._orig_loop)
         AsyncIOMainLoop().clear_current()
@@ -553,11 +577,11 @@ class WebDriverTestCase:
         install_asyncio()
         reset()
 
-    def start(self):
+    def start(self) -> None:
         """Start server and web driver."""
         self.wd = get_webdriver()
 
-        def start_server(port):
+        def start_server(port: int) -> None:
             import asyncio
             from wdom import server
             server.start_server(port=port)
@@ -575,21 +599,22 @@ class WebDriverTestCase:
         self.wait(times=10)
         self.wd.get(self.url)
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         """Terminate server subprocess."""
         self.server.terminate()
         sys.stdout.flush()
         sys.stderr.flush()
         self.wait(times=10)
-        super().tearDown()
+        super().tearDown()  # type: ignore
 
-    def wait(self, timeout: float = None, times: int = 1):
+    def wait(self, timeout: float = None, times: int = 1) -> None:
         """Wait for ``timeout`` or ``self.wait_time``."""
         loop = asyncio.get_event_loop()
         for i in range(times):
             loop.run_until_complete(asyncio.sleep(timeout or self.wait_time))
 
-    def wait_until(self, func, timeout=None):
+    def wait_until(self, func: Callable[[], Any],
+                   timeout: float = None) -> None:
         """Wait until ``func`` returns True or exceeds timeout.
 
         ``func`` is called with no argument. Unit of ``timeout`` is second, and
@@ -604,7 +629,7 @@ class WebDriverTestCase:
             self.wait()
         raise TimeoutError('{} did not return True until timeout'.format(func))
 
-    def send_keys(self, element, keys: str):
+    def send_keys(self, element: Element, keys: str) -> None:
         """Send ``keys`` to ``element`` one-by-one.
 
         Safer than using ``element.send_keys`` method.

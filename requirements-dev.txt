@@ -1,0 +1,14 @@
+-r requirements-test.txt
+-r requirements-docs.txt
+
+tornado>=4
+doit
+green
+tox
+coverage
+
+flake8
+mypy
+pydocstyle
+
+livereload

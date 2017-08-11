@@ -1,20 +1,29 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Web server control functions."""
+
 import os
 import json
 import logging
 import asyncio
-from typing import Optional
+from typing import Any
 
 from tornado import autoreload
 
-from wdom.misc import static_dir, install_asyncio
+from wdom.util import STATIC_DIR, install_asyncio
 from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
 from wdom.server import _tornado as module
 
-__all__ = ('get_app', 'start_server', 'stop_server', 'exclude_patterns')
+__all__ = (
+    'add_static_path',
+    'exclude_patterns',
+    'get_app',
+    'start',
+    'start_server',
+    'stop_server',
+)
 logger = logging.getLogger(__name__)
 _server = None
 server_config = module.server_config
@@ -32,7 +41,7 @@ def push_message(msg: dict) -> None:
 
 
 def send_message() -> None:
-    """Send message to all client connections."""
+    """Send message via WS to all client connections."""
     if not _msg_queue:
         return
     msg = json.dumps(_msg_queue)
@@ -41,7 +50,7 @@ def send_message() -> None:
         conn.write_message(msg)
 
 
-def add_static_path(prefix, path, no_watch: bool = False) -> None:
+def add_static_path(prefix: str, path: str, no_watch: bool = False) -> None:
     """Add directory to serve static files.
 
     First argument ``prefix`` is a URL prefix for the ``path``. ``path`` must
@@ -54,24 +63,27 @@ def add_static_path(prefix, path, no_watch: bool = False) -> None:
         watch_dir(path)
 
 
-def get_app(*args, **kwargs) -> 'Application':
-    """Get root Application object."""
+def get_app() -> module.Application:
+    """Get root web application object."""
     return module.get_app()
 
 
-@asyncio.coroutine
-def _message_loop():
+async def _message_loop() -> None:
     while True:
         send_message()
-        yield from asyncio.sleep(config.message_wait)
+        await asyncio.sleep(config.message_wait)
 
 
-def start_server(browser: Optional[str] = None, address: Optional[str] = None,
-                 check_time: Optional[int] = 500, **kwargs):
-    """Start web server."""
+def start_server(browser: str = None, address: str = None,
+                 check_time: int = 500, **kwargs: Any
+                 ) -> module.HTTPServer:
+    """Start web server.
+
+    Use wrapper function :func:`start` instead.
+    """
     # Add application's static files directory
     from wdom.document import get_document
-    add_static_path('_static', static_dir)
+    add_static_path('_static', STATIC_DIR)
     doc = get_document()
     if os.path.exists(doc.tempdir):
         add_static_path('tmp', doc.tempdir, no_watch=True)
@@ -93,15 +105,16 @@ def start_server(browser: Optional[str] = None, address: Optional[str] = None,
     return _server
 
 
-def stop_server(server=None):
+def stop_server(server: module.HTTPServer = None) -> None:
     """Terminate web server."""
     module.stop_server(server or _server)
 
 
-def start(**kwargs):
+def start(**kwargs: Any) -> None:
     """Start web server.
+
     Run until ``Ctrl-c`` pressed, or if auto-shutdown is enabled, until when
-    window is closed.
+    all browser windows are closed.
     """
     start_server(**kwargs)
     try:

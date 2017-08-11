@@ -1,33 +1,38 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Wrapper module of tornado web server to use WDOM."""
+
 import asyncio
 import logging
 import socket
-from typing import Optional
+from typing import Any, TYPE_CHECKING
 
-from tornado import web
-from tornado import websocket
+from tornado import web, websocket
 from tornado.httpserver import HTTPServer
 
+from wdom.util import install_asyncio
 from wdom.options import config
-from wdom.misc import install_asyncio
 from wdom.server.handler import on_websocket_message
+
+if TYPE_CHECKING:
+    from typing import List  # noqa
 
 logger = logging.getLogger(__name__)
 install_asyncio()
-connections = []
+connections = []  # type: List[WSHandler]
 server_config = dict()
 
 
-def is_connected():
+def is_connected() -> bool:
     """Check if tornado web server has a client connection."""
     return any(connections)
 
 
 class MainHandler(web.RequestHandler):
     """Main handler to serve document of the application."""
-    def get(self):
+
+    def get(self) -> None:
         """Return whole html representation of the root document."""
         from wdom.document import get_document
         logger.info('connected')
@@ -36,26 +41,26 @@ class MainHandler(web.RequestHandler):
 
 class WSHandler(websocket.WebSocketHandler):
     """Handler class of web socket connection."""
-    def open(self):
-        """Called when connection open."""
+
+    def open(self) -> None:
+        """Execute when connection open."""
         logger.info('WS OPEN')
         connections.append(self)
 
-    def on_message(self, message):
-        """Called when get message from client."""
+    def on_message(self, message: str) -> None:
+        """Execute when get message from client."""
         on_websocket_message(message)
 
-    @asyncio.coroutine
-    def terminate(self):
+    async def terminate(self) -> None:
         """Terminate server if no more connection exists."""
-        yield from asyncio.sleep(config.shutdown_wait)
+        await asyncio.sleep(config.shutdown_wait)
         # stop server and close loop if no more connection exists
         if not is_connected():
             stop_server(self.application.server)
             self.application.server.io_loop.stop()
 
-    def on_close(self):
-        """Called when connection closed."""
+    def on_close(self) -> None:
+        """Execute when connection closed."""
         logger.info('RootWS CLOSED')
         if self in connections:
             # Remove this connection from connection-list
@@ -66,14 +71,19 @@ class WSHandler(websocket.WebSocketHandler):
 
 
 class StaticFileHandlerNoCache(web.StaticFileHandler):
-    def set_extra_headers(self, path):
+    """Provides static files without browser cache.
+
+    Usefull for debug purpose.
+    """
+
+    def set_extra_headers(self, path: str) -> None:
+        """Set no-cache header."""
         self.set_header('Cache-control', 'no-cache')
 
 
+StaticFileHandler = web.StaticFileHandler
 if config.debug:
     StaticFileHandler = StaticFileHandlerNoCache
-else:
-    StaticFileHandler = web.StaticFileHandler
 
 
 class Application(web.Application):
@@ -83,7 +93,8 @@ class Application(web.Application):
     methods to make it easy to set up app.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Initialize application."""
         super().__init__(
             [(r'/', MainHandler), (r'/rimo_ws', WSHandler)],
             *args,
@@ -93,7 +104,7 @@ class Application(web.Application):
             **kwargs
         )
 
-    def log_request(self, handler):
+    def log_request(self, handler: web.RequestHandler) -> None:
         """Handle access log."""
         if 'log_function' in self.settings:
             self.settings['log_function'](handler)
@@ -112,7 +123,7 @@ class Application(web.Application):
         else:
             log_method('%d %s', status, handler._request_summary())
 
-    def add_static_path(self, prefix: str, path: str):
+    def add_static_path(self, prefix: str, path: str) -> None:
         """Add path to serve static files.
 
         ``prefix`` is used for url prefix to serve static files and ``path`` is
@@ -129,7 +140,7 @@ class Application(web.Application):
             [(pattern, StaticFileHandler, dict(path=path))]
         )
 
-    def add_favicon_path(self, path: str):
+    def add_favicon_path(self, path: str) -> None:
         """Add path to serve favicon file.
 
         ``path`` should be a directory, which contains favicon file
@@ -148,12 +159,12 @@ class Application(web.Application):
 main_application = Application()
 
 
-def get_app(*args, **kwargs) -> Application:
+def get_app(*args: Any, **kwargs: Any) -> Application:
     """Return Application object to serve ``document``."""
     return main_application
 
 
-def set_application(app: Application):
+def set_application(app: Application) -> None:
     """Set application as a root application for the server."""
     global main_application
     main_application = app
@@ -161,8 +172,7 @@ def set_application(app: Application):
 
 def start_server(app: web.Application = None, port: int = None,
                  browser: str = None, address: str = None,
-                 check_time: Optional[int] = 500,
-                 **kwargs) -> HTTPServer:
+                 check_time: int = 500, **kwargs: Any) -> HTTPServer:
     """Start server with ``app`` on ``localhost:port``.
 
     If port is not specified, use command line option of ``--port``.
@@ -186,7 +196,7 @@ def start_server(app: web.Application = None, port: int = None,
     return server
 
 
-def stop_server(server: HTTPServer):
+def stop_server(server: HTTPServer) -> None:
     """Terminate given server."""
     server.stop()
     logger.info('Server terminated')

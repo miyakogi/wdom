@@ -10,6 +10,7 @@ from wdom.node import Text
 from wdom.element import (
     DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement,
     HTMLSelectElement, HTMLOptionElement,
+    getElementsBy, getElementsByClassName, getElementsByTagName,
 )
 from wdom.window import customElements
 from wdom.testing import TestCase
@@ -324,6 +325,72 @@ class TestElementMeta(TestCase):
         self.assertEqual(self.tag.html, '<a></a>')
 
 
+class TestGetElements(TestCase):
+    def setUp(self):
+        self.elm = Element('tag')
+        self.c1 = Element('c1')
+        self.c2 = Element('c1')
+        self.c3 = Element('c3')
+        self.c1.setAttribute('a', 'a')
+        self.c2.setAttribute('b', 'b')
+        self.elm.append(self.c1, self.c2, self.c3)
+
+    def test_get_elements_by_attr1(self):
+        attr_elms = getElementsBy(self.elm, lambda n: n.hasAttributes())
+        self.assertEqual(attr_elms.length, 2)
+        self.assertIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_attr2(self):
+        attr_elms = getElementsBy(self.elm, lambda n: n.hasAttribute('a'))
+        self.assertEqual(attr_elms.length, 1)
+        self.assertIs(attr_elms[0], self.c1)
+        self.assertNotIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_tagname1(self):
+        attr_elms = getElementsByTagName(self.elm, 'c1')
+        self.assertEqual(attr_elms.length, 2)
+        self.assertIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_tagname2(self):
+        attr_elms = getElementsByTagName(self.elm, 'c3')
+        self.assertEqual(attr_elms.length, 1)
+        self.assertNotIn(self.c1, attr_elms)
+        self.assertNotIn(self.c2, attr_elms)
+        self.assertIs(self.c3, attr_elms[0])
+
+    def test_get_elements_by_classname1(self):
+        self.c1.className = 'c1'
+        attr_elms = getElementsByClassName(self.elm, 'c1')
+        self.assertEqual(attr_elms.length, 1)
+        self.assertIn(self.c1, attr_elms)
+        self.assertNotIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_classname2(self):
+        self.c1.className = 'c1'
+        self.c2.className = 'c1'
+        attr_elms = getElementsByClassName(self.elm, 'c1')
+        self.assertEqual(attr_elms.length, 2)
+        self.assertIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertNotIn(self.c3, attr_elms)
+
+    def test_get_elements_by_classname3(self):
+        self.c1.className = 'c1'
+        self.c2.className = 'c1 c2'
+        self.c3.className = 'c2 c1'
+        attr_elms = getElementsByClassName(self.elm, 'c2 c1')
+        self.assertEqual(attr_elms.length, 2)
+        self.assertNotIn(self.c1, attr_elms)
+        self.assertIn(self.c2, attr_elms)
+        self.assertIn(self.c3, attr_elms)
+
+
 class TestElement(TestCase):
     def setUp(self):
         customElements.clear()
@@ -388,7 +455,7 @@ class TestElement(TestCase):
         self.assertEqual(self.elm.getAttribute('id'), 'b')
         self.assertEqual(self.elm.id, 'b')
 
-    def test_class_list(self):
+    def test_class_list_str(self):
         self.assertIsNone(self.elm.getAttribute('class'))
         self.assertFalse(self.elm.hasAttribute('class'))
         self.assertFalse(self.elm.hasAttributes())
@@ -402,6 +469,28 @@ class TestElement(TestCase):
         self.assertIsNone(self.elm.getAttribute('class'))
         self.assertFalse(self.elm.hasAttribute('class'))
         self.assertFalse(self.elm.hasAttributes())
+
+    def test_class_list_list(self):
+        self.elm.setAttribute('class', ['a', 'b'])
+        self.assertEqual(self.elm.getAttribute('class'), 'a b')
+        self.assertTrue(self.elm.hasAttribute('class'))
+        self.assertTrue(self.elm.hasAttributes())
+
+    def test_class_name(self):
+        self.assertEqual(self.elm.className, '')
+        self.elm.className = 'a'
+        self.assertEqual(self.elm.className, 'a')
+        self.assertEqual(self.elm.getAttribute('class'), 'a')
+        self.elm.className = 'b c'
+        self.assertEqual(self.elm.className, 'b c')
+        self.assertEqual(self.elm.getAttribute('class'), 'b c')
+        self.assertEqual(self.elm.classList.length, 2)
+        self.elm.className = 'd'
+        self.assertEqual(self.elm.className, 'd')
+        self.assertEqual(self.elm.getAttribute('class'), 'd')
+        self.assertEqual(self.elm.classList.length, 1)
+        with self.assertRaises(TypeError):
+            self.elm.className = ['d']
 
     def test_start_tag(self):
         self.assertEqual(self.elm.start_tag, '<tag>')
@@ -507,6 +596,29 @@ class TestElement(TestCase):
         self.assertEqual(len(c2_classes), 1)
         self.assertIs(c1_classes[0], self.c1)
         self.assertIs(c2_classes[0], self.c2)
+
+    def test_get_elements_by_classname_multi1(self):
+        self.elm.appendChild(self.c1)
+        self.elm.appendChild(self.c2)
+        self.c2.classList.add('c1')
+        c1_classes = self.elm.getElementsByClassName('c1')
+        c2_classes = self.elm.getElementsByClassName('c2')
+        self.assertEqual(len(c1_classes), 2)
+        self.assertEqual(len(c2_classes), 1)
+
+    def test_get_elements_by_classname_multi2(self):
+        self.elm.appendChild(self.c1)
+        self.elm.appendChild(self.c2)
+        self.c1.classList.add('c3')
+        self.c2.classList.add('c1')
+        self.c2.classList.add('c3')
+        classes1 = self.elm.getElementsByClassName('c1')
+        classes2 = self.elm.getElementsByClassName('c1 c2')
+        classes3 = self.elm.getElementsByClassName('c1 c2 c4')
+        self.assertEqual(len(classes1), 2)
+        self.assertEqual(len(classes2), 1)
+        self.assertEqual(len(classes3), 0)
+        self.assertIs(classes2[0], self.c2)
 
     def test_get_elements_by_classname_nest(self):
         self.elm.appendChild(self.c1)
@@ -621,10 +733,10 @@ class TestElement(TestCase):
         gc.collect()
         elm = Element('a')
         _id = id(elm)
-        self.assertIn(elm, Element._elements)
+        self.assertIn(elm, Element._element_buffer)
         del elm
         gc.collect()  # run gc
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             assert id(elm) != _id
 
     def test_reference_with_id(self):
@@ -635,9 +747,10 @@ class TestElement(TestCase):
         del elm
         gc.collect()
         self.assertNotIn('a', Element._elements_with_id)
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             assert id(elm) != _id
 
+    @skipIf(sys.implementation.name == 'pypy', 'GC not work in PyPy.')
     def test_reference_add_id(self):
         gc.collect()
         elm = Element('a')
@@ -657,7 +770,7 @@ class TestElement(TestCase):
         del elm
         gc.collect()
         self.assertNotIn('c', Element._elements_with_id)
-        for elm in Element._elements:
+        for elm in Element._element_buffer:
             assert id(elm) != _id
 
     def test_reference_del_id(self):
@@ -753,23 +866,27 @@ class TestHTMLElement(TestCase):
 
     def test_draggable(self):
         n = HTMLElement('img')
+        self.assertIs(n.draggable, False)
         n.draggable = True
-        self.assertEqual(n.start_tag, '<img draggable="true">')
+        self.assertEqual(n.html, '<img draggable="true">')
+        self.assertIs(n.draggable, True)
+        n.draggable = False
+        self.assertEqual(n.html, '<img>')
 
     def test_hidden(self):
         n = HTMLElement('img')
         n.hidden = True
-        self.assertEqual(n.start_tag, '<img hidden>')
+        self.assertEqual(n.html, '<img hidden>')
 
     def test_title(self):
         n = HTMLElement('img')
         n.title = 'Image'
-        self.assertEqual(n.start_tag, '<img title="Image">')
+        self.assertEqual(n.html, '<img title="Image">')
 
     def test_type(self):
         n = HTMLElement('input')
         n.type = 'text'
-        self.assertEqual(n.start_tag, '<input type="text">')
+        self.assertEqual(n.html, '<input type="text">')
 
     def test_init_attrs(self):
         elm = HTMLElement('a', src='b', hidden=True)
@@ -798,7 +915,6 @@ class TestHTMLElement(TestCase):
         self.assertEqual(elm.getAttribute('style'), 'color: red;')
         self.assertEqual(elm.html, '<a style="color: red;"></a>')
 
-    @skipIf(sys.version_info < (3, 5), 'py34 does not keep style order')
     def test_style_setter(self):
         self.elm.style = 'color: red;'
         self.assertEqual(self.elm.style.cssText, 'color: red;')
@@ -827,6 +943,30 @@ class TestHTMLElement(TestCase):
 
         clone.style.color = 'black'
         self.assertEqual(clone.style.cssText, 'color: black;')
+        self.assertEqual(self.elm.style.cssText, 'color: red;')
+
+    def test_style_new(self):
+        st = CSSStyleDeclaration()
+        self.assertEqual(self.elm.style.cssText, '')
+        self.assertEqual(st.cssText, '')
+        st.setProperty('color', 'red')
+        self.assertEqual(st.cssText, 'color: red;')
+        self.assertEqual(self.elm.style.cssText, '')
+        self.elm.style = st
+        self.assertEqual(self.elm.style.cssText, 'color: red;')
+        st.setProperty('color', 'blue')
+        self.assertEqual(st.cssText, 'color: blue;')
+        # shouldn't do this???
+        self.assertEqual(self.elm.style.cssText, 'color: blue;')
+
+    def test_style_copy(self):
+        self.elm.style = 'color: red;'
+        elm2 = HTMLElement('b')
+        elm2.style = self.elm.style
+        self.assertEqual(elm2.style.cssText, 'color: red;')
+
+        elm2.style.setProperty('color', 'blue')
+        self.assertEqual(elm2.style.cssText, 'color: blue;')
         self.assertEqual(self.elm.style.cssText, 'color: red;')
 
     def test_attr_clone(self):

@@ -2,6 +2,7 @@ API Reference
 =============
 
 .. toctree::
-    dom
-    webserver
-    test
+   webserver
+   dom
+   event
+   test

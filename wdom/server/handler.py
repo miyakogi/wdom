@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Event/Message handlers for web server."""
+
 import json
 import logging
+from typing import Dict
 
-from wdom.interface import Event
+from wdom.event import Event, create_event, EventMsgDict
 
 logger = logging.getLogger(__name__)
 
 
-def log_handler(level: str, message: str):
+def log_handler(level: str, message: str) -> None:
     """Handle logs from client (browser)."""
     message = 'JS: ' + str(message)
     if level == 'error':
@@ -22,27 +25,44 @@ def log_handler(level: str, message: str):
         logger.debug(message)
 
 
-def event_handler(msg: dict):
+def create_event_from_msg(msg: EventMsgDict) -> Event:
+    """Create Event from dictionally (JSON message).
+
+    Message format:
+        {
+            'proto': 'event.__proto__.toString()',
+            'type': 'event type',
+            'currentTarget': {
+                'id': 'rimo_id of target node',
+                ... (additional information),
+                },
+            'target': {
+                'id': 'rimo_id of target node',
+                ... (additional information),
+                },
+            ...,  // event specific fields
+            }
+    """
+    return create_event(msg)
+
+
+def event_handler(msg: EventMsgDict) -> Event:
     """Handle events emitted on browser."""
-    from wdom.document import getElementByRimoId
-    e = Event(**msg.get('event'))
-    _id = e.currentTarget.get('id')
-    currentTarget = getElementByRimoId(_id)
-    if currentTarget is None:
+    e = create_event_from_msg(msg)
+    if e.currentTarget is None:
         if e.type not in ['mount', 'unmount']:
-            logger.warning('No such element: rimo_id={}'.format(_id))
-        return
-
-    currentTarget.on_event_pre(e)
-    e.currentTarget = currentTarget
-    e.target = getElementByRimoId(e.target.get('id'))
+            id = msg['currentTarget']['id']
+            logger.warning('No such element: rimo_id={}'.format(id))
+        return e
+    e.currentTarget.on_event_pre(e)
     e.currentTarget.dispatchEvent(e)
+    return e
 
 
-def response_handler(msg: dict):
+def response_handler(msg: Dict[str, str]) -> None:
     """Handle response sent by browser."""
     from wdom.document import getElementByRimoId
-    id = msg.get('id')
+    id = msg['id']
     elm = getElementByRimoId(id)
     if elm:
         elm.on_response(msg)
@@ -50,16 +70,19 @@ def response_handler(msg: dict):
         logger.warning('No such element: rimo_id={}'.format(id))
 
 
-def on_websocket_message(message):
+def on_websocket_message(message: str) -> None:
     """Handle messages from browser."""
     msgs = json.loads(message)
     for msg in msgs:
+        if not isinstance(msg, dict):
+            logger.error('Invalid WS message format: {}'.format(message))
+            continue
         _type = msg.get('type')
         if _type == 'log':
-            log_handler(msg.get('level'), msg.get('message'))
+            log_handler(msg['level'], msg['message'])
         elif _type == 'event':
-            event_handler(msg)
+            event_handler(msg['event'])
         elif _type == 'response':
             response_handler(msg)
         else:
-            raise ValueError('unkown message type: {}'.format(message))
+            raise ValueError('Unkown message type: {}'.format(message))

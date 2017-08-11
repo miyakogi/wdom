@@ -1,6 +1,0 @@
-tornado
-selenium
-mypy-lang
-sphinx-autodoc-typehints
-git+https://github.com/miyakogi/slex.git
-git+https://github.com/miyakogi/m2r.git

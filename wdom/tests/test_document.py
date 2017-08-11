@@ -5,87 +5,183 @@ import os
 import re
 from unittest.mock import MagicMock
 
-from wdom import options
-from wdom.interface import Event
-from wdom.node import DocumentFragment, Comment, Text
-from wdom.element import Attr, Element
-from wdom.document import Document
+from wdom import options, server
+from wdom.document import Document, WdomDocument
 from wdom.document import get_document, get_new_document, set_document
 from wdom.document import getElementById, getElementByRimoId
-from wdom.web_node import WdomElement
-from wdom.tag import Tag, HTMLElement, A
+from wdom.element import Attr, Element
+from wdom.event import Event
+from wdom.node import DocumentFragment, Comment, Text
+from wdom.server.handler import event_handler
+from wdom.tag import Tag, A
 from wdom.testing import TestCase
+from wdom.web_node import WdomElement, remove_rimo_id
 
 
 class TestGetElement(TestCase):
     def setUp(self):
         super().setUp()
-        Tag._elements_with_id.clear()
-        Tag._elements_with_rimo_id.clear()
-        self.doc = Document()
+        self.doc = WdomDocument()
 
     def test_get_element_by_id(self):
         elm = Element(tag='a', id='a')
-        self.assertIsNone(getElementById('a'))
+        self.assertIs(getElementById('a'), elm)
+        self.assertIsNone(self.doc.getElementById('a'), elm)
         self.doc.appendChild(elm)
         self.assertIs(getElementById('a'), elm)
 
     def test_get_element_by_rimo_id(self):
-        elm = WdomElement(tag='a', id='a', rimo_id='b')
-        self.assertIsNone(getElementById('a'))
-        self.assertIsNone(getElementByRimoId('b'))
+        elm = WdomElement(tag='a')
+        rimo_id = elm.rimo_id
+        self.assertIs(getElementByRimoId(rimo_id), elm)
+        self.assertIsNone(self.doc.getElementByRimoId(rimo_id))
         self.doc.appendChild(elm)
-        self.assertIs(getElementById('a'), elm)
-        self.assertIsNone(getElementByRimoId('a'))
-        self.assertIs(getElementByRimoId('b'), elm)
+        self.assertIs(getElementByRimoId(rimo_id), elm)
+        self.assertIs(self.doc.getElementByRimoId(rimo_id), elm)
+
+    def test_get_element_by_rimo_id_doc(self):
+        doc = getElementByRimoId('document')
+        self.assertIs(get_document(), doc)
+
+    def test_get_element_by_rimo_id_win(self):
+        win = getElementByRimoId('window')
+        self.assertIs(get_document().defaultView, win)
 
 
-class TestMainDocument(TestCase):
+class TestDocument(TestCase):
+    def setUp(self):
+        super().setUp()
+        self.doc = Document()
+
+    def test_doctype(self):
+        from wdom.node import DocumentType
+        self.assertTrue(isinstance(self.doc.doctype, DocumentType))
+        self.assertEqual(self.doc.doctype.html, '<!DOCTYPE html>')
+
+    def test_html(self):
+        from wdom.tag import Html
+        self.assertTrue(isinstance(self.doc.documentElement, Html))
+        # html element has <head> and <body>
+        self.assertEqual(self.doc.documentElement.length, 2)
+
+    def test_head(self):
+        from wdom.tag import Head
+        self.assertTrue(isinstance(self.doc.head, Head))
+        self.assertEqual(self.doc.head.length, 0)  # head is empty
+
+    def test_body(self):
+        from wdom.tag import Body
+        self.assertTrue(isinstance(self.doc.body, Body))
+        self.assertEqual(self.doc.body.length, 0)  # body is empty
+
+    def test_charset(self):
+        # head element is empty
+        self.assertEqual(self.doc.head.length, 0)
+        self.assertEqual(self.doc.characterSet, '')
+        # head element is still empty
+        self.assertEqual(self.doc.head.length, 0)
+        self.doc.characterSet = 'utf-8'
+        self.assertEqual(self.doc.characterSet, 'utf-8')
+        # head element has <meta charset="utf-8"> now
+        self.assertEqual(self.doc.head.length, 1)
+
+    def test_title(self):
+        # head element is empty
+        self.assertEqual(self.doc.head.length, 0)
+        self.assertEqual(self.doc.title, '')
+        # head element is still empty
+        self.assertEqual(self.doc.head.length, 0)
+        self.doc.title = 'test wdom'
+        self.assertEqual(self.doc.title, 'test wdom')
+        # head element has <title> now
+        self.assertEqual(self.doc.head.length, 1)
+
+    def test_create_documentfragment(self):
+        df = self.doc.createDocumentFragment()
+        self.assertEqual(type(df), DocumentFragment)
+        self.assertFalse(df.hasChildNodes())
+
+    def test_create_textnode(self):
+        t = self.doc.createTextNode('text')
+        self.assertEqual(type(t), Text)
+        self.assertEqual(t.html, 'text')
+
+    def test_create_comment(self):
+        t = self.doc.createComment('text')
+        self.assertEqual(type(t), Comment)
+        self.assertEqual(t.html, '<!--text-->')
+
+    def test_create_attr(self):
+        a = self.doc.createAttribute('src')
+        a.value = 'a'
+        self.assertEqual(type(a), Attr)
+        self.assertEqual(a.html, 'src="a"')
+        tag = Element('tag')
+        tag.setAttributeNode(a)
+        self.assertEqual(tag.html, '<tag src="a"></tag>')
+
+    def test_create_event(self):
+        tag = WdomElement('tag')
+        mock = MagicMock(_is_coroutine=False)
+        tag.addEventListener('a', mock)
+        e = self.doc.createEvent('a')
+        self.assertEqual(type(e), Event)
+        tag.dispatchEvent(e)
+        mock.assert_called_once_with(e)
+
+    def test_add_eventlistener(self):
+        mock = MagicMock(_is_coroutine=False)
+        self.doc.addEventListener('click', mock)
+        msg = {
+            'type': 'click',
+            'currentTarget': {'id': 'document'},
+            'target': {'id': 'document'},
+        }
+        e = Event('click', msg)
+        self.doc.dispatchEvent(e)
+        mock.assert_called_once_with(e)
+
+
+class TestWdomDocument(TestCase):
     def setUp(self) -> None:
         super().setUp()
-        Tag._elements_with_id.clear()
-        Tag._elements_with_rimo_id.clear()
-        self.doc = Document()
+        self.doc = WdomDocument()
         self.doc.defaultView.customElements.reset()
-
-    def tearDown(self):
-        self.doc.defaultView.customElements.reset()
-        super().tearDown()
+        server._tornado.connections = [1]
 
     def test_blankpage(self) -> None:
         _re = re.compile(
             '\s*<!DOCTYPE html>'
-            '\s*<html rimo_id="\d+">'
-            '\s*<head rimo_id="\d+">'
-            '\s*<meta( charset="utf-8"| rimo_id="\d+"){2}>'
-            '\s*<title rimo_id="\d+">'
+            '\s*<html>'
+            '\s*<head>'
+            '\s*<meta charset="utf-8">'
+            '\s*<title>'
             '\s*W-DOM'
             '\s*</title>'
-            '(\s*<script( type="text/javascript"| rimo_id="\d+"){2}>.*?</script>)?'  # noqa: E501
+            '(\s*<script type="text/javascript">.*?</script>)?'
             '\s*</head>'
-            '\s*<body rimo_id="\d+">'
-            '\s*<script( type="text/javascript"| rimo_id="\d+"){2}>'
+            '\s*<body>'
+            '\s*<script type="text/javascript">'
             '.*?</script>'
             '\s*</body>'
-            '.*\s*</html>',
+            '.*</html>',
             re.S
         )
         html = self.doc.build()
-        self.assertIsNotNone(_re.match(html))
+        self.assertIsNotNone(_re.match(remove_rimo_id(html)))
 
     def test_get_element_by_id(self):
-        self.assertIsNone(self.doc.getElementById('1'))
-        elm = Element('a', parent=self.doc.body, id='a')
-        self.assertIs(elm, self.doc.getElementById('a'))
-        elm2 = Tag()
-        self.assertIsNone(self.doc.getElementByRimoId(elm2.rimo_id))
+        elm = WdomElement(tag='a', id='a', rimo_id='b')
+        self.assertIs(getElementById('a'), elm)
+        self.assertIs(getElementByRimoId('b'), elm)
+        self.assertIsNone(self.doc.getElementById('a'))
+        self.assertIsNone(self.doc.getElementByRimoId('b'), elm)
 
-    def test_get_element_by_remo_id(self):
-        self.assertIsNone(self.doc.getElementByRimoId('1'))
-        elm = Tag(parent=self.doc.body)
-        self.assertIs(elm, self.doc.getElementByRimoId(elm.rimo_id))
-        elm2 = Tag()
-        self.assertIsNone(self.doc.getElementByRimoId(elm2.rimo_id))
+        self.doc.appendChild(elm)
+        self.assertIs(getElementById('a'), elm)
+        self.assertIs(getElementByRimoId('b'), elm)
+        self.assertIs(self.doc.getElementById('a'), elm)
+        self.assertIs(self.doc.getElementByRimoId('b'), elm)
 
     def test_add_jsfile(self) -> None:
         self.doc.add_jsfile('jsfile')
@@ -124,7 +220,7 @@ class TestMainDocument(TestCase):
         )
 
     def test_title(self) -> None:
-        doc = Document(title='TEST')
+        doc = WdomDocument(title='TEST')
         _re = re.compile(
             '<title rimo_id="\d+">\s*TEST\s*</title>',
             re.S
@@ -135,7 +231,7 @@ class TestMainDocument(TestCase):
         self.assertEqual('TEST', doc.title)
 
     def test_charset(self) -> None:
-        doc = Document(charset='TEST')
+        doc = WdomDocument(charset='TEST')
         _re = re.compile(
             '<meta( charset="TEST"| rimo_id="\d+"){2}>',
             re.S
@@ -143,7 +239,7 @@ class TestMainDocument(TestCase):
         html = doc.build()
         self.assertIsNotNone(_re.search(html))
         self.assertNotIn('utf', html)
-        self.assertEqual('TEST', doc.charset)
+        self.assertEqual('TEST', doc.characterSet)
 
     def test_set_body(self) -> None:
         self.doc.body.prepend(Tag())
@@ -171,25 +267,25 @@ class TestMainDocument(TestCase):
 
     def test_create_element_unknown(self):
         elm = self.doc.createElement('aa')
-        self.assertEqual(type(elm), HTMLElement)
+        self.assertEqual(type(elm), WdomElement)
         self.assertRegex(elm.html, r'<aa rimo_id="\d+"></aa>')
 
     def test_create_element_defclass(self):
         from wdom import element
-        doc = Document(default_class=element.HTMLElement)
+        doc = WdomDocument(default_class=element.HTMLElement)
         elm = doc.createElement('a')
         self.assertEqual(type(elm), A)
         self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
 
     def test_create_element_defclass_unknown(self):
         from wdom import element
-        doc = Document(default_class=element.HTMLElement)
+        doc = WdomDocument(default_class=element.HTMLElement)
         elm = doc.createElement('aa')
         self.assertEqual(type(elm), element.HTMLElement)
         self.assertRegex(elm.html, '<aa></aa>')
 
     def test_create_custom_element(self):
-        class A(HTMLElement):
+        class A(WdomElement):
             pass
         self.doc.defaultView.customElements.define('a', A)
         elm = self.doc.createElement('a')
@@ -204,73 +300,40 @@ class TestMainDocument(TestCase):
         self.assertEqual(type(elm), A)
         self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
 
-    def test_create_documentfragment(self):
-        df = self.doc.createDocumentFragment()
-        self.assertEqual(type(df), DocumentFragment)
-        self.assertFalse(df.hasChildNodes())
-
-    def test_create_textnode(self):
-        t = self.doc.createTextNode('text')
-        self.assertEqual(type(t), Text)
-        self.assertEqual(t.html, 'text')
-
-    def test_create_comment(self):
-        t = self.doc.createComment('text')
-        self.assertEqual(type(t), Comment)
-        self.assertEqual(t.html, '<!--text-->')
-
-    def test_create_attr(self):
-        a = self.doc.createAttribute('src')
-        a.value = 'a'
-        self.assertEqual(type(a), Attr)
-        self.assertEqual(a.html, 'src="a"')
-        tag = HTMLElement('tag')
-        tag.setAttributeNode(a)
-        self.assertRegex(tag.html, '<tag rimo_id="\d+" src="a"></tag>')
-
-    def test_create_event(self):
-        tag = HTMLElement('tag')
-        mock = MagicMock(_is_coroutine=False)
-        tag.addEventListener('a', mock)
-        e = self.doc.createEvent('a')
-        self.assertEqual(type(e), Event)
-        tag.dispatchEvent(e)
-        mock.assert_called_once_with(e)
-
     def test_custom_tag_theme_tag(self):
-        from wdom import tag
-        self.doc.register_theme(tag)
+        from wdom import themes
+        self.doc.register_theme(themes)
         elm = Tag(parent=self.doc.body)
         elm.innerHTML = '<div is="container"></div>'
-        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+        self.assertTrue(isinstance(elm.firstChild, themes.Container))
 
     def test_custom_tag_theme_default(self):
         from wdom.themes import default
-        from wdom import tag
+        from wdom import themes
         self.doc.register_theme(default)
         elm = Tag(parent=self.doc.body)
         elm.innerHTML = '<div is="container"></div>'
         self.assertTrue(isinstance(elm.firstChild, default.Container))
-        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+        self.assertTrue(isinstance(elm.firstChild, themes.Container))
 
     def test_custom_tag_theme(self):
         from wdom.themes import bootstrap3
-        from wdom import tag
+        from wdom import themes
         self.doc.register_theme(bootstrap3)
         elm = Tag(parent=self.doc.body)
         elm.innerHTML = '<div is="container"></div>'
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.Container))
-        self.assertTrue(isinstance(elm.firstChild, tag.Container))
+        self.assertTrue(isinstance(elm.firstChild, themes.Container))
         self.assertIn('maxcdn.bootstrapcdn.com', self.doc.build())
 
         elm.innerHTML = '<button is="default-button"></button>'
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.DefaultButton))
         self.assertTrue(isinstance(elm.firstChild, bootstrap3.Button))
-        self.assertFalse(isinstance(elm.firstChild, tag.DefaultButton))
-        self.assertTrue(isinstance(elm.firstChild, tag.Button))
+        self.assertFalse(isinstance(elm.firstChild, themes.DefaultButton))
+        self.assertTrue(isinstance(elm.firstChild, themes.Button))
 
     def test_tempdir(self):
-        doc = Document()
+        doc = WdomDocument()
         self.assertIsNotNone(doc.tempdir)
         self.assertTrue(os.path.exists(doc.tempdir))
         self.assertTrue(os.path.isabs(doc.tempdir))
@@ -288,6 +351,24 @@ class TestMainDocument(TestCase):
         gc.collect()
         self.assertFalse(os.path.exists(testfile))
         self.assertFalse(os.path.exists(tempdir))
+
+    def test_add_eventlistener(self):
+        mock = MagicMock(_is_coroutine=False)
+        js_mock = MagicMock()
+        doc = get_document()
+        doc.js_exec = js_mock
+        doc.addEventListener('click', mock)
+        js_mock.assert_called_once_with('addEventListener', 'click')
+        msg = {
+            'type': 'click',
+            'currentTarget': {'id': 'document'},
+            'target': {'id': 'document'},
+        }
+        e = event_handler(msg)
+        mock.assert_called_once_with(e)
+
+    def test_rimo_id(self):
+        self.assertEqual(self.doc.rimo_id, 'document')
 
 
 class TestDocumentOptions(TestCase):

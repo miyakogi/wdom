@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""
-This module defines options for wdom and wraps ``tornado.options``.
+"""This module defines options for wdom and wraps ``tornado.options``.
+
 Do not use ``tornado.options`` directly.
+
+When this module is loaded, automatically parse command line options.
+If need to parse command line optionas again, call ``parse_command_line``
+function.
 """
 
-import sys
 import logging
 from argparse import ArgumentParser, Namespace
-import re
 from typing import Union
 
 from tornado.log import LogFormatter
@@ -92,7 +94,7 @@ parser.add_argument(
 )
 
 
-def level_to_int(level: Union[str, int]):
+def level_to_int(level: Union[str, int]) -> int:
     if isinstance(level, int):
         if logging.NOTSET <= level <= logging.FATAL:
             return level
@@ -110,7 +112,12 @@ def level_to_int(level: Union[str, int]):
             'but gat type: {}'.format(type(level)))
 
 
-def set_loglevel(level=None):
+def set_loglevel(level: Union[int, str, None] = None) -> None:
+    """Set proper log-level.
+
+    :arg Optional[int, str] level: Level to be set. If None, use proper log
+    level from command line option. Default value is ``logging.INFO``.
+    """
     if level is not None:
         lv = level_to_int(level)
     elif config.logging:
@@ -123,21 +130,15 @@ def set_loglevel(level=None):
     _log_handler.setLevel(lv)
 
 
-def parse_command_line():
-    '''Parse command line options and set options in ``tornado.options``.'''
+def parse_command_line() -> Namespace:
+    """Parse command line options and set them to ``config``.
+
+    This function skips unknown command line options. After parsing options,
+    set log level and set options in ``tornado.options``.
+    """
     import tornado.options
-    _, unkown_args = parser.parse_known_args(namespace=config)
-    set_loglevel()
-    if unkown_args and not (
-            'sphinx-build' in sys.argv[0]
-            or re.search(r'green[-.\d]*$,', sys.argv[0])
-            or re.search(r'nose(tests)?[-.\d]*$,', sys.argv[0])
-            or re.search(r'py\.test[-.0-9]*$', sys.argv[0])
-    ):
-        # warn when get unknown argument
-        # if run in test, skip warning since test runner adds some arguments
-        logger.warning('Unknown Arguments: {}'.format(unkown_args))
-        parser.print_help()
+    parser.parse_known_args(namespace=config)
+    set_loglevel()  # set new log level based on commanline option
     for k, v in vars(config).items():
         if k.startswith('log'):
             tornado.options.options.__setattr__(k, v)

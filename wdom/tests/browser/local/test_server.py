@@ -10,7 +10,7 @@ from tempfile import NamedTemporaryFile
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.misc import install_asyncio
+from wdom.util import install_asyncio
 from wdom.testing import get_webdriver, free_port, browser_implict_wait
 from wdom.testing import TestCase, close_webdriver
 
@@ -29,7 +29,7 @@ src_base = '''
 import sys
 import asyncio
 
-from wdom.misc import install_asyncio
+from wdom.util import install_asyncio
 from wdom.tag import H1
 from wdom.document import get_document
 from wdom import server
@@ -79,6 +79,7 @@ class TestAutoReload(TestCase):
         with open(css_path, 'w') as f:
             f.write(src_css)
         self.port = free_port()
+        self.wait()
         self.url = 'http://localhost:{}'.format(self.port)
         tmpfile = NamedTemporaryFile(mode='w+', dir=CURDIR, suffix='.py',
                                      delete=False)

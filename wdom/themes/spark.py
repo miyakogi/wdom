@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import Form as _Form
+from wdom.themes import *
 
 name = 'Spark'
 project_url = 'http://codewithspark.com/'
@@ -32,7 +34,7 @@ DangerButton = NewTag('DangerButton', 'button', Button, class_='red', is_='dange
 ErrorButton = NewTag('ErrorButton', 'button', Button, class_='red', is_='error-button')
 LinkButton = NewTag('LinkButton', 'button', Button, class_='flat', is_='link-button')
 
-class Form(Form):
+class Form(_Form):
     class_ = 'form'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'INK'
 project_url = 'http://ink.sapo.pt/'
@@ -30,7 +31,7 @@ ErrorButton = NewTag('ErrorButton', 'button', Button, class_='red', is_='error-b
 LinkButton = NewTag('LinkButton', 'button', Button, is_='link-button')
 
 Form = NewTag('Form', 'form', Form, class_='ink-form')
-FormGroup = NewTag('FormGroup', 'div', Div, class_='control-group')
+FormGroup = NewTag('FormGroup', 'div', FormGroup, class_='control-group')
 Input = NewTag('Input', 'input', Input)
 TextInput = NewTag('TextInput', 'input', TextInput)
 Textarea = NewTag('Textarea', 'textarea', Textarea)

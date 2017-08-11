@@ -1,0 +1,5 @@
+sphinx>=1.6
+selenium
+mypy
+sphinx-autodoc-typehints
+m2r

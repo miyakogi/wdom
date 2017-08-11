@@ -5,7 +5,7 @@
 Data binding example
 '''
 
-from wdom.themes.default import H1, Div, Input
+from wdom.themes import H1, Div, Input
 
 
 class App(Div):

@@ -7,9 +7,9 @@ WDOM
 .. image:: https://img.shields.io/pypi/pyversions/wdom.svg
    :target: https://pypi.python.org/pypi/wdom
 
-.. image:: https://readthedocs.org/projects/wdom-py/badge/?version=latest
-   :target: http://wdom-py.readthedocs.io/en/latest/?badge=latest
-   :alt: Documentation Status
+.. image:: https://img.shields.io/badge/docs-latest-brightgreen.svg
+   :target: https://miyakogi.github.io/wdom/
+   :alt: Documentation
 
 .. image:: https://travis-ci.org/miyakogi/wdom.svg?branch=dev
    :target: https://travis-ci.org/miyakogi/wdom
@@ -27,7 +27,7 @@ codes in python.
 This library includes web-server (`tornado`_), but is not intended to
 be used as a web framework, please use for **Desktop** GUI Applications.
 
-Document: `Read the Docs <http://wdom-py.readthedocs.io/en/latest/?badge=latest>`_
+Document: `WDOM Documentation <https://miyakogi.github.io/wdom/>`_
 
 Disclaimer
 ----------
@@ -54,8 +54,6 @@ Requirements
 
 Python 3.5.3+ and any modern-browsers are required.
 Also supports Electron and PyQt's webkit browsers.
-IE is not supported, but most of features will work with IE11 (but not
-recomended).
 
 Installation
 ------------
@@ -115,10 +113,12 @@ Of course, WDOM can handle events:
     from wdom.document import set_app
     from wdom.server import start
 
+    def rev_text(event):
+        elm = event.currentTarget
+        elm.textContent = elm.textContent[::-1]
+
     if __name__ == '__main__':
         h1 = H1('Hello, WDOM')
-        def rev_text(event):
-            h1.textContent = h1.textContent[::-1]
         h1.addEventListener('click', rev_text)
         set_app(h1)
         start()
@@ -141,7 +141,7 @@ Making components with python class:
             self.textbox.addEventListener('input', self.update)
 
         def update(self, event):
-            self.text.textContent = event.target.value
+            self.text.textContent = event.currentTarget.value
             # Or, you can write as below
             # self.text.textContent = self.textbox.value
 
@@ -184,11 +184,13 @@ Differences are:
 - import tag classes from ``wdom.themes.[theme_name]`` instead of ``wdom.tag``
 - register theme-module by ``document.register_theme(theme_module)``
 
-If you want to more easily change themes (or, css frameworks), try command-line option ``--theme``.
-``wdom.themes.default`` module is switched by ``--theme`` option.
+If you want to more easily change themes (or, css frameworks), try command-line
+option ``--theme``. ``wdom.themes.default`` module would be switched to
+``--theme`` option.
 
-For example, in the above code, change ``bootstrap3`` to ``default``.
-And execute the code with ``--theme theme_name`` option (see below).
+For example, in the above code, change ``from wdom.themes import bootstrap3`` to
+``from wdom.themes import default``. And execute the code with ``--theme
+theme_name`` option (see below).
 
 
 .. image:: https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif
@@ -207,7 +209,7 @@ or write its wrapper module and send `PR`_.
 
 Of course you can use your original css. See `Loading Static Contents -> Local
 Resource
-<http://wdom-py.readthedocs.io/en/latest/guide/load_resource.html#local-resources>`_
+<https://miyakogi.github.io/wdom/guide/load_resource.html#local-resources>`_
 section in the `User Guide`_.
 
 Contributing
@@ -227,6 +229,6 @@ Please see `User Guide`_.
 .. _DOM specification: https://dom.spec.whatwg.org/
 .. _Selenium: http://selenium-python.readthedocs.org/
 .. _tornado: http://www.tornadoweb.org/en/stable/
-.. _User Guide: http://wdom-py.readthedocs.io/en/latest/guide/index.html
+.. _User Guide: https://miyakogi.github.io/wdom/guide/index.html
 .. _Issues: https://github.com/miyakogi/wdom/issues
 .. _PR: https://github.com/miyakogi/wdom/pulls

@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Blaze'
 project_url = 'http://blazecss.com/'
@@ -11,7 +12,7 @@ license = 'MIT License'
 license_url = 'https://github.com/BlazeCSS/blaze/blob/master/LICENSE'
 
 css_files = [
-    '//cdn.jsdelivr.net/blazecss/2.1.1/blaze.min.css',
+    'https://unpkg.com/blaze',
 ]
 
 Button = NewTag('Button', bases=Button, class_='c-button')
@@ -39,12 +40,12 @@ Tr = NewTag('Tr', 'tr', Tr, class_='c-table__row')
 Th = NewTag('Th', 'th', Th, class_='c-table__cell')
 Td = NewTag('Td', 'td', Td, class_='c-table__cell')
 
-H1 = NewTag('H1', 'div', H1, class_='c-heading c-heading--super')
-H2 = NewTag('H2', 'div', H2, class_='c-heading c-heading--xlarge')
-H3 = NewTag('H3', 'div', H3, class_='c-heading c-heading--large')
-H4 = NewTag('H4', 'div', H4, class_='c-heading c-heading--medium')
-H5 = NewTag('H5', 'div', H5, class_='c-heading c-heading--small')
-H6 = NewTag('H6', 'div', H6, class_='c-heading c-heading--xsmall')
+H1 = NewTag('H1', 'div', H1, class_='c-heading c-heading--super', is_='h1')
+H2 = NewTag('H2', 'div', H2, class_='c-heading c-heading--xlarge', is_='h1')
+H3 = NewTag('H3', 'div', H3, class_='c-heading c-heading--large', is_='h1')
+H4 = NewTag('H4', 'div', H4, class_='c-heading c-heading--medium', is_='h1')
+H5 = NewTag('H5', 'div', H5, class_='c-heading c-heading--small', is_='h1')
+H6 = NewTag('H6', 'div', H6, class_='c-heading c-heading--xsmall', is_='h1')
 
 Row = NewTag('Row', 'div', Row, class_='o-gird')
 Col = NewTag('Col', 'div', Col, class_='o-grid__cell')

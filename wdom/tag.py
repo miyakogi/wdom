@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""Web-connected HTML tag classes."""
+
 import logging
 from collections import Iterable
-from typing import Tuple, Union
+from typing import Any, Dict, Union, TYPE_CHECKING
 from types import new_class
 
-from wdom.node import Node
-from wdom.element import DOMTokenList, ElementMeta
+from wdom.element import _AttrValueType
 from wdom.element import (
     HTMLAnchorElement,
     HTMLButtonElement,
@@ -22,143 +23,78 @@ from wdom.element import (
     HTMLStyleElement,
     HTMLTextAreaElement,
 )
+from wdom.node import Node, NodeList
+# Just export Comment/RawHtml/Text
+from wdom.node import Comment, RawHtml, Text  # noqa: F401
 from wdom.web_node import WdomElement
+
+if TYPE_CHECKING:
+    from typing import List, Type  # noqa
 
 logger = logging.getLogger(__name__)
 
 
-class HTMLElement(WdomElement):
-    pass
+class Tag(WdomElement):
+    """Base class for html tags.
 
+    ``HTMLElement`` requires to specify tag name when instanciate it, but this
+    class and sublasses have default tag name and not need to specify it for
+    each thier instances.
+    """
 
-class TagBaseMeta(ElementMeta):
-    '''Meta class to set default class variable of HtmlDom'''
-    def __prepare__(name, bases, **kwargs) -> dict:
-        return {'inherit_class': True}
-
-
-class Tag(HTMLElement, metaclass=TagBaseMeta):
-    '''Base class for html tags. ``HTMLElement`` requires to specify tag name
-    when instanciate it, but this class and sublasses have default tag name and
-    not need to specify it for each thier instances.
-
-    Additionally, this class provides shortcut properties to handle some
-    special attributes (class, type, is).
-    '''
     #: Tag name used for this node.
     tag = 'tag'
-    #: str and list of strs are acceptale.
-    class_ = ''
-    #: Inherit classes defined in super class or not.
-    #: By default, this variable is True.
-    inherit_class = True
     #: use for <input> tag's type
     type_ = ''
     #: custom element which extends built-in tag (like <table is="your-tag">)
     is_ = ''
 
-    def __init__(self, *args, attrs=None, **kwargs):
+    def __init__(self, *args: Any, attrs: Dict[str, _AttrValueType] = None,
+                 **kwargs: Any) -> None:  # noqa: D102
         if attrs:
             kwargs.update(attrs)
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         if self.is_ and 'is' not in kwargs and 'is_' not in kwargs:
             kwargs['is'] = self.is_
-        super().__init__(self.tag, **kwargs)
+        super().__init__(self.tag, **kwargs)  # type: ignore
         self.append(*args)
 
-    @classmethod
-    def get_class_list(cls) -> DOMTokenList:
-        '''Return class-level class list, including all super class's.
-        '''
-        l = []
-        l.append(DOMTokenList(cls, cls.class_))
-        if cls.inherit_class:
-            for base_cls in cls.__bases__:
-                if issubclass(base_cls, Tag):
-                    l.append(base_cls.get_class_list())
-        # Reverse order so that parent's class comes to front
-        l.reverse()
-        return DOMTokenList(cls, l)
+    def _clone_node(self) -> 'Tag':
+        """Need to copy class, not tag.
 
-    def __getitem__(self, attr: Union[str, int]) -> Union[Node, str]:
-        if isinstance(attr, int):
-            return self.childNodes[attr]
-        else:
-            return self.getAttribute(attr)
-
-    def __setitem__(self, attr: str, val):
-        self.setAttribute(attr, val)
-
-    def __delitem__(self, attr: str):
-        self.removeAttribute(attr)
-
-    def __copy__(self) -> HTMLElement:
+        So need to re-implement copy.
+        """
         clone = type(self)()
         for attr in self.attributes:
             clone.setAttribute(attr, self.getAttribute(attr))
         for c in self.classList:
             clone.addClass(c)
         clone.style.update(self.style)
+        # TODO: should clone event listeners???
         return clone
 
-    def getAttribute(self, attr: str) -> str:
-        if attr == 'class':
-            cls = self.get_class_list()
-            cls._append(self.classList)
-            if cls:
-                return cls.toString()
-            else:
-                return None
-        else:
-            return super().getAttribute(attr)
-
-    def addClass(self, *classes: Tuple[str]):
-        self.classList.add(*classes)
-
-    def hasClass(self, class_: str) -> bool:
-        return class_ in self.classList
-
-    def hasClasses(self) -> bool:
-        return len(self.classList) > 0
-
-    def removeClass(self, *classes: Tuple[str]):
-        _remove_cl = []
-        for class_ in classes:
-            if class_ not in self.classList:
-                if class_ in self.__class__.get_class_list():
-                    logger.warning(
-                        'tried to remove class-level class: '
-                        '{}'.format(class_)
-                    )
-                else:
-                    logger.warning(
-                        'tried to remove non-existing class: {}'.format(class_)
-                    )
-            else:
-                _remove_cl.append(class_)
-        self.classList.remove(*_remove_cl)
-
-    def show(self):
-        self.hidden = False
-
-    def hide(self):
-        self.hidden = True
+    __copy__ = _clone_node  # need alias again
 
     @property
-    def type(self) -> str:
+    def type(self) -> _AttrValueType:  # noqa: D102
         return self.getAttribute('type') or self.type_
 
     @type.setter
-    def type(self, val: str):
+    def type(self, val: str) -> None:  # noqa: D102
         self.setAttribute('type', val)
 
 
 class NestedTag(Tag):
-    #: Inner nested tag class
-    inner_tag_class = None
+    """NestedTag class.
 
-    def __init__(self, *args, **kwargs):
+    Useful to make component made by nested, multiple tags.
+    """
+
+    #: Inner nested tag class
+    inner_tag_class = None  # type: Type[Node]
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         self._inner_element = None
         super().__init__(**kwargs)
         if self.inner_tag_class:
@@ -166,80 +102,80 @@ class NestedTag(Tag):
             super().appendChild(self._inner_element)
         self.append(*args)
 
-    def appendChild(self, child) -> Node:
+    def appendChild(self, child: Node) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.appendChild(child)
-        else:
-            return super().appendChild(child)
+        return super().appendChild(child)
 
-    def insertBefore(self, child: Node, ref_node: Node) -> Node:
+    def insertBefore(self, child: Node, ref_node: Node) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.insertBefore(child, ref_node)
-        else:
-            return super().insertBefore(child, ref_node)
+        return super().insertBefore(child, ref_node)
 
-    def removeChild(self, child: Node) -> Node:
+    def removeChild(self, child: Node) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.removeChild(child)
-        else:
-            return super().removeChild(child)
+        return super().removeChild(child)
 
-    def replaceChild(self, new_child: Node, old_child: Node) -> Node:
+    def replaceChild(self, new_child: Node, old_child: Node
+                     ) -> Node:  # noqa: D102
         if self._inner_element:
             return self._inner_element.replaceChild(new_child, old_child)
-        else:
-            return super().replaceChild(new_child, old_child)
+        return super().replaceChild(new_child, old_child)
 
     @property
-    def childNodes(self):
+    def childNodes(self) -> NodeList:  # noqa: D102
         if self._inner_element:
             return self._inner_element.childNodes
-        else:
-            return super().childNodes
+        return super().childNodes
 
-    def empty(self):
+    def empty(self) -> None:  # noqa: D102
         if self._inner_element:
             self._inner_element.empty()
         else:
             super().empty()
 
     @Tag.textContent.setter
-    def textContent(self, text: str):
+    def textContent(self, text: str) -> None:  # type: ignore
+        """Set text content to inner node."""
         if self._inner_element:
             self._inner_element.textContent = text
         else:
             # Need a trick to call property of super-class
-            super().textContent = text
+            super().textContent = text  # type: ignore
 
     @property
     def html(self) -> str:
+        """Get whole html representation of this node."""
         if self._inner_element:
             return self.start_tag + self._inner_element.html + self.end_tag
-        else:
-            return super().html
+        return super().html
 
     @property
     def innerHTML(self) -> str:
+        """Get innerHTML of the inner node."""
         if self._inner_element:
             return self._inner_element.innerHTML
-        else:
-            return super().innerHTML
+        return super().innerHTML
 
     @innerHTML.setter
-    def innerHTML(self, html: str):
+    def innerHTML(self, html: str) -> None:
+        """Set html to inner node."""
         if self._inner_element:
             self._inner_element.innerHTML = html
         else:
-            super().innerHTML = html
+            super().innerHTML = html  # type: ignore
 
 
-def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
-                **kwargs) -> type:
-    '''Generate and return new ``Tag`` class. If ``tag`` is empty, lower case
-    of ``class_name`` is used for a tag name of the new class. ``bases`` should
-    be a tuple of base classes. If it is empty, use ``Tag`` class for a base
-    class. Other keyword arguments are used for class variables of the new
-    class.
+def NewTagClass(class_name: str, tag: str = None,
+                bases: Union[type, Iterable] = (Tag, ),
+                **kwargs: Any) -> type:
+    """Generate and return new ``Tag`` class.
+
+    If ``tag`` is empty, lower case of ``class_name`` is used for a tag name of
+    the new class. ``bases`` should be a tuple of base classes. If it is empty,
+    use ``Tag`` class for a base class. Other keyword arguments are used for
+    class variables of the new class.
 
     Example::
 
@@ -248,8 +184,8 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
         my_button = MyButton('Click!')
         print(my_button.html)
 
-        >>> <button class="btn" id="111111111">Click!</button>
-    '''
+        >>> <button class="btn" id="111111111" is="my-button">Click!</button>
+    """
     if tag is None:
         tag = class_name.lower()
     if not isinstance(type, tuple):
@@ -262,32 +198,34 @@ def NewTagClass(class_name: str, tag: str=None, bases: Tuple[type]=(Tag, ),
     kwargs['tag'] = tag
     # Here not use type() function, since it does not support
     # metaclasss (__prepare__) properly.
-    cls = new_class(class_name, bases, {}, lambda ns: ns.update(kwargs))
+    cls = new_class(  # type: ignore
+        class_name, bases, {}, lambda ns: ns.update(kwargs))
     return cls
 
 
 class Input(Tag, HTMLInputElement):
-    '''Base class for ``<input>`` element.
-    '''
+    """Base class for ``<input>`` element."""
+
     tag = 'input'
     #: type attribute; text, button, checkbox, or radio... and so on.
     type_ = ''
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         super().__init__(*args, **kwargs)
 
 
-class Textarea(Tag, HTMLTextAreaElement):
-    '''Base class for ``<textarea>`` element.'''
+class Textarea(Tag, HTMLTextAreaElement):  # noqa: D204
+    """Base class for ``<textarea>`` element."""
     tag = 'textarea'
 
     @property
     def value(self) -> str:
-        '''Get input value of this node. This value is used as a default value
-        of this element.
-        '''
+        """Get input value of this node.
+
+        This value is used as a default value of this element.
+        """
         return self.textContent
 
     @value.setter
@@ -295,10 +233,15 @@ class Textarea(Tag, HTMLTextAreaElement):
         self.textContent = value
 
 
-class Script(Tag, HTMLScriptElement):
+class Script(Tag, HTMLScriptElement):  # noqa: D204
+    """Base class for <script> tag.
+
+    Inner contents of this node is not escaped.
+    """
     tag = 'script'
 
-    def __init__(self, *args, type='text/javascript', **kwargs):
+    def __init__(self, *args: Any, type: str = 'text/javascript',
+                 **kwargs: Any) -> None:  # noqa: D102
         super().__init__(*args, type=type, **kwargs)
 
 
@@ -359,52 +302,46 @@ Dd = NewTagClass('Dd')
 Form = NewTagClass('Form', 'form', (Tag, HTMLFormElement))
 Button = NewTagClass('Button', 'button', (Tag, HTMLButtonElement))
 Label = NewTagClass('Label', 'label', (Tag, HTMLLabelElement))
-TextInput = NewTagClass('TextInput', 'input', Input, type_='text')
-CheckBox = NewTagClass('CheckBox', 'input', Input, type_='checkbox')
-RadioButton = NewTagClass('RadioButton', 'input', Input, type_='radio')
-Select = NewTagClass('Select', 'select', (NestedTag, HTMLSelectElement))
-Optgroup = NewTagClass('OptGroup', 'optgroup', (Tag, HTMLOptGroupElement))
+Optgroup = NewTagClass('Optgroup', 'optgroup', (Tag, HTMLOptGroupElement))
 Option = NewTagClass('Option', 'option', (Tag, HTMLOptionElement))
+Select = NewTagClass('Select', 'select', (Tag, HTMLSelectElement))
 
-# Building blocks
-Container = NewTagClass('Container', 'div', Div, is_='container')
-Wrapper = NewTagClass('Wrapper', 'div', Div, is_='wrapper')
-Row = NewTagClass('Row', 'div', Div, is_='row')
-FormGroup = NewTagClass('FormGroup', 'div', Div, is_='formgroup')
-Col = NewTagClass('Col', 'div', Div, is_='col')
-Col1 = NewTagClass('Col1', 'div', Div, is_='col1')
-Col2 = NewTagClass('Col2', 'div', Div, is_='col2')
-Col3 = NewTagClass('Col3', 'div', Div, is_='col3')
-Col4 = NewTagClass('Col4', 'div', Div, is_='col4')
-Col5 = NewTagClass('Col5', 'div', Div, is_='col5')
-Col6 = NewTagClass('Col6', 'div', Div, is_='col6')
-Col7 = NewTagClass('Col7', 'div', Div, is_='col7')
-Col8 = NewTagClass('Col8', 'div', Div, is_='col8')
-Col9 = NewTagClass('Col9', 'div', Div, is_='col9')
-Col10 = NewTagClass('Col10', 'div', Div, is_='col10')
-Col11 = NewTagClass('Col11', 'div', Div, is_='col11')
-Col12 = NewTagClass('Col12', 'div', Div, is_='col12')
 
-# Some css updates
-DefaultButton = NewTagClass('DefaultButton', 'button', Button, is_='default-button')  # noqa: E501
-PrimaryButton = NewTagClass('PrimaryButton', 'button', Button, is_='primary-button')  # noqa: E501
-SecondaryButton = NewTagClass('SecondaryButton', 'button', Button, is_='secondary-button')  # noqa: E501
-SuccessButton = NewTagClass('SuccessButton', 'button', Button, is_='success-button')  # noqa: E501
-InfoButton = NewTagClass('InfoButton', 'button', Button, is_='info-button')  # noqa: E501
-WarningButton = NewTagClass('WarningButton', 'button', Button, is_='warning-button')  # noqa: E501
-DangerButton = NewTagClass('DangerButton', 'button', Button, is_='danger-button')  # noqa: E501
-ErrorButton = NewTagClass('ErrorButton', 'button', Button, is_='error-button')  # noqa: E501
-LinkButton = NewTagClass('LinkButton', 'button', Button, is_='link-button')  # noqa: E501
+class RawHtmlNode(Tag):
+    """Does not escape inner contents, similar to ``<script>`` tag.
 
-# css/js/headers
-css_files = []
-js_files = []
-headers = []
+    This node wraps contents by ``<div style="display: inline">...</div>`` and
+    does not escape inner text. Similar to ``wdom.node.RawHtmlNode``, but the
+    difference is this class wraps text by div tag. This enables to treat
+    multi-tag html string as if it's single node.
+
+    Useful for showing generated HTML contents, like markdown conversion
+    result, graph plots, or HTML formatted reports.
+    Usually faster than ``Tag.innerHTML = html``, since this node skips html
+    parsing process to WdomElement.
+
+    Example::
+
+        doc.body.appnd(RawHtml('<h1>Title</h1>'))
+
+    .. note::
+
+        Inner html is not WdomElement, so you cant control them from python.
+    """
+
+    tag = 'div'
+    _should_escape_text = False
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        """Add ``display: inline`` style on div tag."""
+        super().__init__(*args, **kwargs)
+        if 'display' not in self.style:
+            self.style.setProperty('display', 'inline')
+
 
 default_classes = (
     Input,
     Textarea,
-    Button,
     Script,
     Html,
     Body,
@@ -446,36 +383,13 @@ default_classes = (
     Dt,
     Dd,
     Form,
+    Button,
     Label,
+    Optgroup,
     Option,
     Select,
 )
 
-extended_classes = [
-    Container,
-    Wrapper,
-    Row,
-    FormGroup,
-    Col,
-    Col1,
-    Col2,
-    Col3,
-    Col4,
-    Col5,
-    Col6,
-    Col7,
-    Col8,
-    Col9,
-    Col10,
-    Col11,
-    Col12,
-    DefaultButton,
-    PrimaryButton,
-    SecondaryButton,
-    SuccessButton,
-    InfoButton,
-    WarningButton,
-    DangerButton,
-    ErrorButton,
-    LinkButton,
-]
+# alias
+OptGroup = Optgroup
+TextArea = Textarea

@@ -1,11 +1,26 @@
 Version 0.2
 -----------
 
-(next version)
+Version 0.2.0 (2017-08-11)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Drop python 3.4 support (in plan)
+* **Python 3.4 is NOT Supported**
+    * Use async/await
+    * Add type hints (pass mypy check)
+* Write docstrings (pass pydocstyle check)
+* Enable ``python setup.py test``
+* Moved ``suppress_logging`` function from ``wdom.testing`` to ``wdom.misc``
+* Improve auto-reload sequence
+* Parse html using custom elements
+  * Find elements from customElementsRegistory
+* Move non-standard tag classes from ``wdom.tag`` to ``wdom.themes``
+* Add ``wdom.tag.RawHtmlNode`` class
+* Support more events
+    * Keyboard event support
+    * Document/Window level event support
+    * Drag and drop event support
 
-Version 0.1.8 (not released)
+Version 0.1.8 (2017-07-23)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Raise warning if python version is < 3.5

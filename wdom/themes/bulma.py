@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# flake8: noqa
 
 from wdom.tag import NewTagClass as NewTag
-from wdom.tag import *
+from wdom.themes import *
 
 name = 'Bulma'
 project_url = 'http://bulma.io/'
@@ -38,6 +39,7 @@ class Select(NestedTag):
     tag = 'span'
     class_ = 'select'
     inner_tag_class = Select
+    is_ = 'select'
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._inner_element.addEventListener('change', self.dispatchEvent)

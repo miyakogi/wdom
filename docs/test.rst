@@ -1,17 +1,26 @@
 Test Utilities
 ==============
 
+Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>`_ directory.
+
 .. warning:: This document is incomplete and all APIs are not stable.
+
+.. currentmodule:: wdom.testing
 
 .. automodule:: wdom.testing
 
-    .. autofunction:: reset
+   .. autofunction:: reset
 
-    .. autofunction:: suppress_logging
+   .. autoclass:: TestCase
+      :members:
 
-    .. autoclass:: TestCase
+   .. autoclass:: HTTPTestCase
+      :members:
 
-    .. autoclass:: HTTPTestCase
+   .. autoclass:: WebDriverTestCase
+      :members:
+
+   .. autoclass:: RemoteBrowserTestCase
       :members:
 
 
@@ -42,7 +51,7 @@ Test Utilities
 
         # in your test file
         from unittest import TestCase
-        from wdom.misc import install_asyncio
+        from wdom.util import install_asyncio
         form wdom.testing import WebDriverTestCase
 
         def setUpModule():

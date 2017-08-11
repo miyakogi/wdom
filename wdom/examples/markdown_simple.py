@@ -12,10 +12,13 @@ except ImportError:
           'by `pip install misaka pygments`.')
     exit()
 
-from wdom.document import get_document
-from wdom.themes.bootstrap3 import css_files, js_files
-from wdom.themes.bootstrap3 import Div, Textarea, Col6, Row, H1, Hr
-from wdom.themes.bootstrap3 import Select, Option, Style
+from wdom.options import config
+if config.theme is None:
+    config.theme = 'concise'  # fake command line `--theme` option
+from wdom.document import get_document  # noqa: E402
+from wdom.themes import default, RawHtmlNode  # noqa: E402
+from wdom.themes.default import Div, Textarea, Col6, Row, H1, Hr  # noqa: E402
+from wdom.themes.default import Select, Option, Style  # noqa: E402
 
 
 src = '''
@@ -81,33 +84,26 @@ class Editor(Row):
         viewer_col.appendChild(self.viewer)
 
         self.editor.addEventListener('input', self.render)
-        self.editor.addEventListener('change', self.render)
 
         self.set_style('default')
         self.editor.textContent = src
-        self.viewer.innerHTML = self.md(src)
-        # TIPS: Wen just showing HTML, `appendChild(RawHTML(html))` is better
+        # TIPS: Wen just showing HTML, `appendChild(RawHtmlNode)` is better
         # than innerHTML on performance since it skips parse process.
-        # from wdom.node import RawHtml
-        # self.viewer.appendChild(RawHtml(self.md(src)))
+        self.viewer.appendChild(RawHtmlNode(self.md(src)))
 
     def render(self, event):
         content = event.currentTarget.textContent
-        self.viewer.innerHTML = self.md(content)
-        # TIPS: Same as above reason, RawHtml is also better here
-        # self.viewer.empty()
-        # self.viewer.appendChild(RawHtml(self.md(content)))
+        # self.viewer.innerHTML = self.md(content)
+        # TIPS: Same as above reason, RawHtml node is also better here
+        self.viewer.replaceChild(RawHtmlNode(self.md(content)),
+                                 self.viewer.firstChild)
 
     def set_style(self, style: str):
         self.css.innerHTML = HtmlFormatter(style=style).get_style_defs()
 
 
 def sample_page(**kwargs):
-    doc = get_document(**kwargs)
-    for js in js_files:
-        doc.add_jsfile(js)
-    for css in css_files:
-        doc.add_cssfile(css)
+    get_document().register_theme(default)
     app = Div(style='width: 90vw; margin: auto')
     title = H1('Simple Markdown Editor', class_='text-center')
     app.appendChild(title)
