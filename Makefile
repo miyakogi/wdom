@@ -47,6 +47,7 @@ clean-test: ## remove test and coverage artifacts
 	@echo "Remove test/coverage files (.coverage, htmlcov/)."
 	@rm -f .coverage
 	@rm -fr htmlcov/
+	@rm -f wdom/tests/browser/local/tmp*.py
 
 
 .PHONY: green green-cov green-single unittests
