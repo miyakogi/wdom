@@ -10,6 +10,8 @@ from tempfile import NamedTemporaryFile
 
 from selenium.common.exceptions import NoSuchElementException
 
+from syncer import sync
+
 from wdom.testing import get_webdriver, free_port, browser_implict_wait
 from wdom.testing import TestCase, close_webdriver
 
@@ -72,7 +74,7 @@ class TestAutoReload(TestCase):
         with open(css_path, 'w') as f:
             f.write(src_css)
         self.port = free_port()
-        self.wait()
+        self.wait_short()
         self.url = 'http://localhost:{}'.format(self.port)
         tmpfile = NamedTemporaryFile(mode='w+', dir=CURDIR, suffix='.py',
                                      delete=False)
@@ -96,33 +98,40 @@ class TestAutoReload(TestCase):
     def wait(self, t: float = None):
         _t = t or self.wait_time
         for i in range(10):
-            asyncio.get_event_loop().run_until_complete(asyncio.sleep(_t/10))
+            sync(asyncio.sleep(_t/10))
 
     def wait_short(self, t: float = None):
-        asyncio.get_event_loop().run_until_complete(
-            asyncio.sleep(t or (self.wait_time / 10)))
+        sync(asyncio.sleep(t or (self.wait_time / 10)))
+
+    def get_element_by_id(self, _id):
+        for i in range(30):
+            self.wait_short()
+            try:
+                elm = self.wd.find_element_by_id(_id)
+            except NoSuchElementException:
+                continue
+            else:
+                return elm
+        raise NoSuchElementException
 
     def check_reload(self, args):
         self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
         self.wait()
         self.wd.get(self.url)
-        self.wait()
-        try:
-            h1 = self.wd.find_element_by_id('h1')
-        except NoSuchElementException:
-            self.wait()
-            h1 = self.wd.find_element_by_id('h1')
+        h1 = self.get_element_by_id('h1')
         self.assertEqual(h1.text, 'FIRST')
 
         with open(self.tmpfilename, 'w') as f:
             f.write(src_base.replace('FIRST', 'SECOND'))
-        self.wait()
-        try:
-            h1 = self.wd.find_element_by_id('h1')
-        except NoSuchElementException:
-            self.wait()
-            h1 = self.wd.find_element_by_id('h1')
-        h1 = self.wd.find_element_by_id('h1')
+
+        for i in range(30):
+            self.wait_short()
+            try:
+                h1 = self.wd.find_element_by_id('h1')
+            except NoSuchElementException:
+                continue
+            if h1.text == 'SECOND':
+                break
         self.assertEqual(h1.text, 'SECOND')
         self.proc.terminate()
         self.proc.wait()
@@ -147,23 +156,22 @@ class TestAutoReload(TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
         self.wait()
         self.wd.get(self.url)
-        self.wait()
-        try:
-            h1 = self.wd.find_element_by_id('h1')
-        except NoSuchElementException:
-            self.wait()
-            h1 = self.wd.find_element_by_id('h1')
+        h1 = self.get_element_by_id('h1')
         # value_of_css_property return colors as rgba style
         self.assertRegex(h1.value_of_css_property('color'),
                          r'0,\s*0,\s* 0,\s*1\s*')
+
         with open(css_path, 'w') as f:
             f.write(src_css_post)
-        self.wait()
-        try:
-            h1 = self.wd.find_element_by_id('h1')
-        except NoSuchElementException:
-            self.wait()
-            h1 = self.wd.find_element_by_id('h1')
+
+        for i in range(30):
+            self.wait_short()
+            try:
+                h1 = self.wd.find_element_by_id('h1')
+            except NoSuchElementException:
+                continue
+            if '255' in h1.value_of_css_property('color'):
+                break
         self.assertRegex(h1.value_of_css_property('color'),
                          r'255,\s*0,\s* 0,\s*1\s*')
         self.proc.terminate()
@@ -181,23 +189,16 @@ class TestAutoReload(TestCase):
         self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
         self.wait()
         self.wd.get(self.url)
-        self.wait()
-        try:
-            h1 = self.wd.find_element_by_id('h1')
-        except NoSuchElementException:
-            self.wait()
-            h1 = self.wd.find_element_by_id('h1')
+
+        h1 = self.get_element_by_id('h1')
         # value_of_css_property return colors as rgba style
         self.assertRegex(h1.value_of_css_property('color'),
                          r'0,\s*0,\s* 0,\s*1\s*')
         with open(css_path, 'w') as f:
             f.write(src_css_post)
+
         self.wait()
-        try:
-            h1 = self.wd.find_element_by_id('h1')
-        except NoSuchElementException:
-            self.wait()
-            h1 = self.wd.find_element_by_id('h1')
+        h1 = self.get_element_by_id('h1')
         self.assertRegex(h1.value_of_css_property('color'),
                          r'0,\s*0,\s* 0,\s*1\s*')
         self.proc.terminate()
