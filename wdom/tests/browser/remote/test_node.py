@@ -10,15 +10,15 @@ from syncer import sync
 
 from wdom.testing import TestCase
 from wdom.document import get_document
-from wdom.util import install_asyncio
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WdomElement
 from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
 from wdom.testing import start_remote_browser, close_remote_browser
+from wdom.util import suppress_logging
 
 
 def setUpModule():
-    install_asyncio()
+    suppress_logging()
     start_remote_browser()
 
 

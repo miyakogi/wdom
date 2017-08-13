@@ -12,10 +12,6 @@ from wdom.testing import TestCase
 from wdom.testing import close_webdriver, get_webdriver
 
 
-def setUpModule():
-    pass
-
-
 def tearDownModule():
     close_webdriver()
 
@@ -38,6 +34,7 @@ class BaseTestCase(object):
 
     def tearDown(self):
         self.proc.terminate()
+        self.proc.wait()
         super().tearDown()
 
 

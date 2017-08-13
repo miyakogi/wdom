@@ -10,13 +10,8 @@ from tempfile import NamedTemporaryFile
 
 from selenium.common.exceptions import NoSuchElementException
 
-from wdom.util import install_asyncio
 from wdom.testing import get_webdriver, free_port, browser_implict_wait
 from wdom.testing import TestCase, close_webdriver
-
-
-def setUpModule():
-    install_asyncio()
 
 
 def tearDownModule():
@@ -29,12 +24,10 @@ src_base = '''
 import sys
 import asyncio
 
-from wdom.util import install_asyncio
 from wdom.tag import H1
 from wdom.document import get_document
 from wdom import server
 
-install_asyncio()
 loop = asyncio.get_event_loop()
 doc = get_document()
 doc.body.appendChild(H1('FIRST', id='h1'))
@@ -131,6 +124,8 @@ class TestAutoReload(TestCase):
             h1 = self.wd.find_element_by_id('h1')
         h1 = self.wd.find_element_by_id('h1')
         self.assertEqual(h1.text, 'SECOND')
+        self.proc.terminate()
+        self.proc.wait()
 
     def test_autoreload(self):
         with open(self.tmpfilename, 'w') as f:
@@ -171,6 +166,8 @@ class TestAutoReload(TestCase):
             h1 = self.wd.find_element_by_id('h1')
         self.assertRegex(h1.value_of_css_property('color'),
                          r'255,\s*0,\s* 0,\s*1\s*')
+        self.proc.terminate()
+        self.proc.wait()
 
     def test_autoreload_css(self):
         with open(self.tmpfilename, 'w') as f:
@@ -203,6 +200,8 @@ class TestAutoReload(TestCase):
             h1 = self.wd.find_element_by_id('h1')
         self.assertRegex(h1.value_of_css_property('color'),
                          r'0,\s*0,\s* 0,\s*1\s*')
+        self.proc.terminate()
+        self.proc.wait()
 
     def test_autoreload_exclude_css(self):
         with open(self.tmpfilename, 'w') as f:

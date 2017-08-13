@@ -29,12 +29,11 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
-from tornado.platform.asyncio import AsyncIOMainLoop, to_asyncio_future
+from tornado.platform.asyncio import to_asyncio_future
 from tornado.websocket import websocket_connect, WebSocketClientConnection
 
 from wdom import options, server
 from wdom.element import Element
-from wdom.util import install_asyncio
 from wdom.window import customElements
 
 if TYPE_CHECKING:
@@ -556,25 +555,13 @@ class WebDriverTestCase:
     wait_time = 0.01
     #: secondes for deault timeout for ``wait_until`` method
     timeout = 1.0
-    _orig_loop = None  # type: AbstractEventLoop
 
     @classmethod
     def setUpClass(cls) -> None:  # noqa: D102
-        # Keep original loop
-        cls._orig_loop = asyncio.get_event_loop()
-        # When change default loop, tornado's ioloop needs to be reinstalled
-        AsyncIOMainLoop().clear_current()
-        AsyncIOMainLoop().clear_instance()
-        install_asyncio()
         reset()
 
     @classmethod
     def tearDownClass(cls) -> None:  # noqa: D102
-        # Set original loop and reinstall to tornado
-        asyncio.set_event_loop(cls._orig_loop)
-        AsyncIOMainLoop().clear_current()
-        AsyncIOMainLoop().clear_instance()
-        install_asyncio()
         reset()
 
     def start(self) -> None:
@@ -582,10 +569,8 @@ class WebDriverTestCase:
         self.wd = get_webdriver()
 
         def start_server(port: int) -> None:
-            import asyncio
             from wdom import server
-            server.start_server(port=port)
-            asyncio.get_event_loop().run_forever()
+            server.start(port=port)
 
         self.address = 'localhost'
         self.port = free_port()

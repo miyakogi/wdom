@@ -11,7 +11,7 @@ from typing import Any
 
 from tornado import autoreload
 
-from wdom.util import STATIC_DIR, install_asyncio
+from wdom.util import STATIC_DIR
 from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
 from wdom.server import _tornado as module
@@ -88,7 +88,6 @@ def start_server(browser: str = None, address: str = None,
     if os.path.exists(doc.tempdir):
         add_static_path('tmp', doc.tempdir, no_watch=True)
     if doc._autoreload or config.autoreload or config.debug:
-        install_asyncio()
         autoreload.start(check_time=check_time)
     global _server
     _server = module.start_server(**kwargs)

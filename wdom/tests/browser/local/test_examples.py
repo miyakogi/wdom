@@ -6,13 +6,13 @@ from selenium.webdriver.support.color import Color
 
 from wdom.tag import H1
 from wdom.document import get_document, set_app
-from wdom.util import install_asyncio
 from wdom.testing import WebDriverTestCase, TestCase
 from wdom.testing import close_webdriver
+from wdom.util import suppress_logging
 
 
 def setUpModule():
-    install_asyncio()
+    suppress_logging()
 
 
 def tearDownModule():

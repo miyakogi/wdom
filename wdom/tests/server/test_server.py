@@ -17,12 +17,11 @@ from syncer import sync
 from wdom import server
 from wdom.document import get_document
 from wdom.testing import HTTPTestCase
-from wdom.util import install_asyncio
+from wdom.util import suppress_logging
 
 curdir = path.dirname(__file__)
 root = path.dirname(path.dirname(path.dirname(curdir)))
 script = '''
-import asyncio
 from wdom import document, server
 doc = document.get_document()
 with open(doc.tempdir + '/a.html', 'w') as f:
@@ -32,7 +31,7 @@ server.start()
 
 
 def setUpModule():
-    install_asyncio()
+    suppress_logging()
 
 
 class TestServerBase(HTTPTestCase):
@@ -44,10 +43,10 @@ class TestServerBase(HTTPTestCase):
         sync(self.wait(times=3))
         env = os.environ.copy()
         env['PYTHONPATH'] = root
-        _ = tempfile.NamedTemporaryFile(mode='w+', suffix='.py', delete=False)
-        with _ as f:
-            self.tmp = f.name
-            f.write(script)
+        with tempfile.NamedTemporaryFile(
+                mode='w+', suffix='.py', delete=False) as fp:
+            self.tmp = fp.name
+            fp.write(script)
         cmd = [sys.executable, self.tmp, '--port', str(self.port)] + self.cmd
         self.url = 'http://localhost:{}'.format(self.port)
         self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
@@ -65,6 +64,8 @@ class TestServerBase(HTTPTestCase):
             os.remove(self.tmp)
         if self.proc.returncode is None:
             self.proc.terminate()
+        self.proc.wait()
+        self.proc.poll()
         sync(self.wait(times=10))
         super().tearDown()
 
@@ -88,6 +89,7 @@ class TestAutoShutdown(TestServerBase):
         ws = await self.ws_connect(self.ws_url)
         await self.wait(timeout=0.1, times=5)
         self.assertIsNone(self.proc.poll())
+        ws.close()
 
     @sync
     async def test_multi_connection(self):

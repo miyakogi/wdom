@@ -9,13 +9,13 @@ from selenium.common.exceptions import NoSuchElementException
 from wdom.tag import Tag, Textarea, Input, Label, Div, Select, Option, Form
 from wdom.themes import CheckBox
 from wdom.document import get_document
-from wdom.util import install_asyncio
 from wdom.testing import RemoteBrowserTestCase, TestCase
 from wdom.testing import start_remote_browser, close_remote_browser
+from wdom.util import suppress_logging
 
 
 def setUpModule():
-    install_asyncio()
+    suppress_logging()
     start_remote_browser()
 
 
