@@ -17,6 +17,13 @@ DOIT_CONFIG = {
 }
 
 
+def task_cleanup():  # type: ignore
+    """Cleanup project."""
+    return {
+        'actions': ['make clean'],
+    }
+
+
 def task_flake8():  # type: ignore
     """Run flake8 check."""
     return {
