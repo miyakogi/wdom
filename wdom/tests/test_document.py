@@ -308,6 +308,8 @@ class TestWdomDocument(TestCase):
         self.assertTrue(isinstance(elm.firstChild, themes.Container))
 
     def test_custom_tag_theme_default(self):
+        from wdom.util import suppress_logging
+        suppress_logging()
         from wdom.themes import default
         from wdom import themes
         self.doc.register_theme(default)
