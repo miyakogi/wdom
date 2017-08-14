@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Application and Server &#8212; WDOM 0.1.8 documentation</title>
+    <title>Application and Server &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -31,7 +31,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -51,12 +50,163 @@
             
   <div class="section" id="application-and-server">
 <h1>Application and Server<a class="headerlink" href="#application-and-server" title="Permalink to this headline">¶</a></h1>
-<p>WDOM applications consist of a single html document and a web server.</p>
+<p>WDOM applications consist of a single html <code class="xref py py-class docutils literal"><span class="pre">Document</span></code> and a web server.</p>
 <div class="section" id="html-document-object">
 <h2>HTML Document Object<a class="headerlink" href="#html-document-object" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="wdom.document.WdomDocument">
+<em class="property">class </em><code class="descclassname">wdom.document.</code><code class="descname">WdomDocument</code><span class="sig-paren">(</span><em>*</em>, <em>doctype=’html’</em>, <em>title=’W-DOM’</em>, <em>charset=’utf-8’</em>, <em>default_class=&lt;class ‘wdom.web_node.WdomElement’&gt;</em>, <em>autoreload=None</em>, <em>reload_wait=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document"><code class="xref py py-class docutils literal"><span class="pre">wdom.document.Document</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.event.WebEventTarget</span></code></p>
+<p>Main document class for WDOM applications.</p>
+<p>Create new document object for WDOM application.</p>
+<div class="admonition caution">
+<p class="first admonition-title">Caution</p>
+<p class="last">Don’t create new document from <a class="reference internal" href="#wdom.document.WdomDocument" title="wdom.document.WdomDocument"><code class="xref py py-class docutils literal"><span class="pre">WdomDocument</span></code></a> class
+constructor. Use <a class="reference internal" href="#wdom.document.get_new_document" title="wdom.document.get_new_document"><code class="xref py py-func docutils literal"><span class="pre">get_new_document()</span></code></a> function instead.</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>doctype</strong> (<em>str</em>) – doctype of the document (default: html).</li>
+<li><strong>title</strong> (<em>str</em>) – title of the document.</li>
+<li><strong>charset</strong> (<em>str</em>) – charset of the document.</li>
+<li><strong>default_class</strong> (<a class="reference internal" href="node.html#wdom.element.HTMLElement.type" title="wdom.element.HTMLElement.type"><em>type</em></a>) – Set default Node class of the document. This
+class is used when make node by <code class="xref py py-meth docutils literal"><span class="pre">createElement()</span></code></li>
+<li><strong>autoreload</strong> (<em>bool</em>) – Enable/Disable autoreload (default: False).</li>
+<li><strong>reload_wait</strong> (<em>float</em>) – How long (seconds) wait to reload. This
+parameter is only used when autoreload is enabled.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="wdom.document.WdomDocument.tempdir">
+<code class="descname">tempdir</code><a class="headerlink" href="#wdom.document.WdomDocument.tempdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return temporary directory used by this document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.document.WdomDocument.getElementByRimoId">
+<code class="descname">getElementByRimoId</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.getElementByRimoId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.getElementByRimoId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an element node with <code class="docutils literal"><span class="pre">rimo_id</span></code>.</p>
+<p>If this document does not have the element with the id, return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">WebEventTarget</span></code>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.document.WdomDocument.add_jsfile">
+<code class="descname">add_jsfile</code><span class="sig-paren">(</span><em>src</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.add_jsfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.add_jsfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add JS file to load at this document’s bottom of the body.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.document.WdomDocument.add_jsfile_head">
+<code class="descname">add_jsfile_head</code><span class="sig-paren">(</span><em>src</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.add_jsfile_head"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.add_jsfile_head" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add JS file to load at this document’s header.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.document.WdomDocument.add_cssfile">
+<code class="descname">add_cssfile</code><span class="sig-paren">(</span><em>src</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.add_cssfile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.add_cssfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add CSS file to load at this document’s header.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.document.WdomDocument.add_header">
+<code class="descname">add_header</code><span class="sig-paren">(</span><em>header</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.add_header"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.add_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert header tag staring at this document’s header.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>header</strong> (<em>str</em>) – tag to insert &lt;head&gt; ~ &lt;/head&gt; area.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.document.WdomDocument.register_theme">
+<code class="descname">register_theme</code><span class="sig-paren">(</span><em>theme</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.register_theme"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.register_theme" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set theme for this docuemnt.</p>
+<p>This method sets theme’s js/css files and headers on this document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>theme</strong> (<em>ModuleType</em>) – a module which has <code class="docutils literal"><span class="pre">js_files</span></code>, <code class="docutils literal"><span class="pre">css_files</span></code>,
+<code class="docutils literal"><span class="pre">headers</span></code>, and <code class="docutils literal"><span class="pre">extended_classes</span></code>. see <code class="docutils literal"><span class="pre">wdom.themes</span></code>
+directory actual theme module structures.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.document.WdomDocument.build">
+<code class="descname">build</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.build" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return HTML representation of this document.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="wdom.document.get_new_document">
-<code class="descclassname">wdom.document.</code><code class="descname">get_new_document</code><span class="sig-paren">(</span><em>include_rimo=True</em>, <em>include_skeleton=False</em>, <em>include_normalizecss=False</em>, <em>autoreload=None</em>, <em>reload_wait=None</em>, <em>log_level=None</em>, <em>log_prefix=None</em>, <em>log_console=False</em>, <em>ws_url=None</em>, <em>message_wait=None</em>, <em>document_factory=&lt;class ‘wdom.document.Document’&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_new_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_new_document" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">wdom.document.</code><code class="descname">get_new_document</code><span class="sig-paren">(</span><em>include_rimo=True</em>, <em>include_skeleton=False</em>, <em>include_normalizecss=False</em>, <em>autoreload=None</em>, <em>reload_wait=None</em>, <em>log_level=None</em>, <em>log_prefix=None</em>, <em>log_console=False</em>, <em>ws_url=None</em>, <em>message_wait=None</em>, <em>document_factory=&lt;class ‘wdom.document.WdomDocument’&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_new_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_new_document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new <a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document"><code class="xref py py-class docutils literal"><span class="pre">Document</span></code></a> object with options.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -92,7 +242,7 @@ object.</li>
 
 <dl class="function">
 <dt id="wdom.document.get_document">
-<code class="descclassname">wdom.document.</code><code class="descname">get_document</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_document" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">wdom.document.</code><code class="descname">get_document</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get current root document object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -147,6 +297,8 @@ path do not trigger restart if <code class="docutils literal"><span class="pre">
 <dd><p>Start web server.</p>
 <p>Run until <code class="docutils literal"><span class="pre">Ctrl-c</span></code> pressed, or if auto-shutdown is enabled, until when
 all browser windows are closed.</p>
+<p>This function accepts keyword areguments same as <a class="reference internal" href="#wdom.server.start_server" title="wdom.server.start_server"><code class="xref py py-func docutils literal"><span class="pre">start_server()</span></code></a> and
+all arguments passed to it.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -173,14 +325,23 @@ all browser windows are closed.</p>
 
 <dl class="function">
 <dt id="wdom.server.start_server">
-<code class="descclassname">wdom.server.</code><code class="descname">start_server</code><span class="sig-paren">(</span><em>browser=None</em>, <em>address=None</em>, <em>check_time=500</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.start_server" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start web server.</p>
+<code class="descclassname">wdom.server.</code><code class="descname">start_server</code><span class="sig-paren">(</span><em>address=’localhost’</em>, <em>port=8888</em>, <em>check_time=500</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/server.html#start_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.server.start_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start web server on <code class="docutils literal"><span class="pre">address:port</span></code>.</p>
 <p>Use wrapper function <a class="reference internal" href="#wdom.server.start" title="wdom.server.start"><code class="xref py py-func docutils literal"><span class="pre">start()</span></code></a> instead.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">HTTPServer</span></code></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>address</strong> (<em>str</em>) – address of the server [default: localhost].</li>
+<li><strong>port</strong> (<em>int</em>) – tcp port of the server [default: 8888].</li>
+<li><strong>check_time</strong> (<em>int</em>) – millisecondes to wait until reload browser when
+autoreload is enabled [default: 500].</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">HTTPServer</span></code></p>
+</td>
 </tr>
 </tbody>
 </table>

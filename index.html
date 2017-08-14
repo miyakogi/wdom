@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>WDOM &#8212; WDOM 0.1.8 documentation</title>
+    <title>WDOM &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -30,7 +30,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -94,9 +93,7 @@ not stable, and may be changed in future release.</p>
 <div class="section" id="requirements">
 <h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
 <p>Python 3.5.3+ and any modern-browsers are required.
-Also supports Electron and PyQt’s webkit browsers.
-IE is not supported, but most of features will work with IE11 (but not
-recomended).</p>
+Also supports Electron and PyQt’s webkit browsers.</p>
 </div>
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
@@ -146,10 +143,12 @@ tag classes to easily generate elements:</p>
 <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="kn">import</span> <span class="n">set_app</span>
 <span class="kn">from</span> <span class="nn">wdom.server</span> <span class="kn">import</span> <span class="n">start</span>
 
+<span class="k">def</span> <span class="nf">rev_text</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+    <span class="n">elm</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">currentTarget</span>
+    <span class="n">elm</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">elm</span><span class="o">.</span><span class="n">textContent</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">h1</span> <span class="o">=</span> <span class="n">H1</span><span class="p">(</span><span class="s1">&#39;Hello, WDOM&#39;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">rev_text</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-        <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">h1</span><span class="o">.</span><span class="n">textContent</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">h1</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="n">rev_text</span><span class="p">)</span>
     <span class="n">set_app</span><span class="p">(</span><span class="n">h1</span><span class="p">)</span>
     <span class="n">start</span><span class="p">()</span>
@@ -169,7 +168,7 @@ tag classes to easily generate elements:</p>
         <span class="bp">self</span><span class="o">.</span><span class="n">textbox</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">target</span><span class="o">.</span><span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">currentTarget</span><span class="o">.</span><span class="n">value</span>
         <span class="c1"># Or, you can write as below</span>
         <span class="c1"># self.text.textContent = self.textbox.value</span>
 
@@ -209,10 +208,12 @@ frameworks. For example, use bootstrap3:</p>
 <li>import tag classes from <code class="docutils literal"><span class="pre">wdom.themes.[theme_name]</span></code> instead of <code class="docutils literal"><span class="pre">wdom.tag</span></code></li>
 <li>register theme-module by <code class="docutils literal"><span class="pre">document.register_theme(theme_module)</span></code></li>
 </ul>
-<p>If you want to more easily change themes (or, css frameworks), try command-line option <code class="docutils literal"><span class="pre">--theme</span></code>.
-<code class="docutils literal"><span class="pre">wdom.themes.default</span></code> module is switched by <code class="docutils literal"><span class="pre">--theme</span></code> option.</p>
-<p>For example, in the above code, change <code class="docutils literal"><span class="pre">bootstrap3</span></code> to <code class="docutils literal"><span class="pre">default</span></code>.
-And execute the code with <code class="docutils literal"><span class="pre">--theme</span> <span class="pre">theme_name</span></code> option (see below).</p>
+<p>If you want to more easily change themes (or, css frameworks), try command-line
+option <code class="docutils literal"><span class="pre">--theme</span></code>. <code class="docutils literal"><span class="pre">wdom.themes.default</span></code> module would be switched to
+<code class="docutils literal"><span class="pre">--theme</span></code> option.</p>
+<p>For example, in the above code, change <code class="docutils literal"><span class="pre">from</span> <span class="pre">wdom.themes</span> <span class="pre">import</span> <span class="pre">bootstrap3</span></code> to
+<code class="docutils literal"><span class="pre">from</span> <span class="pre">wdom.themes</span> <span class="pre">import</span> <span class="pre">default</span></code>. And execute the code with <code class="docutils literal"><span class="pre">--theme</span>
+<span class="pre">theme_name</span></code> option (see below).</p>
 <a class="reference external image-reference" href="https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif"><img alt="https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif" src="https://raw.githubusercontent.com/wiki/miyakogi/wdom/screencasts/themes.gif" style="width: 90%;" /></a>
 <p>Currently, WDOM bundles 20+ CSS frameworks by default, and they are listed in
 <a class="reference external" href="https://github.com/miyakogi/wdom/wiki/ScreenShots">Wiki</a> with screenshots. In

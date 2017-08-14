@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.event &#8212; WDOM 0.1.8 documentation</title>
+    <title>wdom.event &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -29,7 +29,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -48,57 +47,251 @@
           <div class="body" role="main">
             
   <h1>Source code for wdom.event</h1><div class="highlight"><pre>
-<span></span><span class="ch">#!/usr/bin/env python3.5</span>
+<span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="c1"># -*- coding: utf-8 -*-</span>
 
-<span class="sd">&quot;&quot;&quot;Event related classes.&quot;&quot;&quot;</span>
+<span class="sd">&quot;&quot;&quot;Event classes.</span>
 
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="sd">Event representes events which take plase on browser DOM.</span>
+
+<span class="sd">Usually users don&#39;t need to instantiate these classes directly.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">asyncio</span> <span class="k">import</span> <span class="n">ensure_future</span><span class="p">,</span> <span class="n">iscoroutinefunction</span><span class="p">,</span> <span class="n">Future</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
 
-<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span>  <span class="c1"># noqa</span>
+<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">MutableMapping</span>  <span class="c1"># noqa</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">MutableMapping</span>  <span class="c1"># noqa: F401</span>
+
+
+<span class="c1"># EventMsgDict = TypedDict(&#39;EventMsgDict&#39;, {</span>
+<span class="c1">#     &#39;proto&#39;: str,</span>
+<span class="c1">#     &#39;type&#39;: str,</span>
+<span class="c1">#     &#39;currentTarget&#39;: Dict[str, str],</span>
+<span class="c1">#     &#39;target&#39;: Dict[str, str],</span>
+<span class="c1"># })</span>
+<span class="n">EventMsgDict</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">normalize_type</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Normalize DataTransfer&#39;s type strings.</span>
+
+<span class="sd">    https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-getdata</span>
+<span class="sd">    &#39;text&#39; -&gt; &#39;text/plain&#39;</span>
+<span class="sd">    &#39;url&#39; -&gt; &#39;text/uri-list&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;text&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;text/plain&#39;</span>
+    <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;url&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;text/uri-list&#39;</span>
+    <span class="k">return</span> <span class="nb">type</span>
+
+
+<div class="viewcode-block" id="DataTransfer"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer">[docs]</a><span class="k">class</span> <span class="nc">DataTransfer</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;DataTransfer object is used to transfer drag/drop data.</span>
+
+<span class="sd">    TODO: Currently always read/write enabled.</span>
+<span class="sd">    https://html.spec.whatwg.org/multipage/dnd.html#drag-data-store-mode</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_store</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># type: Dict[str, DataTransfer]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return number of items in this DataTransfer object.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Initialize a new empty DataTransfer object with id.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>  <span class="c1"># type: Dict[str, str]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+
+<div class="viewcode-block" id="DataTransfer.getData"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer.getData">[docs]</a>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get data of type format.</span>
+
+<span class="sd">        If this DataTransfer object does not have `type` data, return empty</span>
+<span class="sd">        string.</span>
+<span class="sd">        :arg str type: Data format of the data, like &#39;text/plain&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">normalize_type</span><span class="p">(</span><span class="nb">type</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataTransfer.setData"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer.setData">[docs]</a>    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set data of type format.</span>
+
+<span class="sd">        :arg str type: Data format of the data, like &#39;text/plain&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="n">normalize_type</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span></div>
+
+<div class="viewcode-block" id="DataTransfer.clearData"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer.clearData">[docs]</a>    <span class="k">def</span> <span class="nf">clearData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove data of type foramt.</span>
+
+<span class="sd">        If type argument is omitted, remove all data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">type</span> <span class="o">=</span> <span class="n">normalize_type</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span></div></div>
 
 
 <div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../event.html#wdom.event.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Event interface class.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Base class of Event classes.&quot;&quot;&quot;</span>
 
-    <span class="n">currentTarget</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[Node]</span>
-    <span class="n">target</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[Node]</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">currentTarget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;WebEventTarget&#39;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return current event target.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__currentTarget</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">target</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;WebEventTarget&#39;</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return original event target, which emitted this event first.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__target</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">EventMsgDict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Create event object.</span>
 
 <span class="sd">        First argument (type) is a string to represents type of this event.</span>
 <span class="sd">        Second optional argument (init) is a dictionally, which has fields for</span>
 <span class="sd">        this event&#39;s status.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementByRimoId</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">init</span>  <span class="c1"># type: dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">init</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;currentTarget&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+        <span class="n">ctarget</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__currentTarget</span> <span class="o">=</span> <span class="n">ctarget</span>
+        <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ctarget</span>
 
 <div class="viewcode-block" id="Event.stopPrapagation"><a class="viewcode-back" href="../../event.html#wdom.event.Event.stopPrapagation">[docs]</a>    <span class="k">def</span> <span class="nf">stopPrapagation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Not implemented yet.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
 
 
-<div class="viewcode-block" id="create_event"><a class="viewcode-back" href="../../event.html#wdom.event.create_event">[docs]</a><span class="k">def</span> <span class="nf">create_event</span><span class="p">(</span><span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-                 <span class="n">currentTarget</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">target</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">init</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Create Event and set target nodes.</span>
+<span class="k">class</span> <span class="nc">UIEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;Super class of user input related events.</span>
+
+<span class="sd">    Mouse/Touch/Focus/Keyboard/Wheel/Input/Composition/...Events are</span>
+<span class="sd">    descendants of this class.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+
+
+<div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../event.html#wdom.event.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;Mouse event class.</span>
+
+<span class="sd">    Event types generate this event class are ``click``, ``dblclick``,</span>
+<span class="sd">    ``mouseup``, and ``mousedown``.</span>
+
+<span class="sd">    This class has the following attributes:</span>
+
+<span class="sd">    altKey, button, clientX, clientY, ctrlKey, metaKey, movementX, movementY,</span>
+<span class="sd">    offsetX, offsetY, pageX, pageY, region, screenX, screenY, shiftKey, x, y</span>
+
+<span class="sd">    For details of the attributes, see</span>
+<span class="sd">    `MouseEvent - Web APIs | MDN</span>
+<span class="sd">    &lt;https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;altKey&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="s1">&#39;clientX&#39;</span><span class="p">,</span> <span class="s1">&#39;clientY&#39;</span><span class="p">,</span> <span class="s1">&#39;ctrlKey&#39;</span><span class="p">,</span> <span class="s1">&#39;metaKey&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;movementX&#39;</span><span class="p">,</span> <span class="s1">&#39;movementY&#39;</span><span class="p">,</span> <span class="s1">&#39;offsetX&#39;</span><span class="p">,</span> <span class="s1">&#39;offsetY&#39;</span><span class="p">,</span> <span class="s1">&#39;pageX&#39;</span><span class="p">,</span> <span class="s1">&#39;pageY&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;region&#39;</span><span class="p">,</span> <span class="s1">&#39;screenX&#39;</span><span class="p">,</span> <span class="s1">&#39;screenY&#39;</span><span class="p">,</span> <span class="s1">&#39;shiftKey&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">EventMsgDict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102,E501</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
+        <span class="n">rt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;relatedTarget&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+        <span class="n">rid</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">rid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementByRimoId</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../event.html#wdom.event.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">MouseEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;Drag event class.</span>
+
+<span class="sd">    This class inherits :py:class:`MouseEvent` class and has own attribute</span>
+<span class="sd">    `dataTransfer`, which is :py:class:`DataTransfer` containing data send by</span>
+<span class="sd">    this drag event.</span>
+
+<span class="sd">    Event types generate this event class are ``drag``, ``dragend``,</span>
+<span class="sd">    ``dragenter``, ``dragexit``, ``dragleave``, ``dragover``, ``dragstart``,</span>
+<span class="sd">    and ``drop``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">EventMsgDict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102,E501</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+        <span class="n">dt_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dataTransfer&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dt_id</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span> <span class="o">=</span> <span class="n">DataTransfer</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span> <span class="o">=</span> <span class="n">DataTransfer</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dt_id</span><span class="p">)</span>\
+                <span class="ow">or</span> <span class="n">DataTransfer</span><span class="p">(</span><span class="n">dt_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;dragend&#39;</span><span class="p">:</span>
+                <span class="n">DataTransfer</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">dt_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../event.html#wdom.event.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;Keyboard event class.</span>
+
+<span class="sd">    Event types generate this event class are ``keydown``, ``keypress``, and</span>
+<span class="sd">    ``keyup``.</span>
+
+<span class="sd">    This class has the following attributes:</span>
+
+<span class="sd">    altKey, code, ctrlKey, key, locale, metaKey, repeat, shiftKey</span>
+
+<span class="sd">    For details of the attributes, see</span>
+<span class="sd">    `KeyboardEvent - Web APIs | MDN</span>
+<span class="sd">    &lt;https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent&gt;`_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;altKey&#39;</span><span class="p">,</span> <span class="s1">&#39;code&#39;</span><span class="p">,</span> <span class="s1">&#39;ctrlKey&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;locale&#39;</span><span class="p">,</span> <span class="s1">&#39;metaKey&#39;</span><span class="p">,</span> <span class="s1">&#39;repeat&#39;</span><span class="p">,</span>
+             <span class="s1">&#39;shiftKey&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">EventMsgDict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102,E501</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span></div>
+
+
+<span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+    <span class="sd">&quot;&quot;&quot;Input event class.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">EventMsgDict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102,E501</span>
+        <span class="sd">&quot;&quot;&quot;Initialize DragEvent and set data attribute.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="s1">&#39;&#39;</span>
+
+
+<span class="n">proto_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;MouseEvent&#39;</span><span class="p">:</span> <span class="n">MouseEvent</span><span class="p">,</span>
+    <span class="s1">&#39;DragEvent&#39;</span><span class="p">:</span> <span class="n">DragEvent</span><span class="p">,</span>
+    <span class="s1">&#39;KeyboardEvent&#39;</span><span class="p">:</span> <span class="n">KeyboardEvent</span><span class="p">,</span>
+    <span class="s1">&#39;InputEvent&#39;</span><span class="p">:</span> <span class="n">InputEvent</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="create_event"><a class="viewcode-back" href="../../event.html#wdom.event.create_event">[docs]</a><span class="k">def</span> <span class="nf">create_event</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">EventMsgDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Create Event from JSOM msg and set target nodes.</span>
 
 <span class="sd">    :arg EventTarget currentTarget: Current event target node.</span>
 <span class="sd">    :arg EventTarget target: Node which emitted this event first.</span>
 <span class="sd">    :arg dict init: Event options.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">e</span> <span class="o">=</span> <span class="n">Event</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
-    <span class="n">e</span><span class="o">.</span><span class="n">currentTarget</span> <span class="o">=</span> <span class="n">currentTarget</span>
-    <span class="n">e</span><span class="o">.</span><span class="n">target</span> <span class="o">=</span> <span class="n">target</span>
+    <span class="n">proto</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proto&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">proto_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">proto</span><span class="p">,</span> <span class="n">Event</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">e</span></div>
 
 
@@ -149,20 +342,21 @@
 <span class="sd">    This class and subclasses can add/remove event listeners and emit events.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_listeners</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: MutableMapping[str, List[EventListener]]</span>
+    <span class="n">_event_listeners</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: MutableMapping[str, List[EventListener]]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ownerDocument</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Need to check the target is mounted on document or not.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_listeners</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="c1"># need to call super().__init__ to use as mixin class</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_add_event_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
                             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_add_event_listener_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WebIF</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;addEventListener&#39;</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">))</span>
 
 <div class="viewcode-block" id="EventTarget.addEventListener"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.addEventListener">[docs]</a>    <span class="k">def</span> <span class="nf">addEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
                          <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -173,12 +367,11 @@
 <span class="sd">        ``on``. For example, to add a listener which is called when this node</span>
 <span class="sd">        is clicked, event is ``&#39;click``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener_web</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_remove_event_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
                                <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">listeners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span>
+        <span class="n">listeners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">listeners</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">listeners</span><span class="p">:</span>
@@ -186,12 +379,7 @@
                 <span class="n">listeners</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
                 <span class="k">break</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">listeners</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span>
-
-    <span class="k">def</span> <span class="nf">_remove_event_listener_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WebIF</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">WebIF</span><span class="p">)</span> <span class="ow">and</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listeners</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeEventListener&#39;</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span>
 
 <div class="viewcode-block" id="EventTarget.removeEventListener"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.removeEventListener">[docs]</a>    <span class="k">def</span> <span class="nf">removeEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
                             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -200,21 +388,116 @@
 <span class="sd">        The listener is removed only when both event type and listener is</span>
 <span class="sd">        matched.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_event_listener_web</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_dispatch_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
-        <span class="n">_tasks</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">listener</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_listeners</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">listener</span><span class="o">.</span><span class="n">_is_coroutine</span><span class="p">:</span>
-                <span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">listener</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">listener</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">_tasks</span>
+<div class="viewcode-block" id="EventTarget.on_event_pre"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.on_event_pre">[docs]</a>    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run before dispatching events.</span>
 
-<div class="viewcode-block" id="EventTarget.dispatchEvent"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.dispatchEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dispatchEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
+<span class="sd">        Used for seting values changed by user input, in some elements like</span>
+<span class="sd">        input, textarea, or select. In this method, event.currentTarget is a</span>
+<span class="sd">        dict sent from browser.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">_dispatch_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">listener</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">]:</span>
+            <span class="n">listener</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+<div class="viewcode-block" id="EventTarget.dispatchEvent"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.dispatchEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dispatchEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Emit events.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div></div>
+
+
+<span class="n">_T_MsgItem</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">WebEventTarget</span><span class="p">(</span><span class="n">EventTarget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mixin class for web connection controll.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return ID used to relate python node and browser DOM node.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;When this instance has any connection, return True.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__reqid</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tasks</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: Dict</span>
+
+    <span class="k">def</span> <span class="nf">on_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Run when get response from browser.&quot;&quot;&quot;</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="p">:</span>
+            <span class="n">task</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tasks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;reqid&#39;</span><span class="p">),</span> <span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">cancelled</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
+                <span class="n">task</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">js_exec</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Execute ``method`` in the related node on browser.</span>
+
+<span class="sd">        Other keyword arguments are passed to ``params`` attribute.</span>
+<span class="sd">        If this node is not in any document tree (namely, this node does not</span>
+<span class="sd">        have parent node), the ``method`` is not executed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ws_send</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">args</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">js_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send query to related DOM on browser.</span>
+
+<span class="sd">        :param str query: single string which indicates query type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__reqid</span><span class="p">)</span>
+            <span class="n">fut</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>  <span class="c1"># type: Future[str]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tasks</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__reqid</span><span class="p">]</span> <span class="o">=</span> <span class="n">fut</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__reqid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">return</span> <span class="n">fut</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">Future</span><span class="p">()</span>  <span class="c1"># type: Future[None]</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">f</span>
+
+    <span class="k">def</span> <span class="nf">ws_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">_T_MsgItem</span><span class="p">],</span> <span class="n">_T_MsgItem</span><span class="p">]]</span>
+                <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Send ``obj`` as message to the related nodes on browser.</span>
+
+<span class="sd">        :arg dict obj: Message is serialized by JSON object and send via</span>
+<span class="sd">            WebSocket connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">wdom</span> <span class="k">import</span> <span class="n">server</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">push_message</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+    <span class="c1"># Event Handling</span>
+    <span class="k">def</span> <span class="nf">_add_event_listener_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;addEventListener&#39;</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">addEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
+                         <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener_web</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_remove_event_listener_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeEventListener&#39;</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="k">def</span> <span class="nf">removeEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
+                            <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">removeEventListener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_remove_event_listener_web</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_on_mount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener_web</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
 </pre></div>
 
           </div>

@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Event API &#8212; WDOM 0.1.8 documentation</title>
+    <title>Event API &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -31,7 +31,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -55,11 +54,39 @@
 <dt id="wdom.event.Event">
 <em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">Event</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.Event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
-<p>Event interface class.</p>
+<p>Base class of Event classes.</p>
 <p>Create event object.</p>
 <p>First argument (type) is a string to represents type of this event.
 Second optional argument (init) is a dictionally, which has fields for
 this event’s status.</p>
+<dl class="attribute">
+<dt id="wdom.event.Event.currentTarget">
+<code class="descname">currentTarget</code><a class="headerlink" href="#wdom.event.Event.currentTarget" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return current event target.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">WebEventTarget</span></code>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="wdom.event.Event.target">
+<code class="descname">target</code><a class="headerlink" href="#wdom.event.Event.target" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return original event target, which emitted this event first.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal"><span class="pre">WebEventTarget</span></code>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="wdom.event.Event.stopPrapagation">
 <code class="descname">stopPrapagation</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#Event.stopPrapagation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.Event.stopPrapagation" title="Permalink to this definition">¶</a></dt>
@@ -76,10 +103,122 @@ this event’s status.</p>
 
 </dd></dl>
 
+<dl class="class">
+<dt id="wdom.event.MouseEvent">
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">MouseEvent</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#MouseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.MouseEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.event.UIEvent</span></code></p>
+<p>Mouse event class.</p>
+<p>Event types generate this event class are <code class="docutils literal"><span class="pre">click</span></code>, <code class="docutils literal"><span class="pre">dblclick</span></code>,
+<code class="docutils literal"><span class="pre">mouseup</span></code>, and <code class="docutils literal"><span class="pre">mousedown</span></code>.</p>
+<p>This class has the following attributes:</p>
+<p>altKey, button, clientX, clientY, ctrlKey, metaKey, movementX, movementY,
+offsetX, offsetY, pageX, pageY, region, screenX, screenY, shiftKey, x, y</p>
+<p>For details of the attributes, see
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent">MouseEvent - Web APIs | MDN</a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.event.KeyboardEvent">
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">KeyboardEvent</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#KeyboardEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.KeyboardEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.event.UIEvent</span></code></p>
+<p>Keyboard event class.</p>
+<p>Event types generate this event class are <code class="docutils literal"><span class="pre">keydown</span></code>, <code class="docutils literal"><span class="pre">keypress</span></code>, and
+<code class="docutils literal"><span class="pre">keyup</span></code>.</p>
+<p>This class has the following attributes:</p>
+<p>altKey, code, ctrlKey, key, locale, metaKey, repeat, shiftKey</p>
+<p>For details of the attributes, see
+<a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent">KeyboardEvent - Web APIs | MDN</a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.event.DragEvent">
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">DragEvent</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#DragEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DragEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#wdom.event.MouseEvent" title="wdom.event.MouseEvent"><code class="xref py py-class docutils literal"><span class="pre">wdom.event.MouseEvent</span></code></a></p>
+<p>Drag event class.</p>
+<p>This class inherits <a class="reference internal" href="#wdom.event.MouseEvent" title="wdom.event.MouseEvent"><code class="xref py py-class docutils literal"><span class="pre">MouseEvent</span></code></a> class and has own attribute
+<cite>dataTransfer</cite>, which is <a class="reference internal" href="#wdom.event.DataTransfer" title="wdom.event.DataTransfer"><code class="xref py py-class docutils literal"><span class="pre">DataTransfer</span></code></a> containing data send by
+this drag event.</p>
+<p>Event types generate this event class are <code class="docutils literal"><span class="pre">drag</span></code>, <code class="docutils literal"><span class="pre">dragend</span></code>,
+<code class="docutils literal"><span class="pre">dragenter</span></code>, <code class="docutils literal"><span class="pre">dragexit</span></code>, <code class="docutils literal"><span class="pre">dragleave</span></code>, <code class="docutils literal"><span class="pre">dragover</span></code>, <code class="docutils literal"><span class="pre">dragstart</span></code>,
+and <code class="docutils literal"><span class="pre">drop</span></code>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="wdom.event.DataTransfer">
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">DataTransfer</code><span class="sig-paren">(</span><em>id=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#DataTransfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DataTransfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>DataTransfer object is used to transfer drag/drop data.</p>
+<p>TODO: Currently always read/write enabled.
+<a class="reference external" href="https://html.spec.whatwg.org/multipage/dnd.html#drag-data-store-mode">https://html.spec.whatwg.org/multipage/dnd.html#drag-data-store-mode</a></p>
+<p>Initialize a new empty DataTransfer object with id.</p>
+<dl class="attribute">
+<dt id="wdom.event.DataTransfer.length">
+<code class="descname">length</code><a class="headerlink" href="#wdom.event.DataTransfer.length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return number of items in this DataTransfer object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">int</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.event.DataTransfer.getData">
+<code class="descname">getData</code><span class="sig-paren">(</span><em>type</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#DataTransfer.getData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DataTransfer.getData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get data of type format.</p>
+<p>If this DataTransfer object does not have <cite>type</cite> data, return empty
+string.
+:arg str type: Data format of the data, like ‘text/plain’.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.event.DataTransfer.setData">
+<code class="descname">setData</code><span class="sig-paren">(</span><em>type</em>, <em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#DataTransfer.setData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DataTransfer.setData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set data of type format.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>type</strong> (<em>str</em>) – Data format of the data, like ‘text/plain’.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="wdom.event.DataTransfer.clearData">
+<code class="descname">clearData</code><span class="sig-paren">(</span><em>type=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#DataTransfer.clearData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DataTransfer.clearData" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove data of type foramt.</p>
+<p>If type argument is omitted, remove all data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="function">
 <dt id="wdom.event.create_event">
-<code class="descclassname">wdom.event.</code><code class="descname">create_event</code><span class="sig-paren">(</span><em>type</em>, <em>*</em>, <em>currentTarget=None</em>, <em>target=None</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#create_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.create_event" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create Event and set target nodes.</p>
+<code class="descclassname">wdom.event.</code><code class="descname">create_event</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#create_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.create_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Event from JSOM msg and set target nodes.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -116,6 +255,20 @@ synchronously as if it is normal function.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Base class for EventTargets.</p>
 <p>This class and subclasses can add/remove event listeners and emit events.</p>
+<dl class="attribute">
+<dt id="wdom.event.EventTarget.ownerDocument">
+<code class="descname">ownerDocument</code><a class="headerlink" href="#wdom.event.EventTarget.ownerDocument" title="Permalink to this definition">¶</a></dt>
+<dd><p>Need to check the target is mounted on document or not.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-data docutils literal"><span class="pre">Optional</span></code>[<a class="reference internal" href="node.html#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">Node</span></code></a>]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="wdom.event.EventTarget.addEventListener">
 <code class="descname">addEventListener</code><span class="sig-paren">(</span><em>event</em>, <em>listener</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget.addEventListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget.addEventListener" title="Permalink to this definition">¶</a></dt>
@@ -151,6 +304,23 @@ matched.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="wdom.event.EventTarget.on_event_pre">
+<code class="descname">on_event_pre</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget.on_event_pre"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget.on_event_pre" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run before dispatching events.</p>
+<p>Used for seting values changed by user input, in some elements like
+input, textarea, or select. In this method, event.currentTarget is a
+dict sent from browser.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="wdom.event.EventTarget.dispatchEvent">
 <code class="descname">dispatchEvent</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget.dispatchEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget.dispatchEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Emit events.</p>
@@ -158,7 +328,7 @@ matched.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal"><span class="pre">Awaitable</span></code>[<code class="docutils literal"><span class="pre">None</span></code>]]</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="docutils literal"><span class="pre">None</span></code></td>
 </tr>
 </tbody>
 </table>

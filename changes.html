@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Changes &#8212; WDOM 0.1.8 documentation</title>
+    <title>Changes &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -30,7 +30,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -52,18 +51,44 @@
 <h1>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="version-0-2">
 <h2>Version 0.2<a class="headerlink" href="#version-0-2" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="version-0-2-0-next-version">
-<h3>Version 0.2.0 (next version)<a class="headerlink" href="#version-0-2-0-next-version" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="version-0-2-0-2017-08-11">
+<h3>Version 0.2.0 (2017-08-11)<a class="headerlink" href="#version-0-2-0-2017-08-11" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><strong>Python 3.4 is NOT Supported</strong></li>
-<li>Use async/await</li>
-<li>Enable <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></code></li>
-<li>Moved <code class="docutils literal"><span class="pre">suppress_logging</span></code> function from <code class="docutils literal"><span class="pre">wdom.testing</span></code> to <code class="docutils literal"><span class="pre">wdom.misc</span></code></li>
-<li>Add type hints (pass mypy check)</li>
-<li>Improve auto-reload sequence</li>
-<li>Write docstrings (pass pydocstyle check)</li>
+<li>Change metadata</li>
 </ul>
 </div>
+</div>
+<div class="section" id="id1">
+<h2>Version 0.2.0 (2017-08-11)<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><dl class="first docutils">
+<dt><strong>Python 3.4 is NOT Supported</strong></dt>
+<dd><ul class="first last">
+<li>Use async/await</li>
+<li>Add type hints (pass mypy check)</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li>Write docstrings (pass pydocstyle check)</li>
+<li>Enable <code class="docutils literal"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">test</span></code></li>
+<li>Moved <code class="docutils literal"><span class="pre">suppress_logging</span></code> function from <code class="docutils literal"><span class="pre">wdom.testing</span></code> to <code class="docutils literal"><span class="pre">wdom.misc</span></code></li>
+<li>Improve auto-reload sequence</li>
+<li>Parse html using custom elements
+* Find elements from customElementsRegistory</li>
+<li>Move non-standard tag classes from <code class="docutils literal"><span class="pre">wdom.tag</span></code> to <code class="docutils literal"><span class="pre">wdom.themes</span></code></li>
+<li>Add <code class="docutils literal"><span class="pre">wdom.tag.RawHtmlNode</span></code> class</li>
+<li><dl class="first docutils">
+<dt>Support more events</dt>
+<dd><ul class="first last">
+<li>Keyboard event support</li>
+<li>Document/Window level event support</li>
+<li>Drag and drop event support</li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
 <div class="section" id="version-0-1-8-2017-07-23">
 <h3>Version 0.1.8 (2017-07-23)<a class="headerlink" href="#version-0-1-8-2017-07-23" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">

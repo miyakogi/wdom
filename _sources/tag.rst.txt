@@ -18,8 +18,7 @@ Tag class
 
    .. autofunction:: NewTagClass
 
-   .. autoclass:: TagBaseMeta
-      :members:
+   .. autoclass:: RawHtmlNode
 
 
 List of HTML Tag Classes
@@ -75,33 +74,34 @@ List of HTML Tag Classes
 .. autoclass:: U
 .. autoclass:: Ul
 
-Extended HTML Tag Classes
-^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. autoclass:: Col
-.. autoclass:: Col1
-.. autoclass:: Col2
-.. autoclass:: Col3
-.. autoclass:: Col4
-.. autoclass:: Col5
-.. autoclass:: Col6
-.. autoclass:: Col7
-.. autoclass:: Col8
-.. autoclass:: Col9
-.. autoclass:: Col10
-.. autoclass:: Col11
-.. autoclass:: Col12
-.. autoclass:: Container
-.. autoclass:: DangerButton
-.. autoclass:: DefaultButton
-.. autoclass:: ErrorButton
-.. autoclass:: FormGroup
-.. autoclass:: InfoButton
-.. autoclass:: LinkButton
-.. autoclass:: PrimaryButton
-.. autoclass:: Row
-.. autoclass:: SecondaryButton
-.. autoclass:: SuccessButton
-.. autoclass:: WarningButton
-.. autoclass:: Wrapper
+..
+    Extended HTML Tag Classes
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+    .. autoclass:: Col
+    .. autoclass:: Col1
+    .. autoclass:: Col2
+    .. autoclass:: Col3
+    .. autoclass:: Col4
+    .. autoclass:: Col5
+    .. autoclass:: Col6
+    .. autoclass:: Col7
+    .. autoclass:: Col8
+    .. autoclass:: Col9
+    .. autoclass:: Col10
+    .. autoclass:: Col11
+    .. autoclass:: Col12
+    .. autoclass:: Container
+    .. autoclass:: DangerButton
+    .. autoclass:: DefaultButton
+    .. autoclass:: ErrorButton
+    .. autoclass:: FormGroup
+    .. autoclass:: InfoButton
+    .. autoclass:: LinkButton
+    .. autoclass:: PrimaryButton
+    .. autoclass:: Row
+    .. autoclass:: SecondaryButton
+    .. autoclass:: SuccessButton
+    .. autoclass:: WarningButton
+    .. autoclass:: Wrapper
 

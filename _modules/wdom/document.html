@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.document &#8212; WDOM 0.1.8 documentation</title>
+    <title>wdom.document &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -29,7 +29,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -53,20 +52,22 @@
 
 <span class="sd">&quot;&quot;&quot;Document class and its helper functions.</span>
 
-<span class="sd">{} module also provides a deafult root-document object.</span>
-<span class="sd">&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="sd">This module also provides a deafult root-document object.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="k">import</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">ModuleType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">weakref</span>
 
-<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">Element</span><span class="p">,</span> <span class="n">Attr</span>
-<span class="kn">from</span> <span class="nn">wdom.event</span> <span class="k">import</span> <span class="n">Event</span>
-<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">DocumentType</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">RawHtml</span><span class="p">,</span> <span class="n">Comment</span>
+<span class="kn">from</span> <span class="nn">wdom</span> <span class="k">import</span> <span class="n">server</span>
+<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">Element</span><span class="p">,</span> <span class="n">Attr</span><span class="p">,</span> <span class="n">HTMLElement</span><span class="p">,</span> <span class="n">getElementsBy</span>
+<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">getElementsByClassName</span><span class="p">,</span> <span class="n">getElementsByTagName</span>
+<span class="kn">from</span> <span class="nn">wdom.event</span> <span class="k">import</span> <span class="n">Event</span><span class="p">,</span> <span class="n">EventTarget</span><span class="p">,</span> <span class="n">WebEventTarget</span>
+<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">DocumentType</span><span class="p">,</span> <span class="n">Text</span><span class="p">,</span> <span class="n">RawHtml</span><span class="p">,</span> <span class="n">Comment</span><span class="p">,</span> <span class="n">ParentNode</span>
 <span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">DocumentFragment</span>
 <span class="kn">from</span> <span class="nn">wdom.options</span> <span class="k">import</span> <span class="n">config</span>
 <span class="kn">from</span> <span class="nn">wdom.tag</span> <span class="k">import</span> <span class="n">Tag</span>
@@ -75,19 +76,26 @@
 <span class="kn">from</span> <span class="nn">wdom.window</span> <span class="k">import</span> <span class="n">Window</span>
 
 
-<span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Get element with ``id``.&quot;&quot;&quot;</span>
-    <span class="n">elm</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_elements_with_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+    <span class="n">elm</span> <span class="o">=</span> <span class="n">Element</span><span class="o">.</span><span class="n">_elements_with_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">elm</span>
 
 
-<span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WdomElement</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
     <span class="sd">&quot;&quot;&quot;Get element with ``rimo_id``.&quot;&quot;&quot;</span>
-    <span class="n">elm</span> <span class="o">=</span> <span class="n">WdomElement</span><span class="o">.</span><span class="n">_elements_with_rimo_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">id</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">elif</span> <span class="nb">id</span> <span class="o">==</span> <span class="s1">&#39;document&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_document</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">id</span> <span class="o">==</span> <span class="s1">&#39;window&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">get_document</span><span class="p">()</span><span class="o">.</span><span class="n">defaultView</span>
+    <span class="n">elm</span> <span class="o">=</span> <span class="n">WdomElement</span><span class="o">.</span><span class="n">_elements_with_rimo_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">elm</span>
 
 
 <span class="k">def</span> <span class="nf">_cleanup</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Cleanup temporary directory.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
@@ -118,64 +126,189 @@
     <span class="k">return</span> <span class="n">base_class</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">attr</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../node.html#wdom.document.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Document class.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_find_tag</span><span class="p">(</span><span class="n">elm</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
+    <span class="n">_tag</span> <span class="o">=</span> <span class="n">tag</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">elm</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">nodeType</span> <span class="o">==</span> <span class="n">Element</span><span class="o">.</span><span class="n">nodeType</span> <span class="ow">and</span> <span class="n">child</span><span class="o">.</span><span class="n">localName</span> <span class="o">==</span> <span class="n">_tag</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">child</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="Document"><a class="viewcode-back" href="../../node.html#wdom.document.Document">[docs]</a><span class="k">class</span> <span class="nc">Document</span><span class="p">(</span><span class="n">Node</span><span class="p">,</span> <span class="n">ParentNode</span><span class="p">,</span> <span class="n">EventTarget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for Document node.&quot;&quot;&quot;</span>
 
     <span class="n">nodeType</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="n">DOCUMENT_NODE</span>
     <span class="n">nodeName</span> <span class="o">=</span> <span class="s1">&#39;#document&#39;</span>
-    <span class="n">body</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Node</span>
-    <span class="n">html</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Node</span>
+
+    <span class="n">getElementsBy</span> <span class="o">=</span> <span class="n">getElementsBy</span>
+    <span class="n">getElementsByTagName</span> <span class="o">=</span> <span class="n">getElementsByTagName</span>
+    <span class="n">getElementsByClassName</span> <span class="o">=</span> <span class="n">getElementsByClassName</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">doctype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span>
+                 <span class="n">default_class</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">HTMLElement</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create new Document node.</span>
+
+<span class="sd">        :arg str doctype: Document type of this document.</span>
+<span class="sd">        :arg type default_class: Default class created by</span>
+<span class="sd">            :py:meth:`createElement` method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__window</span> <span class="o">=</span> <span class="n">Window</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_class</span> <span class="o">=</span> <span class="n">default_class</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__doctype</span> <span class="o">=</span> <span class="n">DocumentType</span><span class="p">(</span><span class="n">doctype</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__html</span> <span class="o">=</span> <span class="n">Html</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__head</span> <span class="o">=</span> <span class="n">Head</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">documentElement</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__body</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">documentElement</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">defaultView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Window</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return :class:`Window` class of this document.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_window</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__window</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">doctype</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentType</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return DocumentType element of this document.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__doctype</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">documentElement</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return &lt;html&gt; element of this document.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__html</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">head</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return &lt;head&gt; element of this document.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__head</span>
+
+    <span class="k">def</span> <span class="nf">_find_charset_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Element</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">localName</span> <span class="o">==</span> <span class="s1">&#39;meta&#39;</span> <span class="ow">and</span> <span class="n">child</span><span class="o">.</span><span class="n">hasAttribute</span><span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">child</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">characterSet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get/Set charset of this document.&quot;&quot;&quot;</span>
+        <span class="n">charset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_charset_node</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">charset</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">charset</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@characterSet</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">characterSet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set character set of this document.&quot;&quot;&quot;</span>
+        <span class="n">charset_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_charset_node</span><span class="p">()</span> <span class="ow">or</span> <span class="n">Meta</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
+        <span class="n">charset_node</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">,</span> <span class="n">charset</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">body</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Element</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return &lt;body&gt; element of this document.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__body</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get/Set title string of this document.&quot;&quot;&quot;</span>
+        <span class="n">title_element</span> <span class="o">=</span> <span class="n">_find_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">title_element</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">title_element</span><span class="o">.</span><span class="n">textContent</span>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="nd">@title</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_title</span> <span class="o">=</span> <span class="n">_find_tag</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">,</span> <span class="s1">&#39;title&#39;</span><span class="p">)</span>
+        <span class="n">title_element</span> <span class="o">=</span> <span class="n">_title</span> <span class="ow">or</span> <span class="n">Title</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
+        <span class="n">title_element</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">new_title</span>
+
+<div class="viewcode-block" id="Document.getElementById"><a class="viewcode-back" href="../../node.html#wdom.document.Document.getElementById">[docs]</a>    <span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get element by ``id``.</span>
+
+<span class="sd">        If this document does not have the element with the id, return None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">elm</span> <span class="o">=</span> <span class="n">getElementById</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">elm</span> <span class="ow">and</span> <span class="n">elm</span><span class="o">.</span><span class="n">ownerDocument</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">elm</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Document.createDocumentFragment"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createDocumentFragment">[docs]</a>    <span class="k">def</span> <span class="nf">createDocumentFragment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentFragment</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create empty document fragment.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">DocumentFragment</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Document.createTextNode"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createTextNode">[docs]</a>    <span class="k">def</span> <span class="nf">createTextNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Text</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create text node with ``text``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.createComment"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createComment">[docs]</a>    <span class="k">def</span> <span class="nf">createComment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Comment</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create comment node with ``comment``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Comment</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.createElement"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createElement">[docs]</a>    <span class="k">def</span> <span class="nf">createElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create new element whose tag name is ``tag``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">create_element</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_class</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createEvent">[docs]</a>    <span class="k">def</span> <span class="nf">createEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create Event object with ``event`` type.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Document.createAttribute"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">createAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create Attribute object with ``name``.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="WdomDocument"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument">[docs]</a><span class="k">class</span> <span class="nc">WdomDocument</span><span class="p">(</span><span class="n">Document</span><span class="p">,</span> <span class="n">WebEventTarget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Main document class for WDOM applications.&quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="k">return</span> <span class="s1">&#39;document&#39;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+        <span class="k">return</span> <span class="n">server</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tempdir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return temporary directory used by this document.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tempdir</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tempdir</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doctype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;W-DOM&#39;</span><span class="p">,</span>
-                 <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span> <span class="n">default_class</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">WdomElement</span><span class="p">,</span>
-                 <span class="n">autoreload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">reload_wait</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create new document object.</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+                 <span class="n">doctype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;html&#39;</span><span class="p">,</span>
+                 <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;W-DOM&#39;</span><span class="p">,</span>
+                 <span class="n">charset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">,</span>
+                 <span class="n">default_class</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="n">WdomElement</span><span class="p">,</span>
+                 <span class="n">autoreload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">reload_wait</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Create new document object for WDOM application.</span>
 
 <span class="sd">        .. caution::</span>
-<span class="sd">            Don&#39;t create new document from :class:`Document` class constructor.</span>
-<span class="sd">            Use :func:`get_new_document` function instead.</span>
+
+<span class="sd">            Don&#39;t create new document from :class:`WdomDocument` class</span>
+<span class="sd">            constructor. Use :func:`get_new_document` function instead.</span>
 
 <span class="sd">        :arg str doctype: doctype of the document (default: html).</span>
 <span class="sd">        :arg str title: title of the document.</span>
 <span class="sd">        :arg str charset: charset of the document.</span>
 <span class="sd">        :arg type default_class: Set default Node class of the document. This</span>
-<span class="sd">            class is used when make node by ``createElement`` method.</span>
+<span class="sd">            class is used when make node by :py:meth:`createElement()`</span>
 <span class="sd">        :arg bool autoreload: Enable/Disable autoreload (default: False).</span>
 <span class="sd">        :arg float reload_wait: How long (seconds) wait to reload. This</span>
-<span class="sd">            parameter is only used when ``autoreload`` is enabled.</span>
+<span class="sd">            parameter is only used when autoreload is enabled.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_tempdir</span> <span class="o">=</span> <span class="n">_tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tempdir</span> <span class="o">=</span> <span class="n">_tempdir</span> <span class="o">=</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">mkdtemp</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_finalizer</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
                                            <span class="n">partial</span><span class="p">(</span><span class="n">_cleanup</span><span class="p">,</span> <span class="n">_tempdir</span><span class="p">))</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_window</span> <span class="o">=</span> <span class="n">Window</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_default_class</span> <span class="o">=</span> <span class="n">default_class</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_autoreload</span> <span class="o">=</span> <span class="n">autoreload</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reload_wait</span> <span class="o">=</span> <span class="n">reload_wait</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">doctype</span> <span class="o">=</span> <span class="n">DocumentType</span><span class="p">(</span><span class="n">doctype</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">html</span> <span class="o">=</span> <span class="n">Html</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">Head</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">charset_element</span> <span class="o">=</span> <span class="n">Meta</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">doctype</span><span class="o">=</span><span class="n">doctype</span><span class="p">,</span> <span class="n">default_class</span><span class="o">=</span><span class="n">default_class</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">characterSet</span> <span class="o">=</span> <span class="n">charset</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title_element</span> <span class="o">=</span> <span class="n">Title</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="n">Body</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">script</span> <span class="o">=</span> <span class="n">Script</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_autoreload_script</span> <span class="o">=</span> <span class="n">Script</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;mount&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_mount</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_autoreload</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_autoreload_script</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
@@ -193,18 +326,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_autoreload_script</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ar_script</span><span class="p">))</span>
 
-<div class="viewcode-block" id="Document.getElementById"><a class="viewcode-back" href="../../node.html#wdom.document.Document.getElementById">[docs]</a>    <span class="k">def</span> <span class="nf">getElementById</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Node</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get element by ``id``.</span>
-
-<span class="sd">        If this document does not have the element with the id, return None.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">elm</span> <span class="o">=</span> <span class="n">getElementById</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">elm</span> <span class="ow">and</span> <span class="n">elm</span><span class="o">.</span><span class="n">ownerDocument</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">elm</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
-
-<div class="viewcode-block" id="Document.getElementByRimoId"><a class="viewcode-back" href="../../node.html#wdom.document.Document.getElementByRimoId">[docs]</a>    <span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WdomElement</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get element by ``rimo_id``.</span>
+<div class="viewcode-block" id="WdomDocument.getElementByRimoId"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.getElementByRimoId">[docs]</a>    <span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get an element node with ``rimo_id``.</span>
 
 <span class="sd">        If this document does not have the element with the id, return None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -213,78 +336,34 @@
             <span class="k">return</span> <span class="n">elm</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Document.createElement"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createElement">[docs]</a>    <span class="k">def</span> <span class="nf">createElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create new element.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">create_element</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_default_class</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Document.createDocumentFragment"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createDocumentFragment">[docs]</a>    <span class="k">def</span> <span class="nf">createDocumentFragment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DocumentFragment</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create empty document fragment.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">DocumentFragment</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="Document.createTextNode"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createTextNode">[docs]</a>    <span class="k">def</span> <span class="nf">createTextNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Text</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create text node with ``text``.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Document.createComment"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createComment">[docs]</a>    <span class="k">def</span> <span class="nf">createComment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Comment</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create comment node with ``comment``.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Comment</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Document.createEvent"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createEvent">[docs]</a>    <span class="k">def</span> <span class="nf">createEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create Event object with ``event`` type.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Document.createAttribute"><a class="viewcode-back" href="../../node.html#wdom.document.Document.createAttribute">[docs]</a>    <span class="k">def</span> <span class="nf">createAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Attr</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Create Attribute object with ``name``.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return title of this document.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_element</span><span class="o">.</span><span class="n">textContent</span>
-
-    <span class="nd">@title</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Set title of this document.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">title_element</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="n">value</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">characterSet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return character set of this document.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">charset_element</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">)</span>
-
-    <span class="nd">@characterSet</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">characterSet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Set character set of this document.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">charset_element</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="s1">&#39;charset&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">charset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Return charset set of this document.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">characterSet</span>
-
-    <span class="nd">@charset</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">charset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Set charset set of this document.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">characterSet</span> <span class="o">=</span> <span class="n">value</span>
-
-<div class="viewcode-block" id="Document.add_jsfile"><a class="viewcode-back" href="../../node.html#wdom.document.Document.add_jsfile">[docs]</a>    <span class="k">def</span> <span class="nf">add_jsfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add JS file to load at this document&#39;s bottom.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WdomDocument.add_jsfile"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_jsfile">[docs]</a>    <span class="k">def</span> <span class="nf">add_jsfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add JS file to load at this document&#39;s bottom of the body.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Document.add_jsfile_head"><a class="viewcode-back" href="../../node.html#wdom.document.Document.add_jsfile_head">[docs]</a>    <span class="k">def</span> <span class="nf">add_jsfile_head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="WdomDocument.add_jsfile_head"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_jsfile_head">[docs]</a>    <span class="k">def</span> <span class="nf">add_jsfile_head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add JS file to load at this document&#39;s header.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Document.add_cssfile"><a class="viewcode-back" href="../../node.html#wdom.document.Document.add_cssfile">[docs]</a>    <span class="k">def</span> <span class="nf">add_cssfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add CSS file to load at this document&#39;s bottom.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WdomDocument.add_cssfile"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_cssfile">[docs]</a>    <span class="k">def</span> <span class="nf">add_cssfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add CSS file to load at this document&#39;s header.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Link</span><span class="p">(</span><span class="n">rel</span><span class="o">=</span><span class="s1">&#39;stylesheet&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">src</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Document.add_header"><a class="viewcode-back" href="../../node.html#wdom.document.Document.add_header">[docs]</a>    <span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Add CSS file to load at this document&#39;s header.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WdomDocument.add_header"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_header">[docs]</a>    <span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Insert header tag staring at this document&#39;s header.</span>
+
+<span class="sd">        :arg str header: tag to insert &lt;head&gt; ~ &lt;/head&gt; area.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">RawHtml</span><span class="p">(</span><span class="n">header</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="Document.register_theme"><a class="viewcode-back" href="../../node.html#wdom.document.Document.register_theme">[docs]</a>    <span class="k">def</span> <span class="nf">register_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theme</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Set theme.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WdomDocument.register_theme"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.register_theme">[docs]</a>    <span class="k">def</span> <span class="nf">register_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theme</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Set theme for this docuemnt.</span>
+
+<span class="sd">        This method sets theme&#39;s js/css files and headers on this document.</span>
+
+<span class="sd">        :arg ModuleType theme: a module which has ``js_files``, ``css_files``,</span>
+<span class="sd">            ``headers``, and ``extended_classes``. see ``wdom.themes``</span>
+<span class="sd">            directory actual theme module structures.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="s1">&#39;css_files&#39;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;theme module must include `css_files`.&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">css</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="s1">&#39;css_files&#39;</span><span class="p">,</span> <span class="p">[]):</span>
@@ -296,7 +375,7 @@
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="s1">&#39;extended_classes&#39;</span><span class="p">,</span> <span class="p">[]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">defaultView</span><span class="o">.</span><span class="n">customElements</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Document.build"><a class="viewcode-back" href="../../node.html#wdom.document.Document.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="WdomDocument.build"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return HTML representation of this document.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_autoreload</span><span class="p">()</span>
         <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">html</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">)</span></div></div>
@@ -306,14 +385,14 @@
         <span class="n">include_rimo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_skeleton</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">include_normalizecss</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">autoreload</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">reload_wait</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">log_level</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">log_prefix</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">autoreload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">reload_wait</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_level</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_prefix</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_console</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">ws_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">message_wait</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">document_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Document</span><span class="p">]</span> <span class="o">=</span> <span class="n">Document</span><span class="p">,</span>
+        <span class="n">ws_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">message_wait</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">document_factory</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Document</span><span class="p">]</span> <span class="o">=</span> <span class="n">WdomDocument</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Create new :class:`Document` object with options.</span>
 
@@ -371,8 +450,7 @@
     <span class="k">return</span> <span class="n">document</span></div>
 
 
-<span class="c1"># get_document = get_new_document</span>
-<div class="viewcode-block" id="get_document"><a class="viewcode-back" href="../../webserver.html#wdom.document.get_document">[docs]</a><span class="k">def</span> <span class="nf">get_document</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+<div class="viewcode-block" id="get_document"><a class="viewcode-back" href="../../webserver.html#wdom.document.get_document">[docs]</a><span class="k">def</span> <span class="nf">get_document</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Get current root document object.</span>
 
 <span class="sd">    :rtype: Document</span>
@@ -390,7 +468,10 @@
 
 
 <span class="k">def</span> <span class="nf">set_app</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Tag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Set root ``Tag`` as applicaion to the current root document.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Set ``Tag`` as applicaion to the current root document.</span>
+
+<span class="sd">    Equivalent to ``get_document().body.prepend(app)``.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">document</span> <span class="o">=</span> <span class="n">get_document</span><span class="p">()</span>
     <span class="n">document</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">prepend</span><span class="p">(</span><span class="n">app</span><span class="p">)</span>
 

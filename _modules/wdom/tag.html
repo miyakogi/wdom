@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.tag &#8212; WDOM 0.1.8 documentation</title>
+    <title>wdom.tag &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -29,7 +29,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -55,10 +54,10 @@
 
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Iterable</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">new_class</span>
 
-<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">DOMTokenList</span><span class="p">,</span> <span class="n">ElementMeta</span><span class="p">,</span> <span class="n">_AttrValueType</span>
+<span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">_AttrValueType</span>
 <span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">HTMLAnchorElement</span><span class="p">,</span>
     <span class="n">HTMLButtonElement</span><span class="p">,</span>
@@ -74,41 +73,26 @@
     <span class="n">HTMLTextAreaElement</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">NodeList</span>
+<span class="c1"># Just export Comment/RawHtml/Text</span>
+<span class="kn">from</span> <span class="nn">wdom.node</span> <span class="k">import</span> <span class="n">Comment</span><span class="p">,</span> <span class="n">RawHtml</span><span class="p">,</span> <span class="n">Text</span>  <span class="c1"># noqa: F401</span>
 <span class="kn">from</span> <span class="nn">wdom.web_node</span> <span class="k">import</span> <span class="n">WdomElement</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span> <span class="c1"># noqa</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Type</span>  <span class="c1"># noqa</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TagBaseMeta"><a class="viewcode-back" href="../../tag.html#wdom.tag.TagBaseMeta">[docs]</a><span class="k">class</span> <span class="nc">TagBaseMeta</span><span class="p">(</span><span class="n">ElementMeta</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Meta class to set default class variable of HTMLElement.&quot;&quot;&quot;</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">__prepare__</span><span class="p">(</span><span class="n">metacls</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bases</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">type</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
-                    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;inherit_class&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span></div>
-
-
-<div class="viewcode-block" id="Tag"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag">[docs]</a><span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">WdomElement</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">TagBaseMeta</span><span class="p">):</span>
+<div class="viewcode-block" id="Tag"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag">[docs]</a><span class="k">class</span> <span class="nc">Tag</span><span class="p">(</span><span class="n">WdomElement</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for html tags.</span>
 
 <span class="sd">    ``HTMLElement`` requires to specify tag name when instanciate it, but this</span>
 <span class="sd">    class and sublasses have default tag name and not need to specify it for</span>
 <span class="sd">    each thier instances.</span>
-
-<span class="sd">    Additionally, this class provides shortcut properties to handle some</span>
-<span class="sd">    special attributes (class, type, is).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1">#: Tag name used for this node.</span>
     <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;tag&#39;</span>
-    <span class="c1">#: str and list of strs are acceptale.</span>
-    <span class="n">class_</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-    <span class="c1">#: Inherit classes defined in super class or not.</span>
-    <span class="c1">#: By default, this variable is True.</span>
-    <span class="n">inherit_class</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="c1">#: use for &lt;input&gt; tag&#39;s type</span>
     <span class="n">type_</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="c1">#: custom element which extends built-in tag (like &lt;table is=&quot;your-tag&quot;&gt;)</span>
@@ -125,84 +109,21 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tag</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Tag.get_class_list"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.get_class_list">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_class_list</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DOMTokenList</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get class-level class list, including all super class&#39;s.&quot;&quot;&quot;</span>
-        <span class="n">l</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">class_</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">cls</span><span class="o">.</span><span class="n">inherit_class</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">base_cls</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="vm">__bases__</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">base_cls</span><span class="p">,</span> <span class="n">Tag</span><span class="p">):</span>
-                    <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">base_cls</span><span class="o">.</span><span class="n">get_class_list</span><span class="p">())</span>
-        <span class="c1"># Reverse order so that parent&#39;s class comes to front</span>
-        <span class="n">l</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">DOMTokenList</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">l</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="nf">_clone_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tag&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Need to copy class, not tag.</span>
 
-    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
-                    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">Node</span><span class="p">,</span> <span class="n">_AttrValueType</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">val</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__delitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">removeAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Tag&#39;</span><span class="p">:</span>
+<span class="sd">        So need to re-implement copy.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">clone</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)()</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">:</span>
             <span class="n">clone</span><span class="o">.</span><span class="n">setAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">:</span>
             <span class="n">clone</span><span class="o">.</span><span class="n">addClass</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
         <span class="n">clone</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">)</span>
+        <span class="c1"># TODO: should clone event listeners???</span>
         <span class="k">return</span> <span class="n">clone</span>
 
-    <span class="k">def</span> <span class="nf">getAttribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;class&#39;</span><span class="p">:</span>
-            <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_list</span><span class="p">()</span>
-            <span class="bp">cls</span><span class="o">.</span><span class="n">_append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">)</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">toString</span><span class="p">()</span> <span class="k">if</span> <span class="bp">cls</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">getAttribute</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Tag.addClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.addClass">[docs]</a>    <span class="k">def</span> <span class="nf">addClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[Not Standard] Add classes to this node.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="o">*</span><span class="n">classes</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Tag.hasClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.hasClass">[docs]</a>    <span class="k">def</span> <span class="nf">hasClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
-        <span class="sd">&quot;&quot;&quot;[Not Standard] Return if this node has ``class_`` class or not.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">class_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span></div>
-
-<div class="viewcode-block" id="Tag.hasClasses"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.hasClasses">[docs]</a>    <span class="k">def</span> <span class="nf">hasClasses</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
-        <span class="sd">&quot;&quot;&quot;[Not Standard] Return if this node has any classes or not.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
-
-<div class="viewcode-block" id="Tag.removeClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.removeClass">[docs]</a>    <span class="k">def</span> <span class="nf">removeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">classes</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[Not Standard] Remove classes from this node.&quot;&quot;&quot;</span>
-        <span class="n">_remove_cl</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">class_</span> <span class="ow">in</span> <span class="n">classes</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">class_</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">class_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_class_list</span><span class="p">():</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s1">&#39;tried to remove class-level class: &#39;</span>
-                        <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
-                    <span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-                        <span class="s1">&#39;tried to remove non-existing class: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
-                    <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">_remove_cl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">classList</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="o">*</span><span class="n">_remove_cl</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Tag.show"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[Not Standard] Show this node on browser.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="kc">False</span></div>
-
-<div class="viewcode-block" id="Tag.hide"><a class="viewcode-back" href="../../tag.html#wdom.tag.Tag.hide">[docs]</a>    <span class="k">def</span> <span class="nf">hide</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;[Not Standard] Hide this node on browser.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hidden</span> <span class="o">=</span> <span class="kc">True</span></div>
+    <span class="n">__copy__</span> <span class="o">=</span> <span class="n">_clone_node</span>  <span class="c1"># need alias again</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_AttrValueType</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
@@ -295,7 +216,7 @@
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="n">html</span>  <span class="c1"># type: ignore</span>
 
 
-<div class="viewcode-block" id="NewTagClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.NewTagClass">[docs]</a><span class="k">def</span> <span class="nf">NewTagClass</span><span class="p">(</span><span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="NewTagClass"><a class="viewcode-back" href="../../tag.html#wdom.tag.NewTagClass">[docs]</a><span class="k">def</span> <span class="nf">NewTagClass</span><span class="p">(</span><span class="n">class_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">bases</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">type</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="p">),</span>
                 <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">type</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Generate and return new ``Tag`` class.</span>
@@ -312,7 +233,7 @@
 <span class="sd">        my_button = MyButton(&#39;Click!&#39;)</span>
 <span class="sd">        print(my_button.html)</span>
 
-<span class="sd">        &gt;&gt;&gt; &lt;button class=&quot;btn&quot; id=&quot;111111111&quot;&gt;Click!&lt;/button&gt;</span>
+<span class="sd">        &gt;&gt;&gt; &lt;button class=&quot;btn&quot; id=&quot;111111111&quot; is=&quot;my-button&quot;&gt;Click!&lt;/button&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">tag</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">tag</span> <span class="o">=</span> <span class="n">class_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
@@ -430,52 +351,46 @@
 <span class="n">Form</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Form&#39;</span><span class="p">,</span> <span class="s1">&#39;form&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLFormElement</span><span class="p">))</span>
 <span class="n">Button</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Button&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLButtonElement</span><span class="p">))</span>
 <span class="n">Label</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Label&#39;</span><span class="p">,</span> <span class="s1">&#39;label&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLLabelElement</span><span class="p">))</span>
-<span class="n">TextInput</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;TextInput&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;text&#39;</span><span class="p">)</span>
-<span class="n">CheckBox</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;CheckBox&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;checkbox&#39;</span><span class="p">)</span>
-<span class="n">RadioButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;RadioButton&#39;</span><span class="p">,</span> <span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">type_</span><span class="o">=</span><span class="s1">&#39;radio&#39;</span><span class="p">)</span>
-<span class="n">Select</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Select&#39;</span><span class="p">,</span> <span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">NestedTag</span><span class="p">,</span> <span class="n">HTMLSelectElement</span><span class="p">))</span>
-<span class="n">Optgroup</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;OptGroup&#39;</span><span class="p">,</span> <span class="s1">&#39;optgroup&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLOptGroupElement</span><span class="p">))</span>
+<span class="n">Optgroup</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Optgroup&#39;</span><span class="p">,</span> <span class="s1">&#39;optgroup&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLOptGroupElement</span><span class="p">))</span>
 <span class="n">Option</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Option&#39;</span><span class="p">,</span> <span class="s1">&#39;option&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLOptionElement</span><span class="p">))</span>
+<span class="n">Select</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Select&#39;</span><span class="p">,</span> <span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">Tag</span><span class="p">,</span> <span class="n">HTMLSelectElement</span><span class="p">))</span>
 
-<span class="c1"># Building blocks</span>
-<span class="n">Container</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Container&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;container&#39;</span><span class="p">)</span>
-<span class="n">Wrapper</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Wrapper&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;wrapper&#39;</span><span class="p">)</span>
-<span class="n">Row</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Row&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;row&#39;</span><span class="p">)</span>
-<span class="n">FormGroup</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;FormGroup&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;formgroup&#39;</span><span class="p">)</span>
-<span class="n">Col</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col&#39;</span><span class="p">)</span>
-<span class="n">Col1</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col1&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col1&#39;</span><span class="p">)</span>
-<span class="n">Col2</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col2&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col2&#39;</span><span class="p">)</span>
-<span class="n">Col3</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col3&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col3&#39;</span><span class="p">)</span>
-<span class="n">Col4</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col4&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col4&#39;</span><span class="p">)</span>
-<span class="n">Col5</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col5&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col5&#39;</span><span class="p">)</span>
-<span class="n">Col6</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col6&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col6&#39;</span><span class="p">)</span>
-<span class="n">Col7</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col7&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col7&#39;</span><span class="p">)</span>
-<span class="n">Col8</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col8&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col8&#39;</span><span class="p">)</span>
-<span class="n">Col9</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col9&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col9&#39;</span><span class="p">)</span>
-<span class="n">Col10</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col10&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col10&#39;</span><span class="p">)</span>
-<span class="n">Col11</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col11&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col11&#39;</span><span class="p">)</span>
-<span class="n">Col12</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;Col12&#39;</span><span class="p">,</span> <span class="s1">&#39;div&#39;</span><span class="p">,</span> <span class="n">Div</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;col12&#39;</span><span class="p">)</span>
 
-<span class="c1"># Some css updates</span>
-<span class="n">DefaultButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;DefaultButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;default-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">PrimaryButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;PrimaryButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;primary-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">SecondaryButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;SecondaryButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;secondary-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">SuccessButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;SuccessButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;success-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">InfoButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;InfoButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;info-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">WarningButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;WarningButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;warning-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">DangerButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;DangerButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;danger-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">ErrorButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;ErrorButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;error-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
-<span class="n">LinkButton</span> <span class="o">=</span> <span class="n">NewTagClass</span><span class="p">(</span><span class="s1">&#39;LinkButton&#39;</span><span class="p">,</span> <span class="s1">&#39;button&#39;</span><span class="p">,</span> <span class="n">Button</span><span class="p">,</span> <span class="n">is_</span><span class="o">=</span><span class="s1">&#39;link-button&#39;</span><span class="p">)</span>  <span class="c1"># noqa: E501</span>
+<div class="viewcode-block" id="RawHtmlNode"><a class="viewcode-back" href="../../tag.html#wdom.tag.RawHtmlNode">[docs]</a><span class="k">class</span> <span class="nc">RawHtmlNode</span><span class="p">(</span><span class="n">Tag</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Does not escape inner contents, similar to ``&lt;script&gt;`` tag.</span>
 
-<span class="c1"># css/js/headers</span>
-<span class="n">css_files</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
-<span class="n">js_files</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
-<span class="n">headers</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: List[str]</span>
+<span class="sd">    This node wraps contents by ``&lt;div style=&quot;display: inline&quot;&gt;...&lt;/div&gt;`` and</span>
+<span class="sd">    does not escape inner text. Similar to ``wdom.node.RawHtmlNode``, but the</span>
+<span class="sd">    difference is this class wraps text by div tag. This enables to treat</span>
+<span class="sd">    multi-tag html string as if it&#39;s single node.</span>
+
+<span class="sd">    Useful for showing generated HTML contents, like markdown conversion</span>
+<span class="sd">    result, graph plots, or HTML formatted reports.</span>
+<span class="sd">    Usually faster than ``Tag.innerHTML = html``, since this node skips html</span>
+<span class="sd">    parsing process to WdomElement.</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        doc.body.appnd(RawHtml(&#39;&lt;h1&gt;Title&lt;/h1&gt;&#39;))</span>
+
+<span class="sd">    .. note::</span>
+
+<span class="sd">        Inner html is not WdomElement, so you cant control them from python.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">tag</span> <span class="o">=</span> <span class="s1">&#39;div&#39;</span>
+    <span class="n">_should_escape_text</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add ``display: inline`` style on div tag.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;display&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">setProperty</span><span class="p">(</span><span class="s1">&#39;display&#39;</span><span class="p">,</span> <span class="s1">&#39;inline&#39;</span><span class="p">)</span></div>
+
 
 <span class="n">default_classes</span> <span class="o">=</span> <span class="p">(</span>
     <span class="n">Input</span><span class="p">,</span>
     <span class="n">Textarea</span><span class="p">,</span>
-    <span class="n">Button</span><span class="p">,</span>
     <span class="n">Script</span><span class="p">,</span>
     <span class="n">Html</span><span class="p">,</span>
     <span class="n">Body</span><span class="p">,</span>
@@ -517,39 +432,16 @@
     <span class="n">Dt</span><span class="p">,</span>
     <span class="n">Dd</span><span class="p">,</span>
     <span class="n">Form</span><span class="p">,</span>
+    <span class="n">Button</span><span class="p">,</span>
     <span class="n">Label</span><span class="p">,</span>
+    <span class="n">Optgroup</span><span class="p">,</span>
     <span class="n">Option</span><span class="p">,</span>
     <span class="n">Select</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">extended_classes</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">Container</span><span class="p">,</span>
-    <span class="n">Wrapper</span><span class="p">,</span>
-    <span class="n">Row</span><span class="p">,</span>
-    <span class="n">FormGroup</span><span class="p">,</span>
-    <span class="n">Col</span><span class="p">,</span>
-    <span class="n">Col1</span><span class="p">,</span>
-    <span class="n">Col2</span><span class="p">,</span>
-    <span class="n">Col3</span><span class="p">,</span>
-    <span class="n">Col4</span><span class="p">,</span>
-    <span class="n">Col5</span><span class="p">,</span>
-    <span class="n">Col6</span><span class="p">,</span>
-    <span class="n">Col7</span><span class="p">,</span>
-    <span class="n">Col8</span><span class="p">,</span>
-    <span class="n">Col9</span><span class="p">,</span>
-    <span class="n">Col10</span><span class="p">,</span>
-    <span class="n">Col11</span><span class="p">,</span>
-    <span class="n">Col12</span><span class="p">,</span>
-    <span class="n">DefaultButton</span><span class="p">,</span>
-    <span class="n">PrimaryButton</span><span class="p">,</span>
-    <span class="n">SecondaryButton</span><span class="p">,</span>
-    <span class="n">SuccessButton</span><span class="p">,</span>
-    <span class="n">InfoButton</span><span class="p">,</span>
-    <span class="n">WarningButton</span><span class="p">,</span>
-    <span class="n">DangerButton</span><span class="p">,</span>
-    <span class="n">ErrorButton</span><span class="p">,</span>
-    <span class="n">LinkButton</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="c1"># alias</span>
+<span class="n">OptGroup</span> <span class="o">=</span> <span class="n">Optgroup</span>
+<span class="n">TextArea</span> <span class="o">=</span> <span class="n">Textarea</span>
 </pre></div>
 
           </div>

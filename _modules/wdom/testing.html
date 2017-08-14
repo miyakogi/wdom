@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.testing &#8212; WDOM 0.1.8 documentation</title>
+    <title>wdom.testing &#8212; WDOM 0.2.1 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.8',
+        VERSION:     '0.2.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -29,7 +29,6 @@
   <link href='https://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <link href='https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
   <!-- Style -->
-  <link rel="stylesheet" href="//cdn.concisecss.com/v3.4.0/concise.min.css">
   
    
   <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
@@ -69,7 +68,7 @@
 <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Process</span><span class="p">,</span> <span class="n">Pipe</span>  <span class="c1"># type: ignore</span>
 <span class="kn">from</span> <span class="nn">multiprocessing.connection</span> <span class="k">import</span> <span class="n">Connection</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="k">import</span> <span class="n">FunctionType</span><span class="p">,</span> <span class="n">MethodType</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">selenium</span> <span class="k">import</span> <span class="n">webdriver</span>
 <span class="kn">from</span> <span class="nn">selenium.common.exceptions</span> <span class="k">import</span> <span class="n">NoSuchElementException</span>
@@ -79,17 +78,16 @@
 <span class="kn">from</span> <span class="nn">selenium.webdriver.support.select</span> <span class="k">import</span> <span class="n">Select</span>
 
 <span class="kn">from</span> <span class="nn">tornado.httpclient</span> <span class="k">import</span> <span class="n">AsyncHTTPClient</span><span class="p">,</span> <span class="n">HTTPResponse</span>
-<span class="kn">from</span> <span class="nn">tornado.platform.asyncio</span> <span class="k">import</span> <span class="n">AsyncIOMainLoop</span><span class="p">,</span> <span class="n">to_asyncio_future</span>
+<span class="kn">from</span> <span class="nn">tornado.platform.asyncio</span> <span class="k">import</span> <span class="n">to_asyncio_future</span>
 <span class="kn">from</span> <span class="nn">tornado.websocket</span> <span class="k">import</span> <span class="n">websocket_connect</span><span class="p">,</span> <span class="n">WebSocketClientConnection</span>
 
 <span class="kn">from</span> <span class="nn">wdom</span> <span class="k">import</span> <span class="n">options</span><span class="p">,</span> <span class="n">server</span>
 <span class="kn">from</span> <span class="nn">wdom.element</span> <span class="k">import</span> <span class="n">Element</span>
-<span class="kn">from</span> <span class="nn">wdom.util</span> <span class="k">import</span> <span class="n">install_asyncio</span>
 <span class="kn">from</span> <span class="nn">wdom.window</span> <span class="k">import</span> <span class="n">customElements</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">asyncio</span> <span class="k">import</span> <span class="n">AbstractEventLoop</span>  <span class="c1"># noqa</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>  <span class="c1"># noqa</span>
+    <span class="kn">from</span> <span class="nn">asyncio</span> <span class="k">import</span> <span class="n">AbstractEventLoop</span>  <span class="c1"># noqa: F401</span>
+    <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>  <span class="c1"># noqa: F401</span>
 
 <span class="n">driver</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">Chrome</span>
 <span class="n">local_webdriver</span> <span class="o">=</span> <span class="kc">None</span>
@@ -120,6 +118,8 @@
 <span class="k">def</span> <span class="nf">get_chrome_options</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">ChromeOptions</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Get default chrome options.&quot;&quot;&quot;</span>
     <span class="n">chrome_options</span> <span class="o">=</span> <span class="n">webdriver</span><span class="o">.</span><span class="n">ChromeOptions</span><span class="p">()</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--headless&#39;</span><span class="p">)</span>
+    <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--disable-gpu&#39;</span><span class="p">)</span>  <span class="c1"># need for headless</span>
     <span class="k">if</span> <span class="s1">&#39;TRAVIS&#39;</span><span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">:</span>
         <span class="n">chrome_options</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-sandbox&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">chrome_options</span>
@@ -137,8 +137,8 @@
     <span class="n">_tornado</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
     <span class="n">_tornado</span><span class="o">.</span><span class="n">set_application</span><span class="p">(</span><span class="n">_tornado</span><span class="o">.</span><span class="n">Application</span><span class="p">())</span>
     <span class="n">Element</span><span class="o">.</span><span class="n">_elements_with_id</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-    <span class="n">Element</span><span class="o">.</span><span class="n">_elements</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-    <span class="n">customElements</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+    <span class="n">Element</span><span class="o">.</span><span class="n">_element_buffer</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+    <span class="n">customElements</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="TestCase"><a class="viewcode-back" href="../../test.html#wdom.testing.TestCase">[docs]</a><span class="k">class</span> <span class="nc">TestCase</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
@@ -164,9 +164,15 @@
 <span class="sd">            set_application(self.your_app)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+<div class="viewcode-block" id="TestCase.setUp"><a class="viewcode-back" href="../../test.html#wdom.testing.TestCase.setUp">[docs]</a>    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reset WDOM states.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">setUp</span><span class="p">()</span>
+        <span class="n">reset</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TestCase.tearDown"><a class="viewcode-back" href="../../test.html#wdom.testing.TestCase.tearDown">[docs]</a>    <span class="k">def</span> <span class="nf">tearDown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reset WDOM states.&quot;&quot;&quot;</span>
         <span class="n">reset</span><span class="p">()</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TestCase.assertIsTrue"><a class="viewcode-back" href="../../test.html#wdom.testing.TestCase.assertIsTrue">[docs]</a>    <span class="k">def</span> <span class="nf">assertIsTrue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bl</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Check arg is exactly True, not truthy.&quot;&quot;&quot;</span>
@@ -190,8 +196,10 @@
 
 <span class="sd">        Please call this method after prepraring document.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">assertLogs</span><span class="p">(</span><span class="n">root_logger</span><span class="p">,</span> <span class="s1">&#39;INFO&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">start_server</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">server_config</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://localhost:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ws_url</span> <span class="o">=</span> <span class="s1">&#39;ws://localhost:</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
@@ -538,7 +546,7 @@
         <span class="sd">&quot;&quot;&quot;Get port of the server.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">server_config</span><span class="p">[</span><span class="s1">&#39;port&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="RemoteBrowserTestCase.wait"><a class="viewcode-back" href="../../test.html#wdom.testing.RemoteBrowserTestCase.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="RemoteBrowserTestCase.wait"><a class="viewcode-back" href="../../test.html#wdom.testing.RemoteBrowserTestCase.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Wait for ``timeout`` seconds.</span>
 
 <span class="sd">        Default timeout is ``RemoteBrowserTestCase.wait_time``.</span>
@@ -548,7 +556,7 @@
             <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">timeout</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_time</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="RemoteBrowserTestCase.wait_until"><a class="viewcode-back" href="../../test.html#wdom.testing.RemoteBrowserTestCase.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span>
-                   <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                   <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Wait until ``func`` returns True or exceeds timeout.</span>
 
 <span class="sd">        ``func`` is called with no argument. Unit of ``timeout`` is second, and</span>
@@ -570,8 +578,7 @@
         <span class="k">except</span> <span class="n">NoSuchElementException</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="RemoteBrowserTestCase.set_element"><a class="viewcode-back" href="../../test.html#wdom.testing.RemoteBrowserTestCase.set_element">[docs]</a>    <span class="k">def</span> <span class="nf">set_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-                    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="RemoteBrowserTestCase.set_element"><a class="viewcode-back" href="../../test.html#wdom.testing.RemoteBrowserTestCase.set_element">[docs]</a>    <span class="k">def</span> <span class="nf">set_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Set the ``node`` as a target node of the remote browser process.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wait_until</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_element</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="n">timeout</span><span class="p">)</span>
@@ -597,25 +604,13 @@
     <span class="n">wait_time</span> <span class="o">=</span> <span class="mf">0.01</span>
     <span class="c1">#: secondes for deault timeout for ``wait_until`` method</span>
     <span class="n">timeout</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="n">_orig_loop</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: AbstractEventLoop</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">setUpClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
-        <span class="c1"># Keep original loop</span>
-        <span class="bp">cls</span><span class="o">.</span><span class="n">_orig_loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
-        <span class="c1"># When change default loop, tornado&#39;s ioloop needs to be reinstalled</span>
-        <span class="n">AsyncIOMainLoop</span><span class="p">()</span><span class="o">.</span><span class="n">clear_current</span><span class="p">()</span>
-        <span class="n">AsyncIOMainLoop</span><span class="p">()</span><span class="o">.</span><span class="n">clear_instance</span><span class="p">()</span>
-        <span class="n">install_asyncio</span><span class="p">()</span>
         <span class="n">reset</span><span class="p">()</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">tearDownClass</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
-        <span class="c1"># Set original loop and reinstall to tornado</span>
-        <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_orig_loop</span><span class="p">)</span>
-        <span class="n">AsyncIOMainLoop</span><span class="p">()</span><span class="o">.</span><span class="n">clear_current</span><span class="p">()</span>
-        <span class="n">AsyncIOMainLoop</span><span class="p">()</span><span class="o">.</span><span class="n">clear_instance</span><span class="p">()</span>
-        <span class="n">install_asyncio</span><span class="p">()</span>
         <span class="n">reset</span><span class="p">()</span>
 
 <div class="viewcode-block" id="WebDriverTestCase.start"><a class="viewcode-back" href="../../test.html#wdom.testing.WebDriverTestCase.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -623,10 +618,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wd</span> <span class="o">=</span> <span class="n">get_webdriver</span><span class="p">()</span>
 
         <span class="k">def</span> <span class="nf">start_server</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">asyncio</span>
             <span class="kn">from</span> <span class="nn">wdom</span> <span class="k">import</span> <span class="n">server</span>
-            <span class="n">server</span><span class="o">.</span><span class="n">start_server</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">run_forever</span><span class="p">()</span>
+            <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="s1">&#39;localhost&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">free_port</span><span class="p">()</span>
@@ -648,14 +641,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">times</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tearDown</span><span class="p">()</span>  <span class="c1"># type: ignore</span></div>
 
-<div class="viewcode-block" id="WebDriverTestCase.wait"><a class="viewcode-back" href="../../test.html#wdom.testing.WebDriverTestCase.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="WebDriverTestCase.wait"><a class="viewcode-back" href="../../test.html#wdom.testing.WebDriverTestCase.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">times</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Wait for ``timeout`` or ``self.wait_time``.&quot;&quot;&quot;</span>
         <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">times</span><span class="p">):</span>
             <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">timeout</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait_time</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="WebDriverTestCase.wait_until"><a class="viewcode-back" href="../../test.html#wdom.testing.WebDriverTestCase.wait_until">[docs]</a>    <span class="k">def</span> <span class="nf">wait_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[],</span> <span class="n">Any</span><span class="p">],</span>
-                   <span class="n">timeout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                   <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Wait until ``func`` returns True or exceeds timeout.</span>
 
 <span class="sd">        ``func`` is called with no argument. Unit of ``timeout`` is second, and</span>
