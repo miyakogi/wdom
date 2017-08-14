@@ -3,8 +3,8 @@
 
 """Document class and its helper functions.
 
-{} module also provides a deafult root-document object.
-""".format(__name__)
+This module also provides a deafult root-document object.
+"""
 
 import os
 import tempfile
@@ -46,6 +46,7 @@ def getElementByRimoId(id: str) -> Optional[WebEventTarget]:
 
 
 def _cleanup(path: str) -> None:
+    """Cleanup temporary directory."""
     if os.path.isdir(path):
         shutil.rmtree(path)
 
@@ -85,7 +86,7 @@ def _find_tag(elm: Node, tag: str) -> Optional[Node]:
 
 
 class Document(Node, ParentNode, EventTarget):
-    """Base Document class."""
+    """Base class for Document node."""
 
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
@@ -98,7 +99,7 @@ class Document(Node, ParentNode, EventTarget):
                  doctype: str = 'html',
                  default_class: type = HTMLElement,
                  **kwargs: Any) -> None:
-        """Generate new Document node.
+        """Create new Document node.
 
         :arg str doctype: Document type of this document.
         :arg type default_class: Default class created by
@@ -234,17 +235,18 @@ class WdomDocument(Document, WebEventTarget):
         """Create new document object for WDOM application.
 
         .. caution::
-        Don't create new document from :class:`WdomDocument` class constructor.
-        Use :func:`get_new_document` function instead.
+
+            Don't create new document from :class:`WdomDocument` class
+            constructor. Use :func:`get_new_document` function instead.
 
         :arg str doctype: doctype of the document (default: html).
         :arg str title: title of the document.
         :arg str charset: charset of the document.
         :arg type default_class: Set default Node class of the document. This
-            class is used when make node by ``createElement`` method.
+            class is used when make node by :py:meth:`createElement()`
         :arg bool autoreload: Enable/Disable autoreload (default: False).
         :arg float reload_wait: How long (seconds) wait to reload. This
-            parameter is only used when ``autoreload`` is enabled.
+            parameter is only used when autoreload is enabled.
         """
         self.__tempdir = _tempdir = tempfile.mkdtemp()
         self._finalizer = weakref.finalize(self,  # type: ignore
@@ -276,7 +278,7 @@ class WdomDocument(Document, WebEventTarget):
                 '\n'.join(ar_script))
 
     def getElementByRimoId(self, id: Union[str]) -> Optional[WebEventTarget]:
-        """Get element by ``rimo_id``.
+        """Get an element node with ``rimo_id``.
 
         If this document does not have the element with the id, return None.
         """
@@ -286,7 +288,7 @@ class WdomDocument(Document, WebEventTarget):
         return None
 
     def add_jsfile(self, src: str) -> None:
-        """Add JS file to load at this document's bottom."""
+        """Add JS file to load at this document's bottom of the body."""
         self.body.appendChild(Script(src=src))
 
     def add_jsfile_head(self, src: str) -> None:
@@ -294,15 +296,25 @@ class WdomDocument(Document, WebEventTarget):
         self.head.appendChild(Script(src=src))
 
     def add_cssfile(self, src: str) -> None:
-        """Add CSS file to load at this document's bottom."""
+        """Add CSS file to load at this document's header."""
         self.head.appendChild(Link(rel='stylesheet', href=src))
 
     def add_header(self, header: str) -> None:
-        """Add CSS file to load at this document's header."""
+        """Insert header tag staring at this document's header.
+
+        :arg str header: tag to insert <head> ~ </head> area.
+        """
         self.head.appendChild(RawHtml(header))
 
     def register_theme(self, theme: ModuleType) -> None:
-        """Set theme."""
+        """Set theme for this docuemnt.
+
+        This method sets theme's js/css files and headers on this document.
+
+        :arg ModuleType theme: a module which has ``js_files``, ``css_files``,
+            ``headers``, and ``extended_classes``. see ``wdom.themes``
+            directory actual theme module structures.
+        """
         if not hasattr(theme, 'css_files'):
             raise ValueError('theme module must include `css_files`.')
         for css in getattr(theme, 'css_files', []):
@@ -389,8 +401,7 @@ def get_new_document(  # noqa: C901
     return document
 
 
-# get_document = get_new_document
-def get_document(*args: Any, **kwargs: Any) -> Document:
+def get_document() -> Document:
     """Get current root document object.
 
     :rtype: Document
@@ -408,7 +419,10 @@ def set_document(new_document: Document) -> None:
 
 
 def set_app(app: Tag) -> None:
-    """Set root ``Tag`` as applicaion to the current root document."""
+    """Set ``Tag`` as applicaion to the current root document.
+
+    Equivalent to ``get_document().body.prepend(app)``.
+    """
     document = get_document()
     document.body.prepend(app)
 
