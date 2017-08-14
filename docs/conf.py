@@ -141,6 +141,10 @@ html_theme_options = {
     'github_banner': True,
     'github_type': 'mark',
     'github_count': False,
+    'font_family': '"Charis SIL", "Noto Serif", serif',
+    'head_font_family': 'Lato, sans-serif',
+    'code_font_family': '"Code new roman", "Ubuntu Mono", monospace',
+    'code_font_size': '1rem',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
