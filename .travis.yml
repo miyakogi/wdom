@@ -18,9 +18,7 @@ install:
   - pip install ${TRAVIS_BUILD_DIR}
 script:
   - mkdir maint && cd maint
-  - cp ${TRAVIS_BUILD_DIR}/.green ./
-  - green -R -s 1 ${TRAVIS_BUILD_DIR}
-  - coverage report
+  - green -c ../.green -r -s 1 ${TRAVIS_BUILD_DIR}
   - cp .coverage ${TRAVIS_BUILD_DIR}
   - cd ${TRAVIS_BUILD_DIR}
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then flake8 setup.py wdom; fi
