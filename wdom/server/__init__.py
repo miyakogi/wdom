@@ -74,7 +74,7 @@ async def _message_loop() -> None:
         await asyncio.sleep(config.message_wait)
 
 
-def start_server(address: str = 'localhost', port: int = 8888,
+def start_server(address: str = None, port: int = None,
                  check_time: int = 500, **kwargs: Any) -> module.HTTPServer:
     """Start web server on ``address:port``.
 
