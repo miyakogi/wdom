@@ -120,7 +120,7 @@ class TestInput(RemoteBrowserTestCase, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.document = get_document(autoreload=False)
+        self.document = get_document()
         self.root = Form()
         self.input = Input(parent=self.root, type='text')
         self.textarea = Textarea(parent=self.root)
@@ -255,7 +255,7 @@ class TestSelect(RemoteBrowserTestCase, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.document = get_document(autoreload=False)
+        self.document = get_document()
         self.root = Div()
         self.select = Select(parent=self.root)
         self.mselect = Select(parent=self.root, multiple=True)
