@@ -30,7 +30,7 @@ cases = [
     ('wdom.server', '_tornado'),
     ('wdom', 'themes'),
     ('wdom.themes', 'default'),
-    ('wdom.themes', 'kube'),
+    ('wdom.themes', 'bootstrap3'),
     ('wdom.examples', 'data_binding'),
     ('wdom.examples', 'rev_text'),
     ('wdom.examples', 'theming'),
