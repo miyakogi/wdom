@@ -16,6 +16,7 @@ import time
 import logging
 import asyncio
 import unittest
+import shutil
 from multiprocessing import Process, Pipe  # type: ignore
 from multiprocessing.connection import Connection
 from types import FunctionType, MethodType
@@ -54,6 +55,9 @@ def _get_chromedriver_path() -> str:
 
     Usually it is on the project root.
     """
+    chromedriver_path = shutil.which('chromedriver')
+    if chromedriver_path:
+        return chromedriver_path
     if 'TRAVIS' in os.environ:
         chromedriver_path = os.path.join(
             os.environ['TRAVIS_BUILD_DIR'], 'chromedriver')
