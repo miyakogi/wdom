@@ -91,7 +91,7 @@
     <span class="k">return</span> <span class="nb">type</span>
 
 
-<div class="viewcode-block" id="DataTransfer"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer">[docs]</a><span class="k">class</span> <span class="nc">DataTransfer</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">DataTransfer</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;DataTransfer object is used to transfer drag/drop data.</span>
 
 <span class="sd">    TODO: Currently always read/write enabled.</span>
@@ -112,16 +112,16 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_store</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
 
-<div class="viewcode-block" id="DataTransfer.getData"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer.getData">[docs]</a>    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">getData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Get data of type format.</span>
 
 <span class="sd">        If this DataTransfer object does not have `type` data, return empty</span>
 <span class="sd">        string.</span>
 <span class="sd">        :arg str type: Data format of the data, like &#39;text/plain&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">normalize_type</span><span class="p">(</span><span class="nb">type</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">normalize_type</span><span class="p">(</span><span class="nb">type</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DataTransfer.setData"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer.setData">[docs]</a>    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Set data of type format.</span>
 
 <span class="sd">        :arg str type: Data format of the data, like &#39;text/plain&#39;.</span>
@@ -129,9 +129,9 @@
         <span class="nb">type</span> <span class="o">=</span> <span class="n">normalize_type</span><span class="p">(</span><span class="nb">type</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span>
 
-<div class="viewcode-block" id="DataTransfer.clearData"><a class="viewcode-back" href="../../event.html#wdom.event.DataTransfer.clearData">[docs]</a>    <span class="k">def</span> <span class="nf">clearData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">clearData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove data of type foramt.</span>
 
 <span class="sd">        If type argument is omitted, remove all data.</span>
@@ -140,10 +140,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span></div></div>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__data</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="Event"><a class="viewcode-back" href="../../event.html#wdom.event.Event">[docs]</a><span class="k">class</span> <span class="nc">Event</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">Event</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Base class of Event classes.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
@@ -172,9 +172,9 @@
         <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ctarget</span>
 
-<div class="viewcode-block" id="Event.stopPrapagation"><a class="viewcode-back" href="../../event.html#wdom.event.Event.stopPrapagation">[docs]</a>    <span class="k">def</span> <span class="nf">stopPrapagation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">stopPrapagation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Not implemented yet.&quot;&quot;&quot;</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div></div>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
 
 <span class="k">class</span> <span class="nc">UIEvent</span><span class="p">(</span><span class="n">Event</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
@@ -186,7 +186,7 @@
     <span class="k">pass</span>
 
 
-<div class="viewcode-block" id="MouseEvent"><a class="viewcode-back" href="../../event.html#wdom.event.MouseEvent">[docs]</a><span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+<span class="k">class</span> <span class="nc">MouseEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
     <span class="sd">&quot;&quot;&quot;Mouse event class.</span>
 
 <span class="sd">    Event types generate this event class are ``click``, ``dblclick``,</span>
@@ -215,10 +215,10 @@
             <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementByRimoId</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span>
 
 
-<div class="viewcode-block" id="DragEvent"><a class="viewcode-back" href="../../event.html#wdom.event.DragEvent">[docs]</a><span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">MouseEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+<span class="k">class</span> <span class="nc">DragEvent</span><span class="p">(</span><span class="n">MouseEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
     <span class="sd">&quot;&quot;&quot;Drag event class.</span>
 
 <span class="sd">    This class inherits :py:class:`MouseEvent` class and has own attribute</span>
@@ -239,10 +239,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dataTransfer</span> <span class="o">=</span> <span class="n">DataTransfer</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">dt_id</span><span class="p">)</span>\
                 <span class="ow">or</span> <span class="n">DataTransfer</span><span class="p">(</span><span class="n">dt_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s1">&#39;dragend&#39;</span><span class="p">:</span>
-                <span class="n">DataTransfer</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">dt_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+                <span class="n">DataTransfer</span><span class="o">.</span><span class="n">_store</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">dt_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="KeyboardEvent"><a class="viewcode-back" href="../../event.html#wdom.event.KeyboardEvent">[docs]</a><span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
+<span class="k">class</span> <span class="nc">KeyboardEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
     <span class="sd">&quot;&quot;&quot;Keyboard event class.</span>
 
 <span class="sd">    Event types generate this event class are ``keydown``, ``keypress``, and</span>
@@ -262,7 +262,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">init</span><span class="p">:</span> <span class="n">EventMsgDict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102,E501</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">init</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span></div>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">attr</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="n">UIEvent</span><span class="p">):</span>  <span class="c1"># noqa: D204</span>
@@ -282,7 +282,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="create_event"><a class="viewcode-back" href="../../event.html#wdom.event.create_event">[docs]</a><span class="k">def</span> <span class="nf">create_event</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">EventMsgDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">create_event</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="n">EventMsgDict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Event</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Create Event from JSOM msg and set target nodes.</span>
 
 <span class="sd">    :arg EventTarget currentTarget: Current event target node.</span>
@@ -292,7 +292,7 @@
     <span class="n">proto</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proto&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="bp">cls</span> <span class="o">=</span> <span class="n">proto_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">proto</span><span class="p">,</span> <span class="n">Event</span><span class="p">)</span>
     <span class="n">e</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">msg</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">e</span></div>
+    <span class="k">return</span> <span class="n">e</span>
 
 
 <span class="n">_EventListenerType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">Event</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>
@@ -306,7 +306,7 @@
     <span class="k">return</span> <span class="n">wrapper</span>
 
 
-<div class="viewcode-block" id="EventListener"><a class="viewcode-back" href="../../event.html#wdom.event.EventListener">[docs]</a><span class="k">class</span> <span class="nc">EventListener</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">EventListener</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Class to wrap an event listener function.</span>
 
 <span class="sd">    Acceptable listeners are function, coroutine, and coroutine-function.</span>
@@ -333,10 +333,10 @@
 
 <span class="sd">        Pass event object to the listener as a first argument.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">action</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="EventTarget"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget">[docs]</a><span class="k">class</span> <span class="nc">EventTarget</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">EventTarget</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Base class for EventTargets.</span>
 
 <span class="sd">    This class and subclasses can add/remove event listeners and emit events.</span>
@@ -358,7 +358,7 @@
                             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">EventListener</span><span class="p">(</span><span class="n">listener</span><span class="p">))</span>
 
-<div class="viewcode-block" id="EventTarget.addEventListener"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.addEventListener">[docs]</a>    <span class="k">def</span> <span class="nf">addEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
+    <span class="k">def</span> <span class="nf">addEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
                          <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add event listener to this node.</span>
 
@@ -367,7 +367,7 @@
 <span class="sd">        ``on``. For example, to add a listener which is called when this node</span>
 <span class="sd">        is clicked, event is ``&#39;click``.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_remove_event_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
                                <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -381,31 +381,31 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">listeners</span><span class="p">:</span>
             <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">[</span><span class="n">event</span><span class="p">]</span>
 
-<div class="viewcode-block" id="EventTarget.removeEventListener"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.removeEventListener">[docs]</a>    <span class="k">def</span> <span class="nf">removeEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
+    <span class="k">def</span> <span class="nf">removeEventListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">listener</span><span class="p">:</span> <span class="n">_EventListenerType</span>
                             <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Remove an event listener of this node.</span>
 
 <span class="sd">        The listener is removed only when both event type and listener is</span>
 <span class="sd">        matched.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_remove_event_listener</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">listener</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EventTarget.on_event_pre"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.on_event_pre">[docs]</a>    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">on_event_pre</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Run before dispatching events.</span>
 
 <span class="sd">        Used for seting values changed by user input, in some elements like</span>
 <span class="sd">        input, textarea, or select. In this method, event.currentTarget is a</span>
 <span class="sd">        dict sent from browser.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div>
+        <span class="k">pass</span>
 
     <span class="k">def</span> <span class="nf">_dispatch_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">listener</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_listeners</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">]:</span>
             <span class="n">listener</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
-<div class="viewcode-block" id="EventTarget.dispatchEvent"><a class="viewcode-back" href="../../event.html#wdom.event.EventTarget.dispatchEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dispatchEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">dispatchEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Emit events.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 
 
 <span class="n">_T_MsgItem</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>

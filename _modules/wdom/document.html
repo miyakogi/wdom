@@ -257,7 +257,7 @@
         <span class="k">return</span> <span class="n">Attr</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="WdomDocument"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument">[docs]</a><span class="k">class</span> <span class="nc">WdomDocument</span><span class="p">(</span><span class="n">Document</span><span class="p">,</span> <span class="n">WebEventTarget</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">WdomDocument</span><span class="p">(</span><span class="n">Document</span><span class="p">,</span> <span class="n">WebEventTarget</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Main document class for WDOM applications.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
@@ -326,7 +326,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_autoreload_script</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ar_script</span><span class="p">))</span>
 
-<div class="viewcode-block" id="WdomDocument.getElementByRimoId"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.getElementByRimoId">[docs]</a>    <span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;Get an element node with ``rimo_id``.</span>
 
 <span class="sd">        If this document does not have the element with the id, return None.</span>
@@ -334,28 +334,28 @@
         <span class="n">elm</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">elm</span> <span class="ow">and</span> <span class="n">elm</span><span class="o">.</span><span class="n">ownerDocument</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">elm</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="WdomDocument.add_jsfile"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_jsfile">[docs]</a>    <span class="k">def</span> <span class="nf">add_jsfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_jsfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add JS file to load at this document&#39;s bottom of the body.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">))</span>
 
-<div class="viewcode-block" id="WdomDocument.add_jsfile_head"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_jsfile_head">[docs]</a>    <span class="k">def</span> <span class="nf">add_jsfile_head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_jsfile_head</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add JS file to load at this document&#39;s header.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Script</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">src</span><span class="p">))</span>
 
-<div class="viewcode-block" id="WdomDocument.add_cssfile"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_cssfile">[docs]</a>    <span class="k">def</span> <span class="nf">add_cssfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_cssfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Add CSS file to load at this document&#39;s header.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Link</span><span class="p">(</span><span class="n">rel</span><span class="o">=</span><span class="s1">&#39;stylesheet&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">src</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">Link</span><span class="p">(</span><span class="n">rel</span><span class="o">=</span><span class="s1">&#39;stylesheet&#39;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">src</span><span class="p">))</span>
 
-<div class="viewcode-block" id="WdomDocument.add_header"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.add_header">[docs]</a>    <span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">add_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Insert header tag staring at this document&#39;s header.</span>
 
 <span class="sd">        :arg str header: tag to insert &lt;head&gt; ~ &lt;/head&gt; area.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">RawHtml</span><span class="p">(</span><span class="n">header</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="n">RawHtml</span><span class="p">(</span><span class="n">header</span><span class="p">))</span>
 
-<div class="viewcode-block" id="WdomDocument.register_theme"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.register_theme">[docs]</a>    <span class="k">def</span> <span class="nf">register_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theme</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">register_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theme</span><span class="p">:</span> <span class="n">ModuleType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Set theme for this docuemnt.</span>
 
 <span class="sd">        This method sets theme&#39;s js/css files and headers on this document.</span>
@@ -373,15 +373,15 @@
         <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="s1">&#39;headers&#39;</span><span class="p">,</span> <span class="p">[]):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_header</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
         <span class="k">for</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">theme</span><span class="p">,</span> <span class="s1">&#39;extended_classes&#39;</span><span class="p">,</span> <span class="p">[]):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">defaultView</span><span class="o">.</span><span class="n">customElements</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">defaultView</span><span class="o">.</span><span class="n">customElements</span><span class="o">.</span><span class="n">define</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
 
-<div class="viewcode-block" id="WdomDocument.build"><a class="viewcode-back" href="../../webserver.html#wdom.document.WdomDocument.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return HTML representation of this document.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_autoreload</span><span class="p">()</span>
-        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">html</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">html</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_new_document"><a class="viewcode-back" href="../../webserver.html#wdom.document.get_new_document">[docs]</a><span class="k">def</span> <span class="nf">get_new_document</span><span class="p">(</span>  <span class="c1"># noqa: C901</span>
+<span class="k">def</span> <span class="nf">get_new_document</span><span class="p">(</span>  <span class="c1"># noqa: C901</span>
         <span class="n">include_rimo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_skeleton</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">include_normalizecss</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -447,24 +447,24 @@
     <span class="k">if</span> <span class="n">include_rimo</span><span class="p">:</span>
         <span class="n">document</span><span class="o">.</span><span class="n">add_jsfile_head</span><span class="p">(</span><span class="s1">&#39;_static/js/rimo/rimo.js&#39;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">document</span></div>
+    <span class="k">return</span> <span class="n">document</span>
 
 
-<div class="viewcode-block" id="get_document"><a class="viewcode-back" href="../../webserver.html#wdom.document.get_document">[docs]</a><span class="k">def</span> <span class="nf">get_document</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">get_document</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Get current root document object.</span>
 
 <span class="sd">    :rtype: Document</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">rootDocument</span></div>
+    <span class="k">return</span> <span class="n">rootDocument</span>
 
 
-<div class="viewcode-block" id="set_document"><a class="viewcode-back" href="../../webserver.html#wdom.document.set_document">[docs]</a><span class="k">def</span> <span class="nf">set_document</span><span class="p">(</span><span class="n">new_document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">set_document</span><span class="p">(</span><span class="n">new_document</span><span class="p">:</span> <span class="n">Document</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Set a new document as a current root document.</span>
 
 <span class="sd">    :param Document new_document: New root document.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">rootDocument</span>
-    <span class="n">rootDocument</span> <span class="o">=</span> <span class="n">new_document</span></div>
+    <span class="n">rootDocument</span> <span class="o">=</span> <span class="n">new_document</span>
 
 
 <span class="k">def</span> <span class="nf">set_app</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Tag</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
