@@ -104,7 +104,7 @@ class TestAutoReload(TestCase):
         sync(asyncio.sleep(t or (self.wait_time / 10)))
 
     def get_element_by_id(self, _id):
-        for i in range(30):
+        for i in range(50):
             self.wait_short()
             try:
                 elm = self.wd.find_element_by_id(_id)
@@ -124,7 +124,7 @@ class TestAutoReload(TestCase):
         with open(self.tmpfilename, 'w') as f:
             f.write(src_base.replace('FIRST', 'SECOND'))
 
-        for i in range(30):
+        for i in range(50):
             self.wait_short()
             try:
                 h1 = self.wd.find_element_by_id('h1')
@@ -164,7 +164,7 @@ class TestAutoReload(TestCase):
         with open(css_path, 'w') as f:
             f.write(src_css_post)
 
-        for i in range(30):
+        for i in range(50):
             self.wait_short()
             try:
                 h1 = self.wd.find_element_by_id('h1')
