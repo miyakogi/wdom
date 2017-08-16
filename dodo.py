@@ -31,7 +31,7 @@ def task_flake8() -> dict:
 def task_mypy() -> dict:
     """Run mypy check."""
     return {
-        'actions': ['mypy wdom'],
+        'actions': ['mypy -i wdom'],
     }
 
 
@@ -45,7 +45,7 @@ def task_pydocstyle() -> dict:
 def task_docs() -> dict:
     """Build sphinx document."""
     return {
-        'actions': ['sphinx-build -q -W -E -b html docs docs/_build/html'],
+        'actions': ['sphinx-build -q -W -j 4 -b html docs docs/_build/html'],  # noqa
     }
 
 

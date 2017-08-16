@@ -93,7 +93,7 @@ pydocstyle:  ## run pydocstyle check
 .PHONY: docs
 docs:  ## build document
 	@echo "Sphinx build start."
-	sphinx-build -q -E -W -b html docs docs/_build/html
+	sphinx-build -q -E -W -j 4 -b html docs docs/_build/html
 	@echo "Sphinx build done."
 
 .PHONY: sphinx
