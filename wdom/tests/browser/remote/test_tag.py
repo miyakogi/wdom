@@ -328,13 +328,13 @@ class TestEvent(RemoteBrowserTestCase, TestCase):
             height: 100px;
             display: inline-block;
         '''
-        self.elm.addEventListener('click', self.click_test)
+        self.elm.addEventListener('click', self.click)
         self.test_done = False
         self.doc.body.append(self.elm)
         self.start()
         self.set_element(self.elm)
 
-    def click_test(self, e):
+    def click(self, e):
         self.assertFalse(e.altKey)
         self.assertFalse(e.ctrlKey)
         self.assertFalse(e.metaKey)
