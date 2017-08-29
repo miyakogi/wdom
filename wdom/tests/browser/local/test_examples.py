@@ -6,8 +6,8 @@ from selenium.webdriver.support.color import Color
 
 from wdom.tag import H1
 from wdom.document import get_document, set_app
-from wdom.testing import WebDriverTestCase, TestCase
-from wdom.testing import close_webdriver
+from wdom.tests.util import WebDriverTestCase, TestCase
+from wdom.tests.util import close_webdriver
 from wdom.util import suppress_logging
 
 
@@ -77,7 +77,7 @@ class TestDragDrop(WebDriverTestCase, TestCase):
                          elm3.value_of_css_property('background-color'))
         # FIXME: not work selenium's drag/drop
         # from selenium.webdriver import ActionChains
-        # from wdom.testing import get_webdriver
+        # from wdom.tests.util import get_webdriver
         # action_chains = ActionChains(get_webdriver())
         # action_chains.drag_and_drop(elm1, elm2).perform()
         # action_chains.click_and_hold(elm1).move_to_element(elm2).release(elm2).perform()

@@ -8,12 +8,12 @@ from unittest.mock import MagicMock
 
 from syncer import sync
 
-from wdom.testing import TestCase
 from wdom.document import get_document
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WdomElement
-from wdom.testing import RemoteBrowserTestCase, NoSuchElementException
-from wdom.testing import start_remote_browser, close_remote_browser
+from wdom.tests.util import TestCase
+from wdom.tests.util import RemoteBrowserTestCase, NoSuchElementException
+from wdom.tests.util import start_remote_browser, close_remote_browser
 from wdom.util import suppress_logging
 
 

@@ -14,7 +14,7 @@ from wdom.event import Event
 from wdom.node import DocumentFragment, Comment, Text
 from wdom.server.handler import event_handler
 from wdom.tag import Tag, A
-from wdom.testing import TestCase
+from wdom.tests.util import TestCase
 from wdom.web_node import WdomElement, remove_rimo_id
 
 

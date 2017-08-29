@@ -7,8 +7,6 @@ import sys
 from os import path
 import logging
 
-from wdom import options
-
 # if freezed by cx_freeze, _static and _template dirs are copied to lib dir.
 if getattr(sys, 'frozen', False):
     root_dir = path.join(path.dirname(sys.executable), 'lib')
@@ -45,5 +43,25 @@ def suppress_logging() -> None:
     This function is intended to be used in test's setup. This function removes
     log handler of ``wdom`` logger and set NullHandler to suppress log.
     """
+    from wdom import options
     options.root_logger.removeHandler(options._log_handler)
     options.root_logger.addHandler(logging.NullHandler())
+
+
+def reset() -> None:
+    """Reset all wdom objects.
+
+    This function clear all connections, elements, and resistered custom
+    elements. This function also makes new document/application and set them.
+    """
+    from wdom.document import get_new_document, set_document
+    from wdom.element import Element
+    from wdom.server import _tornado
+    from wdom.window import customElements
+
+    set_document(get_new_document())
+    _tornado.connections.clear()
+    _tornado.set_application(_tornado.Application())
+    Element._elements_with_id.clear()
+    Element._element_buffer.clear()
+    customElements.reset()

@@ -7,7 +7,7 @@ from parameterized import parameterized
 
 from wdom.tag import Tag, NestedTag
 from wdom.themes import theme_list
-from wdom.testing import TestCase
+from wdom.tests.util import TestCase
 from wdom.util import suppress_logging
 
 

@@ -16,7 +16,7 @@ from syncer import sync
 
 from wdom import server
 from wdom.document import get_document
-from wdom.testing import HTTPTestCase
+from wdom.tests.util import HTTPTestCase
 from wdom.util import suppress_logging
 
 curdir = path.dirname(__file__)

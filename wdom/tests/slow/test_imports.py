@@ -7,7 +7,7 @@ import subprocess
 
 from parameterized import parameterized
 
-from wdom.testing import TestCase
+from wdom.tests.util import TestCase
 
 root = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
@@ -15,25 +15,26 @@ cases = [
     ('wdom', 'css'),
     ('wdom', 'document'),
     ('wdom', 'element'),
+    ('wdom.examples', 'data_binding'),
+    ('wdom.examples', 'drag'),
+    ('wdom.examples', 'rev_text'),
+    ('wdom.examples', 'theming'),
     ('wdom', 'event'),
     ('wdom', 'node'),
     ('wdom', 'options'),
     ('wdom', 'parser'),
-    ('wdom', 'tag'),
-    ('wdom', 'testing'),
-    ('wdom', 'util'),
-    ('wdom', 'web_node'),
-    ('wdom', 'window'),
     ('wdom', 'server'),
     ('wdom.server', 'base'),
     ('wdom.server', 'handler'),
     ('wdom.server', '_tornado'),
+    ('wdom', 'tag'),
+    ('wdom.tests', 'util'),
     ('wdom', 'themes'),
     ('wdom.themes', 'default'),
     ('wdom.themes', 'bootstrap3'),
-    ('wdom.examples', 'data_binding'),
-    ('wdom.examples', 'rev_text'),
-    ('wdom.examples', 'theming'),
+    ('wdom', 'util'),
+    ('wdom', 'web_node'),
+    ('wdom', 'window'),
 ]
 
 

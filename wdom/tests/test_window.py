@@ -7,7 +7,7 @@ from unittest.mock import MagicMock
 from wdom.document import get_document
 from wdom.server import _tornado
 from wdom.server.handler import event_handler
-from wdom.testing import TestCase
+from wdom.tests.util import TestCase
 from wdom.window import customElements
 
 

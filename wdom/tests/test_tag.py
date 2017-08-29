@@ -3,7 +3,7 @@
 
 from wdom.element import DOMTokenList
 from wdom.tag import Tag, NewTagClass, NestedTag, RawHtmlNode
-from wdom.testing import TestCase
+from wdom.tests.util import TestCase
 from wdom.web_node import WdomElement
 from wdom.window import customElements
 

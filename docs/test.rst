@@ -5,11 +5,9 @@ Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>
 
 .. warning:: This document is incomplete and all APIs are not stable.
 
-.. currentmodule:: wdom.testing
+.. currentmodule:: wdom.tests.util
 
-.. automodule:: wdom.testing
-
-   .. autofunction:: reset
+.. automodule:: wdom.tests.util
 
    .. autoclass:: TestCase
       :members:
@@ -28,7 +26,7 @@ Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>
     WebDriverTestCase class
     -----------------------
 
-    ``wdom.testing.WebDriverTestCase`` class is designed for end-to-end UI test,
+    ``wdom.tests.util.WebDriverTestCase`` class is designed for end-to-end UI test,
     which is useful for testing your app on browser. This class runs your app on
     subprocess and prepare WebDriver for tests.
 
@@ -41,7 +39,7 @@ Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>
 
         # in your_test_dir/conftest.py
         import pytest
-        from wdom.testing import start_webdriver, close_webdriver
+        from wdom.tests.util import start_webdriver, close_webdriver
 
         @pytest.fixture(scope='session', autouse=True)
         def browser(request):
@@ -52,7 +50,7 @@ Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>
         # in your test file
         from unittest import TestCase
         from wdom.util import install_asyncio
-        form wdom.testing import WebDriverTestCase
+        from wdom.tests.util import WebDriverTestCase
 
         def setUpModule():
             install_asyncio()  # force tornado to use asyncio
@@ -112,8 +110,8 @@ Examples see `WDOM's test <https://github.com/miyakogi/wdom/tree/dev/wdom/tests>
         from wdom.tag import Div
         from wdom.document import get_document
         from wdom.server import get_app
-        from wdom.tests.util import install_asyncio
-        from wdom.testing import RemoteBrowserTestCase
+        from wdom.util import install_asyncio
+        from wdom.tests.util import RemoteBrowserTestCase
 
         def setup_module():
             install_asyncio()  # force tornado to use asyncio module

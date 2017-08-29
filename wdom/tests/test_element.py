@@ -13,7 +13,7 @@ from wdom.element import (
     getElementsBy, getElementsByClassName, getElementsByTagName,
 )
 from wdom.window import customElements
-from wdom.testing import TestCase
+from wdom.tests.util import TestCase
 
 
 class TestDOMTokenList(TestCase):

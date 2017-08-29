@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from wdom.testing import TestCase
 
 from wdom.node import Node, DocumentFragment
 from wdom.parser import FragmentParser, parse_html
+from wdom.tests.util import TestCase
 from wdom.web_node import WdomElement, remove_rimo_id
 
 style_css = '''

@@ -35,7 +35,7 @@ from tornado.websocket import websocket_connect, WebSocketClientConnection
 
 from wdom import options, server
 from wdom.element import Element
-from wdom.window import customElements
+from wdom.util import reset
 
 if TYPE_CHECKING:
     from asyncio import AbstractEventLoop  # noqa: F401
@@ -78,22 +78,6 @@ def get_chrome_options() -> webdriver.ChromeOptions:
     if 'TRAVIS'in os.environ:
         chrome_options.add_argument('--no-sandbox')
     return chrome_options
-
-
-def reset() -> None:
-    """Reset all wdom objects.
-
-    This function clear all connections, elements, and resistered custom
-    elements. This function also makes new document/application and set them.
-    """
-    from wdom.document import get_new_document, set_document
-    set_document(get_new_document())
-    from wdom.server import _tornado
-    _tornado.connections.clear()
-    _tornado.set_application(_tornado.Application())
-    Element._elements_with_id.clear()
-    Element._element_buffer.clear()
-    customElements.reset()
 
 
 class TestCase(unittest.TestCase):
