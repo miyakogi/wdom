@@ -9,14 +9,14 @@ from syncer import sync
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WdomElement
 from wdom.util import suppress_logging
-from wdom.tests.pyppeteer import BaseTestCase
+from wdom.tests.util import PyppeteerTestCase
 
 
 def setUpModule():
     suppress_logging()
 
 
-class TestWdomElement(BaseTestCase):
+class TestWdomElement(PyppeteerTestCase):
     def setUp(self):
         super().setUp()
 
@@ -393,7 +393,7 @@ class TestWdomElement(BaseTestCase):
         self.assertRegex(log.output[0], r'JS: ReferenceError')
 
 
-class TestEvent(BaseTestCase):
+class TestEvent(PyppeteerTestCase):
     def get_elements(self):
         self.root = WdomElement('div')
         self.tag = WdomElement('span', parent=self.root)

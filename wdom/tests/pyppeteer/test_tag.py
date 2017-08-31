@@ -7,7 +7,7 @@ from syncer import sync
 
 from wdom.tag import Tag, Textarea, Input, Label, Div, Form
 from wdom.themes import CheckBox
-from wdom.tests.pyppeteer import BaseTestCase
+from wdom.tests.util import PyppeteerTestCase
 from wdom.util import suppress_logging
 
 
@@ -15,7 +15,7 @@ def setUpModule():
     suppress_logging()
 
 
-class TestTag(BaseTestCase):
+class TestTag(PyppeteerTestCase):
     def get_elements(self):
         class Root(Tag):
             tag = 'root'
@@ -102,7 +102,7 @@ class TestTag(BaseTestCase):
             await self.element.evaluate('(elm) => elm.hasAttribute("hidden")'))
 
 
-class TestInput(BaseTestCase):
+class TestInput(PyppeteerTestCase):
     def get_elements(self):
         self.root = Form()
         self.input = Input(parent=self.root, type='text')
@@ -245,7 +245,7 @@ class TestInput(BaseTestCase):
         pass
 
 
-class TestEvent(BaseTestCase):
+class TestEvent(PyppeteerTestCase):
     def get_elements(self):
         self.doc.body.style = 'margin: 0; padding: 0;'
         self.elm = Div()

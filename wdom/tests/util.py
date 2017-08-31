@@ -29,11 +29,14 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
+from syncer import sync
+
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.platform.asyncio import to_asyncio_future
 from tornado.websocket import websocket_connect, WebSocketClientConnection
 
 from wdom import options, server
+from wdom.document import get_document
 from wdom.element import Element
 from wdom.util import reset
 
@@ -609,3 +612,65 @@ class WebDriverTestCase:
         """
         for k in keys:
             element.send_keys(k)
+
+
+class PyppeteerTestCase(TestCase):
+    if os.getenv('TRAVIS', False):
+        wait_time = 0.1
+    else:
+        wait_time = 0.05
+
+    @classmethod
+    def setUpClass(cls):
+        from pyppeteer.launcher import launch
+        cls.browser = launch({'headless': True})
+        cls.page = sync(cls.browser.newPage())
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.browser.close()
+
+    def setUp(self):
+        super().setUp()
+        self.doc = get_document()
+        self.root = self.get_elements()
+        self.doc.body.prepend(self.root)
+        self.server = server.start_server(port=0)
+        self.address = server_config['address']
+        self.port = server_config['port']
+        self.url = 'http://{}:{}'.format(self.address, self.port)
+        sync(self.page.goto(self.url))
+        self.element = sync(self.get_element_handle(self.root))
+
+    def tearDown(self):
+        server.stop_server(self.server)
+        # sync(self.page.goto('about:blank'))
+        super().tearDown()
+
+    def get_elements(self):
+        raise NotImplementedError
+
+    @asyncio.coroutine
+    def get_element_handle(self, elm):
+        result = yield from self.page.querySelector(
+            '[rimo_id="{}"]'.format(elm.rimo_id))
+        return result
+
+    @asyncio.coroutine
+    def get_text(self):
+        result = yield from self.element.evaluate('(elm) => elm.textContent')
+        return result
+
+    @asyncio.coroutine
+    def wait(self, timeout=None):
+        timeout = timeout or self.wait_time
+        _t = timeout / 10
+        for _ in range(10):
+            yield from asyncio.sleep(_t)
+
+    @asyncio.coroutine
+    def wait_for_element(self, elm):
+        yield from self.page.waitForSelector(
+            '[rimo_id="{}"]'.format(elm.rimo_id),
+            {'timeout': 100},
+        )
