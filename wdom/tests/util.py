@@ -29,8 +29,6 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
-from syncer import sync
-
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from tornado.platform.asyncio import to_asyncio_future
 from tornado.websocket import websocket_connect, WebSocketClientConnection
@@ -623,6 +621,7 @@ class PyppeteerTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         from pyppeteer.launcher import launch
+        from syncer import sync
         cls.browser = launch({'headless': True})
         cls.page = sync(cls.browser.newPage())
 
@@ -631,6 +630,7 @@ class PyppeteerTestCase(TestCase):
         cls.browser.close()
 
     def setUp(self):
+        from syncer import sync
         super().setUp()
         self.doc = get_document()
         self.root = self.get_elements()

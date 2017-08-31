@@ -15,12 +15,12 @@ before_script:
 install:
   - pip install -r requirements-test.txt
   - pip install coverage green
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls flake8 mypy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install pyppeteer codecov coveralls flake8 mypy; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:
   - mkdir maint && cd maint
-  - green -c ../.green -r -s 1 ${TRAVIS_BUILD_DIR}
-  - cp .coverage ${TRAVIS_BUILD_DIR}
+  - if [[ ! $TRAVIS_PYTHON_VERSION == 3.6* ]]; then green -c ../.green -s 1 ${TRAVIS_BUILD_DIR}/wdom/tests; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then green -c ../.green -s 1 -r ${TRAVIS_BUILD_DIR}/wdom/tests ${TRAVIS_BUILD_DIR}/tests_py36 && cp .coverage ${TRAVIS_BUILD_DIR}; fi
   - cd ${TRAVIS_BUILD_DIR}
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then flake8 setup.py wdom; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then mypy wdom; fi
