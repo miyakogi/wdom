@@ -644,7 +644,6 @@ class PyppeteerTestCase(TestCase):
 
     def tearDown(self):
         server.stop_server(self.server)
-        # sync(self.page.goto('about:blank'))
         super().tearDown()
 
     def get_elements(self):
@@ -657,8 +656,9 @@ class PyppeteerTestCase(TestCase):
         return result
 
     @asyncio.coroutine
-    def get_text(self):
-        result = yield from self.element.evaluate('(elm) => elm.textContent')
+    def get_text(self, elm=None):
+        elm = elm or self.element
+        result = yield from elm.evaluate('(elm) => elm.textContent')
         return result
 
     @asyncio.coroutine
