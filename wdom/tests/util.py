@@ -645,32 +645,36 @@ class PyppeteerTestCase(TestCase):
     def tearDown(self):
         server.stop_server(self.server)
         super().tearDown()
+        import time
+        time.sleep(0.01)
 
     def get_elements(self):
         raise NotImplementedError
 
-    @asyncio.coroutine
-    def get_element_handle(self, elm):
-        result = yield from self.page.querySelector(
+    async def get_element_handle(self, elm):
+        result = await self.page.querySelector(
             '[rimo_id="{}"]'.format(elm.rimo_id))
         return result
 
-    @asyncio.coroutine
-    def get_text(self, elm=None):
+    async def get_text(self, elm=None):
         elm = elm or self.element
-        result = yield from elm.evaluate('(elm) => elm.textContent')
+        result = await elm.evaluate('(elm) => elm.textContent')
         return result
 
-    @asyncio.coroutine
-    def wait(self, timeout=None):
+    async def get_attribute(self, name, elm=None):
+        elm = elm or self.element
+        result = await elm.evaluate(
+            '(elm) => elm.getAttribute("{}")'.format(name))
+        return result
+
+    async def wait(self, timeout=None):
         timeout = timeout or self.wait_time
         _t = timeout / 10
         for _ in range(10):
-            yield from asyncio.sleep(_t)
+            await asyncio.sleep(_t)
 
-    @asyncio.coroutine
-    def wait_for_element(self, elm):
-        yield from self.page.waitForSelector(
+    async def wait_for_element(self, elm):
+        await self.page.waitForSelector(
             '[rimo_id="{}"]'.format(elm.rimo_id),
             {'timeout': 100},
         )

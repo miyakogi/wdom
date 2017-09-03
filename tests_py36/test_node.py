@@ -70,14 +70,14 @@ class TestWdomElement(PyppeteerTestCase):
 
     @sync
     async def test_attr(self):
-        tag = await self.get_element_handle(self.tag)
-        self.assertIsNone(await tag.attribute('src'))
+        self.element = await self.get_element_handle(self.tag)
+        self.assertIsNone(await self.get_attribute('src'))
         self.tag.setAttribute('src', 'a')
         await self.wait()
-        self.assertEqual(await tag.attribute('src'), 'a')
+        self.assertEqual(await self.get_attribute('src'), 'a')
         self.tag.removeAttribute('src')
         await self.wait()
-        self.assertIsNone(await tag.attribute('src'))
+        self.assertIsNone(await self.get_attribute('src'))
 
     @sync
     async def test_addremove_child(self):
@@ -298,45 +298,47 @@ class TestWdomElement(PyppeteerTestCase):
 
     @sync
     async def test_style(self):
-        tag = await self.get_element_handle(self.tag)
+        self.element = await self.get_element_handle(self.tag)
         self.tag.textContent = 'Style'
         await self.wait()
-        self.assertIsNone(await tag.attribute('style'))
+        self.assertIsNone(await self.get_attribute('style'))
         style = 'color: red;'
         self.tag.style = style
         await self.wait()
-        self.assertEqual(await tag.attribute('style'), style)
+        self.assertEqual(await self.get_attribute('style'), style)
         self.tag.style.color = 'black'
         await self.wait()
-        self.assertEqual(await tag.attribute('style'), 'color: black;')
+        self.assertEqual(await self.get_attribute('style'), 'color: black;')
 
     @sync
     async def test_classlist(self):
-        tag = await self.get_element_handle(self.tag)
-        self.assertEqual(await tag.attribute('class'), None)
-        self.assertNotIn('class', await tag.evaluate('(elm) => elm.outerHTML'))
+        self.element = await self.get_element_handle(self.tag)
+        self.assertEqual(await self.get_attribute('class'), None)
+        self.assertNotIn(
+            'class', await self.element.evaluate('(elm) => elm.outerHTML'))
         self.tag.classList.add('a')
         await self.wait()
-        self.assertEqual(await tag.attribute('class'), 'a')
+        self.assertEqual(await self.get_attribute('class'), 'a')
         self.tag.classList.add('b', 'c', 'd')
         await self.wait()
-        self.assertEqual(await tag.attribute('class'), 'a b c d')
+        self.assertEqual(await self.get_attribute('class'), 'a b c d')
 
         self.tag.classList.remove('c')
         await self.wait()
-        self.assertEqual(await tag.attribute('class'), 'a b d')
+        self.assertEqual(await self.get_attribute('class'), 'a b d')
 
         self.tag.classList.remove('a', 'd')
         await self.wait()
-        self.assertEqual(await tag.attribute('class'), 'b')
+        self.assertEqual(await self.get_attribute('class'), 'b')
 
         self.tag.classList.toggle('b')
         await self.wait()
-        self.assertEqual(await tag.attribute('class'), None)
-        self.assertNotIn('class', await tag.evaluate('(elm) => elm.outerHTML'))
+        self.assertEqual(await self.get_attribute('class'), None)
+        self.assertNotIn(
+            'class', await self.element.evaluate('(elm) => elm.outerHTML'))
         self.tag.classList.toggle('b')
         await self.wait()
-        self.assertEqual(await tag.attribute('class'), 'b')
+        self.assertEqual(await self.get_attribute('class'), 'b')
 
     @sync
     async def test_click(self):
@@ -376,14 +378,14 @@ class TestWdomElement(PyppeteerTestCase):
 
     @sync
     async def test_exec(self):
-        tag = await self.get_element_handle(self.tag)
+        self.element = await self.get_element_handle(self.tag)
         self.tag.exec('this.style = "color: red;"')
         await self.wait()
-        self.assertEqual(await tag.attribute('style'), 'color: red;')
+        self.assertEqual(await self.get_attribute('style'), 'color: red;')
 
         self.tag.exec('node.style = "color: blue;"')
         await self.wait()
-        self.assertEqual(await tag.attribute('style'), 'color: blue;')
+        self.assertEqual(await self.get_attribute('style'), 'color: blue;')
 
     @sync
     async def test_exec_error(self):

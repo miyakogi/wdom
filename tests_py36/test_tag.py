@@ -36,22 +36,22 @@ class TestTag(PyppeteerTestCase):
 
     @sync
     async def test_node_attr(self):
-        self.assertIsNone(await self.element.attribute('src'))
+        self.assertIsNone(await self.get_attribute('src'))
         self.root.setAttribute('src', 'a')
         await self.wait()
-        self.assertEqual(await self.element.attribute('src'), 'a')
+        self.assertEqual(await self.get_attribute('src'), 'a')
         self.root.removeAttribute('src')
         await self.wait()
-        self.assertIsNone(await self.element.attribute('src'))
+        self.assertIsNone(await self.get_attribute('src'))
 
     @sync
     async def test_node_class(self):
         self.root.addClass('a')
         await self.wait()
-        self.assertEqual(await self.element.attribute('class'), 'a')
+        self.assertEqual(await self.get_attribute('class'), 'a')
         self.root.removeClass('a')
         await self.wait()
-        self.assertEqual(await self.element.attribute('class'), None)
+        self.assertEqual(await self.get_attribute('class'), None)
         self.assertNotIn('class',
                          await self.element.evaluate('(elm) => elm.outerHTML'))
 
@@ -134,7 +134,7 @@ class TestInput(PyppeteerTestCase):
 
         await self.page.reload()
         self.element = await self.get_element_handle(self.input)
-        self.assertEqual(await self.element.attribute('value'), 'a')
+        self.assertEqual(await self.get_attribute('value'), 'a')
 
         await self.page.focus('[rimo_id="{}"]'.format(self.input.rimo_id))
         await self.page.type('d')
