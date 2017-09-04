@@ -8,7 +8,6 @@ import re
 import json
 import time
 import subprocess
-import tempfile
 import unittest
 
 from selenium.webdriver.common.utils import free_port
@@ -41,17 +40,14 @@ class TestServerBase(HTTPTestCase):
         super().setUp()
         self.port = free_port()
         sync(self.wait(times=3))
-        env = os.environ.copy()
-        env['PYTHONPATH'] = root
-        with tempfile.NamedTemporaryFile(
-                mode='w+', suffix='.py', delete=False) as fp:
-            self.tmp = fp.name
-            fp.write(script)
-        cmd = [sys.executable, self.tmp, '--port', str(self.port)] + self.cmd
+        cmd = [
+            sys.executable, '-c', script,
+            '--port', str(self.port)
+        ] + self.cmd
         self.url = 'http://localhost:{}'.format(self.port)
         self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
         self.proc = subprocess.Popen(
-            cmd, cwd=curdir, env=env,
+            cmd, cwd=root,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             universal_newlines=True,
@@ -60,8 +56,6 @@ class TestServerBase(HTTPTestCase):
         sync(self.wait(times=10))
 
     def tearDown(self):
-        if os.path.exists(self.tmp):
-            os.remove(self.tmp)
         if self.proc.returncode is None:
             self.proc.terminate()
         self.proc.wait()
@@ -197,7 +191,6 @@ class TestStaticFileHandler(HTTPTestCase):
 
     @sync
     async def test_tempdir(self):
-        from os import path
         self.assertTrue(path.exists(self.document.tempdir))
         with self.assertLogs('wdom.server', 'INFO'):
             res = await self.fetch(self.url + '/tmp/a.html')
@@ -236,7 +229,6 @@ class TestStaticFileHandler(HTTPTestCase):
 
 class TestAddStaticPath(HTTPTestCase):
     def setUp(self) -> None:
-        from os import path
         super().setUp()
         server.add_static_path('a', path.abspath(path.dirname(__file__)))
         self.document = get_document()
