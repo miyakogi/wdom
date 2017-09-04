@@ -20,7 +20,7 @@ from wdom.tests.util import HTTPTestCase
 from wdom.util import suppress_logging
 
 curdir = path.dirname(__file__)
-root = path.dirname(path.dirname(path.dirname(curdir)))
+root = path.dirname(path.dirname(curdir))
 script = '''
 from wdom import document, server
 doc = document.get_document()

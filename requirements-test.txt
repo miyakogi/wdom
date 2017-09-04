@@ -1,3 +1,4 @@
 selenium
 parameterized
 syncer
+pyppeteer

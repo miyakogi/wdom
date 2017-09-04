@@ -24,7 +24,7 @@ def task_cleanup() -> dict:
 def task_flake8() -> dict:
     """Run flake8 check."""
     return {
-        'actions': ['flake8 wdom setup.py'],
+        'actions': ['flake8 setup.py wdom tests'],
     }
 
 
@@ -45,7 +45,7 @@ def task_pydocstyle() -> dict:
 def task_docs() -> dict:
     """Build sphinx document."""
     return {
-        'actions': ['sphinx-build -q -W -j 4 -b html docs docs/_build/html'],  # noqa
+        'actions': ['sphinx-build -q -W -j 4 -b html docs docs/_build/html'],
     }
 
 
@@ -60,7 +60,7 @@ def task_check() -> dict:
 def task_test_fast() -> dict:
     return {
         'actions': [
-            'python -m unittest wdom/tests/test_*.py 2>&1',
+            'python -m unittest tests/test_*.py 2>&1',
         ],
     }
 
@@ -68,7 +68,7 @@ def task_test_fast() -> dict:
 def task_test_slow() -> dict:
     return {
         'actions': [
-            'python -m unittest wdom/tests/slow/test_*.py 2>&1',
+            'python -m unittest tests/slow/test_*.py 2>&1',
         ],
     }
 
@@ -76,7 +76,7 @@ def task_test_slow() -> dict:
 def task_test_server() -> dict:
     return {
         'actions': [
-            'python -m unittest wdom/tests/server/test_*.py 2>&1',
+            'python -m unittest tests/server/test_*.py 2>&1',
         ],
     }
 
@@ -84,7 +84,7 @@ def task_test_server() -> dict:
 def task_test_browser_local() -> dict:
     return {
         'actions': [
-            'python -m unittest wdom/tests/browser/local/test_*.py 2>&1',
+            'python -m unittest tests/browser/local/test_*.py 2>&1',
         ],
     }
 
@@ -92,7 +92,7 @@ def task_test_browser_local() -> dict:
 def task_test_browser_remote() -> dict:
     return {
         'actions': [
-            'python -m unittest wdom/tests/browser/remote/test_*.py 2>&1',
+            'python -m unittest tests/browser/remote/test_*.py 2>&1',
         ],
     }
 
@@ -100,7 +100,14 @@ def task_test_browser_remote() -> dict:
 def task_test_browser_server() -> dict:
     return {
         'actions': [
-            'python -m unittest wdom/tests/browser/server/test_*.py 2>&1',
+            'python -m unittest tests/browser/server/test_*.py 2>&1',
+        ],
+    }
+
+def task_test_pyppeteer() -> dict:
+    return {
+        'actions': [
+            'python -m unittest tests/browser2/test_*.py 2>&1',
         ],
     }
 
@@ -115,5 +122,6 @@ def task_test() -> dict:
             'test_browser_local',
             'test_browser_remote',
             'test_browser_server',
+            'test_pyppeteer',
         ]
     }
