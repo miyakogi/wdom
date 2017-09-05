@@ -10,7 +10,7 @@ from wdom.node import DocumentFragment, Text
 from wdom.web_node import WdomElement
 from wdom.util import suppress_logging
 
-from tests.pyppeteer.util import PyppeteerTestCase
+from tests.pyppeteer_tests.util import PyppeteerTestCase
 
 
 def setUpModule():

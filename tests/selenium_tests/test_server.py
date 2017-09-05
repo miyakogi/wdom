@@ -13,8 +13,8 @@ from selenium.common.exceptions import NoSuchElementException
 from syncer import sync
 
 from tests.util import TestCase
-from tests.selenium.util import get_webdriver, free_port, browser_implict_wait
-from tests.selenium.util import close_webdriver
+from tests.selenium_tests.util import free_port, browser_implict_wait
+from tests.selenium_tests.util import get_webdriver, close_webdriver
 
 
 def tearDownModule():
@@ -22,6 +22,9 @@ def tearDownModule():
 
 
 CURDIR = path.dirname(path.abspath(__file__))
+ROOTDIR = path.dirname(path.dirname(CURDIR))
+ENV = os.environ.copy()
+ENV['PYTHONPATH'] = ROOTDIR
 
 src_base = '''
 import sys
@@ -116,7 +119,7 @@ class TestAutoReload(TestCase):
         raise NoSuchElementException
 
     def check_reload(self, args):
-        self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
+        self.proc = subprocess.Popen(args, cwd=CURDIR, env=ENV)
         self.wait()
         self.wd.get(self.url)
         h1 = self.get_element_by_id('h1')
@@ -154,7 +157,7 @@ class TestAutoReload(TestCase):
         self.check_reload(args)
 
     def check_css_reload(self, args):
-        self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
+        self.proc = subprocess.Popen(args, cwd=CURDIR, env=ENV)
         self.wait()
         self.wd.get(self.url)
         h1 = self.get_element_by_id('h1')
@@ -187,7 +190,7 @@ class TestAutoReload(TestCase):
         self.check_css_reload(args)
 
     def check_css_noreload(self, args):
-        self.proc = subprocess.Popen(args, cwd=CURDIR, env=os.environ)
+        self.proc = subprocess.Popen(args, cwd=CURDIR, env=ENV)
         self.wait()
         self.wd.get(self.url)
 

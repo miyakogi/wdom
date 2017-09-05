@@ -5,7 +5,7 @@ from syncer import sync
 
 from wdom.util import suppress_logging
 
-from tests.pyppeteer.util import PyppeteerTestCase
+from tests.pyppeteer_tests.util import PyppeteerTestCase
 
 
 def setUpModule():

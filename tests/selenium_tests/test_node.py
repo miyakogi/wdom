@@ -14,8 +14,8 @@ from wdom.web_node import WdomElement
 from wdom.util import suppress_logging
 
 from tests.util import TestCase
-from tests.selenium.util import RemoteBrowserTestCase, NoSuchElementException
-from tests.selenium.util import start_remote_browser, close_remote_browser
+from tests.selenium_tests.util import RemoteBrowserTestCase, NoSuchElementException  # noqa: E501
+from tests.selenium_tests.util import start_remote_browser, close_remote_browser  # noqa: E501
 
 
 def setUpModule():

@@ -12,8 +12,8 @@ from wdom.document import get_document
 from wdom.util import suppress_logging
 
 from tests.util import TestCase
-from tests.selenium.util import RemoteBrowserTestCase
-from tests.selenium.util import start_remote_browser, close_remote_browser
+from tests.selenium_tests.util import RemoteBrowserTestCase
+from tests.selenium_tests.util import start_remote_browser, close_remote_browser  # noqa: E501
 
 
 def setUpModule():
