@@ -7,7 +7,7 @@ from wdom.node import ParentNode, NonDocumentTypeChildNode, ChildNode
 from wdom.node import Text, DocumentType, DocumentFragment, RawHtml
 from wdom.node import Comment, CharacterData
 
-from tests.util import TestCase
+from tests.base import TestCase
 
 
 class TestNode(TestCase):

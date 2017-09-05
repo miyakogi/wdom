@@ -7,8 +7,9 @@ from selenium.webdriver.support.color import Color
 from wdom.tag import H1
 from wdom.document import get_document, set_app
 from wdom.util import suppress_logging
-from tests.util import TestCase
-from tests.selenium_tests.util import WebDriverTestCase, close_webdriver
+
+from tests.base import TestCase
+from tests.selenium_tests.base import WebDriverTestCase, close_webdriver
 
 
 def setUpModule():

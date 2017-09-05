@@ -6,7 +6,7 @@ from wdom.tag import Tag, NewTagClass, NestedTag, RawHtmlNode
 from wdom.web_node import WdomElement
 from wdom.window import customElements
 
-from tests.util import TestCase
+from tests.base import TestCase
 
 
 class TestTag(TestCase):

@@ -9,7 +9,7 @@ from wdom.server import _tornado
 from wdom.server.handler import event_handler
 from wdom.window import customElements
 
-from tests.util import TestCase
+from tests.base import TestCase
 
 
 class TestWindow(TestCase):

@@ -13,7 +13,7 @@ from wdom.event import MouseEvent, DataTransfer, DragEvent
 from wdom.server.handler import create_event_from_msg
 from wdom.web_node import WdomElement
 
-from tests.util import TestCase
+from tests.base import TestCase
 
 
 class TestDataTransfer(TestCase):

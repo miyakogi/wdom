@@ -12,9 +12,9 @@ from selenium.common.exceptions import NoSuchElementException
 
 from syncer import sync
 
-from tests.util import TestCase
-from tests.selenium_tests.util import free_port, browser_implict_wait
-from tests.selenium_tests.util import get_webdriver, close_webdriver
+from tests.base import TestCase
+from tests.selenium_tests.base import free_port, browser_implict_wait
+from tests.selenium_tests.base import get_webdriver, close_webdriver
 
 
 def tearDownModule():

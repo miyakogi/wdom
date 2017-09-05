@@ -9,7 +9,7 @@ from wdom.tag import Tag, NestedTag
 from wdom.themes import theme_list
 from wdom.util import suppress_logging
 
-from tests.util import TestCase
+from tests.base import TestCase
 
 
 def setUpModule():

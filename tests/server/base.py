@@ -12,7 +12,7 @@ from tornado.websocket import websocket_connect, WebSocketClientConnection
 
 from wdom import server
 
-from tests.util import TestCase
+from tests.base import TestCase
 
 logger = logging.getLogger(__name__)
 root_logger = logging.getLogger('wdom')
@@ -25,7 +25,7 @@ class HTTPTestCase(TestCase):
     wait_time = 0.05 if os.getenv('TRAVIS') else 0.01
     timeout = 1.0
     _server_started = False
-    _ws_connections = []  # type: List[Connection]
+    _ws_connections = []
 
     def start(self) -> None:
         """Start web server.

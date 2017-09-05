@@ -12,7 +12,7 @@ from parameterized import parameterized
 from wdom.options import parse_command_line, config, set_loglevel
 from wdom import tag
 
-from tests.util import TestCase
+from tests.base import TestCase
 
 _argv = copy(sys.argv)
 _config = copy(vars(config))
