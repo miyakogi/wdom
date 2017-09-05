@@ -11,10 +11,11 @@ from syncer import sync
 from wdom.document import get_document
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WdomElement
-from wdom.tests.util import TestCase
-from wdom.tests.util import RemoteBrowserTestCase, NoSuchElementException
-from wdom.tests.util import start_remote_browser, close_remote_browser
 from wdom.util import suppress_logging
+
+from tests.util import TestCase
+from tests.selenium.util import RemoteBrowserTestCase, NoSuchElementException
+from tests.selenium.util import start_remote_browser, close_remote_browser
 
 
 def setUpModule():

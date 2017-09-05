@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from unittest import TestCase
+from wdom.element import Element
 from wdom.node import Node, NodeList
 from wdom.node import ParentNode, NonDocumentTypeChildNode, ChildNode
 from wdom.node import Text, DocumentType, DocumentFragment, RawHtml
 from wdom.node import Comment, CharacterData
-from wdom.element import Element
+
+from tests.util import TestCase
 
 
 class TestNode(TestCase):
     def setUp(self):
+        super().setUp()
         self.node = Node()
         self.c1 = Node()
         self.c2 = Node()
@@ -217,6 +219,7 @@ class TestNode(TestCase):
 
 class TestNodeList(TestCase):
     def setUp(self):
+        super().setUp()
         self.nl = NodeList(list(range(3)))
 
     def test_length(self):

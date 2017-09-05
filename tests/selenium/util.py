@@ -15,12 +15,11 @@ import os
 import time
 import logging
 import asyncio
-import unittest
 import shutil
 from multiprocessing import Process, Pipe  # type: ignore
 from multiprocessing.connection import Connection
 from types import FunctionType, MethodType
-from typing import Any, Callable, Iterable, Union, Set, Optional, TYPE_CHECKING
+from typing import Any, Callable, Iterable, Union, Set, Optional
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -29,25 +28,15 @@ from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.select import Select
 
-from tornado.httpclient import AsyncHTTPClient, HTTPResponse
-from tornado.platform.asyncio import to_asyncio_future
-from tornado.websocket import websocket_connect, WebSocketClientConnection
-
 from wdom import options, server
-from wdom.document import get_document
 from wdom.element import Element
 from wdom.util import reset
-
-if TYPE_CHECKING:
-    from asyncio import AbstractEventLoop  # noqa: F401
-    from typing import List  # noqa: F401
 
 driver = webdriver.Chrome
 local_webdriver = None
 remote_webdriver = None
 browser_implict_wait = 0
 logger = logging.getLogger(__name__)
-root_logger = logging.getLogger('wdom')
 server_config = server.server_config
 
 
@@ -79,130 +68,6 @@ def get_chrome_options() -> webdriver.ChromeOptions:
     if 'TRAVIS'in os.environ:
         chrome_options.add_argument('--no-sandbox')
     return chrome_options
-
-
-class TestCase(unittest.TestCase):
-    """Base class for testing wdom modules.
-
-    This class is a sub class of the ``unittest.TestCase``. After all test
-    methods, reset wdom's global objects like document, application, and
-    elements. If you use ``tearDown`` method, do not forget to call
-    ``super().tearDown()``.
-
-    If you want to reuse document/application object in your test class, please
-    set them in each setup phase as follow::
-
-        @classmethod
-        def setUpClass(cls):
-            cls.your_doc = get_document()
-            cls.your_app = get_app()
-
-        def setUp(self):
-            from wdom.document import set_document
-            from wdom.server import set_application
-            set_document(self.your_doc)
-            set_application(self.your_app)
-    """
-
-    def setUp(self) -> None:
-        """Reset WDOM states."""
-        super().setUp()
-        reset()
-
-    def tearDown(self) -> None:
-        """Reset WDOM states."""
-        reset()
-        super().tearDown()
-
-    def assertIsTrue(self, bl: bool) -> None:
-        """Check arg is exactly True, not truthy."""
-        self.assertIs(bl, True)
-
-    def assertIsFalse(self, bl: bool) -> None:
-        """Check arg is exactly False, not falsy."""
-        self.assertIs(bl, False)
-
-
-class HTTPTestCase(TestCase):
-    """For http/ws connection test."""
-
-    wait_time = 0.05 if os.getenv('TRAVIS') else 0.01
-    timeout = 1.0
-    _server_started = False
-    _ws_connections = []  # type: List[Connection]
-
-    def start(self) -> None:
-        """Start web server.
-
-        Please call this method after prepraring document.
-        """
-        time.sleep(0.1)
-        with self.assertLogs(root_logger, 'INFO'):
-            self.server = server.start_server(port=0)
-        time.sleep(0.1)
-        self.port = server_config['port']
-        self.url = 'http://localhost:{}'.format(self.port)
-        self.ws_url = 'ws://localhost:{}'.format(self.port)
-        self._server_started = True
-
-    def tearDown(self) -> None:
-        """Terminate server and close all ws client connections."""
-        if self._server_started:
-            with self.assertLogs(root_logger, 'INFO'):
-                server.stop_server(self.server)
-            self._server_started = False
-        while self._ws_connections:
-            ws = self._ws_connections.pop()
-            ws.close()
-        super().tearDown()
-
-    async def fetch(self, url: str, encoding: str = 'utf-8') -> HTTPResponse:
-        """Fetch url and return ``tornado.httpclient.HTTPResponse`` object.
-
-        Response body is decoded by ``encoding`` and set ``text`` property of
-        the response. If failed to decode, ``text`` property will be ``None``.
-        """
-        response = await to_asyncio_future(
-            AsyncHTTPClient().fetch(url, raise_error=False))
-        if response.body:
-            try:
-                response.text = response.body.decode(encoding)
-            except UnicodeDecodeError:
-                response.text = None
-        else:
-            response.text = None
-        return response
-
-    async def ws_connect(self, url: str, timeout: float = None
-                         ) -> WebSocketClientConnection:
-        """Make WebSocket connection to the url.
-
-        Retries up to _max (default: 20) times. Client connections made by this
-        method are closed after each test method.
-        """
-        st = time.perf_counter()
-        timeout = timeout or self.timeout
-        while (time.perf_counter() - st) < timeout:
-            try:
-                ws = await to_asyncio_future(websocket_connect(url))
-            except ConnectionRefusedError:
-                await self.wait()
-                continue
-            else:
-                self._ws_connections.append(ws)
-                return ws
-        raise ConnectionRefusedError(
-            'WebSocket connection refused: {}'.format(url))
-
-    async def wait(self, timeout: float = None, times: int = 1) -> None:
-        """Coroutine to wait for ``timeout``.
-
-        ``timeout`` is second to wait, and its default value is
-        ``self.wait_time``. If ``times`` are specified, wait for
-        ``timeout * times``.
-        """
-        for i in range(times):
-            await asyncio.sleep(timeout or self.wait_time)
 
 
 def start_webdriver() -> None:
@@ -610,71 +475,3 @@ class WebDriverTestCase:
         """
         for k in keys:
             element.send_keys(k)
-
-
-class PyppeteerTestCase(TestCase):
-    if os.getenv('TRAVIS', False):
-        wait_time = 0.1
-    else:
-        wait_time = 0.05
-
-    @classmethod
-    def setUpClass(cls):
-        from pyppeteer.launcher import launch
-        from syncer import sync
-        cls.browser = launch({'headless': True})
-        cls.page = sync(cls.browser.newPage())
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.browser.close()
-
-    def setUp(self):
-        from syncer import sync
-        super().setUp()
-        self.doc = get_document()
-        self.root = self.get_elements()
-        self.doc.body.prepend(self.root)
-        self.server = server.start_server(port=0)
-        self.address = server_config['address']
-        self.port = server_config['port']
-        self.url = 'http://{}:{}'.format(self.address, self.port)
-        sync(self.page.goto(self.url))
-        self.element = sync(self.get_element_handle(self.root))
-
-    def tearDown(self):
-        server.stop_server(self.server)
-        super().tearDown()
-        import time
-        time.sleep(0.01)
-
-    def get_elements(self):
-        raise NotImplementedError
-
-    async def get_element_handle(self, elm):
-        result = await self.page.querySelector(
-            '[rimo_id="{}"]'.format(elm.rimo_id))
-        return result
-
-    async def get_text(self, elm=None):
-        elm = elm or self.element
-        result = await elm.evaluate('(elm) => elm.textContent')
-        return result
-
-    async def get_attribute(self, name, elm=None):
-        elm = elm or self.element
-        result = await elm.evaluate(
-            '(elm) => elm.getAttribute("{}")'.format(name))
-        return result
-
-    async def wait(self, timeout=None):
-        timeout = timeout or self.wait_time
-        _t = timeout / 10
-        for _ in range(10):
-            await asyncio.sleep(_t)
-
-    async def wait_for_element(self, elm):
-        await self.page.waitForSelector(
-            '[rimo_id="{}"]'.format(elm.rimo_id),
-            {'timeout': 100},
-        )

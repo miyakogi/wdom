@@ -3,7 +3,7 @@
 
 import unittest
 
-from wdom.tests import util
+from wdom.util import reset
 from wdom.document import get_document
 
 
@@ -12,6 +12,6 @@ class TestInitialize(unittest.TestCase):
         from wdom.server import _tornado
         old_doc = get_document()
         old_app_tornado = _tornado.get_app()
-        util.reset()
+        reset()
         self.assertIsNot(old_doc, get_document())
         self.assertIsNot(old_app_tornado, _tornado.get_app())

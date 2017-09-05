@@ -9,8 +9,9 @@ from wdom.document import set_app
 from wdom.event import create_event
 from wdom.node import Text
 from wdom.server import _tornado
-from wdom.tests.util import TestCase
 from wdom.web_node import WdomElement
+
+from tests.util import TestCase
 
 
 class TestWdomElement(TestCase):

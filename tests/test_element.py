@@ -6,14 +6,15 @@ import gc
 from unittest import skipIf
 
 from wdom.css import CSSStyleDeclaration
-from wdom.node import Text
 from wdom.element import (
     DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement,
     HTMLSelectElement, HTMLOptionElement,
     getElementsBy, getElementsByClassName, getElementsByTagName,
 )
+from wdom.node import Text
 from wdom.window import customElements
-from wdom.tests.util import TestCase
+
+from tests.util import TestCase
 
 
 class TestDOMTokenList(TestCase):

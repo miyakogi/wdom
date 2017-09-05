@@ -9,9 +9,11 @@ from selenium.common.exceptions import NoSuchElementException
 from wdom.tag import Tag, Textarea, Input, Label, Div, Select, Option, Form
 from wdom.themes import CheckBox
 from wdom.document import get_document
-from wdom.tests.util import RemoteBrowserTestCase, TestCase
-from wdom.tests.util import start_remote_browser, close_remote_browser
 from wdom.util import suppress_logging
+
+from tests.util import TestCase
+from tests.selenium.util import RemoteBrowserTestCase
+from tests.selenium.util import start_remote_browser, close_remote_browser
 
 
 def setUpModule():

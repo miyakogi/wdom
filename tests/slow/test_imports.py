@@ -7,7 +7,7 @@ import subprocess
 
 from parameterized import parameterized
 
-from wdom.tests.util import TestCase
+from tests.util import TestCase
 
 root = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 
@@ -28,7 +28,6 @@ cases = [
     ('wdom.server', 'handler'),
     ('wdom.server', '_tornado'),
     ('wdom', 'tag'),
-    ('wdom.tests', 'util'),
     ('wdom', 'themes'),
     ('wdom.themes', 'default'),
     ('wdom.themes', 'bootstrap3'),

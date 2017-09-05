@@ -7,7 +7,8 @@ from wdom.css import _normalize_css_property
 from wdom.css import CSSStyleDeclaration, parse_style_decl
 from wdom.css import CSSStyleRule, parse_style_rules
 from wdom.css import CSSRuleList
-from wdom.tests.util import TestCase
+
+from tests.util import TestCase
 
 
 class TestCSSProperties(TestCase):

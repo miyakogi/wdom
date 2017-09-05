@@ -7,8 +7,9 @@ from syncer import sync
 
 from wdom.tag import Tag, Textarea, Input, Label, Div, Form
 from wdom.themes import CheckBox
-from wdom.tests.util import PyppeteerTestCase
 from wdom.util import suppress_logging
+
+from tests.pyppeteer.util import PyppeteerTestCase
 
 
 def setUpModule():

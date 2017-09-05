@@ -3,9 +3,10 @@
 
 from wdom.element import DOMTokenList
 from wdom.tag import Tag, NewTagClass, NestedTag, RawHtmlNode
-from wdom.tests.util import TestCase
 from wdom.web_node import WdomElement
 from wdom.window import customElements
+
+from tests.util import TestCase
 
 
 class TestTag(TestCase):

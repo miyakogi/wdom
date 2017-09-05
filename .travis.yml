@@ -14,7 +14,7 @@ before_script:
 
 install:
   - pip install -r requirements-test.txt
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install coverage codecov coveralls flake8 mypy; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install coverage codecov flake8 mypy; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:
   - mkdir maint && cd maint

@@ -9,7 +9,8 @@ from syncer import sync
 from wdom.node import DocumentFragment, Text
 from wdom.web_node import WdomElement
 from wdom.util import suppress_logging
-from wdom.tests.util import PyppeteerTestCase
+
+from tests.pyppeteer.util import PyppeteerTestCase
 
 
 def setUpModule():
