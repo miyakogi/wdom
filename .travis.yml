@@ -17,11 +17,9 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install coverage codecov flake8 mypy; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:
-  - mkdir maint && cd maint
-  - if [[ ! $TRAVIS_PYTHON_VERSION == 3.6* ]]; then python -m unittest discover ${TRAVIS_BUILD_DIR}/tests; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then coverage run --rcfile=${TRAVIS_BUILD_DIR}/.coveragerc -m unittest discover ${TRAVIS_BUILD_DIR}/tests; fi
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then coverage report && cp .coverage ${TRAVIS_BUILD_DIR}; fi
-  - cd ${TRAVIS_BUILD_DIR}
+  - if [[ ! $TRAVIS_PYTHON_VERSION == 3.6* ]]; then python -m unittest discover tests; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then coverage run -m unittest discovertests; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then coverage report; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then flake8 setup.py wdom tests; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then mypy wdom; fi
 after_success:
