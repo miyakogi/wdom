@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.document &#8212; WDOM 0.2.1 documentation</title>
+    <title>wdom.document &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -82,15 +82,15 @@
     <span class="k">return</span> <span class="n">elm</span>
 
 
-<span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;Get element with ``rimo_id``.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">getElementByWdomId</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Get element with ``wdom_id``.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">id</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">elif</span> <span class="nb">id</span> <span class="o">==</span> <span class="s1">&#39;document&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_document</span><span class="p">()</span>
     <span class="k">elif</span> <span class="nb">id</span> <span class="o">==</span> <span class="s1">&#39;window&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_document</span><span class="p">()</span><span class="o">.</span><span class="n">defaultView</span>
-    <span class="n">elm</span> <span class="o">=</span> <span class="n">WdomElement</span><span class="o">.</span><span class="n">_elements_with_rimo_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+    <span class="n">elm</span> <span class="o">=</span> <span class="n">WdomElement</span><span class="o">.</span><span class="n">_elements_with_wdom_id</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">elm</span>
 
 
@@ -261,7 +261,7 @@
     <span class="sd">&quot;&quot;&quot;Main document class for WDOM applications.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
+    <span class="k">def</span> <span class="nf">wdom_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
         <span class="k">return</span> <span class="s1">&#39;document&#39;</span>
 
     <span class="nd">@property</span>
@@ -319,19 +319,19 @@
 
         <span class="k">if</span> <span class="n">autoreload</span><span class="p">:</span>
             <span class="n">ar_script</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="n">ar_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var RIMO_AUTORELOAD = true&#39;</span><span class="p">)</span>
+            <span class="n">ar_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var WDOM_AUTORELOAD = true&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reload_wait</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">ar_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var RIMO_RELOAD_WAIT = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">ar_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var WDOM_RELOAD_WAIT = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_reload_wait</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_autoreload_script</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ar_script</span><span class="p">))</span>
 
-    <span class="k">def</span> <span class="nf">getElementByRimoId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
-        <span class="sd">&quot;&quot;&quot;Get an element node with ``rimo_id``.</span>
+    <span class="k">def</span> <span class="nf">getElementByWdomId</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WebEventTarget</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Get an element node with ``wdom_id``.</span>
 
 <span class="sd">        If this document does not have the element with the id, return None.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">elm</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
+        <span class="n">elm</span> <span class="o">=</span> <span class="n">getElementByWdomId</span><span class="p">(</span><span class="nb">id</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">elm</span> <span class="ow">and</span> <span class="n">elm</span><span class="o">.</span><span class="n">ownerDocument</span> <span class="ow">is</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">elm</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -382,7 +382,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_new_document</span><span class="p">(</span>  <span class="c1"># noqa: C901</span>
-        <span class="n">include_rimo</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">include_wdom_js</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_skeleton</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">include_normalizecss</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">autoreload</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -396,7 +396,7 @@
         <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Document</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Create new :class:`Document` object with options.</span>
 
-<span class="sd">    :arg bool include_rimo: Include rimo.js file. Usually should be True.</span>
+<span class="sd">    :arg bool include_wdom_js: Include wdom.js file. Usually should be True.</span>
 <span class="sd">    :arg bool include_skeleton: Include skelton.css.</span>
 <span class="sd">    :arg bool include_normalizecss: Include normalize.css.</span>
 <span class="sd">    :arg bool autoreload: Enable autoreload flag. This flag overwrites</span>
@@ -409,7 +409,7 @@
 <span class="sd">    :arg str log_prefix: Prefix of log outputs.</span>
 <span class="sd">    :arg bool log_console: Flag to show wdom log on browser console.</span>
 <span class="sd">    :arg str ws_url: URL string to the ws url.</span>
-<span class="sd">        Default: ``ws://localhost:8888/rimo_ws``.</span>
+<span class="sd">        Default: ``ws://localhost:8888/wdom_ws``.</span>
 <span class="sd">    :arg float message_wait: Duration (seconds) to send WS messages.</span>
 <span class="sd">    :arg Callable document_factory: Factory function/class to create Document</span>
 <span class="sd">        object.</span>
@@ -427,25 +427,25 @@
         <span class="n">message_wait</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">message_wait</span>
 
     <span class="n">log_script</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var RIMO_MESSAGE_WAIT = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message_wait</span><span class="p">))</span>
+    <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var WDOM_MESSAGE_WAIT = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">message_wait</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var RIMO_LOG_LEVEL = </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_level</span><span class="p">))</span>
+        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var WDOM_LOG_LEVEL = </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_level</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">log_level</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var RIMO_LOG_LEVEL = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_level</span><span class="p">))</span>
+        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var WDOM_LOG_LEVEL = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_level</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">log_prefix</span><span class="p">:</span>
-        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var RIMO_LOG_PREFIX = </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_prefix</span><span class="p">))</span>
+        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var WDOM_LOG_PREFIX = </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">log_prefix</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">log_console</span><span class="p">:</span>
-        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var RIMO_LOG_CONSOLE = true&#39;</span><span class="p">)</span>
+        <span class="n">log_script</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;var WDOM_LOG_CONSOLE = true&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">log_script</span><span class="p">:</span>
         <span class="n">_s</span> <span class="o">=</span> <span class="n">Script</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
         <span class="n">_s</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">log_script</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">ws_url</span><span class="p">:</span>
         <span class="n">_s</span> <span class="o">=</span> <span class="n">Script</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">document</span><span class="o">.</span><span class="n">head</span><span class="p">)</span>
-        <span class="n">_s</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">var RIMO_WS_URL = </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ws_url</span><span class="p">)</span>
+        <span class="n">_s</span><span class="o">.</span><span class="n">textContent</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">var WDOM_WS_URL = </span><span class="se">\&#39;</span><span class="si">{}</span><span class="se">\&#39;\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ws_url</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">include_rimo</span><span class="p">:</span>
-        <span class="n">document</span><span class="o">.</span><span class="n">add_jsfile_head</span><span class="p">(</span><span class="s1">&#39;_static/js/rimo/rimo.js&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">include_wdom_js</span><span class="p">:</span>
+        <span class="n">document</span><span class="o">.</span><span class="n">add_jsfile_head</span><span class="p">(</span><span class="s1">&#39;_static/js/wdom.js&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">document</span>
 

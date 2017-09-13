@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.event &#8212; WDOM 0.2.1 documentation</title>
+    <title>wdom.event &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -163,14 +163,14 @@
 <span class="sd">        Second optional argument (init) is a dictionally, which has fields for</span>
 <span class="sd">        this event&#39;s status.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementByRimoId</span>
+        <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementByWdomId</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span> <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">init</span>
         <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;currentTarget&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
-        <span class="n">ctarget</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
+        <span class="n">ctarget</span> <span class="o">=</span> <span class="n">getElementByWdomId</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__currentTarget</span> <span class="o">=</span> <span class="n">ctarget</span>
         <span class="n">_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;target&#39;</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ctarget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__target</span> <span class="o">=</span> <span class="n">getElementByWdomId</span><span class="p">(</span><span class="n">_id</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ctarget</span>
 
     <span class="k">def</span> <span class="nf">stopPrapagation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Not implemented yet.&quot;&quot;&quot;</span>
@@ -212,8 +212,8 @@
         <span class="n">rt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;relatedTarget&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
         <span class="n">rid</span> <span class="o">=</span> <span class="n">rt</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">rid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementByRimoId</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="n">getElementByRimoId</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span>
+            <span class="kn">from</span> <span class="nn">wdom.document</span> <span class="k">import</span> <span class="n">getElementByWdomId</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="n">getElementByWdomId</span><span class="p">(</span><span class="n">rid</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">relatedTarget</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -415,7 +415,7 @@
     <span class="sd">&quot;&quot;&quot;Mixin class for web connection controll.&quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">wdom_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Return ID used to relate python node and browser DOM node.&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
@@ -472,7 +472,7 @@
         <span class="kn">from</span> <span class="nn">wdom</span> <span class="k">import</span> <span class="n">server</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;target&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;node&#39;</span>
-            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span>
+            <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wdom_id</span>
             <span class="n">server</span><span class="o">.</span><span class="n">push_message</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
     <span class="c1"># Event Handling</span>

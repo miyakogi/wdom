@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>HTML Tag Class &#8212; WDOM 0.2.1 documentation</title>
+    <title>HTML Tag Class &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -57,7 +57,7 @@ python and browser.</p>
 <p>Web-connected HTML tag classes.</p>
 <dl class="class">
 <dt id="wdom.tag.Tag">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tag</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tag</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/tag.html#Tag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Tag" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="node.html#wdom.web_node.WdomElement" title="wdom.web_node.WdomElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.web_node.WdomElement</span></code></a></p>
 <p>Base class for html tags.</p>
 <p><code class="docutils literal"><span class="pre">HTMLElement</span></code> requires to specify tag name when instanciate it, but this
@@ -561,7 +561,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">hidden</span></
 <dl class="attribute">
 <dt id="wdom.tag.Tag.html_noid">
 <code class="descname">html_noid</code><a class="headerlink" href="#wdom.tag.Tag.html_noid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get html representation of this node without rimo_id.</p>
+<dd><p>Get html representation of this node without wdom_id.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1068,8 +1068,8 @@ node, this property returns <code class="docutils literal"><span class="pre">Non
 <dl class="attribute">
 <dt id="wdom.tag.Tag.rimo_id">
 <code class="descname">rimo_id</code><a class="headerlink" href="#wdom.tag.Tag.rimo_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get rimo_id attribute.</p>
-<p>This attribute is used to relate python node and browser DOM node.</p>
+<dd><p>[Deprecated] Alias to <cite>wdom_id</cite>.</p>
+<p>rimo_id is renamed to <cite>wdom_id</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1198,6 +1198,21 @@ Deleter: Remove <code class="docutils literal"><span class="pre">title</span></c
 </table>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="wdom.tag.Tag.wdom_id">
+<code class="descname">wdom_id</code><a class="headerlink" href="#wdom.tag.Tag.wdom_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get wdom_id attribute.</p>
+<p>This attribute is used to relate python node and browser DOM node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="wdom.tag.Tag.ws_send">
 <code class="descname">ws_send</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tag.ws_send" title="Permalink to this definition">¶</a></dt>
@@ -1246,7 +1261,7 @@ print(my_button.html)
 
 <dl class="class">
 <dt id="wdom.tag.RawHtmlNode">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">RawHtmlNode</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#RawHtmlNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.RawHtmlNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">RawHtmlNode</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/tag.html#RawHtmlNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.RawHtmlNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 <p>Does not escape inner contents, similar to <code class="docutils literal"><span class="pre">&lt;script&gt;</span></code> tag.</p>
 <p>This node wraps contents by <code class="docutils literal"><span class="pre">&lt;div</span> <span class="pre">style=&quot;display:</span> <span class="pre">inline&quot;&gt;...&lt;/div&gt;</span></code> and
@@ -1273,194 +1288,194 @@ parsing process to WdomElement.</p>
 <h2>List of HTML Tag Classes<a class="headerlink" href="#list-of-html-tag-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wdom.tag.A">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">A</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.A" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">A</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.A" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLAnchorElement" title="wdom.element.HTMLAnchorElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLAnchorElement</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Body">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Body</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Body" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Body</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Body" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Br">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Br</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Br" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Br</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Br" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Button">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Button</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Button" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Button</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Button" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLButtonElement" title="wdom.element.HTMLButtonElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLButtonElement</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Cite">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Cite</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Cite" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Cite</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Cite" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Code">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Code</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Code" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Code</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Code" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Dd">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dd</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Dd" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dd</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Dd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Div">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Div</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Div" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Div</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Div" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Dl">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dl</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Dl" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dl</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Dl" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Dt">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dt</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Dt" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Dt</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Dt" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Em">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Em</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Em" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Em</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Em" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Form">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Form</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Form" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Form</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Form" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLFormElement" title="wdom.element.HTMLFormElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLFormElement</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.H1">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H1</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H1" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H1</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.H1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.H2">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H2</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H2" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H2</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.H2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.H3">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H3</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H3" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H3</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.H3" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.H4">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H4</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H4" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H4</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.H4" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.H5">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H5</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H5" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H5</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.H5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.H6">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H6</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.H6" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">H6</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.H6" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Head">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Head</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Head" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Head</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Head" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Hr">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Hr</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Hr" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Hr</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Hr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Html">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Html</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Html" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Html</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Html" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Img">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Img</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Img" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Img</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Img" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Input">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Input</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Input" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Input</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/tag.html#Input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLInputElement" title="wdom.element.HTMLInputElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLInputElement</span></code></a></p>
 <p>Base class for <code class="docutils literal"><span class="pre">&lt;input&gt;</span></code> element.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Label">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Label</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Label" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Label</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLLabelElement" title="wdom.element.HTMLLabelElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLLabelElement</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Li">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Li</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Li" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Li</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Li" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Link">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Link</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Link" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Link</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Link" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Meta">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Meta</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Meta" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Meta</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Meta" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Ol">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Ol</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Ol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Ol</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Ol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Option">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Option</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Option" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Option</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Option" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLOptionElement" title="wdom.element.HTMLOptionElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLOptionElement</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.P">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">P</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.P" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">P</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.P" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Pre">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Pre</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Pre" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Pre</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Pre" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Script">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Script</code><span class="sig-paren">(</span><em>*args</em>, <em>type='text/javascript'</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Script" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Script</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>type: str = 'text/javascript'</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/tag.html#Script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLScriptElement" title="wdom.element.HTMLScriptElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLScriptElement</span></code></a></p>
 <p>Base class for &lt;script&gt; tag.</p>
 <p>Inner contents of this node is not escaped.</p>
@@ -1468,92 +1483,92 @@ parsing process to WdomElement.</p>
 
 <dl class="class">
 <dt id="wdom.tag.Select">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Select</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Select" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Select</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLSelectElement" title="wdom.element.HTMLSelectElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLSelectElement</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Span">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Span</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Span" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Span</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Span" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Strong">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Strong</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Strong" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Strong</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Strong" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Style">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Style</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Style" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Style</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Style" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLStyleElement" title="wdom.element.HTMLStyleElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLStyleElement</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Table">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Table" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Table</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Tbody">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tbody</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tbody" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tbody</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Tbody" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Td">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Td</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Td" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Td</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Td" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Textarea">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Textarea</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/tag.html#Textarea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Textarea" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Textarea</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/tag.html#Textarea"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.tag.Textarea" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a>, <a class="reference internal" href="node.html#wdom.element.HTMLTextAreaElement" title="wdom.element.HTMLTextAreaElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLTextAreaElement</span></code></a></p>
 <p>Base class for <code class="docutils literal"><span class="pre">&lt;textarea&gt;</span></code> element.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Tfoot">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tfoot</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tfoot" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tfoot</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Tfoot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Th">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Th</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Th" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Th</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Th" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Thead">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Thead</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Thead" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Thead</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Thead" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Title">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Title</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Title" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Title</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Tr">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tr</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Tr" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Tr</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Tr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.U">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">U</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.U" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">U</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.U" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.tag.Ul">
-<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Ul</code><span class="sig-paren">(</span><em>*args</em>, <em>attrs=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#wdom.tag.Ul" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.tag.</code><code class="descname">Ul</code><span class="sig-paren">(</span><em>*args: typing.Any, attrs: typing.Dict[str, typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType]] = None, **kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#wdom.tag.Ul" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.tag.Tag" title="wdom.tag.Tag"><code class="xref py py-class docutils literal"><span class="pre">wdom.tag.Tag</span></code></a></p>
 </dd></dl>
 
@@ -1595,7 +1610,6 @@ parsing process to WdomElement.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>

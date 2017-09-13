@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Python Classes and Extensions of WDOM &#8212; WDOM 0.2.1 documentation</title>
+    <title>Python Classes and Extensions of WDOM &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -86,10 +86,10 @@ For example, <code class="docutils literal"><span class="pre">&lt;button&gt;</sp
 and <code class="docutils literal"><span class="pre">&lt;textarea&gt;</span></code> tag is <code class="docutils literal"><span class="pre">Textarea</span></code>.</p>
 <p>Actual HTML strings can be obtained by <code class="docutils literal"><span class="pre">html</span></code> property of each elements.
 For example, <code class="docutils literal"><span class="pre">print(MyElement().html)</span></code> shows</p>
-<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">rimo_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">rimo_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;&lt;</span><span class="nt">h1</span> <span class="na">rimo_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;</span>Hello, WDOM<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<div class="highlight-html"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">wdom_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;&lt;</span><span class="nt">input</span> <span class="na">wdom_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;&lt;</span><span class="nt">h1</span> <span class="na">wdom_id</span><span class="o">=</span><span class="s">&quot;...&quot;</span><span class="p">&gt;</span>Hello, WDOM<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
 </pre></div>
 </div>
-<p><code class="docutils literal"><span class="pre">rimo_id</span></code> attribute is used internally.
+<p><code class="docutils literal"><span class="pre">wdom_id</span></code> is an attribute which is used internally.
 If you want to omit it for tests, use <code class="docutils literal"><span class="pre">html_noid</span></code> property instead</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">MyElement</span><span class="p">()</span><span class="o">.</span><span class="n">html_noid</span><span class="p">)</span>
 <span class="c1"># -&gt; &lt;div&gt;&lt;input&gt;&lt;h1&gt;Hello, WDOM&lt;/h1&gt;&lt;/div&gt;</span>

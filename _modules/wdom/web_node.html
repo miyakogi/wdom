@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.web_node &#8212; WDOM 0.2.1 documentation</title>
+    <title>wdom.web_node &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -56,6 +56,7 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">TYPE_CHECKING</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">weakref</span> <span class="k">import</span> <span class="n">WeakValueDictionary</span>
 
 <span class="kn">from</span> <span class="nn">wdom</span> <span class="k">import</span> <span class="n">server</span>
@@ -68,12 +69,12 @@
     <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Type</span>  <span class="c1"># noqa</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">_remove_id_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39; rimo_id=&quot;\d+&quot;&#39;</span><span class="p">)</span>
-<span class="n">_RimoIdType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
+<span class="n">_remove_id_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39; wdom_id=&quot;\d+&quot;&#39;</span><span class="p">)</span>
+<span class="n">_WdomIdType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">remove_rimo_id</span><span class="p">(</span><span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;Remove ``rimo_id`` attribute from html strings.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">remove_wdom_id</span><span class="p">(</span><span class="n">html</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Remove ``wdom_id`` attribute from html strings.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_remove_id_re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
 
 
@@ -104,8 +105,8 @@
 <span class="sd">    attributes.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_elements_with_rimo_id</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">(</span>
-    <span class="p">)</span>  <span class="c1"># type: WeakValueDictionary[_RimoIdType, WdomElement]</span>
+    <span class="n">_elements_with_wdom_id</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">(</span>
+    <span class="p">)</span>  <span class="c1"># type: WeakValueDictionary[_WdomIdType, WdomElement]</span>
     <span class="n">_parser_class</span> <span class="o">=</span> <span class="n">WdomElementParser</span>  <span class="c1"># type: Type[ElementParser]</span>
 
     <span class="c1">#: str and list of strs are acceptale.</span>
@@ -115,12 +116,21 @@
     <span class="n">inherit_class</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get rimo_id attribute.</span>
+    <span class="k">def</span> <span class="nf">wdom_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get wdom_id attribute.</span>
 
 <span class="sd">        This attribute is used to relate python node and browser DOM node.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__rimo_id</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__wdom_id</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;[Deprecated] Alias to `wdom_id`.</span>
+
+<span class="sd">        rimo_id is renamed to `wdom_id`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;rimo_id is renamed to wdom_id.&#39;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wdom_id</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -128,15 +138,15 @@
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">server</span><span class="o">.</span><span class="n">is_connected</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">ownerDocument</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="s1">&#39;WdomElement&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">rimo_id</span><span class="p">:</span> <span class="n">_RimoIdType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">wdom_id</span><span class="p">:</span> <span class="n">_WdomIdType</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># noqa: D102</span>
-        <span class="k">if</span> <span class="n">rimo_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__rimo_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">wdom_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__wdom_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__rimo_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">rimo_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__wdom_id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">wdom_id</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># use super class to set rimo_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_rimo_id</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="c1"># use super class to set wdom_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_elements_with_wdom_id</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">wdom_id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">addEventListener</span><span class="p">(</span><span class="s1">&#39;mount&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_mount</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">parent</span><span class="p">:</span>
             <span class="n">parent</span><span class="o">.</span><span class="n">appendChild</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -149,15 +159,15 @@
 
     <span class="c1"># Hanlde attributes</span>
     <span class="k">def</span> <span class="nf">_get_attrs_by_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;rimo_id=&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="s1">&#39;wdom_id=&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wdom_id</span><span class="p">)</span>
         <span class="n">attrs</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_get_attrs_by_string</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">attrs</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">res</span><span class="p">,</span> <span class="n">attrs</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">res</span>
 
     <span class="k">def</span> <span class="nf">_set_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">_AttrValueType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;rimo_id&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot change rimo_id&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;wdom_id&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot change wdom_id&#39;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
@@ -291,7 +301,7 @@
     <span class="k">def</span> <span class="nf">_remove_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">childNodes</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">WdomElement</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeChildById&#39;</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeChildById&#39;</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">wdom_id</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;removeChildByIndex&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">child</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">child</span>
@@ -308,7 +318,7 @@
     <span class="k">def</span> <span class="nf">_replace_child_web</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">,</span> <span class="n">old_child</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_child_html</span><span class="p">(</span><span class="n">new_child</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">old_child</span><span class="p">,</span> <span class="n">WdomElement</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;replaceChildById&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">,</span> <span class="n">old_child</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">js_exec</span><span class="p">(</span><span class="s1">&#39;replaceChildById&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">,</span> <span class="n">old_child</span><span class="o">.</span><span class="n">wdom_id</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">old_child</span><span class="o">.</span><span class="n">parentNode</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># old_child will be Text Node</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">old_child</span><span class="o">.</span><span class="n">parentNode</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">old_child</span><span class="p">)</span>
@@ -352,8 +362,8 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">html_noid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Get html representation of this node without rimo_id.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">remove_rimo_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
+        <span class="sd">&quot;&quot;&quot;Get html representation of this node without wdom_id.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">remove_wdom_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">html</span><span class="p">)</span>
 
 <div class="viewcode-block" id="WdomElement.click"><a class="viewcode-back" href="../../node.html#wdom.web_node.WdomElement.click">[docs]</a>    <span class="k">def</span> <span class="nf">click</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;Send click event.&quot;&quot;&quot;</span>
@@ -363,8 +373,8 @@
             <span class="c1"># Web上に表示されてれば勝手にブラウザ側からクリックイベント発生する</span>
             <span class="c1"># のでローカルのクリックイベント不要</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;proto&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;click&#39;</span><span class="p">,</span>
-                   <span class="s1">&#39;currentTarget&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">},</span>
-                   <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rimo_id</span><span class="p">}}</span>
+                   <span class="s1">&#39;currentTarget&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">wdom_id</span><span class="p">},</span>
+                   <span class="s1">&#39;target&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">wdom_id</span><span class="p">}}</span>
             <span class="n">e</span> <span class="o">=</span> <span class="n">create_event</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_event</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 

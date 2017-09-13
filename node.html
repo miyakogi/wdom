@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Node interfaces/classes &#8212; WDOM 0.2.1 documentation</title>
+    <title>Node interfaces/classes &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -52,14 +52,14 @@
 <h1>Node interfaces/classes<a class="headerlink" href="#node-interfaces-classes" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="wdom.node.AbstractNode">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">AbstractNode</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#AbstractNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.AbstractNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">AbstractNode</code><a class="reference internal" href="_modules/wdom/node.html#AbstractNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.AbstractNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">xml.dom.Node</span></code></p>
 <p>Abstract Base Class for Node classes.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="wdom.node.Node">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.Node" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">Node</code><span class="sig-paren">(</span><em>parent: wdom.node.AbstractNode = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#Node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.Node" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.AbstractNode</span></code></a></p>
 <p>Base Class for Node interface.</p>
 <p>Initialize node object with parent node.</p>
@@ -359,7 +359,7 @@ new value is set as a text node.</p>
 
 <dl class="class">
 <dt id="wdom.node.Text">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">Text</code><span class="sig-paren">(</span><em>text=''</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#Text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.Text" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">Text</code><span class="sig-paren">(</span><em>text: str = ''</em>, <em>parent: wdom.node.Node = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#Text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.Text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.CharacterData" title="wdom.node.CharacterData"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.CharacterData</span></code></a></p>
 <p>Node class to wrap text contents.</p>
 <dl class="attribute">
@@ -380,7 +380,7 @@ new value is set as a text node.</p>
 
 <dl class="class">
 <dt id="wdom.node.RawHtml">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">RawHtml</code><span class="sig-paren">(</span><em>text=''</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#RawHtml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.RawHtml" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">RawHtml</code><span class="sig-paren">(</span><em>text: str = ''</em>, <em>parent: wdom.node.Node = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#RawHtml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.RawHtml" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.Text" title="wdom.node.Text"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.Text</span></code></a></p>
 <p>Very similar to <code class="docutils literal"><span class="pre">Text</span></code> class, but contents are always not escaped.</p>
 <p>This node is [NOT DOM Standard].</p>
@@ -402,7 +402,7 @@ new value is set as a text node.</p>
 
 <dl class="class">
 <dt id="wdom.node.Comment">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">Comment</code><span class="sig-paren">(</span><em>text=''</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#Comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.Comment" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">Comment</code><span class="sig-paren">(</span><em>text: str = ''</em>, <em>parent: wdom.node.Node = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#Comment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.Comment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.CharacterData" title="wdom.node.CharacterData"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.CharacterData</span></code></a></p>
 <p>Comment node class.</p>
 <dl class="attribute">
@@ -423,7 +423,7 @@ new value is set as a text node.</p>
 
 <dl class="class">
 <dt id="wdom.node.DocumentType">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">DocumentType</code><span class="sig-paren">(</span><em>type='html'</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#DocumentType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.DocumentType" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">DocumentType</code><span class="sig-paren">(</span><em>type: str = 'html'</em>, <em>parent: wdom.node.Node = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#DocumentType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.DocumentType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.Node</span></code></a>, <a class="reference internal" href="#wdom.node.NonDocumentTypeChildNode" title="wdom.node.NonDocumentTypeChildNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.NonDocumentTypeChildNode</span></code></a></p>
 <p>DocumentType node class.</p>
 <p>Initialize DocumentType node with <cite>type</cite> doctype.</p>
@@ -473,7 +473,7 @@ new value is set as a text node.</p>
 
 <dl class="class">
 <dt id="wdom.node.DocumentFragment">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">DocumentFragment</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#DocumentFragment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.DocumentFragment" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">DocumentFragment</code><span class="sig-paren">(</span><em>parent: wdom.node.AbstractNode = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#DocumentFragment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.DocumentFragment" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.Node</span></code></a>, <a class="reference internal" href="#wdom.node.ParentNode" title="wdom.node.ParentNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.ParentNode</span></code></a></p>
 <p>DocumentFragument node class.</p>
 <p>Initialize node object with parent node.</p>
@@ -503,7 +503,7 @@ new value is set as a text node.</p>
 
 <dl class="class">
 <dt id="wdom.document.Document">
-<em class="property">class </em><code class="descclassname">wdom.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>*</em>, <em>doctype='html'</em>, <em>default_class=&lt;class 'wdom.element.HTMLElement'&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#Document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.Document" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.document.</code><code class="descname">Document</code><span class="sig-paren">(</span><em>*</em>, <em>doctype: str = 'html'</em>, <em>default_class: type = &lt;class 'wdom.element.HTMLElement'&gt;</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/document.html#Document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.Document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.Node</span></code></a>, <a class="reference internal" href="#wdom.node.ParentNode" title="wdom.node.ParentNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.ParentNode</span></code></a>, <a class="reference internal" href="event.html#wdom.event.EventTarget" title="wdom.event.EventTarget"><code class="xref py py-class docutils literal"><span class="pre">wdom.event.EventTarget</span></code></a></p>
 <p>Base class for Document node.</p>
 <p>Create new Document node.</p>
@@ -774,7 +774,7 @@ This searches all child elements recursively.</p>
 
 <dl class="class">
 <dt id="wdom.element.Attr">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">Attr</code><span class="sig-paren">(</span><em>name</em>, <em>value=None</em>, <em>owner=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#Attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.Attr" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">Attr</code><span class="sig-paren">(</span><em>name: str, value: typing.Union[typing.List[str], str, int, wdom.css.CSSStyleDeclaration, NoneType] = None, owner: wdom.node.Node = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#Attr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.Attr" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Attribute node.</p>
 <p>In the latest DOM specification, Attr interface does not inherits <code class="docutils literal"><span class="pre">Node</span></code>
@@ -854,7 +854,7 @@ interface. (Previously, Attr inherited Node interface.)</p>
 
 <dl class="class">
 <dt id="wdom.element.Element">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">Element</code><span class="sig-paren">(</span><em>tag=''</em>, <em>parent=None</em>, <em>_registered=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#Element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.Element" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">Element</code><span class="sig-paren">(</span><em>tag: str = ''</em>, <em>parent: wdom.node.Node = None</em>, <em>_registered: bool = True</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#Element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.Element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.Node</span></code></a>, <a class="reference internal" href="event.html#wdom.event.EventTarget" title="wdom.event.EventTarget"><code class="xref py py-class docutils literal"><span class="pre">wdom.event.EventTarget</span></code></a>, <a class="reference internal" href="#wdom.node.ParentNode" title="wdom.node.ParentNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.ParentNode</span></code></a>, <a class="reference internal" href="#wdom.node.NonDocumentTypeChildNode" title="wdom.node.NonDocumentTypeChildNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.NonDocumentTypeChildNode</span></code></a>, <a class="reference internal" href="#wdom.node.ChildNode" title="wdom.node.ChildNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.ChildNode</span></code></a></p>
 <p>Element base class.</p>
 <p>Initialize.</p>
@@ -1204,7 +1204,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">id</span></code
 
 <dl class="class">
 <dt id="wdom.element.HTMLElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.Element" title="wdom.element.Element"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.Element</span></code></a></p>
 <p>Base class for HTMLElement.</p>
 <p>This class extends <cite>Element</cite> class with some HTML specific features.</p>
@@ -1309,7 +1309,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">type</span></co
 
 <dl class="class">
 <dt id="wdom.window.Window">
-<em class="property">class </em><code class="descclassname">wdom.window.</code><code class="descname">Window</code><span class="sig-paren">(</span><em>document</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/window.html#Window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.window.Window" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.window.</code><code class="descname">Window</code><span class="sig-paren">(</span><em>document: wdom.node.Node</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/window.html#Window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.window.Window" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.event.WebEventTarget</span></code></p>
 <p>Window base class.</p>
 <p>Make new window object.</p>
@@ -1369,7 +1369,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">type</span></co
 <h2>Conclete HTML Elements<a class="headerlink" href="#conclete-html-elements" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wdom.element.HTMLAnchorElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLAnchorElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLAnchorElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLAnchorElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLAnchorElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLAnchorElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLAnchorElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a></p>
 <p>HTMLAnchorElement class (&lt;a&gt;&lt;/a&gt; tag).</p>
 <dl class="attribute">
@@ -1466,7 +1466,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">target</span></
 
 <dl class="class">
 <dt id="wdom.element.HTMLButtonElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLButtonElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLButtonElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLButtonElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLButtonElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLButtonElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLButtonElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a></p>
 <p>HTMLButtonElement class (&lt;button&gt;&lt;/button&gt; tag).</p>
 <dl class="attribute">
@@ -1527,7 +1527,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">value</span></c
 
 <dl class="class">
 <dt id="wdom.element.HTMLFormElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLFormElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLFormElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLFormElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLFormElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLFormElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLFormElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a></p>
 <p>HTMLFormElement class (&lt;form&gt;&lt;/form&gt; tag).</p>
 <dl class="attribute">
@@ -1552,7 +1552,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">name</span></co
 
 <dl class="class">
 <dt id="wdom.element.HTMLIFrameElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLIFrameElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLIFrameElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLIFrameElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLIFrameElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLIFrameElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLIFrameElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a></p>
 <p>HTMLIFrameElement class (&lt;iframe&gt;&lt;/iframe&gt; tag).</p>
 <dl class="attribute">
@@ -1649,7 +1649,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">width</span></c
 
 <dl class="class">
 <dt id="wdom.element.HTMLInputElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLInputElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLInputElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLInputElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLInputElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLInputElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLInputElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.element.FormControlMixin</span></code></p>
 <p>HTMLInputElement class (&lt;input&gt;&lt;/input&gt; tag).</p>
 <dl class="method">
@@ -1878,7 +1878,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">width</span></c
 
 <dl class="class">
 <dt id="wdom.element.HTMLLabelElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLLabelElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLLabelElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLLabelElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLLabelElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLLabelElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLLabelElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.element.FormControlMixin</span></code></p>
 <p>HTMLLabelElement class (&lt;label&gt;&lt;/label&gt; tag).</p>
 <dl class="attribute">
@@ -1913,7 +1913,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">width</span></c
 
 <dl class="class">
 <dt id="wdom.element.HTMLOptGroupElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLOptGroupElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLOptGroupElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLOptGroupElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLOptGroupElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLOptGroupElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLOptGroupElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.element.FormControlMixin</span></code></p>
 <p>HTMLOptionElement class (&lt;optgroup&gt;&lt;/optgroup&gt; tag).</p>
 <dl class="attribute">
@@ -1956,7 +1956,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">label</span></c
 
 <dl class="class">
 <dt id="wdom.element.HTMLOptionElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLOptionElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLOptionElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLOptionElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLOptionElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLOptionElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLOptionElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.element.FormControlMixin</span></code></p>
 <p>HTMLOptionElement class (&lt;option&gt;&lt;/option&gt; tag).</p>
 <dl class="attribute">
@@ -2053,7 +2053,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">value</span></c
 
 <dl class="class">
 <dt id="wdom.element.HTMLScriptElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLScriptElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLScriptElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLScriptElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLScriptElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLScriptElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLScriptElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a></p>
 <p>HTMLScriptElement class (&lt;script&gt;&lt;/script&gt; tag).</p>
 <p>In this tag, all inner contents are not escaped.</p>
@@ -2133,7 +2133,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">src</span></cod
 
 <dl class="class">
 <dt id="wdom.element.HTMLSelectElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLSelectElement</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLSelectElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLSelectElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLSelectElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLSelectElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLSelectElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.element.FormControlMixin</span></code></p>
 <p>HTMLSelectElement class (&lt;select&gt;&lt;/select&gt; tag).</p>
 <dl class="method">
@@ -2304,7 +2304,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">value</span></c
 
 <dl class="class">
 <dt id="wdom.element.HTMLStyleElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLStyleElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLStyleElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLStyleElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLStyleElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLStyleElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLStyleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a></p>
 <p>HTMLStyleElement class (&lt;style&gt;&lt;/style&gt; tag).</p>
 <p>In this tag, all inner contents are not escaped.</p>
@@ -2348,7 +2348,7 @@ Deleter: Remove <code class="docutils literal"><span class="pre">scoped</span></
 
 <dl class="class">
 <dt id="wdom.element.HTMLTextAreaElement">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLTextAreaElement</code><span class="sig-paren">(</span><em>*args</em>, <em>style=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#HTMLTextAreaElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLTextAreaElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">HTMLTextAreaElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>style: str = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#HTMLTextAreaElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.HTMLTextAreaElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.element.FormControlMixin</span></code></p>
 <p>HTMLTextAreaElement class (&lt;textarea&gt;&lt;/textarea&gt; tag).</p>
 <dl class="attribute">
@@ -2496,7 +2496,7 @@ new value is set as a text node.</p>
 <h2>Node Collectoin Classes<a class="headerlink" href="#node-collectoin-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wdom.node.NodeList">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">NodeList</code><span class="sig-paren">(</span><em>nodes</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#NodeList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.NodeList" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">NodeList</code><span class="sig-paren">(</span><em>nodes: typing.Sequence[wdom.node.Node]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#NodeList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.NodeList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">typing.Sequence</span></code></p>
 <p>Collection of Node objects.</p>
 <p>Initialize NodeList by iterable <cite>nodes</cite>.</p>
@@ -2547,7 +2547,7 @@ new value is set as a text node.</p>
 
 <dl class="class">
 <dt id="wdom.element.DOMTokenList">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">DOMTokenList</code><span class="sig-paren">(</span><em>owner</em>, <em>*args</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#DOMTokenList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.DOMTokenList" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">DOMTokenList</code><span class="sig-paren">(</span><em>owner: typing.Union[wdom.node.Node, typing.Type[_ForwardRef('HTMLElement')]], *args: typing.Union[str, _ForwardRef('DOMTokenList')]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#DOMTokenList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.DOMTokenList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">typing.MutableSequence</span></code></p>
 <p>Collection of DOM token strings.</p>
 <p>DOM token is a string which does not contain spases.
@@ -2686,7 +2686,7 @@ return None.</p>
 
 <dl class="class">
 <dt id="wdom.element.NamedNodeMap">
-<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">NamedNodeMap</code><span class="sig-paren">(</span><em>owner</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/element.html#NamedNodeMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.NamedNodeMap" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.element.</code><code class="descname">NamedNodeMap</code><span class="sig-paren">(</span><em>owner: wdom.node.Node</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/element.html#NamedNodeMap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.element.NamedNodeMap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">collections.UserDict</span></code></p>
 <p>Collection of Attr objects.</p>
 <p>Initialize with owner node.</p>
@@ -2790,7 +2790,7 @@ return None.</p>
 <h2>Abstract classes<a class="headerlink" href="#abstract-classes" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wdom.node.ParentNode">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">ParentNode</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#ParentNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.ParentNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">ParentNode</code><a class="reference internal" href="_modules/wdom/node.html#ParentNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.ParentNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.AbstractNode</span></code></a></p>
 <p>Mixin class for Node classes which can have child nodes.</p>
 <p>This class is inherited by Document, DocumentFragment, and Element class.</p>
@@ -2927,7 +2927,7 @@ return None.</p>
 
 <dl class="class">
 <dt id="wdom.node.NonDocumentTypeChildNode">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">NonDocumentTypeChildNode</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#NonDocumentTypeChildNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.NonDocumentTypeChildNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">NonDocumentTypeChildNode</code><a class="reference internal" href="_modules/wdom/node.html#NonDocumentTypeChildNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.NonDocumentTypeChildNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.AbstractNode</span></code></a></p>
 <p>Mixin class for <code class="docutils literal"><span class="pre">CharacterData</span></code> and <code class="docutils literal"><span class="pre">DocumentType</span></code> class.</p>
 <dl class="attribute">
@@ -2964,7 +2964,7 @@ return None.</p>
 
 <dl class="class">
 <dt id="wdom.node.ChildNode">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">ChildNode</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#ChildNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.ChildNode" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">ChildNode</code><a class="reference internal" href="_modules/wdom/node.html#ChildNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.ChildNode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.AbstractNode" title="wdom.node.AbstractNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.AbstractNode</span></code></a></p>
 <p>Mixin class for Node classes which can have parent node.</p>
 <p>This class is inherited by DocumentType, Element, and CharacterData
@@ -3032,7 +3032,7 @@ return None.</p>
 
 <dl class="class">
 <dt id="wdom.node.CharacterData">
-<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">CharacterData</code><span class="sig-paren">(</span><em>text=''</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/node.html#CharacterData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.CharacterData" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.node.</code><code class="descname">CharacterData</code><span class="sig-paren">(</span><em>text: str = ''</em>, <em>parent: wdom.node.Node = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/node.html#CharacterData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.node.CharacterData" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.node.Node" title="wdom.node.Node"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.Node</span></code></a>, <a class="reference internal" href="#wdom.node.ChildNode" title="wdom.node.ChildNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.ChildNode</span></code></a>, <a class="reference internal" href="#wdom.node.NonDocumentTypeChildNode" title="wdom.node.NonDocumentTypeChildNode"><code class="xref py py-class docutils literal"><span class="pre">wdom.node.NonDocumentTypeChildNode</span></code></a></p>
 <p>Abstract class for classes which wraps text data.</p>
 <p>This class is a super class of <code class="docutils literal"><span class="pre">Text</span></code> and <code class="docutils literal"><span class="pre">Comment</span></code>.</p>
@@ -3226,7 +3226,7 @@ return None.</p>
 <h2>WdomElement class (base class of Tag)<a class="headerlink" href="#wdomelement-class-base-class-of-tag" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wdom.web_node.WdomElement">
-<em class="property">class </em><code class="descclassname">wdom.web_node.</code><code class="descname">WdomElement</code><span class="sig-paren">(</span><em>*args</em>, <em>parent=None</em>, <em>rimo_id=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/web_node.html#WdomElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.web_node.WdomElement" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.web_node.</code><code class="descname">WdomElement</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>parent: typing.Union[wdom.web_node.WdomElement</em>, <em>NoneType] = None</em>, <em>wdom_id: typing.Union[int</em>, <em>str] = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/web_node.html#WdomElement"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.web_node.WdomElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.element.HTMLElement" title="wdom.element.HTMLElement"><code class="xref py py-class docutils literal"><span class="pre">wdom.element.HTMLElement</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.event.WebEventTarget</span></code></p>
 <p>WdomElement class.</p>
 <p>This class provides main features to synchronously control browser DOM
@@ -3247,10 +3247,25 @@ By default, this variable is True.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="wdom.web_node.WdomElement.wdom_id">
+<code class="descname">wdom_id</code><a class="headerlink" href="#wdom.web_node.WdomElement.wdom_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get wdom_id attribute.</p>
+<p>This attribute is used to relate python node and browser DOM node.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">str</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="wdom.web_node.WdomElement.rimo_id">
 <code class="descname">rimo_id</code><a class="headerlink" href="#wdom.web_node.WdomElement.rimo_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get rimo_id attribute.</p>
-<p>This attribute is used to relate python node and browser DOM node.</p>
+<dd><p>[Deprecated] Alias to <cite>wdom_id</cite>.</p>
+<p>rimo_id is renamed to <cite>wdom_id</cite>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3482,7 +3497,7 @@ new value is set as a text node.</p>
 <dl class="attribute">
 <dt id="wdom.web_node.WdomElement.html_noid">
 <code class="descname">html_noid</code><a class="headerlink" href="#wdom.web_node.WdomElement.html_noid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get html representation of this node without rimo_id.</p>
+<dd><p>Get html representation of this node without wdom_id.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -3589,7 +3604,6 @@ new value is set as a text node.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>

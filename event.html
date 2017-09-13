@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Event API &#8212; WDOM 0.2.1 documentation</title>
+    <title>Event API &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -23,7 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Test Utilities" href="test.html" />
+    <link rel="next" title="Changes" href="changes.html" />
     <link rel="prev" title="Node interfaces/classes" href="node.html" />
   <!-- font -->
   <link href='https://fonts.googleapis.com/css?family=Raleway:500' rel='stylesheet' type='text/css'>
@@ -52,7 +52,7 @@
 <h1>Event API<a class="headerlink" href="#event-api" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="wdom.event.Event">
-<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">Event</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.Event" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">Event</code><span class="sig-paren">(</span><em>type: str</em>, <em>init: typing.Dict[str</em>, <em>typing.Any] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/event.html#Event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.Event" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Base class of Event classes.</p>
 <p>Create event object.</p>
@@ -105,7 +105,7 @@ this event’s status.</p>
 
 <dl class="class">
 <dt id="wdom.event.MouseEvent">
-<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">MouseEvent</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#MouseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.MouseEvent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">MouseEvent</code><span class="sig-paren">(</span><em>type: str</em>, <em>init: typing.Dict[str</em>, <em>typing.Any] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/event.html#MouseEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.MouseEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.event.UIEvent</span></code></p>
 <p>Mouse event class.</p>
 <p>Event types generate this event class are <code class="docutils literal"><span class="pre">click</span></code>, <code class="docutils literal"><span class="pre">dblclick</span></code>,
@@ -119,7 +119,7 @@ offsetX, offsetY, pageX, pageY, region, screenX, screenY, shiftKey, x, y</p>
 
 <dl class="class">
 <dt id="wdom.event.KeyboardEvent">
-<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">KeyboardEvent</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#KeyboardEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.KeyboardEvent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">KeyboardEvent</code><span class="sig-paren">(</span><em>type: str</em>, <em>init: typing.Dict[str</em>, <em>typing.Any] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/event.html#KeyboardEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.KeyboardEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wdom.event.UIEvent</span></code></p>
 <p>Keyboard event class.</p>
 <p>Event types generate this event class are <code class="docutils literal"><span class="pre">keydown</span></code>, <code class="docutils literal"><span class="pre">keypress</span></code>, and
@@ -132,7 +132,7 @@ offsetX, offsetY, pageX, pageY, region, screenX, screenY, shiftKey, x, y</p>
 
 <dl class="class">
 <dt id="wdom.event.DragEvent">
-<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">DragEvent</code><span class="sig-paren">(</span><em>type</em>, <em>init=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#DragEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DragEvent" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">DragEvent</code><span class="sig-paren">(</span><em>type: str</em>, <em>init: typing.Dict[str</em>, <em>typing.Any] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/event.html#DragEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DragEvent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#wdom.event.MouseEvent" title="wdom.event.MouseEvent"><code class="xref py py-class docutils literal"><span class="pre">wdom.event.MouseEvent</span></code></a></p>
 <p>Drag event class.</p>
 <p>This class inherits <a class="reference internal" href="#wdom.event.MouseEvent" title="wdom.event.MouseEvent"><code class="xref py py-class docutils literal"><span class="pre">MouseEvent</span></code></a> class and has own attribute
@@ -145,7 +145,7 @@ and <code class="docutils literal"><span class="pre">drop</span></code>.</p>
 
 <dl class="class">
 <dt id="wdom.event.DataTransfer">
-<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">DataTransfer</code><span class="sig-paren">(</span><em>id=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#DataTransfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DataTransfer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">DataTransfer</code><span class="sig-paren">(</span><em>id: str = ''</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/event.html#DataTransfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.DataTransfer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>DataTransfer object is used to transfer drag/drop data.</p>
 <p>TODO: Currently always read/write enabled.
@@ -239,7 +239,7 @@ string.
 
 <dl class="class">
 <dt id="wdom.event.EventListener">
-<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">EventListener</code><span class="sig-paren">(</span><em>listener</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventListener" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">EventListener</code><span class="sig-paren">(</span><em>listener: typing.Union[typing.Callable[[wdom.event.Event], NoneType], typing.Callable[[wdom.event.Event], typing.Awaitable[NoneType]]]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/event.html#EventListener"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventListener" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Class to wrap an event listener function.</p>
 <p>Acceptable listeners are function, coroutine, and coroutine-function.
@@ -251,7 +251,7 @@ synchronously as if it is normal function.</p>
 
 <dl class="class">
 <dt id="wdom.event.EventTarget">
-<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">EventTarget</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/event.html#EventTarget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.event.</code><code class="descname">EventTarget</code><span class="sig-paren">(</span><em>*args: typing.Any</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/event.html#EventTarget"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.event.EventTarget" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
 <p>Base class for EventTargets.</p>
 <p>This class and subclasses can add/remove event listeners and emit events.</p>
@@ -369,7 +369,6 @@ dict sent from browser.</p>
 <li class="toctree-l2"><a class="reference internal" href="webserver.html">Application and Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Event API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>
@@ -381,7 +380,7 @@ dict sent from browser.</p>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="reference.html">API Reference</a><ul>
       <li>Previous: <a href="node.html" title="previous chapter">Node interfaces/classes</a></li>
-      <li>Next: <a href="test.html" title="next chapter">Test Utilities</a></li>
+      <li>Next: <a href="changes.html" title="next chapter">Changes</a></li>
   </ul></li>
   </ul></li>
 </ul>

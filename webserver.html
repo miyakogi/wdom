@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Application and Server &#8212; WDOM 0.2.1 documentation</title>
+    <title>Application and Server &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -55,7 +55,7 @@
 <h2>HTML Document Object<a class="headerlink" href="#html-document-object" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="wdom.document.WdomDocument">
-<em class="property">class </em><code class="descclassname">wdom.document.</code><code class="descname">WdomDocument</code><span class="sig-paren">(</span><em>*</em>, <em>doctype=’html’</em>, <em>title=’W-DOM’</em>, <em>charset=’utf-8’</em>, <em>default_class=&lt;class ‘wdom.web_node.WdomElement’&gt;</em>, <em>autoreload=None</em>, <em>reload_wait=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">wdom.document.</code><code class="descname">WdomDocument</code><span class="sig-paren">(</span><em>*</em>, <em>doctype: str = ‘html’</em>, <em>title: str = ‘W-DOM’</em>, <em>charset: str = ‘utf-8’</em>, <em>default_class: type = &lt;class ‘wdom.web_node.WdomElement’&gt;</em>, <em>autoreload: bool = None</em>, <em>reload_wait: float = None</em>, <em>**kwargs: typing.Any</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/wdom/document.html#WdomDocument"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document"><code class="xref py py-class docutils literal"><span class="pre">wdom.document.Document</span></code></a>, <code class="xref py py-class docutils literal"><span class="pre">wdom.event.WebEventTarget</span></code></p>
 <p>Main document class for WDOM applications.</p>
 <p>Create new document object for WDOM application.</p>
@@ -97,9 +97,9 @@ parameter is only used when autoreload is enabled.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="wdom.document.WdomDocument.getElementByRimoId">
-<code class="descname">getElementByRimoId</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.getElementByRimoId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.getElementByRimoId" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get an element node with <code class="docutils literal"><span class="pre">rimo_id</span></code>.</p>
+<dt id="wdom.document.WdomDocument.getElementByWdomId">
+<code class="descname">getElementByWdomId</code><span class="sig-paren">(</span><em>id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#WdomDocument.getElementByWdomId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.WdomDocument.getElementByWdomId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get an element node with <code class="docutils literal"><span class="pre">wdom_id</span></code>.</p>
 <p>If this document does not have the element with the id, return None.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -206,14 +206,14 @@ directory actual theme module structures.</td>
 
 <dl class="function">
 <dt id="wdom.document.get_new_document">
-<code class="descclassname">wdom.document.</code><code class="descname">get_new_document</code><span class="sig-paren">(</span><em>include_rimo=True</em>, <em>include_skeleton=False</em>, <em>include_normalizecss=False</em>, <em>autoreload=None</em>, <em>reload_wait=None</em>, <em>log_level=None</em>, <em>log_prefix=None</em>, <em>log_console=False</em>, <em>ws_url=None</em>, <em>message_wait=None</em>, <em>document_factory=&lt;class ‘wdom.document.WdomDocument’&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_new_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_new_document" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">wdom.document.</code><code class="descname">get_new_document</code><span class="sig-paren">(</span><em>include_wdom_js=True</em>, <em>include_skeleton=False</em>, <em>include_normalizecss=False</em>, <em>autoreload=None</em>, <em>reload_wait=None</em>, <em>log_level=None</em>, <em>log_prefix=None</em>, <em>log_console=False</em>, <em>ws_url=None</em>, <em>message_wait=None</em>, <em>document_factory=&lt;class ‘wdom.document.WdomDocument’&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/wdom/document.html#get_new_document"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#wdom.document.get_new_document" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create new <a class="reference internal" href="node.html#wdom.document.Document" title="wdom.document.Document"><code class="xref py py-class docutils literal"><span class="pre">Document</span></code></a> object with options.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>include_rimo</strong> (<em>bool</em>) – Include rimo.js file. Usually should be True.</li>
+<li><strong>include_wdom_js</strong> (<em>bool</em>) – Include wdom.js file. Usually should be True.</li>
 <li><strong>include_skeleton</strong> (<em>bool</em>) – Include skelton.css.</li>
 <li><strong>include_normalizecss</strong> (<em>bool</em>) – Include normalize.css.</li>
 <li><strong>autoreload</strong> (<em>bool</em>) – Enable autoreload flag. This flag overwrites
@@ -226,7 +226,7 @@ use <code class="docutils literal"><span class="pre">wdom.config.options.log_lev
 <li><strong>log_prefix</strong> (<em>str</em>) – Prefix of log outputs.</li>
 <li><strong>log_console</strong> (<em>bool</em>) – Flag to show wdom log on browser console.</li>
 <li><strong>ws_url</strong> (<em>str</em>) – URL string to the ws url.
-Default: <code class="docutils literal"><span class="pre">ws://localhost:8888/rimo_ws</span></code>.</li>
+Default: <code class="docutils literal"><span class="pre">ws://localhost:8888/wdom_ws</span></code>.</li>
 <li><strong>message_wait</strong> (<em>float</em>) – Duration (seconds) to send WS messages.</li>
 <li><strong>document_factory</strong> (<em>Callable</em>) – Factory function/class to create Document
 object.</li>
@@ -395,7 +395,6 @@ autoreload is enabled [default: 500].</li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Application and Server</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dom.html">DOM API</a></li>
 <li class="toctree-l2"><a class="reference internal" href="event.html">Event API</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test.html">Test Utilities</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changes</a></li>

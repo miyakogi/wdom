@@ -5,13 +5,13 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>wdom.element &#8212; WDOM 0.2.1 documentation</title>
+    <title>wdom.element &#8212; WDOM 0.3.0 documentation</title>
     <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2.1',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -1003,7 +1003,7 @@
             <span class="n">_selected</span> <span class="o">=</span> <span class="n">ct_msg</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;selectedOptions&#39;</span><span class="p">,</span> <span class="p">[])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_selected_options</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">rimo_id</span> <span class="ow">in</span> <span class="n">_selected</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">wdom_id</span> <span class="ow">in</span> <span class="n">_selected</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_selected_options</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">opt</span><span class="p">)</span>
                     <span class="n">opt</span><span class="o">.</span><span class="n">_set_attribute</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
