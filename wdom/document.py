@@ -396,7 +396,7 @@ def get_new_document(  # noqa: C901
         _s.textContent = '\nvar RIMO_WS_URL = \'{}\'\n'.format(ws_url)
 
     if include_rimo:
-        document.add_jsfile_head('_static/js/rimo/rimo.js')
+        document.add_jsfile_head('_static/js/rimo.js')
 
     return document
 

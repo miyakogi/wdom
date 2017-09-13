@@ -185,7 +185,7 @@ class TestStaticFileHandler(HTTPTestCase):
     @sync
     async def test_static_file(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
-            res = await self.fetch(self.url + '/_static/js/rimo/rimo.js')
+            res = await self.fetch(self.url + '/_static/js/rimo.js')
         self.assertEqual(res.code, 200)
         self.assertIn('rimo', res.text)
         self.assertIn('rimo.log', res.text)
