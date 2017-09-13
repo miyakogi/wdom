@@ -114,14 +114,14 @@ class Event:
         Second optional argument (init) is a dictionally, which has fields for
         this event's status.
         """
-        from wdom.document import getElementByRimoId
+        from wdom.document import getElementByWdomId
         self.type = type
         self.init = dict() if init is None else init
         _id = self.init.get('currentTarget', {'id': None}).get('id')
-        ctarget = getElementByRimoId(_id)
+        ctarget = getElementByWdomId(_id)
         self.__currentTarget = ctarget
         _id = self.init.get('target', {'id': None}).get('id')
-        self.__target = getElementByRimoId(_id) or ctarget
+        self.__target = getElementByWdomId(_id) or ctarget
 
     def stopPrapagation(self) -> None:
         """Not implemented yet."""
@@ -163,8 +163,8 @@ class MouseEvent(UIEvent):  # noqa: D204
         rt = self.init.get('relatedTarget') or {'id': None}
         rid = rt.get('id')
         if rid is not None:
-            from wdom.document import getElementByRimoId
-            self.relatedTarget = getElementByRimoId(rid)
+            from wdom.document import getElementByWdomId
+            self.relatedTarget = getElementByWdomId(rid)
         else:
             self.relatedTarget = None
 
@@ -366,7 +366,7 @@ class WebEventTarget(EventTarget):
     """Mixin class for web connection controll."""
 
     @property
-    def rimo_id(self) -> str:
+    def wdom_id(self) -> str:
         """Return ID used to relate python node and browser DOM node."""
         raise NotImplementedError
 
@@ -423,7 +423,7 @@ class WebEventTarget(EventTarget):
         from wdom import server
         if self.ownerDocument is not None:
             obj['target'] = 'node'
-            obj['id'] = self.rimo_id
+            obj['id'] = self.wdom_id
             server.push_message(obj)
 
     # Event Handling

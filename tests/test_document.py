@@ -8,13 +8,13 @@ from unittest.mock import MagicMock
 from wdom import options, server
 from wdom.document import Document, WdomDocument
 from wdom.document import get_document, get_new_document, set_document
-from wdom.document import getElementById, getElementByRimoId
+from wdom.document import getElementById, getElementByWdomId
 from wdom.element import Attr, Element
 from wdom.event import Event
 from wdom.node import DocumentFragment, Comment, Text
 from wdom.server.handler import event_handler
 from wdom.tag import Tag, A
-from wdom.web_node import WdomElement, remove_rimo_id
+from wdom.web_node import WdomElement, remove_wdom_id
 
 from .base import TestCase
 
@@ -31,21 +31,21 @@ class TestGetElement(TestCase):
         self.doc.appendChild(elm)
         self.assertIs(getElementById('a'), elm)
 
-    def test_get_element_by_rimo_id(self):
+    def test_get_element_by_wdom_id(self):
         elm = WdomElement(tag='a')
-        rimo_id = elm.rimo_id
-        self.assertIs(getElementByRimoId(rimo_id), elm)
-        self.assertIsNone(self.doc.getElementByRimoId(rimo_id))
+        wdom_id = elm.wdom_id
+        self.assertIs(getElementByWdomId(wdom_id), elm)
+        self.assertIsNone(self.doc.getElementByWdomId(wdom_id))
         self.doc.appendChild(elm)
-        self.assertIs(getElementByRimoId(rimo_id), elm)
-        self.assertIs(self.doc.getElementByRimoId(rimo_id), elm)
+        self.assertIs(getElementByWdomId(wdom_id), elm)
+        self.assertIs(self.doc.getElementByWdomId(wdom_id), elm)
 
-    def test_get_element_by_rimo_id_doc(self):
-        doc = getElementByRimoId('document')
+    def test_get_element_by_wdom_id_doc(self):
+        doc = getElementByWdomId('document')
         self.assertIs(get_document(), doc)
 
-    def test_get_element_by_rimo_id_win(self):
-        win = getElementByRimoId('window')
+    def test_get_element_by_wdom_id_win(self):
+        win = getElementByWdomId('window')
         self.assertIs(get_document().defaultView, win)
 
 
@@ -169,26 +169,26 @@ class TestWdomDocument(TestCase):
             re.S
         )
         html = self.doc.build()
-        self.assertIsNotNone(_re.match(remove_rimo_id(html)))
+        self.assertIsNotNone(_re.match(remove_wdom_id(html)))
 
     def test_get_element_by_id(self):
-        elm = WdomElement(tag='a', id='a', rimo_id='b')
+        elm = WdomElement(tag='a', id='a', wdom_id='b')
         self.assertIs(getElementById('a'), elm)
-        self.assertIs(getElementByRimoId('b'), elm)
+        self.assertIs(getElementByWdomId('b'), elm)
         self.assertIsNone(self.doc.getElementById('a'))
-        self.assertIsNone(self.doc.getElementByRimoId('b'), elm)
+        self.assertIsNone(self.doc.getElementByWdomId('b'), elm)
 
         self.doc.appendChild(elm)
         self.assertIs(getElementById('a'), elm)
-        self.assertIs(getElementByRimoId('b'), elm)
+        self.assertIs(getElementByWdomId('b'), elm)
         self.assertIs(self.doc.getElementById('a'), elm)
-        self.assertIs(self.doc.getElementByRimoId('b'), elm)
+        self.assertIs(self.doc.getElementByWdomId('b'), elm)
 
     def test_add_jsfile(self) -> None:
         self.doc.add_jsfile('jsfile')
         _re = re.compile(
             '<body.*'
-            '<script( src="jsfile"| type="text/javascript"| rimo_id="\d+"){3}'
+            '<script( src="jsfile"| type="text/javascript"| wdom_id="\d+"){3}'
             '>\s*</script>'
             '.*</body',
             re.S
@@ -198,8 +198,8 @@ class TestWdomDocument(TestCase):
     def test_add_cssfile(self) -> None:
         self.doc.add_cssfile('cssfile')
         _re = re.compile(
-            '<head rimo_id="\d+">.*'
-            '<link( href="cssfile"| rel="stylesheet"| rimo_id="\d+"){3}>'
+            '<head wdom_id="\d+">.*'
+            '<link( href="cssfile"| rel="stylesheet"| wdom_id="\d+"){3}>'
             '.*</head>'
             '', re.S
         )
@@ -223,7 +223,7 @@ class TestWdomDocument(TestCase):
     def test_title(self) -> None:
         doc = WdomDocument(title='TEST')
         _re = re.compile(
-            '<title rimo_id="\d+">\s*TEST\s*</title>',
+            '<title wdom_id="\d+">\s*TEST\s*</title>',
             re.S
         )
         html = doc.build()
@@ -234,7 +234,7 @@ class TestWdomDocument(TestCase):
     def test_charset(self) -> None:
         doc = WdomDocument(charset='TEST')
         _re = re.compile(
-            '<meta( charset="TEST"| rimo_id="\d+"){2}>',
+            '<meta( charset="TEST"| wdom_id="\d+"){2}>',
             re.S
         )
         html = doc.build()
@@ -246,7 +246,7 @@ class TestWdomDocument(TestCase):
         self.doc.body.prepend(Tag())
         html = self.doc.build()
         _re = re.compile(
-            '<tag rimo_id="\d+">\s*</tag>',
+            '<tag wdom_id="\d+">\s*</tag>',
             re.S
         )
         self.assertIsNotNone(_re.search(html))
@@ -264,19 +264,19 @@ class TestWdomDocument(TestCase):
     def test_create_element(self):
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), A)
-        self.assertRegex(elm.html, r'<a rimo_id="\d+"></a>')
+        self.assertRegex(elm.html, r'<a wdom_id="\d+"></a>')
 
     def test_create_element_unknown(self):
         elm = self.doc.createElement('aa')
         self.assertEqual(type(elm), WdomElement)
-        self.assertRegex(elm.html, r'<aa rimo_id="\d+"></aa>')
+        self.assertRegex(elm.html, r'<aa wdom_id="\d+"></aa>')
 
     def test_create_element_defclass(self):
         from wdom import element
         doc = WdomDocument(default_class=element.HTMLElement)
         elm = doc.createElement('a')
         self.assertEqual(type(elm), A)
-        self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
+        self.assertRegex(elm.html, '<a wdom_id="\d+"></a>')
 
     def test_create_element_defclass_unknown(self):
         from wdom import element
@@ -291,7 +291,7 @@ class TestWdomDocument(TestCase):
         self.doc.defaultView.customElements.define('a', A)
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), A)
-        self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
+        self.assertRegex(elm.html, '<a wdom_id="\d+"></a>')
 
     def test_create_custom_element_tag(self):
         class A(Tag):
@@ -299,7 +299,7 @@ class TestWdomDocument(TestCase):
         self.doc.defaultView.customElements.define('a', A)
         elm = self.doc.createElement('a')
         self.assertEqual(type(elm), A)
-        self.assertRegex(elm.html, '<a rimo_id="\d+"></a>')
+        self.assertRegex(elm.html, '<a wdom_id="\d+"></a>')
 
     def test_custom_tag_theme_tag(self):
         from wdom import themes
@@ -370,8 +370,8 @@ class TestWdomDocument(TestCase):
         e = event_handler(msg)
         mock.assert_called_once_with(e)
 
-    def test_rimo_id(self):
-        self.assertEqual(self.doc.rimo_id, 'document')
+    def test_wdom_id(self):
+        self.assertEqual(self.doc.wdom_id, 'document')
 
 
 class TestDocumentOptions(TestCase):
@@ -391,42 +391,42 @@ class TestDocumentOptions(TestCase):
     def test_document_autoreload(self):
         doc = get_new_document(autoreload=True)
         html = doc.build()
-        self.assertIn('RIMO_AUTORELOAD = true', html)
-        self.assertNotIn('RIMO_RELOAD_WAIT', html)
+        self.assertIn('WDOM_AUTORELOAD = true', html)
+        self.assertNotIn('WDOM_RELOAD_WAIT', html)
 
     def test_document_reload_wait(self):
         doc = get_new_document(autoreload=True, reload_wait=1234)
         html = doc.build()
-        self.assertIn('RIMO_AUTORELOAD = true', html)
-        self.assertIn('RIMO_RELOAD_WAIT = 1234', html)
+        self.assertIn('WDOM_AUTORELOAD = true', html)
+        self.assertIn('WDOM_RELOAD_WAIT = 1234', html)
 
     def test_document_no_reload_wait_no_reload(self):
         doc = get_new_document(autoreload=False, reload_wait=1234)
         html = doc.build()
-        self.assertNotIn('RIMO_AUTORELOAD', html)
-        self.assertNotIn('RIMO_RELOAD_WAIT', html)
+        self.assertNotIn('WDOM_AUTORELOAD', html)
+        self.assertNotIn('WDOM_RELOAD_WAIT', html)
 
     def test_document_log_level_str(self):
         doc = get_new_document(log_level='INFO')
         html = doc.build()
-        self.assertIn('RIMO_LOG_LEVEL = \'INFO\'', html)
+        self.assertIn('WDOM_LOG_LEVEL = \'INFO\'', html)
 
     def test_document_log_level_int(self):
         doc = get_new_document(log_level=10)
         html = doc.build()
-        self.assertIn('RIMO_LOG_LEVEL = 10', html)
+        self.assertIn('WDOM_LOG_LEVEL = 10', html)
 
     def test_document_log_prefix(self):
         doc = get_new_document(log_prefix='TEST')
         html = doc.build()
-        self.assertIn('RIMO_LOG_PREFIX = \'TEST\'', html)
+        self.assertIn('WDOM_LOG_PREFIX = \'TEST\'', html)
 
     def test_document_log_console(self):
         doc = get_new_document(log_console=True)
         html = doc.build()
-        self.assertIn('RIMO_LOG_CONSOLE = true', html)
+        self.assertIn('WDOM_LOG_CONSOLE = true', html)
 
     def test_document_ws_url(self):
         doc = get_new_document(ws_url='test_ws')
         html = doc.build()
-        self.assertIn('RIMO_WS_URL = \'test_ws\'', html)
+        self.assertIn('WDOM_WS_URL = \'test_ws\'', html)

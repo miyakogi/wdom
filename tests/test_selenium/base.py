@@ -178,7 +178,7 @@ class BrowserController:
         """
         try:
             self.element = self.wd.find_element_by_css_selector(
-                '[rimo_id="{}"]'.format(id))
+                '[wdom_id="{}"]'.format(id))
             return True
         except NoSuchElementException:
             return 'Error NoSuchElement: {}'.format(id)
@@ -378,7 +378,7 @@ class RemoteBrowserTestCase:
 
     def _set_element(self, node: Element) -> Union[bool, str]:
         try:
-            res = self.proc.set_element_by_id(node.rimo_id)
+            res = self.proc.set_element_by_id(node.wdom_id)
             return res
         except NoSuchElementException:
             return False

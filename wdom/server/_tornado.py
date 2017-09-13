@@ -96,7 +96,7 @@ class Application(web.Application):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize application."""
         super().__init__(
-            [(r'/', MainHandler), (r'/rimo_ws', WSHandler)],
+            [(r'/', MainHandler), (r'/wdom_ws', WSHandler)],
             *args,
             debug=config.debug,
             autoreload=False,

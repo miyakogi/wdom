@@ -1,6 +1,6 @@
 include LICENSE
 include README.rst
-include wdom/_static/js/rimo.js
+include wdom/_static/js/wdom.js
 
 recursive-include tests *.py *.css
 recursive-include wdom/_static/css *.css

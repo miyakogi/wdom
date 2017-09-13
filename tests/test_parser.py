@@ -4,7 +4,7 @@
 
 from wdom.node import Node, DocumentFragment
 from wdom.parser import FragmentParser, parse_html
-from wdom.web_node import WdomElement, remove_rimo_id
+from wdom.web_node import WdomElement, remove_wdom_id
 
 from .base import TestCase
 
@@ -152,7 +152,7 @@ class TestFragmentParser(TestCase):
         self.assertTrue(isinstance(df, DocumentFragment))
         self.assertEqual(df.length, 3)  # h1, empty text, p
         elm.appendChild(df)
-        self.assertEqual(body_sample, remove_rimo_id(elm.innerHTML))
+        self.assertEqual(body_sample, remove_wdom_id(elm.innerHTML))
 
     def test_parse_script(self):
         elm = WdomElement('tag')
@@ -160,7 +160,7 @@ class TestFragmentParser(TestCase):
         self.assertTrue(isinstance(df, DocumentFragment))
         self.assertEqual(df.length, 1)  # h1, empty text, p
         elm.appendChild(df)
-        self.assertEqual(script_html, remove_rimo_id(elm.innerHTML))
+        self.assertEqual(script_html, remove_wdom_id(elm.innerHTML))
         self.assertEqual(script_js, elm.firstChild.innerHTML)
 
     def test_parse_style(self):
@@ -169,7 +169,7 @@ class TestFragmentParser(TestCase):
         self.assertTrue(isinstance(df, DocumentFragment))
         self.assertEqual(df.length, 1)  # h1, empty text, p
         elm.appendChild(df)
-        self.assertEqual(style_html, remove_rimo_id(elm.innerHTML))
+        self.assertEqual(style_html, remove_wdom_id(elm.innerHTML))
         self.assertEqual(style_css, elm.firstChild.innerHTML)
 
     def test_parsed_class1(self):

@@ -68,8 +68,8 @@ class TestEvent(TestCase):
         msg = {
             'proto': 'event',
             'type': 'event',
-            'currentTarget': {'id': self.elm.rimo_id},
-            'target': {'id': self.elm.rimo_id},
+            'currentTarget': {'id': self.elm.wdom_id},
+            'target': {'id': self.elm.wdom_id},
         }
         e = create_event(msg)
         self.assertEqual(e.type, 'event')
@@ -147,8 +147,8 @@ class TestCreateEventMsg(TestCase):
     def test_event_from_msg(self):
         msg = {
             'type': 'event',
-            'currentTarget': {'id': self.elm.rimo_id},
-            'target': {'id': self.elm.rimo_id},
+            'currentTarget': {'id': self.elm.wdom_id},
+            'target': {'id': self.elm.wdom_id},
         }
         e = create_event_from_msg(msg)
         self.assertEqual(e.type, 'event')
@@ -161,8 +161,8 @@ class TestCreateEventMsg(TestCase):
         msg = {
             'proto': 'MouseEvent',
             'type': 'event',
-            'currentTarget': {'id': self.elm.rimo_id},
-            'target': {'id': self.elm.rimo_id},
+            'currentTarget': {'id': self.elm.wdom_id},
+            'target': {'id': self.elm.wdom_id},
         }
         e = create_event_from_msg(msg)
         self.assertEqual(e.type, 'event')

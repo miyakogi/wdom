@@ -1,10 +1,10 @@
-/* rimo v0.0.1 alpha, @lisence MIT, copyright 2016, miyakogi */
+/* wdom.js v0.1.0 alpha, @lisence MIT, copyright 2016, miyakogi */
 
 ;(function(window, undefined){
   'use strict';
   // Define global object
-  const rimo = { version: '0.0.1', settings: {}, log: { level: 0 }}
-  const config_prefix = 'RIMO_'
+  const wdom = { version: '0.1.0', settings: {}, log: { level: 0 }}
+  const config_prefix = 'WDOM_'
 
   const log_levels = {
     FATAL: 50,
@@ -36,15 +36,15 @@
     }
 
     // Get unknown log level
-    console.warn(rimo.settings.LOG_PREFIX + `unknown log level: ${level}`)
+    console.warn(wdom.settings.LOG_PREFIX + `unknown log level: ${level}`)
     return 0
   }
 
   function set_default(key, defval) {
     if (config_prefix + key in window) {
-      rimo.settings[key] = window[config_prefix + key]
+      wdom.settings[key] = window[config_prefix + key]
     } else {
-      rimo.settings[key] = defval
+      wdom.settings[key] = defval
     }
   }
 
@@ -54,49 +54,49 @@
     } else if (id === 'document') {
       return document
     } else {
-      return document.querySelector(`[rimo_id="${id}"]`)
+      return document.querySelector(`[wdom_id="${id}"]`)
     }
   }
 
-  function get_rimo_id(node) {
+  function get_wdom_id(node) {
     if (node === window) {
       return 'window'
     } else if (node === document) {
       return 'document'
     } else {
-      return node.getAttribute('rimo_id')
+      return node.getAttribute('wdom_id')
     }
   }
 
-  function is_rimo_node(node) {
-    return  node === document || node === window || node.hasAttribute('rimo_id')
+  function is_wdom_node(node) {
+    return  node === document || node === window || node.hasAttribute('wdom_id')
   }
 
   function node_mounted(node) {
-    if (!is_rimo_node(node)) { return }
-    rimo.send_event({type: 'mount', target: node, currentTarget: node})
+    if (!is_wdom_node(node)) { return }
+    wdom.send_event({type: 'mount', target: node, currentTarget: node})
     if (element_with_value.indexOf(node.tagName) >= 0) {
-      node.addEventListener('input', rimo.send_event, false)
-      node.addEventListener('change', rimo.send_event, false)
+      node.addEventListener('input', wdom.send_event, false)
+      node.addEventListener('change', wdom.send_event, false)
     }
   }
 
   function node_unmounted(node) {
-    if (!is_rimo_node(node)) { return }
-    rimo.send_event({type: 'unmount', target: node, currentTarget: node})
+    if (!is_wdom_node(node)) { return }
+    wdom.send_event({type: 'unmount', target: node, currentTarget: node})
   }
 
   function mutation_handler(m) {
     let i, node
     for (i=0; i < m.addedNodes.length; i++) {
       node = m.addedNodes[i]
-      if (node && node.nodeType === Node.ELEMENT_NODE && node.hasAttribute('rimo_id')) {
+      if (node && node.nodeType === Node.ELEMENT_NODE && node.hasAttribute('wdom_id')) {
         node_mounted(node)
       }
     }
     for (i=0; i < m.removedNodes.length; i++) {
       node = m.addedNodes[i]
-      if (node && node.nodeType === Node.ELEMENT_NODE && node.hasAttribute('rimo_id')) {
+      if (node && node.nodeType === Node.ELEMENT_NODE && node.hasAttribute('wdom_id')) {
         node_unmounted(node)
       }
     }
@@ -118,12 +118,12 @@
 
   function ws_onopen() {
     // Start msg sending loop
-    rimo.msg_loop()
+    wdom.msg_loop()
     // Send pending events
-    rimo.pending_msgs.forEach(function(msg) {
-      rimo.push_msg(msg)
+    wdom.pending_msgs.forEach(function(msg) {
+      wdom.push_msg(msg)
     })
-    rimo.pending_msgs = []
+    wdom.pending_msgs = []
   }
 
   function ws_onmessage(e) {
@@ -144,14 +144,14 @@
           let node = get_node(msg.id)
             if (!node) {
               // node not found. send warning.
-              rimo.log.console('warn', `gat message to unknown node (id=${msg.id}).\n Message: ${msg}`)
-              rimo.log.warn(`unknown node: id=${msg.id}, method=${msg.method}`)
+              wdom.log.console('warn', `gat message to unknown node (id=${msg.id}).\n Message: ${msg}`)
+              wdom.log.warn(`unknown node: id=${msg.id}, method=${msg.method}`)
             } else {
-              rimo.exec(node, msg.method, msg.params)
+              wdom.exec(node, msg.method, msg.params)
             }
         }, 100)
       } else {
-        rimo.exec(node, msg.method, msg.params)
+        wdom.exec(node, msg.method, msg.params)
       }
     }
   }
@@ -174,9 +174,9 @@
           } else {
             _retry += 1
             if (_retry < 100) {
-              setTimeout(open, rimo.settings.RELOAD_WAIT)
+              setTimeout(open, wdom.settings.RELOAD_WAIT)
             } else {
-              rimo.log.console('error', 'Server auto-reload failed.')
+              wdom.log.console('error', 'Server auto-reload failed.')
             }
           }
         }
@@ -186,102 +186,102 @@
       open()
     }
 
-    if (rimo.settings.AUTORELOAD) {
-      rimo.log.console('info', 'RootWS closed, reloading page...')
-      setTimeout(reload, rimo.settings.RELOAD_WAIT)
+    if (wdom.settings.AUTORELOAD) {
+      wdom.log.console('info', 'RootWS closed, reloading page...')
+      setTimeout(reload, wdom.settings.RELOAD_WAIT)
     } else {
-      rimo.log.console('RootWS CLOSED');
+      wdom.log.console('RootWS CLOSED');
     }
   }
 
   function initialize() {
     // Define default variables
-    const __ws_url = 'ws://' + location.host + '/rimo_ws'
+    const __ws_url = 'ws://' + location.host + '/wdom_ws'
     set_default('DEBUG', false)
     set_default('AUTORELOAD', false)
     set_default('RELOAD_WAIT', 100)
     set_default('MESSAGE_WAIT', 0.005)
     set_default('LOG_LEVEL', 'WARN')
-    set_default('LOG_PREFIX', 'rimo: ')
+    set_default('LOG_PREFIX', 'wdom: ')
     set_default('LOG_CONSOLE', false)
     set_default('WS_URL', __ws_url)
-    rimo.log.set_level(rimo.settings.LOG_LEVEL)
+    wdom.log.set_level(wdom.settings.LOG_LEVEL)
 
     // Make root WebScoket connection
-    rimo.ws = new WebSocket(rimo.settings.WS_URL)
-    rimo.ws.addEventListener('open', ws_onopen, false)
-    rimo.ws.addEventListener('message', ws_onmessage, false)
-    rimo.ws.addEventListener('close', ws_onclose, false)
+    wdom.ws = new WebSocket(wdom.settings.WS_URL)
+    wdom.ws.addEventListener('open', ws_onopen, false)
+    wdom.ws.addEventListener('message', ws_onmessage, false)
+    wdom.ws.addEventListener('close', ws_onclose, false)
 
     node_mounted(document)
     node_mounted(window)
   }
 
-  rimo.exec = function(node, method, params) {
+  wdom.exec = function(node, method, params) {
     // Execute fucntion with msg
     setTimeout(function() {
       const args = [node].concat(params)
-      rimo[method].apply(rimo, args)
+      wdom[method].apply(wdom, args)
     }, 0)
   }
 
-  rimo.eval = function(node, script) {
+  wdom.eval = function(node, script) {
     // Execute fucntion with msg
     setTimeout(function() {
       try {
         eval(script)
       }
       catch (e) {
-        rimo.log.error(e.toString())
-        rimo.log.console('error', e.toString())
+        wdom.log.error(e.toString())
+        wdom.log.console('error', e.toString())
       }
     }.bind(node), 0)
   }
 
-  rimo.pending_msgs = []
-  rimo.msg_queue = []
+  wdom.pending_msgs = []
+  wdom.msg_queue = []
 
-  rimo.push_msg = function(msg) {
-    rimo.msg_queue.push(msg)
+  wdom.push_msg = function(msg) {
+    wdom.msg_queue.push(msg)
   }
 
-  rimo.msg_loop = function() {
+  wdom.msg_loop = function() {
     setTimeout(function() {
-      if (rimo.msg_queue.length > 0) {
-        const msg = JSON.stringify(rimo.msg_queue)
-        rimo.msg_queue.length = 0
-        rimo.send(msg)
+      if (wdom.msg_queue.length > 0) {
+        const msg = JSON.stringify(wdom.msg_queue)
+        wdom.msg_queue.length = 0
+        wdom.send(msg)
       }
-      rimo.msg_loop()
-    }, rimo.settings.MESSAGE_WAIT)
+      wdom.msg_loop()
+    }, wdom.settings.MESSAGE_WAIT)
   }
 
-  rimo.send = function(msg, retry) {
-    if ('ws' in rimo) {
-      if (rimo.ws.readyState ===  1) { 
-        rimo.ws.send(msg)
+  wdom.send = function(msg, retry) {
+    if ('ws' in wdom) {
+      if (wdom.ws.readyState ===  1) { 
+        wdom.ws.send(msg)
       } else {
         retry = retry ? retry + 1 : 1
         if (retry < 5) {
-          setTimeout(function() { rimo.send(msg, retry) }, 200)
+          setTimeout(function() { wdom.send(msg, retry) }, 200)
         } else {
-          setTimeout(function() { rimo.send(msg) }, 200)
+          setTimeout(function() { wdom.send(msg) }, 200)
         }
       }
     } else {
-      rimo.pending_msgs.push(msg)
+      wdom.pending_msgs.push(msg)
     }
   }
 
   // send response
-  rimo.send_response = function(node, reqid, data) {
+  wdom.send_response = function(node, reqid, data) {
     const msg = {
       type: 'response',
-      id: get_rimo_id(node),
+      id: get_wdom_id(node),
       reqid: reqid,
       data: data
     }
-    rimo.push_msg(msg)
+    wdom.push_msg(msg)
   }
 
   /* Event control */
@@ -296,12 +296,12 @@
       'repeat', 'shiftKey'],
   }
   let _data_transfer_id = 1
-  rimo.send_event = function(e) {
+  wdom.send_event = function(e) {
     // Catch currentTarget here. In callback, it becomes different node or null,
     // since event bubbles up.
     const currentTarget = e.currentTarget
     const target = e.target
-    if (!is_rimo_node(currentTarget)) { return }
+    if (!is_wdom_node(currentTarget)) { return }
 
     // define func here to capture e and event
     function copy_event_attrs(event_class) {
@@ -315,15 +315,15 @@
         proto: event.__proto__.toString(),
         type: event.type,
         currentTarget: {
-          id: rimo_id of the currentTarget,
+          id: wdom_id of the currentTarget,
           ...,  // some info of the currentTarget, like value/checked
         },
         target: {
-          id: rimo_id of the currentTarget,
+          id: wdom_id of the currentTarget,
           ...,  // some info of the target
         },
         dataTransfer: {
-          id: data transfer id for rimo,
+          id: data transfer id for wdom,
           ..., // data if exists
         },
         ..., // event specific fields
@@ -333,14 +333,14 @@
     const event = {
       'proto': proto,
       'type': e.type,
-      'currentTarget': {'id': get_rimo_id(currentTarget)},
-      'target': {'id': get_rimo_id(e.target)}
+      'currentTarget': {'id': get_wdom_id(currentTarget)},
+      'target': {'id': get_wdom_id(e.target)}
     }
 
     // Mouse Event
     if (e instanceof MouseEvent) {
       if (e.relatedTarget !== null) {
-        event.relatedTarget = {id: get_rimo_id(e.relatedTarget)}
+        event.relatedTarget = {id: get_wdom_id(e.relatedTarget)}
       } else {
         event.relatedTarget = null
       }
@@ -361,12 +361,12 @@
       const dt = e.dataTransfer
       if (e.type === 'dragstart') {
         const _id = _data_transfer_id.toString()
-        dt.setData('rimo/id', _id)
+        dt.setData('wdom/id', _id)
         currentTarget.__dt_id = _id
         currentTarget.__dragged = true
         _data_transfer_id += 1
       }
-      event.dataTransfer.id = dt.getData('rimo/id') || currentTarget.__dt_id || ''
+      event.dataTransfer.id = dt.getData('wdom/id') || currentTarget.__dt_id || ''
       if (e.type === 'dragend' && currentTarget.__dragged) {
         delete currentTarget.__dragged
         delete currentTarget.__dt_id
@@ -393,7 +393,7 @@
       const len = currentTarget.selectedOptions.length
       for (let i=0; i < len; i++) {
         let opt = currentTarget.selectedOptions[i]
-        selected.push(get_rimo_id(opt))
+        selected.push(get_wdom_id(opt))
       }
       event.currentTarget.selectedOptions = selected
     }
@@ -402,23 +402,23 @@
         msg = {
           type: 'event',
           event: event object,
-          id: rimo_id of the currentTarget,
+          id: wdom_id of the currentTarget,
         }
     */
     const msg = {
       type: 'event',
       event: event,
-      id: get_rimo_id(currentTarget)
+      id: get_wdom_id(currentTarget)
     }
-    rimo.push_msg(msg)
+    wdom.push_msg(msg)
   }
 
   // Add event listener
-  rimo.addEventListener = function(node, event) {
-    node.addEventListener(event, rimo.send_event, false)
+  wdom.addEventListener = function(node, event) {
+    node.addEventListener(event, wdom.send_event, false)
     if (event === 'dragstart') {
       // Send drag-end signal to remove data on dataTransfer on server
-      node.addEventListener('dragend', rimo.send_event, false)
+      node.addEventListener('dragend', wdom.send_event, false)
     } else if (event === 'drop') {
       node.addEventListener('dragover', function(e) {
         e.preventDefault()  // Necessary to enable drop.
@@ -426,12 +426,12 @@
     }
   }
 
-  rimo.removeEventListener = function(node, event) {
-    node.removeEventListener(event, rimo.send_event)
+  wdom.removeEventListener = function(node, event) {
+    node.removeEventListener(event, wdom.send_event)
   }
 
   /* DOM control */
-  rimo.insert = function(node, ind, html) {
+  wdom.insert = function(node, ind, html) {
     const index = Number(ind)
     if (!node.hasChildNodes() || index >= node.childNodes.length) {
       node.insertAdjacentHTML('beforeend', html)
@@ -449,33 +449,33 @@
     }
   }
 
-  rimo.insertAdjacentHTML = function(node, position, html) {
+  wdom.insertAdjacentHTML = function(node, position, html) {
     node.insertAdjacentHTML(position, html)
   }
 
-  rimo.textContent = function(node, text) {
+  wdom.textContent = function(node, text) {
     node.textContent = text
   }
 
-  rimo.innerHTML = function(node, html) {
+  wdom.innerHTML = function(node, html) {
     node.innerHTML = html
   }
 
-  rimo.outerHTML = function(node, html) {
+  wdom.outerHTML = function(node, html) {
     node.outerHTML = html
   }
 
-  rimo.removeChildById = function(node, id) {
+  wdom.removeChildById = function(node, id) {
     const child = get_node(id)
     if (child) { node.removeChild(child) }
   }
 
-  rimo.removeChildByIndex = function(node, index) {
+  wdom.removeChildByIndex = function(node, index) {
     const child = node.childNodes.item(index)
     if (child) { node.removeChild(child) }
   }
 
-  rimo.replaceChildById = function(node, html, id) {
+  wdom.replaceChildById = function(node, html, id) {
     const old_child = get_node(id)
     if (old_child) {
       old_child.insertAdjacentHTML('beforebegin', html)
@@ -483,19 +483,19 @@
     }
   }
 
-  rimo.replaceChildByIndex = function(node, html, index) {
+  wdom.replaceChildByIndex = function(node, html, index) {
     const old_child = node.childNodes.item(index)
     if (old_child) {
-      rimo.insert(node, index, html)
+      wdom.insert(node, index, html)
       old_child.parentNode.removeChild(old_child)
     }
   }
 
-  rimo.removeAttribute = function(node, attr) {
+  wdom.removeAttribute = function(node, attr) {
     node.removeAttribute(attr)
   }
 
-  rimo.setAttribute = function(node, attr, value) {
+  wdom.setAttribute = function(node, attr, value) {
     if (attr in node) {
       // some boolean values, like hidden, fail on setAttribute
       node[attr] = value
@@ -504,13 +504,13 @@
     }
   }
 
-  rimo.addClass = function(node, classes) {
+  wdom.addClass = function(node, classes) {
     // I won't support IE and Safari...
     // node.classList.add(...params.classes)
     node.classList.add.apply(node.classList, classes)
   }
 
-  rimo.removeClass = function(node, classes) {
+  wdom.removeClass = function(node, classes) {
     // I won't support IE and Safari...
     // node.classList.remove(...params.classes)
     node.classList.remove.apply(node.classList, classes)
@@ -519,13 +519,13 @@
     }
   }
 
-  rimo.empty = function(node) {
+  wdom.empty = function(node) {
     node.innerHTML = ''
   }
 
-  rimo.getBoundingClientRect = function(node, reqid) {
+  wdom.getBoundingClientRect = function(node, reqid) {
     const rect = node.getBoundingClientRect()
-    rimo.send_response(node, reqid, {
+    wdom.send_response(node, reqid, {
       bottom: rect.bottom,
       height: rect.height,
       left: rect.left,
@@ -536,68 +536,68 @@
   }
 
   /* Event Control */
-  rimo.click = function(node) {
+  wdom.click = function(node) {
     node.click()
   }
 
   /* Window Control */
-  rimo.scroll = function(node, x, y){
+  wdom.scroll = function(node, x, y){
     window.scrollTo(x, y)
   }
 
-  rimo.scrollTo = function(node, x, y){
+  wdom.scrollTo = function(node, x, y){
     window.scrollTo(x, y)
   }
 
-  rimo.scrollBy = function(node, x, y){
+  wdom.scrollBy = function(node, x, y){
     window.scrollBy(x, y)
   }
 
-  rimo.scrollX = function(node, reqid){
-    rimo.send_response(node, reqid, {x: window.scrollX})
+  wdom.scrollX = function(node, reqid){
+    wdom.send_response(node, reqid, {x: window.scrollX})
   }
 
-  rimo.scrollY = function(node, reqid){
-    rimo.send_response(node, reqid, {y: window.scrollY})
+  wdom.scrollY = function(node, reqid){
+    wdom.send_response(node, reqid, {y: window.scrollY})
   }
 
-  rimo.log.log = function(level, message) {
+  wdom.log.log = function(level, message) {
     const msg = {
       type: 'log',
       level: level,
       message: message
     }
 
-    if (rimo.settings.LOG_CONSOLE) {
-      rimo.log.console(level, message)
+    if (wdom.settings.LOG_CONSOLE) {
+      wdom.log.console(level, message)
     }
-    rimo.push_msg(msg)
+    wdom.push_msg(msg)
   }
 
-  rimo.log.console = function(level, message) {
-    if (rimo.log.level <= get_log_level(level) && 'console' in window) {
-      console[level](rimo.settings.LOG_PREFIX + message)
+  wdom.log.console = function(level, message) {
+    if (wdom.log.level <= get_log_level(level) && 'console' in window) {
+      console[level](wdom.settings.LOG_PREFIX + message)
     }
   }
 
-  rimo.log.set_level = function(level) {
-    rimo.log.level = get_log_level(level)
+  wdom.log.set_level = function(level) {
+    wdom.log.level = get_log_level(level)
   }
 
-  rimo.log.error = function(message) {
-    rimo.log.log('error', message)
+  wdom.log.error = function(message) {
+    wdom.log.log('error', message)
   }
 
-  rimo.log.warn = function(message) {
-    rimo.log.log('warn', message)
+  wdom.log.warn = function(message) {
+    wdom.log.log('warn', message)
   }
 
-  rimo.log.info = function(message) {
-    rimo.log.log('info', message)
+  wdom.log.info = function(message) {
+    wdom.log.log('info', message)
   }
 
-  rimo.log.debug = function(message) {
-    rimo.log.log('debug', message)
+  wdom.log.debug = function(message) {
+    wdom.log.log('debug', message)
   }
 
   // Register object to global

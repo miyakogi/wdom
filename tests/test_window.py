@@ -30,8 +30,8 @@ class TestWindow(TestCase):
         self.assertIs(self.win.document, self.doc)
         self.assertIs(self.win, self.doc.defaultView)
 
-    def test_rimo_id(self):
-        self.assertEqual(self.win.rimo_id, 'window')
+    def test_wdom_id(self):
+        self.assertEqual(self.win.wdom_id, 'window')
 
     def test_add_eventlistener(self):
         mock = MagicMock(_is_coroutine=False)

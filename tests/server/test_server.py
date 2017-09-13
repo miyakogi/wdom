@@ -46,7 +46,7 @@ class TestServerBase(HTTPTestCase):
             '--port', str(self.port)
         ] + self.cmd
         self.url = 'http://localhost:{}'.format(self.port)
-        self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
+        self.ws_url = 'ws://localhost:{}/wdom_ws'.format(self.port)
         self.proc = subprocess.Popen(
             cmd, cwd=root,
             stdout=subprocess.PIPE,
@@ -153,8 +153,8 @@ class TestMainHandlerBlank(HTTPTestCase):
             res = await self.fetch(self.url)
         self.assertEqual(res.code, 200)
         _re = re.compile(
-            '<!DOCTYPE html>\s*<html rimo_id="\d+">\s*<head rimo_id="\d+">'
-            '.*<meta .*<title rimo_id="\d+">\s*W-DOM\s*</title>.*'
+            '<!DOCTYPE html>\s*<html wdom_id="\d+">\s*<head wdom_id="\d+">'
+            '.*<meta .*<title wdom_id="\d+">\s*W-DOM\s*</title>.*'
             '</head>\s*<body.*>.*<script.*>.*</script>.*'
             '</body>\s*</html>',
             re.S)
@@ -185,10 +185,10 @@ class TestStaticFileHandler(HTTPTestCase):
     @sync
     async def test_static_file(self) -> None:
         with self.assertLogs('wdom.server', 'INFO'):
-            res = await self.fetch(self.url + '/_static/js/rimo.js')
+            res = await self.fetch(self.url + '/_static/js/wdom.js')
         self.assertEqual(res.code, 200)
-        self.assertIn('rimo', res.text)
-        self.assertIn('rimo.log', res.text)
+        self.assertIn('wdom', res.text)
+        self.assertIn('wdom.log', res.text)
 
     @sync
     async def test_tempdir(self):
@@ -248,7 +248,7 @@ class TestRootWSHandler(HTTPTestCase):
         super().setUp()
         self.start()
         sync(self.wait())
-        self.ws_url = 'ws://localhost:{}/rimo_ws'.format(self.port)
+        self.ws_url = 'ws://localhost:{}/wdom_ws'.format(self.port)
         self.ws = sync(self.ws_connect(self.ws_url))
 
     @sync

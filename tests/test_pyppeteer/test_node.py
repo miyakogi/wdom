@@ -427,7 +427,7 @@ class TestEvent(PyppeteerTestCase):
 
     @sync
     async def test_input(self):
-        await self.page.focus('[rimo_id="{}"]'.format(self.input.rimo_id))
+        await self.page.focus('[wdom_id="{}"]'.format(self.input.wdom_id))
         await self.page.type('abc')
         await self.wait()
         self.assertEqual(self.input_event_mock.call_count, 3)

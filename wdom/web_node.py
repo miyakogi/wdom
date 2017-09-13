@@ -7,6 +7,7 @@ import logging
 import re
 from typing import Any, Awaitable, Dict, Tuple, Union
 from typing import TYPE_CHECKING
+import warnings
 from weakref import WeakValueDictionary
 
 from wdom import server
@@ -19,12 +20,12 @@ if TYPE_CHECKING:
     from typing import Type  # noqa
 
 logger = logging.getLogger(__name__)
-_remove_id_re = re.compile(r' rimo_id="\d+"')
-_RimoIdType = Union[int, str]
+_remove_id_re = re.compile(r' wdom_id="\d+"')
+_WdomIdType = Union[int, str]
 
 
-def remove_rimo_id(html: str) -> str:
-    """Remove ``rimo_id`` attribute from html strings."""
+def remove_wdom_id(html: str) -> str:
+    """Remove ``wdom_id`` attribute from html strings."""
     return _remove_id_re.sub('', html)
 
 
@@ -55,8 +56,8 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
     attributes.
     """
 
-    _elements_with_rimo_id = WeakValueDictionary(
-    )  # type: WeakValueDictionary[_RimoIdType, WdomElement]
+    _elements_with_wdom_id = WeakValueDictionary(
+    )  # type: WeakValueDictionary[_WdomIdType, WdomElement]
     _parser_class = WdomElementParser  # type: Type[ElementParser]
 
     #: str and list of strs are acceptale.
@@ -66,12 +67,21 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
     inherit_class = True
 
     @property
-    def rimo_id(self) -> str:
-        """Get rimo_id attribute.
+    def wdom_id(self) -> str:
+        """Get wdom_id attribute.
 
         This attribute is used to relate python node and browser DOM node.
         """
-        return self.__rimo_id
+        return self.__wdom_id
+
+    @property
+    def rimo_id(self) -> str:
+        """[Deprecated] Alias to `wdom_id`.
+
+        rimo_id is renamed to `wdom_id`.
+        """
+        warnings.warn('rimo_id is renamed to wdom_id.', DeprecationWarning)
+        return self.wdom_id
 
     @property
     def connected(self) -> bool:
@@ -79,15 +89,15 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
         return bool(server.is_connected() and self.ownerDocument)
 
     def __init__(self, *args: Any, parent: 'WdomElement' = None,
-                 rimo_id: _RimoIdType = None,
+                 wdom_id: _WdomIdType = None,
                  **kwargs: Any) -> None:  # noqa: D102
-        if rimo_id is None:
-            self.__rimo_id = str(id(self))
+        if wdom_id is None:
+            self.__wdom_id = str(id(self))
         else:
-            self.__rimo_id = str(rimo_id)
+            self.__wdom_id = str(wdom_id)
         super().__init__(*args, **kwargs)
-        # use super class to set rimo_id
-        self._elements_with_rimo_id[self.rimo_id] = self
+        # use super class to set wdom_id
+        self._elements_with_wdom_id[self.wdom_id] = self
         self.addEventListener('mount', self._on_mount)
         if parent:
             parent.appendChild(self)
@@ -100,15 +110,15 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
 
     # Hanlde attributes
     def _get_attrs_by_string(self) -> str:
-        res = 'rimo_id="{}"'.format(self.rimo_id)
+        res = 'wdom_id="{}"'.format(self.wdom_id)
         attrs = super()._get_attrs_by_string()
         if attrs:
             return ' '.join([res, attrs])
         return res
 
     def _set_attribute(self, attr: str, value: _AttrValueType) -> None:
-        if attr == 'rimo_id':
-            raise ValueError('Cannot change rimo_id')
+        if attr == 'wdom_id':
+            raise ValueError('Cannot change wdom_id')
         super()._set_attribute(attr, value)
 
     def __getitem__(self, attr: Union[str, int]
@@ -242,7 +252,7 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
     def _remove_child_web(self, child: Node) -> Node:
         if child in self.childNodes:
             if isinstance(child, WdomElement):
-                self.js_exec('removeChildById', child.rimo_id)
+                self.js_exec('removeChildById', child.wdom_id)
             else:
                 self.js_exec('removeChildByIndex', self.index(child))
         return child
@@ -259,7 +269,7 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
     def _replace_child_web(self, new_child: Node, old_child: Node) -> None:
         html = self._get_child_html(new_child)
         if isinstance(old_child, WdomElement):
-            self.js_exec('replaceChildById', html, old_child.rimo_id)
+            self.js_exec('replaceChildById', html, old_child.wdom_id)
         elif old_child.parentNode is not None:
             # old_child will be Text Node
             index = old_child.parentNode.index(old_child)
@@ -303,8 +313,8 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
 
     @property
     def html_noid(self) -> str:
-        """Get html representation of this node without rimo_id."""
-        return remove_rimo_id(self.html)
+        """Get html representation of this node without wdom_id."""
+        return remove_wdom_id(self.html)
 
     def click(self) -> None:
         """Send click event."""
@@ -314,8 +324,8 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
             # Web上に表示されてれば勝手にブラウザ側からクリックイベント発生する
             # のでローカルのクリックイベント不要
             msg = {'proto': '', 'type': 'click',
-                   'currentTarget': {'id': self.rimo_id},
-                   'target': {'id': self.rimo_id}}
+                   'currentTarget': {'id': self.wdom_id},
+                   'target': {'id': self.wdom_id}}
             e = create_event(msg)
             self._dispatch_event(e)
 

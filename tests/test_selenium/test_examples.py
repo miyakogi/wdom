@@ -31,7 +31,7 @@ class SimpleTestCase(WebDriverTestCase, TestCase):
 
     def test_page(self):
         tag = self.wd.find_element_by_css_selector(
-            '[rimo_id="{}"]'.format(self.h1.rimo_id))
+            '[wdom_id="{}"]'.format(self.h1.wdom_id))
         self.assertEqual(tag.text, 'TITLE')
 
 

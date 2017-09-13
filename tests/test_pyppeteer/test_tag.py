@@ -126,7 +126,7 @@ class TestInput(PyppeteerTestCase):
             inputs.append(e.data)
 
         self.input.addEventListener('input', input_handler)
-        await self.page.focus('[rimo_id="{}"]'.format(self.input.rimo_id))
+        await self.page.focus('[wdom_id="{}"]'.format(self.input.wdom_id))
         await self.page.type('a')
         await self.wait()
         self.assertEqual(self.input.value, 'a')
@@ -137,7 +137,7 @@ class TestInput(PyppeteerTestCase):
         self.element = await self.get_element_handle(self.input)
         self.assertEqual(await self.get_attribute('value'), 'a')
 
-        await self.page.focus('[rimo_id="{}"]'.format(self.input.rimo_id))
+        await self.page.focus('[wdom_id="{}"]'.format(self.input.wdom_id))
         await self.page.type('d')
         await self.wait()
         # focus on top of the text input
@@ -148,7 +148,7 @@ class TestInput(PyppeteerTestCase):
 
     @sync
     async def test_textarea(self):
-        await self.page.focus('[rimo_id="{}"]'.format(self.textarea.rimo_id))
+        await self.page.focus('[wdom_id="{}"]'.format(self.textarea.wdom_id))
         await self.page.type('abc')
         await self.wait()
         self.element = await self.get_element_handle(self.textarea)
@@ -160,7 +160,7 @@ class TestInput(PyppeteerTestCase):
         await self.wait()
         self.assertEqual(await self.get_text(), 'abc')
 
-        await self.page.focus('[rimo_id="{}"]'.format(self.textarea.rimo_id))
+        await self.page.focus('[wdom_id="{}"]'.format(self.textarea.wdom_id))
         await self.page.type('def')
         await self.wait()
         self.assertEqual(self.textarea.textContent, 'defabc')

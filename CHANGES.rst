@@ -6,7 +6,8 @@ Version 0.3
 Version 0.2.2 (next version)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Move testing module to tests.util
+* Remove testing module from wdom package
+* Rename rimo.js to wdom.js
 
 Version 0.2.1 (2017-08-11)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

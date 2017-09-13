@@ -54,7 +54,7 @@ class PyppeteerTestCase(TestCase):
 
     async def get_element_handle(self, elm):
         result = await self.page.querySelector(
-            '[rimo_id="{}"]'.format(elm.rimo_id))
+            '[wdom_id="{}"]'.format(elm.wdom_id))
         return result
 
     async def get_text(self, elm=None):
@@ -76,6 +76,6 @@ class PyppeteerTestCase(TestCase):
 
     async def wait_for_element(self, elm):
         await self.page.waitForSelector(
-            '[rimo_id="{}"]'.format(elm.rimo_id),
+            '[wdom_id="{}"]'.format(elm.wdom_id),
             {'timeout': 100},
         )
