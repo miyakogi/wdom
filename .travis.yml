@@ -13,17 +13,14 @@ before_script:
   - unzip chromedriver_linux64.zip -d ${TRAVIS_BUILD_DIR}
 
 install:
-  - pip install selenium parameterized syncer coverage green
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install codecov coveralls flake8 mypy; fi
+  - pip install -r requirements-test.txt
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then pip install coverage codecov flake8 mypy; fi
   - pip install ${TRAVIS_BUILD_DIR}
 script:
-  - mkdir maint && cd maint
-  - cp ${TRAVIS_BUILD_DIR}/.green ./
-  - green -R -s 1 ${TRAVIS_BUILD_DIR}
-  - coverage report
-  - cp .coverage ${TRAVIS_BUILD_DIR}
-  - cd ${TRAVIS_BUILD_DIR}
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then flake8 setup.py wdom; fi
+  - if [[ ! $TRAVIS_PYTHON_VERSION == 3.6* ]]; then python -m unittest discover -t . -s tests; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then coverage run -m unittest discover -t . -s tests; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then coverage report; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then flake8 setup.py wdom tests; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then mypy wdom; fi
 after_success:
-  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then codecov -b $TRAVIS_BRANCH && coveralls; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 3.6* ]]; then codecov -b $TRAVIS_BRANCH; fi

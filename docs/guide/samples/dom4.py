@@ -7,7 +7,7 @@ if __name__ == '__main__':
     h1.textContent = 'Hello, WDOM'
     input = document.createElement('textarea')
     def update(event):
-        h1.textContent = event.target.value
+        h1.textContent = event.currentTarget.value
     input.addEventListener('input', update)
     document.body.appendChild(input)
     document.body.appendChild(h1)

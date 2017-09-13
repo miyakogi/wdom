@@ -96,7 +96,7 @@ class Application(web.Application):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Initialize application."""
         super().__init__(
-            [(r'/', MainHandler), (r'/rimo_ws', WSHandler)],
+            [(r'/', MainHandler), (r'/wdom_ws', WSHandler)],
             *args,
             debug=config.debug,
             autoreload=False,
@@ -171,16 +171,10 @@ def set_application(app: Application) -> None:
 
 
 def start_server(app: web.Application = None, port: int = None,
-                 browser: str = None, address: str = None,
-                 check_time: int = 500, **kwargs: Any) -> HTTPServer:
+                 address: str = None, **kwargs: Any) -> HTTPServer:
     """Start server with ``app`` on ``localhost:port``.
 
     If port is not specified, use command line option of ``--port``.
-
-    If ``browser`` is not specified, do not open the page. When ``browser`` is
-    specified, open the page with the specified browser. The specified browser
-    name is not registered in ``webbrowser`` module, or, for example it is just
-    ``True``, use system's default browser to open the page.
     """
     app = app or get_app()
     port = port if port is not None else config.port

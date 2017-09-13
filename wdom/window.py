@@ -115,7 +115,7 @@ class Window(WebEventTarget):
         return self._custom_elements
 
     @property
-    def rimo_id(self) -> str:  # noqa: D102
+    def wdom_id(self) -> str:  # noqa: D102
         return 'window'
 
     @property

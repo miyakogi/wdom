@@ -1,13 +1,16 @@
 Application and Server
 ======================
 
-WDOM applications consist of a single html document and a web server.
+WDOM applications consist of a single html :py:class:`Document` and a web server.
 
 
 HTML Document Object
 --------------------
 
 .. currentmodule:: wdom.document
+
+.. autoclass:: wdom.document.WdomDocument
+   :members:
 
 .. autofunction:: wdom.document.get_new_document
 

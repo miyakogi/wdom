@@ -3,8 +3,8 @@
 
 """Document class and its helper functions.
 
-{} module also provides a deafult root-document object.
-""".format(__name__)
+This module also provides a deafult root-document object.
+"""
 
 import os
 import tempfile
@@ -33,19 +33,20 @@ def getElementById(id: str) -> Optional[Node]:
     return elm
 
 
-def getElementByRimoId(id: str) -> Optional[WebEventTarget]:
-    """Get element with ``rimo_id``."""
+def getElementByWdomId(id: str) -> Optional[WebEventTarget]:
+    """Get element with ``wdom_id``."""
     if not id:
         return None
     elif id == 'document':
         return get_document()
     elif id == 'window':
         return get_document().defaultView
-    elm = WdomElement._elements_with_rimo_id.get(id)
+    elm = WdomElement._elements_with_wdom_id.get(id)
     return elm
 
 
 def _cleanup(path: str) -> None:
+    """Cleanup temporary directory."""
     if os.path.isdir(path):
         shutil.rmtree(path)
 
@@ -85,7 +86,7 @@ def _find_tag(elm: Node, tag: str) -> Optional[Node]:
 
 
 class Document(Node, ParentNode, EventTarget):
-    """Base Document class."""
+    """Base class for Document node."""
 
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
@@ -98,7 +99,7 @@ class Document(Node, ParentNode, EventTarget):
                  doctype: str = 'html',
                  default_class: type = HTMLElement,
                  **kwargs: Any) -> None:
-        """Generate new Document node.
+        """Create new Document node.
 
         :arg str doctype: Document type of this document.
         :arg type default_class: Default class created by
@@ -211,7 +212,7 @@ class WdomDocument(Document, WebEventTarget):
     """Main document class for WDOM applications."""
 
     @property
-    def rimo_id(self) -> str:  # noqa: D102
+    def wdom_id(self) -> str:  # noqa: D102
         return 'document'
 
     @property
@@ -234,17 +235,18 @@ class WdomDocument(Document, WebEventTarget):
         """Create new document object for WDOM application.
 
         .. caution::
-        Don't create new document from :class:`WdomDocument` class constructor.
-        Use :func:`get_new_document` function instead.
+
+            Don't create new document from :class:`WdomDocument` class
+            constructor. Use :func:`get_new_document` function instead.
 
         :arg str doctype: doctype of the document (default: html).
         :arg str title: title of the document.
         :arg str charset: charset of the document.
         :arg type default_class: Set default Node class of the document. This
-            class is used when make node by ``createElement`` method.
+            class is used when make node by :py:meth:`createElement()`
         :arg bool autoreload: Enable/Disable autoreload (default: False).
         :arg float reload_wait: How long (seconds) wait to reload. This
-            parameter is only used when ``autoreload`` is enabled.
+            parameter is only used when autoreload is enabled.
         """
         self.__tempdir = _tempdir = tempfile.mkdtemp()
         self._finalizer = weakref.finalize(self,  # type: ignore
@@ -268,25 +270,25 @@ class WdomDocument(Document, WebEventTarget):
 
         if autoreload:
             ar_script = []
-            ar_script.append('var RIMO_AUTORELOAD = true')
+            ar_script.append('var WDOM_AUTORELOAD = true')
             if self._reload_wait is not None:
-                ar_script.append('var RIMO_RELOAD_WAIT = {}'.format(
+                ar_script.append('var WDOM_RELOAD_WAIT = {}'.format(
                     self._reload_wait))
             self._autoreload_script.textContent = '\n{}\n'.format(
                 '\n'.join(ar_script))
 
-    def getElementByRimoId(self, id: Union[str]) -> Optional[WebEventTarget]:
-        """Get element by ``rimo_id``.
+    def getElementByWdomId(self, id: Union[str]) -> Optional[WebEventTarget]:
+        """Get an element node with ``wdom_id``.
 
         If this document does not have the element with the id, return None.
         """
-        elm = getElementByRimoId(id)
+        elm = getElementByWdomId(id)
         if elm and elm.ownerDocument is self:
             return elm
         return None
 
     def add_jsfile(self, src: str) -> None:
-        """Add JS file to load at this document's bottom."""
+        """Add JS file to load at this document's bottom of the body."""
         self.body.appendChild(Script(src=src))
 
     def add_jsfile_head(self, src: str) -> None:
@@ -294,15 +296,25 @@ class WdomDocument(Document, WebEventTarget):
         self.head.appendChild(Script(src=src))
 
     def add_cssfile(self, src: str) -> None:
-        """Add CSS file to load at this document's bottom."""
+        """Add CSS file to load at this document's header."""
         self.head.appendChild(Link(rel='stylesheet', href=src))
 
     def add_header(self, header: str) -> None:
-        """Add CSS file to load at this document's header."""
+        """Insert header tag staring at this document's header.
+
+        :arg str header: tag to insert <head> ~ </head> area.
+        """
         self.head.appendChild(RawHtml(header))
 
     def register_theme(self, theme: ModuleType) -> None:
-        """Set theme."""
+        """Set theme for this docuemnt.
+
+        This method sets theme's js/css files and headers on this document.
+
+        :arg ModuleType theme: a module which has ``js_files``, ``css_files``,
+            ``headers``, and ``extended_classes``. see ``wdom.themes``
+            directory actual theme module structures.
+        """
         if not hasattr(theme, 'css_files'):
             raise ValueError('theme module must include `css_files`.')
         for css in getattr(theme, 'css_files', []):
@@ -321,7 +333,7 @@ class WdomDocument(Document, WebEventTarget):
 
 
 def get_new_document(  # noqa: C901
-        include_rimo: bool = True,
+        include_wdom_js: bool = True,
         include_skeleton: bool = False,
         include_normalizecss: bool = False,
         autoreload: bool = None,
@@ -335,7 +347,7 @@ def get_new_document(  # noqa: C901
         **kwargs: Any) -> Document:
     """Create new :class:`Document` object with options.
 
-    :arg bool include_rimo: Include rimo.js file. Usually should be True.
+    :arg bool include_wdom_js: Include wdom.js file. Usually should be True.
     :arg bool include_skeleton: Include skelton.css.
     :arg bool include_normalizecss: Include normalize.css.
     :arg bool autoreload: Enable autoreload flag. This flag overwrites
@@ -348,7 +360,7 @@ def get_new_document(  # noqa: C901
     :arg str log_prefix: Prefix of log outputs.
     :arg bool log_console: Flag to show wdom log on browser console.
     :arg str ws_url: URL string to the ws url.
-        Default: ``ws://localhost:8888/rimo_ws``.
+        Default: ``ws://localhost:8888/wdom_ws``.
     :arg float message_wait: Duration (seconds) to send WS messages.
     :arg Callable document_factory: Factory function/class to create Document
         object.
@@ -366,31 +378,30 @@ def get_new_document(  # noqa: C901
         message_wait = config.message_wait
 
     log_script = []
-    log_script.append('var RIMO_MESSAGE_WAIT = {}'.format(message_wait))
+    log_script.append('var WDOM_MESSAGE_WAIT = {}'.format(message_wait))
     if isinstance(log_level, str):
-        log_script.append('var RIMO_LOG_LEVEL = \'{}\''.format(log_level))
+        log_script.append('var WDOM_LOG_LEVEL = \'{}\''.format(log_level))
     elif isinstance(log_level, int):
-        log_script.append('var RIMO_LOG_LEVEL = {}'.format(log_level))
+        log_script.append('var WDOM_LOG_LEVEL = {}'.format(log_level))
     if log_prefix:
-        log_script.append('var RIMO_LOG_PREFIX = \'{}\''.format(log_prefix))
+        log_script.append('var WDOM_LOG_PREFIX = \'{}\''.format(log_prefix))
     if log_console:
-        log_script.append('var RIMO_LOG_CONSOLE = true')
+        log_script.append('var WDOM_LOG_CONSOLE = true')
     if log_script:
         _s = Script(parent=document.head)
         _s.textContent = '\n{}\n'.format('\n'.join(log_script))
 
     if ws_url:
         _s = Script(parent=document.head)
-        _s.textContent = '\nvar RIMO_WS_URL = \'{}\'\n'.format(ws_url)
+        _s.textContent = '\nvar WDOM_WS_URL = \'{}\'\n'.format(ws_url)
 
-    if include_rimo:
-        document.add_jsfile_head('_static/js/rimo/rimo.js')
+    if include_wdom_js:
+        document.add_jsfile_head('_static/js/wdom.js')
 
     return document
 
 
-# get_document = get_new_document
-def get_document(*args: Any, **kwargs: Any) -> Document:
+def get_document() -> Document:
     """Get current root document object.
 
     :rtype: Document
@@ -408,7 +419,10 @@ def set_document(new_document: Document) -> None:
 
 
 def set_app(app: Tag) -> None:
-    """Set root ``Tag`` as applicaion to the current root document."""
+    """Set ``Tag`` as applicaion to the current root document.
+
+    Equivalent to ``get_document().body.prepend(app)``.
+    """
     document = get_document()
     document.body.prepend(app)
 

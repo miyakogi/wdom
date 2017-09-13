@@ -1,2 +1,3 @@
 [run]
-omit=wdom/themes/*,wdom/examples/*,wdom/__main__.py
+omit=*/themes/*,*/examples/*,wdom/__main__.py,setup.py
+source=wdom

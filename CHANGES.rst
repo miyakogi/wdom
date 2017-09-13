@@ -1,7 +1,10 @@
-Version 0.2
+Version 0.3
 -----------
 
-Version 0.2.0 (2017-08-11)
+* Remove testing module from wdom package
+* Rename rimo.js to wdom.js
+
+Version 0.2.1 (2017-08-11)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Change metadata

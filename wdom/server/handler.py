@@ -33,11 +33,11 @@ def create_event_from_msg(msg: EventMsgDict) -> Event:
             'proto': 'event.__proto__.toString()',
             'type': 'event type',
             'currentTarget': {
-                'id': 'rimo_id of target node',
+                'id': 'wdom_id of target node',
                 ... (additional information),
                 },
             'target': {
-                'id': 'rimo_id of target node',
+                'id': 'wdom_id of target node',
                 ... (additional information),
                 },
             ...,  // event specific fields
@@ -52,7 +52,7 @@ def event_handler(msg: EventMsgDict) -> Event:
     if e.currentTarget is None:
         if e.type not in ['mount', 'unmount']:
             id = msg['currentTarget']['id']
-            logger.warning('No such element: rimo_id={}'.format(id))
+            logger.warning('No such element: wdom_id={}'.format(id))
         return e
     e.currentTarget.on_event_pre(e)
     e.currentTarget.dispatchEvent(e)
@@ -61,13 +61,13 @@ def event_handler(msg: EventMsgDict) -> Event:
 
 def response_handler(msg: Dict[str, str]) -> None:
     """Handle response sent by browser."""
-    from wdom.document import getElementByRimoId
+    from wdom.document import getElementByWdomId
     id = msg['id']
-    elm = getElementByRimoId(id)
+    elm = getElementByWdomId(id)
     if elm:
         elm.on_response(msg)
     else:
-        logger.warning('No such element: rimo_id={}'.format(id))
+        logger.warning('No such element: wdom_id={}'.format(id))
 
 
 def on_websocket_message(message: str) -> None:

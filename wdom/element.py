@@ -954,7 +954,7 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
             _selected = ct_msg.get('selectedOptions', [])
             self._selected_options.clear()
             for opt in self.options:
-                if opt.rimo_id in _selected:
+                if opt.wdom_id in _selected:
                     self._selected_options.append(opt)
                     opt._set_attribute('selected', True)
                 else:

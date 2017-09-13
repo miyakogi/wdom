@@ -6,16 +6,16 @@ Data binding example
 '''
 
 from wdom import server
-from wdom.document import set_app, getElementByRimoId
+from wdom.document import set_app, getElementByWdomId
 from wdom.themes import Div
 
 
 def dragstart(e):
-    e.dataTransfer.setData('text/plain', e.currentTarget.rimo_id)
+    e.dataTransfer.setData('text/plain', e.currentTarget.wdom_id)
 
 
 def drop(e):
-    start_elm = getElementByRimoId(e.dataTransfer.getData('text/plain'))
+    start_elm = getElementByWdomId(e.dataTransfer.getData('text/plain'))
     current_color = e.currentTarget.style['background-color']
     start_color = start_elm.style['background-color']
     start_elm.style['background-color'] = current_color

@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Event related classes."""
+"""Event classes.
+
+Event representes events which take plase on browser DOM.
+
+Usually users don't need to instantiate these classes directly.
+"""
 
 from asyncio import ensure_future, iscoroutinefunction, Future
 from collections import defaultdict, OrderedDict
@@ -90,7 +95,7 @@ class DataTransfer:
 
 
 class Event:
-    """Event interface class."""
+    """Base class of Event classes."""
 
     @property
     def currentTarget(self) -> Optional['WebEventTarget']:
@@ -109,14 +114,14 @@ class Event:
         Second optional argument (init) is a dictionally, which has fields for
         this event's status.
         """
-        from wdom.document import getElementByRimoId
+        from wdom.document import getElementByWdomId
         self.type = type
         self.init = dict() if init is None else init
         _id = self.init.get('currentTarget', {'id': None}).get('id')
-        ctarget = getElementByRimoId(_id)
+        ctarget = getElementByWdomId(_id)
         self.__currentTarget = ctarget
         _id = self.init.get('target', {'id': None}).get('id')
-        self.__target = getElementByRimoId(_id) or ctarget
+        self.__target = getElementByWdomId(_id) or ctarget
 
     def stopPrapagation(self) -> None:
         """Not implemented yet."""
@@ -133,7 +138,20 @@ class UIEvent(Event):  # noqa: D204
 
 
 class MouseEvent(UIEvent):  # noqa: D204
-    """Mouse event class."""
+    """Mouse event class.
+
+    Event types generate this event class are ``click``, ``dblclick``,
+    ``mouseup``, and ``mousedown``.
+
+    This class has the following attributes:
+
+    altKey, button, clientX, clientY, ctrlKey, metaKey, movementX, movementY,
+    offsetX, offsetY, pageX, pageY, region, screenX, screenY, shiftKey, x, y
+
+    For details of the attributes, see
+    `MouseEvent - Web APIs | MDN
+    <https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent>`_
+    """
     attrs = ['altKey', 'button', 'clientX', 'clientY', 'ctrlKey', 'metaKey',
              'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY',
              'region', 'screenX', 'screenY', 'shiftKey', 'x', 'y']
@@ -145,20 +163,25 @@ class MouseEvent(UIEvent):  # noqa: D204
         rt = self.init.get('relatedTarget') or {'id': None}
         rid = rt.get('id')
         if rid is not None:
-            from wdom.document import getElementByRimoId
-            self.relatedTarget = getElementByRimoId(rid)
+            from wdom.document import getElementByWdomId
+            self.relatedTarget = getElementByWdomId(rid)
         else:
             self.relatedTarget = None
 
 
 class DragEvent(MouseEvent):  # noqa: D204
-    """Drag event class."""
+    """Drag event class.
+
+    This class inherits :py:class:`MouseEvent` class and has own attribute
+    `dataTransfer`, which is :py:class:`DataTransfer` containing data send by
+    this drag event.
+
+    Event types generate this event class are ``drag``, ``dragend``,
+    ``dragenter``, ``dragexit``, ``dragleave``, ``dragover``, ``dragstart``,
+    and ``drop``.
+    """
 
     def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
-        """Initialize DragEvent.
-
-        Set DataTransfer with id, if exists.
-        """
         super().__init__(type, init)
         dt_id = self.init.get('dataTransfer', {'id', ''}).get('id')
         if not dt_id:
@@ -171,12 +194,23 @@ class DragEvent(MouseEvent):  # noqa: D204
 
 
 class KeyboardEvent(UIEvent):  # noqa: D204
-    """Keyboard event class."""
+    """Keyboard event class.
+
+    Event types generate this event class are ``keydown``, ``keypress``, and
+    ``keyup``.
+
+    This class has the following attributes:
+
+    altKey, code, ctrlKey, key, locale, metaKey, repeat, shiftKey
+
+    For details of the attributes, see
+    `KeyboardEvent - Web APIs | MDN
+    <https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent>`_
+    """
     attrs = ['altKey', 'code', 'ctrlKey', 'key', 'locale', 'metaKey', 'repeat',
              'shiftKey']
 
     def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
-        """Initialize DragEvent and set attributes."""
         super().__init__(type, init)
         for attr in self.attrs:
             setattr(self, attr, self.init.get(attr))
@@ -332,7 +366,7 @@ class WebEventTarget(EventTarget):
     """Mixin class for web connection controll."""
 
     @property
-    def rimo_id(self) -> str:
+    def wdom_id(self) -> str:
         """Return ID used to relate python node and browser DOM node."""
         raise NotImplementedError
 
@@ -389,7 +423,7 @@ class WebEventTarget(EventTarget):
         from wdom import server
         if self.ownerDocument is not None:
             obj['target'] = 'node'
-            obj['id'] = self.rimo_id
+            obj['id'] = self.wdom_id
             server.push_message(obj)
 
     # Event Handling

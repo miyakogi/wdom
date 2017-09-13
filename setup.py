@@ -15,7 +15,7 @@ tests_require = ['parameterized', 'selenium', 'syncer']
 
 setup(
     name='wdom',
-    version='0.2.1',
+    version='0.3.0',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
@@ -25,7 +25,6 @@ setup(
         'wdom',
         'wdom.examples',
         'wdom.server',
-        'wdom.tests',
         'wdom.themes',
     ],
     include_package_data=True,
@@ -47,5 +46,5 @@ setup(
     python_requires='>=3.5.2',
     install_requires=install_requires,
     tests_require=tests_require,
-    test_suite='wdom.tests',
+    test_suite='tests',
 )

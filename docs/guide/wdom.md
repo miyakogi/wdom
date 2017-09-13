@@ -23,10 +23,10 @@ Actual HTML strings can be obtained by `html` property of each elements.
 For example, `print(MyElement().html)` shows
 
 ```html
-<div rimo_id="..."><input rimo_id="..."><h1 rimo_id="...">Hello, WDOM</h1></div>
+<div wdom_id="..."><input wdom_id="..."><h1 wdom_id="...">Hello, WDOM</h1></div>
 ```
 
-`rimo_id` attribute is used internally.
+`wdom_id` is an attribute which is used internally.
 If you want to omit it for tests, use `html_noid` property instead
 
 ```python

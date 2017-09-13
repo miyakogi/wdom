@@ -6,6 +6,18 @@ Event API
 .. autoclass:: wdom.event.Event
    :members:
 
+.. autoclass:: wdom.event.MouseEvent
+   :members:
+
+.. autoclass:: wdom.event.KeyboardEvent
+   :members:
+
+.. autoclass:: wdom.event.DragEvent
+   :members:
+
+.. autoclass:: wdom.event.DataTransfer
+   :members:
+
 .. autofunction:: wdom.event.create_event
 
 .. autoclass:: wdom.event.EventListener

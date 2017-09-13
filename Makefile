@@ -1,3 +1,4 @@
+.PHONY: release release-pypi release-github
 .PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
 define BROWSER_PYSCRIPT
@@ -47,7 +48,15 @@ clean-test: ## remove test and coverage artifacts
 	@echo "Remove test/coverage files (.coverage, htmlcov/)."
 	@rm -f .coverage
 	@rm -fr htmlcov/
+	@rm -f wdom/tests/browser/server/tmp*.py
 
+release: release-pypi release-github ## register pypi and push tags to github
+
+release-pypi: ## register pypi
+	python setup.py sdist upload
+
+release-github: ## push tags to gihub
+	git push origin --tags
 
 .PHONY: green green-cov green-single unittests
 green:  ## run green test
@@ -65,9 +74,8 @@ green-single:  ## run green with a single process
 	@cd maint && \
 	green -s 1 -c ../.green ../wdom
 
-unittest:  # run green and calculate coverage
-	@echo "Run unittests."
-	@green wdom/tests/test_*.py
+unittest:  ## run python's unitttest
+	@python -W ignore::ResourceWarning -m unittest discover wdom/tests
 
 .PHONY: flake8
 flake8:  ## run flake8 syntax check
@@ -85,7 +93,7 @@ pydocstyle:  ## run pydocstyle check
 .PHONY: docs
 docs:  ## build document
 	@echo "Sphinx build start."
-	sphinx-build -q -E -W -b html docs docs/_build/html
+	sphinx-build -q -E -W -j 4 -b html docs docs/_build/html
 	@echo "Sphinx build done."
 
 .PHONY: sphinx

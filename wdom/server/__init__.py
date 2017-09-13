@@ -11,7 +11,7 @@ from typing import Any
 
 from tornado import autoreload
 
-from wdom.util import STATIC_DIR, install_asyncio
+from wdom.util import STATIC_DIR
 from wdom.options import config
 from wdom.server.base import exclude_patterns, open_browser, watch_dir
 from wdom.server import _tornado as module
@@ -74,12 +74,16 @@ async def _message_loop() -> None:
         await asyncio.sleep(config.message_wait)
 
 
-def start_server(browser: str = None, address: str = None,
-                 check_time: int = 500, **kwargs: Any
-                 ) -> module.HTTPServer:
-    """Start web server.
+def start_server(address: str = None, port: int = None,
+                 check_time: int = 500, **kwargs: Any) -> module.HTTPServer:
+    """Start web server on ``address:port``.
 
     Use wrapper function :func:`start` instead.
+
+    :arg str address: address of the server [default: localhost].
+    :arg int port: tcp port of the server [default: 8888].
+    :arg int check_time: millisecondes to wait until reload browser when
+        autoreload is enabled [default: 500].
     """
     # Add application's static files directory
     from wdom.document import get_document
@@ -88,10 +92,9 @@ def start_server(browser: str = None, address: str = None,
     if os.path.exists(doc.tempdir):
         add_static_path('tmp', doc.tempdir, no_watch=True)
     if doc._autoreload or config.autoreload or config.debug:
-        install_asyncio()
         autoreload.start(check_time=check_time)
     global _server
-    _server = module.start_server(**kwargs)
+    _server = module.start_server(address=address, port=port, **kwargs)
     logger.info('Start server on {0}:{1:d}'.format(
         server_config['address'], server_config['port']))
 
@@ -101,7 +104,7 @@ def start_server(browser: str = None, address: str = None,
     if config.open_browser:
         open_browser('http://{}:{}/'.format(server_config['address'],
                                             server_config['port']),
-                     browser or config.browser)
+                     config.browser)
     return _server
 
 
@@ -115,6 +118,9 @@ def start(**kwargs: Any) -> None:
 
     Run until ``Ctrl-c`` pressed, or if auto-shutdown is enabled, until when
     all browser windows are closed.
+
+    This function accepts keyword areguments same as :func:`start_server` and
+    all arguments passed to it.
     """
     start_server(**kwargs)
     try:
