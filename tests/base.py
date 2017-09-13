@@ -13,20 +13,6 @@ class TestCase(unittest.TestCase):
     methods, reset wdom's global objects like document, application, and
     elements. If you use ``tearDown`` method, do not forget to call
     ``super().tearDown()``.
-
-    If you want to reuse document/application object in your test class, please
-    set them in each setup phase as follow::
-
-        @classmethod
-        def setUpClass(cls):
-            cls.your_doc = get_document()
-            cls.your_app = get_app()
-
-        def setUp(self):
-            from wdom.document import set_document
-            from wdom.server import set_application
-            set_document(self.your_doc)
-            set_application(self.your_app)
     """
 
     def setUp(self) -> None:

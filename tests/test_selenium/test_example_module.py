@@ -8,8 +8,8 @@ import time
 
 from selenium.webdriver.common.utils import free_port
 
-from tests.base import TestCase
-from tests.selenium_tests.base import close_webdriver, get_webdriver
+from ..base import TestCase
+from .base import close_webdriver, get_webdriver
 
 
 def tearDownModule():

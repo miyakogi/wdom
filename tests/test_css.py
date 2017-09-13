@@ -8,7 +8,7 @@ from wdom.css import CSSStyleDeclaration, parse_style_decl
 from wdom.css import CSSStyleRule, parse_style_rules
 from wdom.css import CSSRuleList
 
-from tests.base import TestCase
+from .base import TestCase
 
 
 class TestCSSProperties(TestCase):

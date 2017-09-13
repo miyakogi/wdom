@@ -7,7 +7,7 @@ import subprocess
 
 from parameterized import parameterized
 
-from tests.base import TestCase
+from .base import TestCase
 
 root = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 

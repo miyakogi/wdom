@@ -11,7 +11,7 @@ from wdom.node import Text
 from wdom.server import _tornado
 from wdom.web_node import WdomElement
 
-from tests.base import TestCase
+from .base import TestCase
 
 
 class TestWdomElement(TestCase):

@@ -6,7 +6,7 @@ from wdom.node import Node, DocumentFragment
 from wdom.parser import FragmentParser, parse_html
 from wdom.web_node import WdomElement, remove_rimo_id
 
-from tests.base import TestCase
+from .base import TestCase
 
 style_css = '''
     body > h1 {

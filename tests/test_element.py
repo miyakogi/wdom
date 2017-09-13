@@ -14,7 +14,7 @@ from wdom.element import (
 from wdom.node import Text
 from wdom.window import customElements
 
-from tests.base import TestCase
+from .base import TestCase
 
 
 class TestDOMTokenList(TestCase):

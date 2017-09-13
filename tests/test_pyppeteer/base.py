@@ -10,7 +10,7 @@ from syncer import sync
 from wdom.document import get_document
 from wdom import server
 
-from tests.base import TestCase
+from ..base import TestCase
 
 server_config = server.server_config
 

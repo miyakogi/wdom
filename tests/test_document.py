@@ -16,7 +16,7 @@ from wdom.server.handler import event_handler
 from wdom.tag import Tag, A
 from wdom.web_node import WdomElement, remove_rimo_id
 
-from tests.base import TestCase
+from .base import TestCase
 
 
 class TestGetElement(TestCase):

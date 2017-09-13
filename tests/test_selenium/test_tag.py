@@ -11,9 +11,9 @@ from wdom.themes import CheckBox
 from wdom.document import get_document
 from wdom.util import suppress_logging
 
-from tests.base import TestCase
-from tests.selenium_tests.base import RemoteBrowserTestCase
-from tests.selenium_tests.base import start_remote_browser, close_remote_browser  # noqa: E501
+from ..base import TestCase
+from .base import RemoteBrowserTestCase
+from .base import start_remote_browser, close_remote_browser
 
 
 def setUpModule():

@@ -17,7 +17,7 @@ from wdom import server
 from wdom.document import get_document
 from wdom.util import suppress_logging
 
-from tests.server.base import HTTPTestCase
+from .base import HTTPTestCase
 
 curdir = path.dirname(__file__)
 root = path.dirname(path.dirname(curdir))

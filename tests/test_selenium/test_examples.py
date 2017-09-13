@@ -8,8 +8,8 @@ from wdom.tag import H1
 from wdom.document import get_document, set_app
 from wdom.util import suppress_logging
 
-from tests.base import TestCase
-from tests.selenium_tests.base import WebDriverTestCase, close_webdriver
+from ..base import TestCase
+from .base import WebDriverTestCase, close_webdriver
 
 
 def setUpModule():

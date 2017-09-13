@@ -12,7 +12,7 @@ from tornado.websocket import websocket_connect, WebSocketClientConnection
 
 from wdom import server
 
-from tests.base import TestCase
+from ..base import TestCase
 
 logger = logging.getLogger(__name__)
 root_logger = logging.getLogger('wdom')
