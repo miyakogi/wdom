@@ -17,6 +17,7 @@ import weakref
 from wdom import server
 from wdom.element import Element, Attr, HTMLElement, getElementsBy
 from wdom.element import getElementsByClassName, getElementsByTagName
+from wdom.element import querySelector, querySelectorAll
 from wdom.event import Event, EventTarget, WebEventTarget
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment, ParentNode
 from wdom.node import DocumentFragment
@@ -94,6 +95,8 @@ class Document(Node, ParentNode, EventTarget):
     getElementsBy = getElementsBy
     getElementsByTagName = getElementsByTagName
     getElementsByClassName = getElementsByClassName
+    querySelector = querySelector
+    querySelectorAll = querySelectorAll
 
     def __init__(self, *,
                  doctype: str = 'html',

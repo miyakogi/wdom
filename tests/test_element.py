@@ -10,6 +10,7 @@ from wdom.element import (
     DOMTokenList, NamedNodeMap, Attr, Element, HTMLElement,
     HTMLSelectElement, HTMLOptionElement,
     getElementsBy, getElementsByClassName, getElementsByTagName,
+    querySelector, querySelectorAll,
 )
 from wdom.node import Text
 from wdom.window import customElements
@@ -390,6 +391,14 @@ class TestGetElements(TestCase):
         self.assertNotIn(self.c1, attr_elms)
         self.assertIn(self.c2, attr_elms)
         self.assertIn(self.c3, attr_elms)
+
+    def test_query_selector(self):
+        with self.assertRaises(NotImplementedError):
+            querySelector(self.elm, 'tag')
+
+    def test_query_selector_all(self):
+        with self.assertRaises(NotImplementedError):
+            querySelectorAll(self.elm, 'tag')
 
 
 class TestElement(TestCase):
@@ -828,6 +837,14 @@ class TestElement(TestCase):
     def test_invalid_define_args(self):
         with self.assertRaises(TypeError):
             customElements.define(1, 2, 3)
+
+    def test_query_selector(self):
+        with self.assertRaises(NotImplementedError):
+            self.elm.querySelector('tag')
+
+    def test_query_selector_all(self):
+        with self.assertRaises(NotImplementedError):
+            self.elm.querySelectorAll('tag')
 
 
 class TestHTMLElement(TestCase):

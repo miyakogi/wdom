@@ -142,6 +142,14 @@ class TestDocument(TestCase):
         self.doc.dispatchEvent(e)
         mock.assert_called_once_with(e)
 
+    def test_query_selector(self):
+        with self.assertRaises(NotImplementedError):
+            self.doc.querySelector('tag')
+
+    def test_query_selector_all(self):
+        with self.assertRaises(NotImplementedError):
+            self.doc.querySelectorAll('tag')
+
 
 class TestWdomDocument(TestCase):
     def setUp(self) -> None:

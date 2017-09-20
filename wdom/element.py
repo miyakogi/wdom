@@ -409,6 +409,22 @@ def getElementsByClassName(start_node: ParentNode, class_name: str
     )
 
 
+def querySelector(start_node: ParentNode, selectors: str) -> AbstractNode:
+    """Not Implemented yet.
+
+    Please use `getElementsBy` method instead.
+    """
+    raise NotImplementedError
+
+
+def querySelectorAll(start_node: ParentNode, selectors: str) -> NodeList:
+    """Not Implemented yet.
+
+    Please use `getElementsBy` method instead.
+    """
+    raise NotImplementedError
+
+
 class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
               ChildNode, metaclass=ElementMeta):
     """Element base class."""
@@ -425,6 +441,8 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     getElementsBy = getElementsBy
     getElementsByTagName = getElementsByTagName
     getElementsByClassName = getElementsByClassName
+    querySelector = querySelector
+    querySelectorAll = querySelectorAll
 
     def __init__(self, tag: str='', parent: Node = None,
                  _registered: bool = True, **kwargs: Any) -> None:
