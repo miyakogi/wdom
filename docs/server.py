@@ -31,8 +31,8 @@ cmd()  # build once
 server = Server()
 
 # Wtach documets
-server.watch(docs('/*.md'), cmd, delay=1)
-server.watch(docs('/*.rst'), cmd, delay=1)
+server.watch(docs('*.md'), cmd, delay=1)
+server.watch(docs('*.rst'), cmd, delay=1)
 server.watch(docs('../*.rst'), cmd, delay=1)
 server.watch(docs('*/*.rst'), cmd, delay=1)
 server.watch(docs('*/*.md'), cmd, delay=1)
