@@ -438,12 +438,6 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     _special_attr_string = ['id']
     _special_attr_boolean = []  # type: List[str]
 
-    getElementsBy = getElementsBy
-    getElementsByTagName = getElementsByTagName
-    getElementsByClassName = getElementsByClassName
-    querySelector = querySelector
-    querySelectorAll = querySelectorAll
-
     def __init__(self, tag: str='', parent: Node = None,
                  _registered: bool = True, **kwargs: Any) -> None:
         """Initialize.
@@ -674,6 +668,26 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     def removeAttributeNode(self, attr: Attr) -> Optional[Attr]:
         """Remove ``Attr`` node from this node."""
         return self.attributes.removeNamedItem(attr)
+
+    def getElementsBy(self, cond: Callable[['Element'], bool]) -> NodeList:
+        """Get elements under this node which matches condition."""
+        return getElementsBy(self, cond)
+
+    def getElementsByTagName(self, tag: str) -> NodeList:
+        """Get elements with tag name under this node."""
+        return getElementsByTagName(self, tag)
+
+    def getElementsByClassName(self, class_name: str) -> NodeList:
+        """Get elements with class name under this node."""
+        return getElementsByClassName(self, class_name)
+
+    def querySelector(self, selectors: str) -> Node:
+        """Not Implemented."""
+        return querySelector(self, selectors)
+
+    def querySelectorAll(self, selectors: str) -> NodeList:
+        """Not Implemented."""
+        return querySelectorAll(self, selectors)
 
 
 class HTMLElement(Element):
