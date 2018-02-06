@@ -245,12 +245,12 @@ class TestNodeList(TestCase):
         self.assertFalse(5 in self.nl)
 
     def test_iteration(self):
-        l = [0, 1, 2]
+        l1 = [0, 1, 2]
         for n in self.nl:
-            self.assertEqual(n, l.pop(0))
-        l = [2, 1, 0]
+            self.assertEqual(n, l1.pop(0))
+        l2 = [2, 1, 0]
         for n in reversed(self.nl):
-            self.assertEqual(n, l.pop(0))
+            self.assertEqual(n, l2.pop(0))
 
     def test_index(self):
         self.assertEqual(self.nl.index(0), 0)
