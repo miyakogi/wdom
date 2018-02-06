@@ -50,7 +50,7 @@ class Tag(WdomElement):
     is_ = ''
 
     def __init__(self, *args: Any, attrs: Dict[str, _AttrValueType] = None,
-                 **kwargs: Any) -> None:  # noqa: D102
+                 **kwargs: Any) -> None:
         if attrs:
             kwargs.update(attrs)
         if self.type_ and 'type' not in kwargs:
@@ -94,7 +94,7 @@ class NestedTag(Tag):
     #: Inner nested tag class
     inner_tag_class = None  # type: Type[Node]
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._inner_element = None
         super().__init__(**kwargs)
         if self.inner_tag_class:
@@ -210,7 +210,7 @@ class Input(Tag, HTMLInputElement):
     #: type attribute; text, button, checkbox, or radio... and so on.
     type_ = ''
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         if self.type_ and 'type' not in kwargs:
             kwargs['type'] = self.type_
         super().__init__(*args, **kwargs)
@@ -241,7 +241,7 @@ class Script(Tag, HTMLScriptElement):  # noqa: D204
     tag = 'script'
 
     def __init__(self, *args: Any, type: str = 'text/javascript',
-                 **kwargs: Any) -> None:  # noqa: D102
+                 **kwargs: Any) -> None:
         super().__init__(*args, type=type, **kwargs)
 
 

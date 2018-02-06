@@ -299,7 +299,7 @@ class NamedNodeMap(UserDict):
 class ElementParser(FragmentParser):
     """HTML Parser class whose default nodes are ``Element``."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.default_class = Element
 
@@ -307,7 +307,7 @@ class ElementParser(FragmentParser):
 class HTMLElementParser(ElementParser):
     """HTML Parser class whose default nodes are ``HTMLElement``."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.default_class = HTMLElement
 
@@ -686,8 +686,7 @@ class HTMLElement(Element):
     _special_attr_boolean = ['hidden']
     _parser_class = HTMLElementParser  # type: Type[ElementParser]
 
-    def __init__(self, *args: Any, style: str=None, **kwargs: Any
-                 ) -> None:  # noqa: D102
+    def __init__(self, *args: Any, style: str=None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.__style = CSSStyleDeclaration(style, owner=self)
 
@@ -959,7 +958,7 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['name', 'size', 'value']
     _special_attr_boolean = ['disabled', 'multiple', 'required']
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._selected_options = []  # type: List[str]
         super().__init__(*args, **kwargs)
 

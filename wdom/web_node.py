@@ -32,7 +32,7 @@ def remove_wdom_id(html: str) -> str:
 class WdomElementParser(ElementParser):
     """Parser class which generates WdomElement nodes."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.default_class = WdomElement
 
@@ -89,8 +89,7 @@ class WdomElement(HTMLElement, WebEventTarget, metaclass=WdomElementMeta):
         return bool(server.is_connected() and self.ownerDocument)
 
     def __init__(self, *args: Any, parent: 'WdomElement' = None,
-                 wdom_id: _WdomIdType = None,
-                 **kwargs: Any) -> None:  # noqa: D102
+                 wdom_id: _WdomIdType = None, **kwargs: Any) -> None:
         if wdom_id is None:
             self.__wdom_id = str(id(self))
         else:

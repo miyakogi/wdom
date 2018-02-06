@@ -156,7 +156,7 @@ class MouseEvent(UIEvent):  # noqa: D204
              'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY',
              'region', 'screenX', 'screenY', 'shiftKey', 'x', 'y']
 
-    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:
         super().__init__(type, init)
         for attr in self.attrs:
             setattr(self, attr, self.init.get(attr))
@@ -181,7 +181,7 @@ class DragEvent(MouseEvent):  # noqa: D204
     and ``drop``.
     """
 
-    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:
         super().__init__(type, init)
         dt_id = self.init.get('dataTransfer', {'id', ''}).get('id')
         if not dt_id:
@@ -210,7 +210,7 @@ class KeyboardEvent(UIEvent):  # noqa: D204
     attrs = ['altKey', 'code', 'ctrlKey', 'key', 'locale', 'metaKey', 'repeat',
              'shiftKey']
 
-    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:
         super().__init__(type, init)
         for attr in self.attrs:
             setattr(self, attr, self.init.get(attr))
@@ -219,7 +219,7 @@ class KeyboardEvent(UIEvent):  # noqa: D204
 class InputEvent(UIEvent):  # noqa: D204
     """Input event class."""
 
-    def __init__(self, type: str, init: EventMsgDict = None) -> None:  # noqa: D102,E501
+    def __init__(self, type: str, init: EventMsgDict = None) -> None:
         """Initialize DragEvent and set data attribute."""
         super().__init__(type, init)
         self.data = self.init.get('data') or ''
@@ -300,7 +300,7 @@ class EventTarget:
         """Need to check the target is mounted on document or not."""
         return None
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         # need to call super().__init__ to use as mixin class
         super().__init__(*args, **kwargs)  # type: ignore
         self._event_listeners = defaultdict(list)
@@ -375,7 +375,7 @@ class WebEventTarget(EventTarget):
         """When this instance has any connection, return True."""
         raise NotImplementedError
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)  # type: ignore
         self.__reqid = 0
         self.__tasks = {}  # type: Dict
