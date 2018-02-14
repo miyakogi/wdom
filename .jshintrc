@@ -6,6 +6,7 @@
   // Environments
   "browser": true,
   "devel": true,
+  "esversion": 6,
 
   // Relaxes
   "asi": true,
