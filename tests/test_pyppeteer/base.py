@@ -23,7 +23,10 @@ class PyppeteerTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.browser = launch({'headless': True})
+        cls.browser = launch({
+            'headless': True,
+            'args': ['--no-sandbox'],
+        })
         cls.page = sync(cls.browser.newPage())
 
     @classmethod
