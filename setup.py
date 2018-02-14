@@ -6,11 +6,18 @@ from os import path
 from setuptools import setup
 
 readme_file = path.join(path.dirname(path.abspath(__file__)), 'README.rst')
-with open(readme_file) as readme_file:
-    readme = readme_file.read()
+with open(readme_file) as f:
+    readme = f.read()
 
-install_requires = ['tornado']
-tests_require = ['parameterized', 'selenium', 'syncer']
+install_requires = [
+    'tornado>=4.0',
+]
+test_requires = [
+    'parameterized',
+    'selenium',
+    'syncer',
+    'pyppeteer',
+]
 
 
 setup(
@@ -45,6 +52,6 @@ setup(
     ],
     python_requires='>=3.5.2',
     install_requires=install_requires,
-    tests_require=tests_require,
+    tests_require=test_requires,
     test_suite='tests',
 )
