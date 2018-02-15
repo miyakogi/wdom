@@ -10,7 +10,7 @@ matrix:
       env: TOXENV=py36,flake8,mypy,pydocstyle,docs,codecov
 
 addons:
-  chrome: stable
+  chrome: beta
 
 before_script:
   - wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
