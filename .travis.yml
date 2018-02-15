@@ -1,5 +1,4 @@
-sudo: false
-dist: trusty
+sudo: required
 language: python
 
 matrix:
@@ -10,7 +9,7 @@ matrix:
       env: TOXENV=py36,flake8,mypy,pydocstyle,docs,codecov
 
 addons:
-  chrome: beta
+  chrome: stable
 
 before_script:
   - wget https://chromedriver.storage.googleapis.com/2.35/chromedriver_linux64.zip
