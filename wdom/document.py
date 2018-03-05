@@ -17,9 +17,10 @@ import weakref
 from wdom import server
 from wdom.element import Element, Attr, HTMLElement, getElementsBy
 from wdom.element import getElementsByClassName, getElementsByTagName
+from wdom.element import querySelector, querySelectorAll
 from wdom.event import Event, EventTarget, WebEventTarget
 from wdom.node import Node, DocumentType, Text, RawHtml, Comment, ParentNode
-from wdom.node import DocumentFragment
+from wdom.node import DocumentFragment, NodeList
 from wdom.options import config
 from wdom.tag import Tag
 from wdom.tag import Html, Head, Body, Meta, Link, Title, Script
@@ -90,10 +91,6 @@ class Document(Node, ParentNode, EventTarget):
 
     nodeType = Node.DOCUMENT_NODE
     nodeName = '#document'
-
-    getElementsBy = getElementsBy
-    getElementsByTagName = getElementsByTagName
-    getElementsByClassName = getElementsByClassName
 
     def __init__(self, *,
                  doctype: str = 'html',
@@ -173,6 +170,18 @@ class Document(Node, ParentNode, EventTarget):
         title_element = _title or Title(parent=self.head)
         title_element.textContent = new_title
 
+    def getElementsBy(self, cond: Callable[[Element], bool]) -> NodeList:
+        """Get elements in this document which matches condition."""
+        return getElementsBy(self, cond)
+
+    def getElementsByTagName(self, tag: str) -> NodeList:
+        """Get elements with tag name in this document."""
+        return getElementsByTagName(self, tag)
+
+    def getElementsByClassName(self, class_name: str) -> NodeList:
+        """Get elements with class name in this document."""
+        return getElementsByClassName(self, class_name)
+
     def getElementById(self, id: str) -> Optional[Node]:
         """Get element by ``id``.
 
@@ -206,6 +215,14 @@ class Document(Node, ParentNode, EventTarget):
     def createAttribute(self, name: str) -> Attr:
         """Create Attribute object with ``name``."""
         return Attr(name)
+
+    def querySelector(self, selectors: str) -> Node:
+        """Not Implemented."""
+        return querySelector(self, selectors)
+
+    def querySelectorAll(self, selectors: str) -> NodeList:
+        """Not Implemented."""
+        return querySelectorAll(self, selectors)
 
 
 class WdomDocument(Document, WebEventTarget):

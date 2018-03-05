@@ -299,7 +299,7 @@ class NamedNodeMap(UserDict):
 class ElementParser(FragmentParser):
     """HTML Parser class whose default nodes are ``Element``."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.default_class = Element
 
@@ -307,7 +307,7 @@ class ElementParser(FragmentParser):
 class HTMLElementParser(ElementParser):
     """HTML Parser class whose default nodes are ``HTMLElement``."""
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.default_class = HTMLElement
 
@@ -409,6 +409,22 @@ def getElementsByClassName(start_node: ParentNode, class_name: str
     )
 
 
+def querySelector(start_node: ParentNode, selectors: str) -> AbstractNode:
+    """Not Implemented yet.
+
+    Please use `getElementsBy` method instead.
+    """
+    raise NotImplementedError
+
+
+def querySelectorAll(start_node: ParentNode, selectors: str) -> NodeList:
+    """Not Implemented yet.
+
+    Please use `getElementsBy` method instead.
+    """
+    raise NotImplementedError
+
+
 class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
               ChildNode, metaclass=ElementMeta):
     """Element base class."""
@@ -421,10 +437,6 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
     _should_escape_text = True
     _special_attr_string = ['id']
     _special_attr_boolean = []  # type: List[str]
-
-    getElementsBy = getElementsBy
-    getElementsByTagName = getElementsByTagName
-    getElementsByClassName = getElementsByClassName
 
     def __init__(self, tag: str='', parent: Node = None,
                  _registered: bool = True, **kwargs: Any) -> None:
@@ -657,6 +669,26 @@ class Element(Node, EventTarget, ParentNode, NonDocumentTypeChildNode,
         """Remove ``Attr`` node from this node."""
         return self.attributes.removeNamedItem(attr)
 
+    def getElementsBy(self, cond: Callable[['Element'], bool]) -> NodeList:
+        """Get elements under this node which matches condition."""
+        return getElementsBy(self, cond)
+
+    def getElementsByTagName(self, tag: str) -> NodeList:
+        """Get elements with tag name under this node."""
+        return getElementsByTagName(self, tag)
+
+    def getElementsByClassName(self, class_name: str) -> NodeList:
+        """Get elements with class name under this node."""
+        return getElementsByClassName(self, class_name)
+
+    def querySelector(self, selectors: str) -> Node:
+        """Not Implemented."""
+        return querySelector(self, selectors)
+
+    def querySelectorAll(self, selectors: str) -> NodeList:
+        """Not Implemented."""
+        return querySelectorAll(self, selectors)
+
 
 class HTMLElement(Element):
     """Base class for HTMLElement.
@@ -668,8 +700,7 @@ class HTMLElement(Element):
     _special_attr_boolean = ['hidden']
     _parser_class = HTMLElementParser  # type: Type[ElementParser]
 
-    def __init__(self, *args: Any, style: str=None, **kwargs: Any
-                 ) -> None:  # noqa: D102
+    def __init__(self, *args: Any, style: str=None, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.__style = CSSStyleDeclaration(style, owner=self)
 
@@ -941,7 +972,7 @@ class HTMLSelectElement(HTMLElement, FormControlMixin):
     _special_attr_string = ['name', 'size', 'value']
     _special_attr_boolean = ['disabled', 'multiple', 'required']
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:  # noqa: D102
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._selected_options = []  # type: List[str]
         super().__init__(*args, **kwargs)
 

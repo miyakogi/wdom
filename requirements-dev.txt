@@ -1,7 +1,6 @@
 -r requirements-test.txt
 -r requirements-docs.txt
 
-tornado>=4
 doit
 green
 tox

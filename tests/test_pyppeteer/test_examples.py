@@ -22,22 +22,20 @@ class TestDataBinding(PyppeteerTestCase):
     async def test_app(self):
         h1 = await self.page.J('h1')
         self.assertEqual(await self.get_text(h1), 'Hello!')
-        await self.page.focus('input')
-
-        await self.page.type('abc')
+        await self.page.type('input', 'abc')
         await self.page.waitForFunction('''
 () => document.querySelector("h1").textContent === "abc"
         '''.strip(), timeout=3000)
         self.assertEqual(await self.get_text(h1), 'abc')
 
         for i in range(3):
-            await self.page.press('Backspace', delay=0.01)
+            await self.page.keyboard.press('Backspace', {'delay': 10})
         await self.page.waitForFunction('''
 () => document.querySelector("h1").textContent === ""
         '''.strip(), timeout=3000)
         self.assertEqual(await self.get_text(h1), '')
 
-        await self.page.type('new')
+        await self.page.type('input', 'new')
         await self.page.waitForFunction('''
 () => document.querySelector("h1").textContent === "new"
         '''.strip(), timeout=3000)
@@ -54,8 +52,7 @@ class TestGlobalEvent(PyppeteerTestCase):
         doc_h1 = await self.page.J('#doc1')
         win_h1 = await self.page.J('#win1')
         input_view = await self.page.J('#input_view')
-        await self.page.focus('#input')
-        await self.page.type('a')
+        await self.page.type('#input', 'a')
         await self.page.waitForFunction('''
 () => document.querySelector("#input_view").textContent === "a"
         '''.strip(), timeout=3000)
@@ -63,7 +60,7 @@ class TestGlobalEvent(PyppeteerTestCase):
         self.assertEqual(await self.get_text(win_h1), 'a')
         self.assertEqual(await self.get_text(input_view), 'a')
 
-        await self.page.type('b')
+        await self.page.type('#input', 'b')
         await self.page.waitForFunction('''
 () => document.querySelector("#input_view").textContent === "b"
         '''.strip(), timeout=3000)

@@ -5,6 +5,9 @@ from os import path
 import subprocess
 
 from livereload import Server
+from livereload import watcher
+
+watcher.pyinotify = None  # disable pyinotiry
 
 docsdir = path.dirname(path.abspath(__file__))
 builddir = path.join(docsdir, '_build')
@@ -28,8 +31,8 @@ cmd()  # build once
 server = Server()
 
 # Wtach documets
-server.watch(docs('/*.md'), cmd, delay=1)
-server.watch(docs('/*.rst'), cmd, delay=1)
+server.watch(docs('*.md'), cmd, delay=1)
+server.watch(docs('*.rst'), cmd, delay=1)
 server.watch(docs('../*.rst'), cmd, delay=1)
 server.watch(docs('*/*.rst'), cmd, delay=1)
 server.watch(docs('*/*.md'), cmd, delay=1)

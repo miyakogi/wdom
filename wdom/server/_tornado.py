@@ -57,7 +57,7 @@ class WSHandler(websocket.WebSocketHandler):
         # stop server and close loop if no more connection exists
         if not is_connected():
             stop_server(self.application.server)
-            self.application.server.io_loop.stop()
+            self.application.loop.stop()
 
     def on_close(self) -> None:
         """Execute when connection closed."""
@@ -182,6 +182,7 @@ def start_server(app: web.Application = None, port: int = None,
 
     server = app.listen(port, address=address)
     app.server = server
+    app.loop = asyncio.get_event_loop()
     server_config['address'] = address
     for sock in server._sockets.values():
         if sock.family == socket.AF_INET:

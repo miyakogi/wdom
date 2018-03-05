@@ -50,10 +50,13 @@ def _get_chromedriver_path() -> str:
         return chromedriver_path
     if 'TRAVIS' in os.environ:
         chromedriver_path = os.path.join(
-            os.environ['TRAVIS_BUILD_DIR'], 'chromedriver')
+            os.environ['TRAVIS_BUILD_DIR'],
+            'chromedriver',
+        )
     else:
+        dirname = os.path.dirname
         chromedriver_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            dirname(dirname(dirname(os.path.abspath(__file__)))),
             'chromedriver'
         )
     return chromedriver_path

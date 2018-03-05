@@ -31,10 +31,11 @@ INCLUDE_DIRS = [STATIC_DIR, TEMPLATE_DIR]
 
 def install_asyncio() -> None:
     """Ensure that asyncio's io-loop is installed to tornado."""
-    from tornado.ioloop import IOLoop
-    from tornado.platform.asyncio import AsyncIOMainLoop
-    if not IOLoop.initialized():
-        AsyncIOMainLoop().install()
+    pass
+    # from tornado.ioloop import IOLoop
+    # from tornado.platform.asyncio import AsyncIOMainLoop
+    # if not IOLoop.initialized():
+    #     AsyncIOMainLoop().install()
 
 
 def suppress_logging() -> None:

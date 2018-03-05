@@ -442,22 +442,6 @@ class ParentNode(AbstractNode):
         node = _to_node_list(nodes)
         self.appendChild(node)
 
-    def query(self, relativeSelectors: str) -> AbstractNode:
-        """Not Implemented."""
-        raise NotImplementedError
-
-    def queryAll(self, relativeSelectors: str) -> NodeList:
-        """Not Implemented."""
-        raise NotImplementedError
-
-    def querySelector(self, selectors: str) -> AbstractNode:
-        """Not Implemented."""
-        raise NotImplementedError
-
-    def querySelectorAll(self, selectors: str) -> NodeList:
-        """Not Implemented."""
-        raise NotImplementedError
-
 
 class NonDocumentTypeChildNode(AbstractNode):
     """Mixin class for ``CharacterData`` and ``DocumentType`` class."""
