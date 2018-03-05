@@ -1,5 +1,14 @@
-Version 0.3
------------
+Version 0.4 (next version)
+--------------------------
+
+Version 0.3.1 (2018-03-06)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* Update for tornado 5.0
+* [test] Update for pyppeteer 0.0.12
+
+Version 0.3 (2017-09-14)
+------------------------
 
 * Remove testing module from wdom package
 * Rename rimo.js to wdom.js
