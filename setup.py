@@ -22,7 +22,7 @@ test_requires = [
 
 setup(
     name='wdom',
-    version='0.3.0',
+    version='0.3.1',
     description='GUI library for browser-based desktop applications',
     long_description=readme,
     author='Hiroyuki Takagi',
