@@ -54,7 +54,8 @@ class TestTag(PyppeteerTestCase):
         await self.wait()
         self.assertEqual(await self.get_attribute('class'), None)
         self.assertNotIn('class',
-                         await self.element.evaluate('(elm) => elm.outerHTML'))
+                         await self.page.evaluate('(elm) => elm.outerHTML',
+                                                  self.element))
 
     @sync
     async def test_addremove_child(self):
@@ -89,18 +90,19 @@ class TestTag(PyppeteerTestCase):
 
     @sync
     async def test_showhide(self):
+        elm = self.element
         self.root.textContent = 'root'
         await self.wait()
         self.assertFalse(
-            await self.element.evaluate('(elm) => elm.hasAttribute("hidden")'))
+            await self.page.evaluate('(e) => e.hasAttribute("hidden")', elm))
         self.root.hide()
         await self.wait()
         self.assertTrue(
-            await self.element.evaluate('(elm) => elm.hasAttribute("hidden")'))
+            await self.page.evaluate('(e) => e.hasAttribute("hidden")', elm))
         self.root.show()
         await self.wait()
         self.assertFalse(
-            await self.element.evaluate('(elm) => elm.hasAttribute("hidden")'))
+            await self.page.evaluate('(e) => e.hasAttribute("hidden")', elm))
 
 
 class TestInput(PyppeteerTestCase):
@@ -126,8 +128,7 @@ class TestInput(PyppeteerTestCase):
             inputs.append(e.data)
 
         self.input.addEventListener('input', input_handler)
-        await self.page.focus('[wdom_id="{}"]'.format(self.input.wdom_id))
-        await self.page.type('a')
+        await self.page.type('[wdom_id="{}"]'.format(self.input.wdom_id), 'a')
         await self.wait()
         self.assertEqual(self.input.value, 'a')
         self.assertEqual(len(inputs), 1)
@@ -137,8 +138,7 @@ class TestInput(PyppeteerTestCase):
         self.element = await self.get_element_handle(self.input)
         self.assertEqual(await self.get_attribute('value'), 'a')
 
-        await self.page.focus('[wdom_id="{}"]'.format(self.input.wdom_id))
-        await self.page.type('d')
+        await self.page.type('[wdom_id="{}"]'.format(self.input.wdom_id), 'd')
         await self.wait()
         # focus on top of the text input
         self.assertEqual(self.input.value, 'da')
@@ -148,8 +148,8 @@ class TestInput(PyppeteerTestCase):
 
     @sync
     async def test_textarea(self):
-        await self.page.focus('[wdom_id="{}"]'.format(self.textarea.wdom_id))
-        await self.page.type('abc')
+        await self.page.type('[wdom_id="{}"]'.format(self.textarea.wdom_id),
+                             'abc')
         await self.wait()
         self.element = await self.get_element_handle(self.textarea)
         self.assertEqual(self.textarea.textContent, 'abc')
@@ -160,8 +160,8 @@ class TestInput(PyppeteerTestCase):
         await self.wait()
         self.assertEqual(await self.get_text(), 'abc')
 
-        await self.page.focus('[wdom_id="{}"]'.format(self.textarea.wdom_id))
-        await self.page.type('def')
+        await self.page.type('[wdom_id="{}"]'.format(self.textarea.wdom_id),
+                             'def')
         await self.wait()
         self.assertEqual(self.textarea.textContent, 'defabc')
 
@@ -176,8 +176,8 @@ class TestInput(PyppeteerTestCase):
         await self.wait()
         self.element = await self.get_element_handle(self.checkbox)
         self.assertIsTrue(
-            await self.element.evaluate('(elm) => elm.hasAttribute("checked")')
-        )
+            await self.page.evaluate('(e) => e.hasAttribute("checked")',
+                                     self.element))
 
         await self.element.click()
         await self.wait()

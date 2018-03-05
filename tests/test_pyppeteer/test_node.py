@@ -287,15 +287,15 @@ class TestWdomElement(PyppeteerTestCase):
         self.tag.textContent = 'TAG'
         await self.wait()
         self.assertFalse(
-            await tag.evaluate('(elm) => elm.hasAttribute("hidden")'))
+            await self.page.evaluate('(e) => e.hasAttribute("hidden")', tag))
         self.tag.hidden = True
         await self.wait()
         self.assertTrue(
-            await tag.evaluate('(elm) => elm.hasAttribute("hidden")'))
+            await self.page.evaluate('(e) => e.hasAttribute("hidden")', tag))
         self.tag.hidden = False
         await self.wait()
         self.assertFalse(
-            await tag.evaluate('(elm) => elm.hasAttribute("hidden")'))
+            await self.page.evaluate('(e) => e.hasAttribute("hidden")', tag))
 
     @sync
     async def test_style(self):
@@ -316,7 +316,8 @@ class TestWdomElement(PyppeteerTestCase):
         self.element = await self.get_element_handle(self.tag)
         self.assertEqual(await self.get_attribute('class'), None)
         self.assertNotIn(
-            'class', await self.element.evaluate('(elm) => elm.outerHTML'))
+            'class', await self.page.evaluate('(elm) => elm.outerHTML',
+                                              self.element))
         self.tag.classList.add('a')
         await self.wait()
         self.assertEqual(await self.get_attribute('class'), 'a')
@@ -336,7 +337,8 @@ class TestWdomElement(PyppeteerTestCase):
         await self.wait()
         self.assertEqual(await self.get_attribute('class'), None)
         self.assertNotIn(
-            'class', await self.element.evaluate('(elm) => elm.outerHTML'))
+            'class', await self.page.evaluate('(elm) => elm.outerHTML',
+                                              self.element))
         self.tag.classList.toggle('b')
         await self.wait()
         self.assertEqual(await self.get_attribute('class'), 'b')
@@ -427,7 +429,7 @@ class TestEvent(PyppeteerTestCase):
 
     @sync
     async def test_input(self):
-        await self.page.focus('[wdom_id="{}"]'.format(self.input.wdom_id))
-        await self.page.type('abc')
+        await self.page.type(
+            '[wdom_id="{}"]'.format(self.input.wdom_id), 'abc')
         await self.wait()
         self.assertEqual(self.input_event_mock.call_count, 3)

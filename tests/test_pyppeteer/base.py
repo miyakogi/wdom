@@ -23,15 +23,12 @@ class PyppeteerTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.browser = launch({
-            'headless': True,
-            'args': ['--no-sandbox'],
-        })
+        cls.browser = launch(args=['--no-sandbox'])
         cls.page = sync(cls.browser.newPage())
 
     @classmethod
     def tearDownClass(cls):
-        cls.browser.close()
+        sync(cls.browser.close())
 
     def setUp(self):
         from syncer import sync
@@ -62,13 +59,13 @@ class PyppeteerTestCase(TestCase):
 
     async def get_text(self, elm=None):
         elm = elm or self.element
-        result = await elm.evaluate('(elm) => elm.textContent')
+        result = await self.page.evaluate('(elm) => elm.textContent', elm)
         return result
 
     async def get_attribute(self, name, elm=None):
         elm = elm or self.element
-        result = await elm.evaluate(
-            '(elm) => elm.getAttribute("{}")'.format(name))
+        result = await self.page.evaluate(
+            '(elm) => elm.getAttribute("{}")'.format(name), elm)
         return result
 
     async def wait(self, timeout=None):

@@ -10,7 +10,7 @@ with open(readme_file) as f:
     readme = f.read()
 
 install_requires = [
-    'tornado>=4.0',
+    'tornado>=5.0',
 ]
 test_requires = [
     'parameterized',
