@@ -23,7 +23,7 @@ class PyppeteerTestCase(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.browser = launch(args=['--no-sandbox'])
+        cls.browser = sync(launch(args=['--no-sandbox']))
         cls.page = sync(cls.browser.newPage())
 
     @classmethod
