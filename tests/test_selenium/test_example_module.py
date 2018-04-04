@@ -5,6 +5,7 @@ import sys
 import os
 import subprocess
 import time
+import unittest
 
 from selenium.webdriver.common.utils import free_port
 
@@ -16,6 +17,7 @@ def tearDownModule():
     close_webdriver()
 
 
+@unittest.skipIf('TRAVIS' in os.environ, 'skip selenium tests on Travis')
 class BaseTestCase(object):
     module = ''
 

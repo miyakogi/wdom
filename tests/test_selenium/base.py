@@ -20,6 +20,7 @@ from multiprocessing import Process, Pipe  # type: ignore
 from multiprocessing.connection import Connection
 from types import FunctionType, MethodType
 from typing import Any, Callable, Iterable, Union, Set, Optional
+import unittest
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -306,6 +307,7 @@ class TimeoutError(Exception):
     """The operation is not completed by timeout."""
 
 
+@unittest.skipIf('TRAVIS' in os.environ, 'skip selenium tests on Travis')
 class RemoteBrowserTestCase:
     """This class is **Experimental**.
 
@@ -396,6 +398,7 @@ class RemoteBrowserTestCase:
         raise NoSuchElementException('element not found: {}'.format(node))
 
 
+@unittest.skipIf('TRAVIS' in os.environ, 'skip selenium tests on Travis')
 class WebDriverTestCase:
     """Base class for testing UI on browser.
 

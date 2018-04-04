@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import unittest
 from unittest.mock import MagicMock
 
 from selenium.common.exceptions import NoSuchElementException
@@ -16,6 +17,7 @@ from .base import RemoteBrowserTestCase
 from .base import start_remote_browser, close_remote_browser
 
 
+@unittest.skipIf('TRAVIS' in os.environ, 'skip selenium tests on Travis')
 def setUpModule():
     suppress_logging()
     start_remote_browser()

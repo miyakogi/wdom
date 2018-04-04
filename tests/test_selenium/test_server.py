@@ -7,6 +7,7 @@ from os import path
 import asyncio
 import subprocess
 from tempfile import NamedTemporaryFile
+import unittest
 
 from selenium.common.exceptions import NoSuchElementException
 
@@ -59,6 +60,7 @@ _src.insert(12, 'server.exclude_patterns.append(r\'testdi*\')')
 src_exclude_dir = '\n'.join(_src)
 
 
+@unittest.skipIf('TRAVIS' in os.environ, 'skip selenium tests on Travis')
 class TestAutoReload(TestCase):
     wait_time = 3 if os.getenv('TRAVIS') else 1
 

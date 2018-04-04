@@ -4,6 +4,7 @@
 import os
 import re
 import asyncio
+import unittest
 from unittest.mock import MagicMock
 
 from syncer import sync
@@ -18,6 +19,7 @@ from .base import RemoteBrowserTestCase, NoSuchElementException
 from .base import start_remote_browser, close_remote_browser
 
 
+@unittest.skipIf('TRAVIS' in os.environ, 'skip selenium tests on Travis')
 def setUpModule():
     suppress_logging()
     start_remote_browser()
