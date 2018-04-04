@@ -22,20 +22,20 @@ class TestDataBinding(PyppeteerTestCase):
     async def test_app(self):
         h1 = await self.page.J('h1')
         self.assertEqual(await self.get_text(h1), 'Hello!')
-        await self.page.type('input', 'abc')
+        await self.page.type('input', 'abc', delay=10)
         await self.page.waitForFunction('''
 () => document.querySelector("h1").textContent === "abc"
         '''.strip(), timeout=3000)
         self.assertEqual(await self.get_text(h1), 'abc')
 
         for i in range(3):
-            await self.page.keyboard.press('Backspace', {'delay': 10})
+            await self.page.keyboard.press('Backspace', delay=10)
         await self.page.waitForFunction('''
 () => document.querySelector("h1").textContent === ""
         '''.strip(), timeout=3000)
         self.assertEqual(await self.get_text(h1), '')
 
-        await self.page.type('input', 'new')
+        await self.page.type('input', 'new', delay=10)
         await self.page.waitForFunction('''
 () => document.querySelector("h1").textContent === "new"
         '''.strip(), timeout=3000)
